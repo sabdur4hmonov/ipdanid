@@ -1,0 +1,64 @@
+# Requirement and evidence matrix
+
+Legend: I implemented; A automated evidence; D real device evidence; P physical evidence; L production active. `—` = not applicable, `no` = no evidence. Partial is not complete. Every requirement in master spec §§1–17 is covered below, including verification and delivery obligations. The referenced subsection remains authoritative for detailed clauses.
+
+| ID | Spec | Milestone / requirement & acceptance | I | A | D | P | L | Evidence |
+|---|---|---|---|---|---|---|---|---|
+| GOV-01 | 1–3 | M0 identity/configurable branding, clean inspection/preservation, handoff provenance | partial | inspection | — | — | no | DECISIONS.md; empty repo cloned; originals in docs |
+| GOV-02 | 3,14,16,17 | M0–7 durable full roadmap/matrix/checkpoint, commits/CI/setup/seeds; no fabricated claims | partial | partial | — | — | no | ROADMAP/STATUS/BLOCKERS/CI; all milestones retained |
+| WEB-01 | 4,5 | M1–3 responsive public/create/craft screens; mobile navigation, accessibility and all error states | partial | partial | no | — | no | src/App.tsx/style.css; desktop + Pixel viewport browser flow |
+| WEB-02 | 4 | M3 actual Android native package/build/device checks; iOS config/build/signing; PWA | partial | build | no | — | no | actual Android/iOS source; debug APK built; no device/iOS run |
+| JOUR-01 | 5 | M1 visitor format/photo/edit/variants/materials/save without account/purchase | partial | yes | no | — | no | tests/e2e/workspace.spec.ts; photo/edit/generate/save without login |
+| JOUR-02 | 5 | M2/4 kit QR/code/profile→design→assemble, returning saved/rebuild/export | partial | partial | no | — | no | saved project resume/export passes; kit-code HTTP sandbox only |
+| JOUR-03 | 5 | M4 gift, app-only entitlement, ready-made approval/tracking, support, admin journeys | partial | partial | no | — | no | server/index.ts support/order and gift credit-transfer endpoints; purchase/delivery/commission/UI pending |
+| IMG-01 | 6,13 | M1 secure byte AND decoded limits, types/orientation/transparency and load errors | yes | partial | no | — | no | core/image.ts; header byte/pixel limits; PNG upload E2E; EXIF/extremes need broader fixtures |
+| IMG-02 | 6 | M1 zoom/pan/crop/rotate/brightness/contrast/reset with saved parameters | yes | partial | no | — | no | core/image.ts/App.tsx; all crop/edit controls; aspect-aware target preparation |
+| IMG-03 | 6 | M2 measurable suitability incl blur/shadows/small/multiple faces/background, undoable optional face edits | partial | partial | no | — | no | measured contrast/edges/shadow; face/background detection pending |
+| IMG-04 | 6 | M2 candidate photos, licensed samples, presets; edits/retries free; explicit upload privacy | partial | partial | no | — | no | original sample, free variants, four bounded photo candidates and persistent validated settings; browser edit/reload evidence |
+| ENG-01 | 7 | M1 versioned material geometry/pins/dimensions/stock/winding/profile provenance | partial | yes | no | no | no | MaterialProfile v3; immutable geometry/materials; head/winding detail and physical calibration pending |
+| ENG-02 | 7 | M1 deterministic real residual/optical minimizer, hash/version/seed, measured baseline | yes | yes | no | no | no | greedy-optical/2; tests/engine.test.ts determinism/error reduction |
+| ENG-03 | 7,15 | M1 worker progress/cancel/recovery/bounded memory + benchmark | yes | partial | no | — | no | worker/cancellation/bounds; recorded desktop benchmark; real modest phone pending |
+| ENG-04 | 7,15 | M1 continuity, legal pin/line bounds, all exports/player share immutable sequence | yes | yes | no | no | no | hash and illegal path/import tests; E2E preview/player/JSON; PDF metadata |
+| ENG-05 | 7 | M2 circle/rectangle/heart geometry/masks/consistent numbering | yes | yes | no | no | no | circle/rectangle/heart and dimension/spacing tests; physical numbering trial pending |
+| ENG-06 | 7 | M2 thickness/shaft approximations, stock checks, length allowances/time at adjustable pace | partial | partial | no | no | no | dimension-relative thread; wraps/waste/stock and adjustable pace; shaft winding is approximate |
+| ENG-07 | 7 | M2 balanced/light/detailed variants, density and reusable presets; approved versions immutable | partial | partial | no | no | no | 3 line choices, immutable photo variants, persistent edit/material presets and library parameter reuse; photo comparisons pending |
+| ENG-08 | 7 | M2 light-on-dark + real constrained multicolor and explicit knot/color segments; baseline comparisons | yes | partial | no | no | no | real light/multicolor continuous segments, color meters; representative photo comparisons/physical trial pending |
+| PLAY-01 | 8 | M1 confirmed step/from/to/segment/completion/time; next/previous/jump/play/pause/pace/replay/zoom/pan | yes | partial | no | — | no | actual browser next/jump/confirm/resume; full control UI; speech/timer edge tests pending |
+| PLAY-02 | 8 | M1/2 knots/tension/repair/color changes/finish/hang guidance | yes | partial | no | no | no | localized knot/tension/repair/color/finish text in UI/PDF; physical usability pending |
+| PLAY-03 | 8 | M2 UZ/RU/EN voice select/speed/interval/availability + correct numbers + text fallback | partial | partial | no | — | no | UZ/RU/EN text + matching TTS/number words; availability fallback; human pronunciation pending |
+| PLAY-04 | 8 | M2/3 coordinated original audio/volume, pause/jump queue cancellation/background/lock-screen | partial | partial | no | — | no | original synthesized sound/ducking/cancel/lifecycle pause; native background service pending |
+| PLAY-05 | 8,15 | M1/2 announced vs confirmed, undo, exact step and ambiguous recurring pin recovery | yes | yes | no | — | no | E2E announced vs confirmed/reload/jump; recurring pin chooser/undo |
+| PLAY-06 | 8,15 | M2 persistent local progress and authenticated sync with explicit stale conflict handling | partial | yes | no | — | no | native Preferences/browser Web Locks CAS and two-tab conflict E2E; server progress CAS; auth sync UI pending |
+| PLAY-07 | 8 | M2 offline downloaded sequence/geometry/available voices/last-sync recovery | partial | yes | no | — | no | precache engine/PDF/font; real offline reload/export; no packaged recorded voices or last-sync server UI |
+| PLAY-08 | 8 | M6 opt-in speech commands, mic/denial/noise/false-trigger verification | no | no | no | — | no | pending |
+| PLAY-09 | 8 | M6 substantiated optional quality checkpoints + experimental camera feasibility/privacy/accuracy, manual fallback | no | no | no | no | no | no guarantee without validation |
+| EXP-01 | 9,12,15 | M1 localized PDF setup/materials/actual-size tiling/pins/orientation/alignment/ruler/all steps/progress; fonts/paper settings | yes | partial | no | no | no | localized A4/Letter font-embedded guide and confirmed snapshot; all ordered steps/50mm rulers/repeated overlap marks checked; printer/human trial pending |
+| EXP-02 | 9 | M2 validated versioned JSON/TXT roundtrip, incompatibility errors, preview export | yes | yes | no | — | no | JSON project progress/edit export; bounded JSON/TXT exact sequence; PNG preview |
+| EXP-03 | 9 | M6 accurate sequence GIF/video; printable 3D frame dimensions/connections/geometry | no | no | no | no | no | pending |
+| LIB-01 | 9 | M2 named project library/reopen/duplicate params/organization/recoverable delete/free re-download | partial | yes | no | — | no | names/reopen/archive/restore/backup/import/parameter reuse; E2E; folders pending |
+| SOCIAL-01 | 9,12 | M6 explicit public consent/reviews/finished uploads/moderation/private originals | no | no | no | — | no | pending |
+| SHOP-01 | 10 | M4 all catalog families/variants/material linkage/stock/country/currency/refills/bundles | partial | partial | no | no | no | server migration/catalog/stock; clearly development prices; full catalog UI pending |
+| SHOP-02 | 10 | M4 cart/address/shipping/discount/referral/payment/confirmation/tracking/return/cancel | partial | partial | no | — | no | HTTP order/create/cancel/ownership; checkout/shipping/discount/tracking UI pending |
+| PAY-01 | 10,15 | M4 server prices/transitions, genuine policy COD, selected verified provider adapters | partial | yes | no | — | no | server price/stock state tested; only generic sandbox adapter; Click/Payme/COD policy pending |
+| PAY-02 | 10,13,15 | M4 callback signatures/replay/idempotency/reconciliation and forged callback tests | partial | yes | no | — | no | HMAC event amount/age/idempotency/replay tests; live-provider reconciliation pending |
+| MSG-01 | 10,12 | M4 localized transactional message delivery states/retries; no unapproved real sends | partial | yes | no | — | no | queued→sandbox_recorded, sent=false; provider delivery/localized templates/retries pending |
+| CODE-01 | 10,13 | M4 secure unique code issuance/batches/QR/profile/quota/expiry/history/revoke/audit/ownership recovery | partial | yes | no | — | no | secure HMAC code/expiry/revoke/profile/one-owner audit; QR/batches/ownership recovery UI pending |
+| CODE-02 | 10,15 | M4 race-safe redemption/project activation/gifts/credit ledger; failure rollback/retry/download free | partial | yes | no | — | no | transactional code/job/gift ledger; one-recipient claims/refund/dedupe/expiry/free download tests; activation/purchase/delivery UI pending |
+| BRICK-01 | 11 brick | M5 palette/inventory/photo grid/size/orientation/edit/counts/baseplates/combination/upgrades | no | no | no | no | no | pending real engine |
+| BRICK-02 | 11 brick | M5 interactive/PDF instructions and progress, seven-tone/rich kit constraints | no | no | no | no | no | pending |
+| DIAM-01 | 11 diamond | M5 independent crystal spacing/palettes/styles/grid/count/spares/magnetic profiles/PDF/region progress | no | no | no | no | no | pending |
+| PAINT-01 | 11 paint | M5 reduced palette/cleaned connected regions/print-safe labels/legend/styles/canvas/coverage/progress | no | no | no | no | no | cannot be decorative pixel cards |
+| MODEL-01 | 11 sculptor | M5 original/licensed 3D model layers/letters/text assembly | no | no | no | no | no | B-CONTENT |
+| QR-01 | 11 sculptor | M5 valid EC-constrained QR/physical grid/payload rejection/real-size scan trials | no | no | no | no | no | physical scans required |
+| GUIDE-01 | 11 guided | M5 original kids/cardboard/Ebru catalog/playback/360 assets/no unnecessary gate | no | no | no | no | no | B-CONTENT |
+| BOOK-01 | 11 folding | M5 height/page/text/date/symbol feasibility/mark-fold measurements/voice/PDF/entitlement | no | no | no | no | no | pending separate engine |
+| ADMIN-01 | 12,13 | M4 least privilege protected roles/server auth/admin materials/stock/orders/codes/returns/content/locales/support/audit/recovery | partial | partial | no | — | no | server-admin bearer protected code/sandbox routes; full RBAC/admin portal pending |
+| B2B-01 | 12 | M6 quotes/volume pricing/recipient links/partner portal/batches/campaign config/inventory/role isolation | no | no | no | — | no | pending |
+| ANALYTICS-01 | 12 | M6 consented funnel/confirmed assembly/support/repeat/referral + net contribution, no photo contents | no | no | no | — | no | pending |
+| I18N-01 | 2,12 | M2 complete UZ/RU/EN customer messages/export/templates/units/fonts + extensible RTL | partial | partial | no | — | no | complete working screen dictionary + PDF UZ/RU/EN; some exception strings/templates still pending |
+| DATA-01 | 13 | M4 schema/migrations for every specified entity; budgets/rate limits/object storage/job abstraction | partial | partial | no | — | no | migrations 001–003 entity vocabulary/jobs/gift transfers; SQLite WAL transactions; no table claimed as feature |
+| SEC-01 | 13,15 | M4 user/order/asset authorization/signed links/log privacy, deletion/TTL/backup/restore | partial | partial | no | — | no | guest opaque sessions/order/instruction ownership/budget/body limits; media retention/backup/recovery pending |
+| QA-01 | 15 | M1–7 meaningful engine/export/photo/progress/security/browser outcomes tests | partial | yes | no | — | no | 21 domain/PDF tests + HTTP sandbox + six E2E outcomes on two browser profiles; VERIFICATION.md; broader security/mobile coverage pending |
+| QA-02 | 15 | M7 named modest-device benchmark under 60s verified, mobile denial/recovery/layout checks | partial | partial | no | — | no | named i7-1065G7/16GiB 96px/120pin benchmark artifacts; browser visual review; no physical phone benchmark |
+| QA-03 | 7,15 | M7 representative physical kit trial/protocol/results + print scale/calibration | protocol | no | no | no | no | docs/PHYSICAL_TRIAL.md; no physical assembly/printing performed |
+| DELIVERY-01 | 16 | M7 source/setup/config/migrations/seeds/CI/mobile build artifacts or actual reproducible path/owner checklist | partial | partial | no | — | no | README/setup/lockfile/migrations/CI/native projects/debug APK; hosted CI/store/provider dependencies pending |

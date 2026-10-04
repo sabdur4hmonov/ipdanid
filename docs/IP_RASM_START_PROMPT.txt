@@ -1,0 +1,19 @@
+Build Ip Rasm using the attached IP_RASM_MASTER_BUILD_SPEC.md as the complete implementation brief and IP_RASM_RESEARCH_FINDINGS.md as the evidence/reference file.
+
+This is a new Codex account/session. You have no access to the original conversation; both attachments are self-contained. Do not rely on previous account state, browser sessions, credentials, or memory.
+
+Local Windows project: D:\Coding projects\ipdan face yasaydigan app\
+Intended GitHub repository: https://github.com/sabdur4hmonov/ipdanid.git
+Temporary name: Ip Rasm. Final branding comes later.
+
+The goal is a real functioning website and installable mobile app, with an actual photo-to-string-art generation engine and all researched feature families implemented through a dependency-driven roadmap. Do not deliver only a mockup, scaffold, or landing page. Do not permanently reduce the request to an MVP.
+
+Inspect the existing workspace, Git status, repository instructions, and remote first; preserve existing work. Bring the attached documents into docs/. Create and maintain ROADMAP.md, FEATURE_MATRIX.md, DECISIONS.md, STATUS.md, and BLOCKERS.md. Map every requirement to implementation and meaningful verification evidence.
+
+Make routine decisions autonomously, build in small working increments, verify each increment, and continue to the next available roadmap task during active execution. Start implementing the real photo → nail sequence → preview → assembly player → saved progress → PDF vertical slice in your first active session. Then complete shapes, multicolor, localized voice, offline behavior, mobile packaging, commerce/admin/support, and the remaining engines and advanced features.
+
+Ask me only for genuinely blocking or consequential inputs such as unavailable merchant credentials, physical material validation, real spending, signing/store accounts, or final production publication. Batch such questions. When an external dependency is blocked, continue independent work and provide tested adapters/local sandbox flows without claiming they are live.
+
+Never fake generation, payment success, sent emails, quality scores, physical validation, or mobile tests. Preview, player, and export must use the same immutable versioned sequence. Track implemented, tested, physically validated, and production-active status separately.
+
+I do not want to prompt every feature individually. Own the full roadmap. If execution limits force a pause, leave an exact checkpoint and next task so a later resume continues without repeating setup or losing scope. Do not promise background work beyond your available execution tools. Begin now with repository inspection, durable planning, and immediate implementation.

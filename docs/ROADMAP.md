@@ -1,0 +1,16 @@
+# Ip Rasm dependency roadmap
+
+The complete attached master spec is the implementation contract. Research is evidence, not instructions; competitor marketing is not validation. No milestone reduces the final scope. Status is maintained in FEATURE_MATRIX and STATUS.
+
+Dependency graph: M0 → M1 → M2 → M3; M1 → M4 foundations; M2 + M4 → M5; M3 + M4 + M5 → M6; validation runs throughout → M7.
+
+- M0: inspect repository, preserve work, import documents, architecture, requirement mapping, CI baseline.
+- M1: real bounded deterministic worker algorithm, versioned material profile, photo edits, immutable preview/player/progress/PDF, meaningful algorithm and browser tests.
+- M2: all shapes/modes, actual multicolor paths, suitability, stock/time estimates, variants/presets, recovery, library/import/export, voice/localization, offline/download packages, sync conflict contracts.
+- M3: responsive PWA, genuine Capacitor Android/iOS projects, native persistence/file sharing/back handling, permissions/background audio, reproducible builds and actual device evidence.
+- M4: relational migrations + transactional local service; auth, catalog/stock, cart/shipping, server prices, orders, sandbox provider contracts, payment verification/idempotency, codes/gifts/credits, email retries, fulfillment, admin/support/audit.
+- M5: palette/inventory brick engine; diamond physical grid; region-based paint engine; letters/QR scan-tested patterns; original guided content; feasible book-folding engine and entitlements.
+- M6: exact-sequence animation/video, validated 3D frame exports, consented gallery/moderation, creator/referral analytics and contribution accounting, B2B portals/batches, region/provider configuration, experimental hands-free and camera feasibility.
+- M7: CI/E2E/security/performance/device/physical trials, cleanup/backup/restore, build artifacts, production prerequisites. Final production publication requires owner approval.
+
+Next task is always recorded in STATUS.md. Independent tasks continue when a provider, device, license, or physical trial is blocked. Features without evidence remain pending or partial.
