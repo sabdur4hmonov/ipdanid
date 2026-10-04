@@ -39,6 +39,8 @@ APK: `android/app/build/outputs/apk/debug/app-debug.apk`. This is a development 
 
 This Windows host successfully compiled the debug APK with JDK 21/SDK 36. A copy is at `output/mobile/ip-rasm-debug.apk`; SHA-256 and exact bundled-web-asset checks are at `output/mobile/build-evidence.json`. No Android device/emulator interaction has yet been tested. Rebuild after source changes; build success does not establish runtime behavior.
 
+`./gradlew.bat :app:assembleDebugAndroidTest` also compiles the packaged-asset smoke test. Its real device execution (`:app:connectedDebugAndroidTest`) and full native customer flow remain pending; no arithmetic placeholder tests are counted as evidence.
+
 ## Data and integrity
 
 - Files: 15 MB, decoded dimensions 24 MP and 12,000 px maximum. Only JPEG/PNG headers are admitted before decode. Browsers normalize EXIF via `createImageBitmap`.

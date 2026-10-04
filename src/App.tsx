@@ -45,6 +45,7 @@ import { spokenPin, translate } from "./i18n";
 import { readProjects, writeProjects, StorageConflictError } from "./storage";
 import { download } from "./download";
 import { PRODUCT_NAME } from "./config";
+import { customerError } from "./errors";
 import {
   readPresets,
   changePreset,
@@ -94,9 +95,12 @@ function Preview({
   );
 }
 export default function App() {
-  const [locale, setLocale] = useState<Locale>(
-    (localStorage.getItem("iprasm.locale") as Locale) || "uz",
-  );
+  const [locale, setLocale] = useState<Locale>(() => {
+    const stored = localStorage.getItem("iprasm.locale");
+    return stored && ["uz", "ru", "en"].includes(stored)
+      ? (stored as Locale)
+      : "uz";
+  });
   const t = translate(["uz", "ru", "en"].includes(locale) ? locale : "uz");
   const [view, setView] = useState<View>("create"),
     [image, setImage] = useState<
@@ -675,7 +679,7 @@ export default function App() {
           )}
           {error && (
             <div role="alert" className="alert error">
-              {error}
+              {customerError(error, locale)}
               <button aria-label="Dismiss error" onClick={() => setError("")}>
                 <X size={16} />
               </button>

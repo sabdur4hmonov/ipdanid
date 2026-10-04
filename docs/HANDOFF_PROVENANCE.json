@@ -1,0 +1,18 @@
+{
+  "originalsByteVerified": true,
+  "sha256": {
+    "IP_RASM_MASTER_BUILD_SPEC.md": "575bb935e957b98e5b47be0746868d8f8b316fb3cd21a88edc425166922e3a1d",
+    "IP_RASM_RESEARCH_FINDINGS.md": "dbd18fcb806adc8917e61e320ee93a51fbf9f9a85f7200d31f6d6fe118ace7b9",
+    "IP_RASM_START_PROMPT.txt": "920a6432432f94903530b28af1e51fb5ce35f94f470c32932a2ae5a1dd123080",
+    "mahsulot-strategiyasi.md": "774b07bc3f26922f70c85fb0b1afb9059751a20a0906a891e82910aca1a797bc",
+    "qbrix-tadqiqot.md": "0499e0273e1074e963df43baf2a7873d09ba52151a6d587b95e21400565701aa",
+    "IP_RASM_CODEX_HANDOFF.zip": "f5291686c344dc3a3839c67c9afe1c839052511370727db2244362258af1a12b"
+  },
+  "archiveEntries": [
+    "IP_RASM_MASTER_BUILD_SPEC.md",
+    "IP_RASM_RESEARCH_FINDINGS.md",
+    "IP_RASM_START_PROMPT.txt"
+  ],
+  "authority": "Current user request + MASTER_BUILD_SPEC; RESEARCH_FINDINGS evidence; START_PROMPT/legacy notes/archive provenance only",
+  "archiveCopiesByteVerified": true
+}

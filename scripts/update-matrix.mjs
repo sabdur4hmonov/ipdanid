@@ -39,7 +39,7 @@ const updates = {
   "IMG-01": [
     "yes",
     "partial",
-    "core/image.ts; header byte/pixel limits; PNG upload E2E; EXIF/extremes need broader fixtures",
+    "core/image.ts; browser EXIF rotation/PNG alpha/header and byte limits; synthetic fixtures; broader photo/decoder coverage pending",
   ],
   "IMG-02": [
     "yes",
@@ -99,7 +99,7 @@ const updates = {
   "PLAY-01": [
     "yes",
     "partial",
-    "actual browser next/jump/confirm/resume; full control UI; speech/timer edge tests pending",
+    "browser next/jump/confirm/resume/autoplay; controlled speech queue cancellation and unchanged confirmed state; device outcomes pending",
   ],
   "PLAY-02": [
     "yes",
@@ -109,7 +109,7 @@ const updates = {
   "PLAY-03": [
     "partial",
     "partial",
-    "UZ/RU/EN text + matching TTS/number words; availability fallback; human pronunciation pending",
+    "UZ/RU/EN text + matching TTS/number words; controlled browser absence/filter/cancellation verified; audible/human pronunciation pending",
   ],
   "PLAY-04": [
     "partial",
@@ -189,7 +189,7 @@ const updates = {
   "I18N-01": [
     "partial",
     "partial",
-    "complete working screen dictionary + PDF UZ/RU/EN; some exception strings/templates still pending",
+    "working UI/PDF and actionable recovery errors UZ/RU/EN; browser switching/error tests; commerce/templates/RTL pending",
   ],
   "DATA-01": [
     "partial",
@@ -204,7 +204,7 @@ const updates = {
   "QA-01": [
     "partial",
     "yes",
-    "21 domain/PDF tests + HTTP sandbox + six E2E outcomes on two browser profiles; VERIFICATION.md; broader security/mobile coverage pending",
+    "21 domain/PDF tests + HTTP sandbox + ten E2E outcomes on two browser profiles; VERIFICATION.md; broader security/mobile coverage pending",
   ],
   "QA-02": [
     "partial",

@@ -1,0 +1,9 @@
+* text=auto
+android/gradlew text eol=lf
+*.bat text eol=crlf
+# Preserve handoff originals exactly, including their existing line endings.
+docs/IP_RASM_MASTER_BUILD_SPEC.md -text
+docs/IP_RASM_RESEARCH_FINDINGS.md -text
+docs/IP_RASM_START_PROMPT.txt -text
+docs/mahsulot-strategiyasi.md -text
+docs/qbrix-tadqiqot.md -text
