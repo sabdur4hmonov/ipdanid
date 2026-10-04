@@ -1,5 +1,15 @@
 import type { Locale } from "./core/types";
 const uz = {
+  portraitSolver: "Portret hisoblash usuli",
+  continuousSolver: "Uzluksiz ip yo‘li",
+  globalSolver: "Global ip joylashuvi (tajriba)",
+  globalHint:
+    "Global usul iplarni olib tashlab, qayta joylashtira oladi. Turli suratlarda sifat hali tasdiqlanmagan; variantlarni solishtiring. Qalin ip pikselni to‘liq yopsa, uzluksiz usulni ishlating.",
+  rerouteGlobal: "Global qayta joylashtirish variantini yaratish",
+  continueGlobal: "Global optimizatsiyani davom ettirish",
+  globalResult: "Yangi, qayta yo‘naltirilgan ip ketma-ketligi",
+  routingConnections: "yo‘lni ulash qadami",
+  removedConnections: "olib tashlangan ip",
   continueRefinement: "Ip yo‘lini keyingi bosqichda tuzatish",
   refinementNotice:
     "Yangi yo‘riqnoma yaratiladi. Eski tasdiqlangan qadamlar yangi ip yo‘liga ko‘chirilmaydi.",
@@ -196,6 +206,16 @@ const uz = {
 };
 type Key = keyof typeof uz;
 const en: Record<Key, string> = {
+  portraitSolver: "Portrait optimization",
+  continuousSolver: "Continuous path",
+  globalSolver: "Global strand placement (experimental)",
+  globalHint:
+    "Global fitting can remove and reposition strands. Quality across multiple portraits is unverified; compare variants. Use continuous mode for thick threads with fully opaque pixel coverage.",
+  rerouteGlobal: "Create globally rerouted variant",
+  continueGlobal: "Continue global optimization",
+  globalResult: "New rerouted strand sequence",
+  routingConnections: "routing connections",
+  removedConnections: "removed strands",
   continueRefinement: "Continue path refinement",
   refinementNotice:
     "Creates a new instruction. Confirmed steps from an older path do not transfer to the new path.",
@@ -390,6 +410,16 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
+  portraitSolver: "Оптимизация портрета",
+  continuousSolver: "Непрерывный путь",
+  globalSolver: "Глобальное размещение нитей (эксперимент)",
+  globalHint:
+    "Глобальный метод удаляет и перемещает нити. Качество на разных портретах не проверено; сравнивайте варианты. Для толстой нити с непрозрачным покрытием пикселя используйте непрерывный метод.",
+  rerouteGlobal: "Создать вариант с глобальной перестройкой",
+  continueGlobal: "Продолжить глобальную оптимизацию",
+  globalResult: "Новая последовательность с перестроенным путём",
+  routingConnections: "соединений для маршрута",
+  removedConnections: "удалённых нитей",
   continueRefinement: "Продолжить уточнение пути",
   refinementNotice:
     "Создаёт новую инструкцию. Подтверждённые шаги старого пути не переносятся в новый.",
@@ -422,7 +452,8 @@ const ru: Record<Key, string> = {
   edgeError: "Ошибка границ",
   stopReason: "Причина остановки",
   computeLimit: "Предел вычислений; оптимум не подтверждён",
-  qualityPlateau: "В текущем поиске полезное дополнительное соединение не найдено",
+  qualityPlateau:
+    "В текущем поиске полезное дополнительное соединение не найдено",
   legacyStop: "Ограничение старого алгоритма",
   refineLimit:
     "Уточнение пути достигло предела вычислений; можно продолжить следующим этапом.",

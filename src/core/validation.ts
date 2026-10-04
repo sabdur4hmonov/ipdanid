@@ -17,10 +17,13 @@ export async function validateInstruction(
       "greedy-optical/2",
       "greedy-optical/3",
       "greedy-optical/4",
+      "density-optical/5",
     ].includes(i.algorithm)
   )
     throw new Error("Unsupported instruction version");
-  const qualityFirst = i.algorithm === "greedy-optical/4",
+  const qualityFirst = ["greedy-optical/4", "density-optical/5"].includes(
+      i.algorithm,
+    ),
     limit = qualityFirst ? MAX_LINES : 3000;
   if (
     !p ||
@@ -134,6 +137,60 @@ export async function validateInstruction(
   )
     throw new Error("Invalid generation parameters");
   if (qualityFirst) {
+    if (i.algorithm === "density-optical/5") {
+      if (i.params.optimization?.pairLimit !== undefined) {
+        if (
+          i.params.optimization.pairLimit !== 32 ||
+          i.params.optimization.pinDegreeLimit !== 160
+        )
+          throw new Error("Invalid winding guards");
+        const degree = new Array(p.pins.length).fill(0),
+          pairs = new Map<string, number>();
+        for (const s of i.segments)
+          for (let j = 1; j < s.path.length; j++) {
+            const a = s.path[j - 1],
+              b = s.path[j],
+              key = [a, b].sort((a, b) => a - b).join(":");
+            degree[a]++;
+            degree[b]++;
+            pairs.set(key, (pairs.get(key) ?? 0) + 1);
+          }
+        if (
+          degree.some((d) => d > 160) ||
+          [...pairs.values()].some((c) => c > 32)
+        )
+          throw new Error("Exceeded winding guards");
+      }
+      const fit = i.metrics.densityFit;
+      if (
+        !i.params.portrait?.enabled ||
+        i.params.mode === "color" ||
+        !fit ||
+        ![
+          fit.sweeps,
+          fit.evaluations,
+          fit.fittedConnections,
+          fit.routingConnections,
+        ].every((v) => Number.isSafeInteger(v) && v >= 0) ||
+        fit.sweeps < 1 ||
+        fit.sweeps > 24 ||
+        fit.fittedConnections + fit.routingConnections !== total ||
+        (fit.removedConnections !== undefined &&
+          (!Number.isSafeInteger(fit.removedConnections) ||
+            fit.removedConnections < 0))
+      )
+        throw new Error("Invalid global fit accounting");
+      if (
+        i.params.optimization?.kind === "optical-coordinate" &&
+        i.params.optimization.order !== "dispersed-v1"
+      )
+        throw new Error("Invalid global candidate order");
+      if (
+        i.params.optimization?.overshoot !== undefined &&
+        i.params.optimization.overshoot !== "target-luminance-v1"
+      )
+        throw new Error("Invalid darkening protection");
+    }
     if (
       i.params.parentSequenceHash &&
       (!/^[a-f0-9]{64}$/.test(i.params.parentSequenceHash) ||
@@ -144,9 +201,22 @@ export async function validateInstruction(
     if (
       i.params.stockPolicy !== "estimate" ||
       !i.params.optimization ||
-      i.params.optimization.lookahead !== 8 ||
-      i.params.optimization.coarseScale !== 4 ||
-      i.params.optimization.minimumRelativeGain !== 1e-7
+      (i.algorithm === "greedy-optical/4"
+        ? i.params.optimization.lookahead !== 8 ||
+          i.params.optimization.coarseScale !== 4 ||
+          i.params.optimization.minimumRelativeGain !== 1e-7
+        : !["density-coordinate", "optical-coordinate"].includes(
+            i.params.optimization.kind ?? "",
+          ) ||
+          i.params.optimization.lookahead !== 0 ||
+          i.params.optimization.coarseScale !== 1 ||
+          i.params.optimization.minimumRelativeGain !== 0.0001 ||
+          !Number.isFinite(i.params.optimization.edgeWeight) ||
+          i.params.optimization.edgeWeight! < 0 ||
+          i.params.optimization.edgeWeight! > 4 ||
+          !Number.isInteger(i.params.optimization.sweeps) ||
+          i.params.optimization.sweeps! < 1 ||
+          i.params.optimization.sweeps! > 24)
     )
       throw new Error("Invalid generation parameters");
     if (i.params.portrait) validPortrait(i.params.portrait);
@@ -256,7 +326,16 @@ export function mergeProgress(
   return { progress: local, conflict: true };
 }
 export function toTxt(i: Instruction): string {
-  return `IP_RASM_TXT_V1\n${JSON.stringify(i)}\n\n# Ordered steps: step from to color\n${flatten(
+  const knots =
+    i.algorithm === "density-optical/5"
+      ? i.segments
+          .map(
+            (s, j) =>
+              `# Segment ${j + 1}: tie ${s.color} to pin ${s.path[0]}; follow its ordered steps without cutting; secure a finishing knot at pin ${s.path.at(-1)}.`,
+          )
+          .join("\n") + "\n"
+      : "";
+  return `IP_RASM_TXT_V1\n${JSON.stringify(i)}\n\n${knots}# Ordered steps: step from to color\n${flatten(
     i,
   )
     .map((s) => `${s.index} ${s.from} ${s.to} ${s.color}`)

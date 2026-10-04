@@ -1,5 +1,9 @@
 # Requirement and evidence matrix
 
+Portrait checkpoint /5: implementation and 28 automated tests are available; exact-source same-material contour measurements and rejected trials are in PORTRAIT_FIDELITY_CHECKPOINT.md and ignored output/fidelity/report.html. Nose/lips remain weak; physical/device/production status is still no. ENG-02/03/04/06/07 and QA-01 have this additional evidence; broader quality acceptance remains partial.
+
+Final /5 increment: all 28 tests + fourteen browser checks pass, offline production Worker matches the selected hash, 102-page PDF verifies all 4,153 steps, and rebuilt Android APK has sixteen byte-matched assets. Provisional repeat/degree guards are tested; physical winding capacity is unverified. This supplements the historical evidence in the rows below and does not mark physical/device/production columns as complete.
+
 Legend: I implemented; A automated evidence; D real device evidence; P physical evidence; L production active. `—` = not applicable, `no` = no evidence. Partial is not complete. Every requirement in master spec §§1–17 is covered below, including verification and delivery obligations. The referenced subsection remains authoritative for detailed clauses.
 
 | ID | Spec | Milestone / requirement & acceptance | I | A | D | P | L | Evidence |

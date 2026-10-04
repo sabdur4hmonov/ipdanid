@@ -1,5 +1,9 @@
 # External dependencies
 
+The latest source is available and processed-target preservation is measured. Weak nose/mouth reconstruction is an engineering limitation with a concrete next experiment, not a missing user input. Reversible /5 variants are optical simulations; nail loading, material opacity, physical assembly and Android runtime remain unverified. No merchant/signing/publication input is needed for the next local quality experiment.
+
+The new route's 32-repeat / 160-incident-edge guards are provisional distribution limits, not a validated nail capacity. B-PHYSICAL includes usable nail wrapping height/head dimensions and coincident-strand coverage/spacing, in addition to measured thread diameter/opacity and assembly trials. This blocks physical claims, not independent optimizer work.
+
 These do not block independent local implementation. No production integrations are active.
 
 Exact portrait source is now available and tested locally; it is not a blocker. One-image optical improvement does not resolve B-PHYSICAL or modest-device performance. Further diverse-photo quality work is implementation/verification work, not an external blocker.

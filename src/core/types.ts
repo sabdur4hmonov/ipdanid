@@ -54,7 +54,8 @@ export interface Instruction {
     | "greedy-optical/1"
     | "greedy-optical/2"
     | "greedy-optical/3"
-    | "greedy-optical/4";
+    | "greedy-optical/4"
+    | "density-optical/5";
   id: string;
   createdAt: string;
   imageHash: string;
@@ -70,12 +71,26 @@ export interface Instruction {
     parentSequenceHash?: string;
     refinementStage?: number;
     optimization?: {
+      kind?: "density-coordinate" | "optical-coordinate";
+      order?: "dispersed-v1";
+      overshoot?: "target-luminance-v1";
+      pairLimit?: 32;
+      pinDegreeLimit?: 160;
+      edgeWeight?: number;
+      sweeps?: number;
       lookahead: number;
       coarseScale: number;
       minimumRelativeGain: number;
     };
   };
   metrics: {
+    densityFit?: {
+      removedConnections?: number;
+      sweeps: number;
+      evaluations: number;
+      fittedConnections: number;
+      routingConnections: number;
+    };
     baselineMse: number;
     reconstructionMse: number;
     estimatedMeters: number;

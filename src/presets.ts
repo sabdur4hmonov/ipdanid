@@ -14,6 +14,7 @@ export interface MakerSettings {
   stockMeters: number;
   edits: EditParams;
   portrait?: PortraitSettings;
+  portraitSolver?: "continuous" | "global";
 }
 export interface MakerPreset {
   id: string;
@@ -60,6 +61,8 @@ function validate(p: MakerPreset) {
       throw new Error("Invalid preset parameters");
   }
   if (s.portrait) validPortrait(s.portrait);
+  if (s.portraitSolver && !["continuous", "global"].includes(s.portraitSolver))
+    throw new Error("Invalid portrait solver");
 }
 export async function readPresets(): Promise<MakerPreset[]> {
   const raw = Capacitor.isNativePlatform()

@@ -1,5 +1,7 @@
 # Ip Rasm dependency roadmap
 
+Active quality checkpoint: reversible global strand placement and legal rerouting are implemented experimentally; nose/mouth quality acceptance remains open. Next: matched multiscale local-contrast optimization at identical crop/240 pins/0.1 mm/160 px, then a separately labeled 192 px computation comparison. Preserve all old sequences and commit 3ce5b0b. See PORTRAIT_FIDELITY_CHECKPOINT.md for exact evidence and commands. This priority removes no M0–M7 scope.
+
 The complete attached master spec is the implementation contract. Research is evidence, not instructions; competitor marketing is not validation. No milestone reduces the final scope. Status is maintained in FEATURE_MATRIX and STATUS.
 
 Dependency graph: M0 → M1 → M2 → M3; M1 → M4 foundations; M2 + M4 → M5; M3 + M4 + M5 → M6; validation runs throughout → M7.

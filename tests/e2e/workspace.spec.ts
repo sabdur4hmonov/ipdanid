@@ -6,6 +6,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   page,
   context,
 }, testInfo) => {
+  test.setTimeout(180000); // Full offline export/re-import sometimes exceeds 90 s on this host.
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
@@ -34,11 +35,9 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
     path: `output/evidence/${testInfo.project.name}-generated.png`,
     fullPage: true,
   });
-  await page
-    .locator(".result-card")
-    .screenshot({
-      path: `output/evidence/${testInfo.project.name}-quality-result.png`,
-    });
+  await page.locator(".result-card").screenshot({
+    path: `output/evidence/${testInfo.project.name}-quality-result.png`,
+  });
   const previewHash = await page
     .locator("canvas[data-sequence-hash]")
     .getAttribute("data-sequence-hash");

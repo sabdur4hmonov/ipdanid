@@ -6,6 +6,8 @@ Portrait mode shows the exact local grayscale target and lets you place the face
 
 ## Run locally
 
+Experimental global portrait fitting can remove misplaced strands and reroute a new immutable variant. It preserves its continuous comparison basis and never transfers old confirmed steps. Local same-source comparisons, enlarged facial regions, rejected trials and winding guards are documented in [docs/PORTRAIT_FIDELITY_CHECKPOINT.md](docs/PORTRAIT_FIDELITY_CHECKPOINT.md); report: ignored `output/fidelity/report.html`. Nose/mouth definition and physical winding validation remain open.
+
 Node 22.12+ (this host uses 24.18.0):
 
 ```powershell

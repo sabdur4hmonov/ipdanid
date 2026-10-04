@@ -19,7 +19,7 @@ export function renderInstruction(
   ctx.lineWidth = (p.threadMm / p.widthMm) * sx;
   ctx.lineCap = "round";
   const end = options.completed ?? steps.length;
-  if (["greedy-optical/3", "greedy-optical/4"].includes(i.algorithm)) {
+  if (["greedy-optical/3", "greedy-optical/4", "density-optical/5"].includes(i.algorithm)) {
     const n = i.params.resolution,
       raster = rasterSequence(i, end);
     const surface = document.createElement("canvas");

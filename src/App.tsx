@@ -161,6 +161,9 @@ export default function App() {
     [lines, setLines] = useState(1400),
     [preset, setPreset] = useState("balanced");
   const [portrait, setPortrait] = useState(structuredClone(DEFAULT_PORTRAIT));
+  const [portraitSolver, setPortraitSolver] = useState<"continuous" | "global">(
+    "continuous",
+  );
   const targetCanvas = useRef<HTMLCanvasElement>(null);
   const [variants, setVariants] = useState<
       { instruction: Instruction; name: string; edits: EditParams }[]
@@ -456,6 +459,7 @@ export default function App() {
     setStockMeters(s.stockMeters);
     setEdits({ ...s.edits });
     setPortrait(structuredClone(s.portrait ?? DEFAULT_PORTRAIT));
+    setPortraitSolver(s.portraitSolver ?? "continuous");
     setPreset("balanced");
   }
   async function savePreset() {
@@ -474,6 +478,7 @@ export default function App() {
           stockMeters,
           edits: { ...edits },
           portrait: structuredClone(portrait),
+          portraitSolver,
         },
       });
       setMakerPresets(next);
@@ -483,7 +488,7 @@ export default function App() {
       setError(String(e));
     }
   }
-  function generate(seed?: Instruction) {
+  function generate(seed?: Instruction, strategyOverride?: "global") {
     if (!image) return;
     let profile;
     try {
@@ -534,17 +539,29 @@ export default function App() {
         if (data.type === "done") {
           try {
             const i = await validateInstruction(data.instruction);
+            const baseline = data.baseline
+              ? await validateInstruction(data.baseline)
+              : undefined;
             setVariants((v) =>
               [
                 ...v,
+                ...(baseline
+                  ? [
+                      {
+                        instruction: baseline,
+                        name: t("continuousSolver"),
+                        edits: { ...generationEdits },
+                      },
+                    ]
+                  : []),
                 {
                   instruction: i,
-                  name: `${photoCandidates.find((p) => p.id === photoId)?.name ?? t("sample")} · ${t(preset as "balanced" | "lighter" | "detailed")}`,
+                  name: `${photoCandidates.find((p) => p.id === photoId)?.name ?? t("sample")} · ${i.algorithm === "density-optical/5" ? t("globalSolver") : t(preset as "balanced" | "lighter" | "detailed")}`,
                   edits: { ...generationEdits },
                 },
               ].slice(-6),
             );
-            setVariant(Math.min(variants.length, 5));
+            setVariant(Math.min(variants.length + (baseline ? 1 : 0), 5));
           } catch (e) {
             setError(String(e));
           }
@@ -565,6 +582,13 @@ export default function App() {
       mode: seed?.params.mode ?? mode,
       portrait: generationPortrait,
       seed,
+      strategy:
+        strategyOverride ??
+        (seed?.algorithm === "density-optical/5"
+          ? "global"
+          : !seed && generationPortrait.enabled && mode !== "color"
+            ? portraitSolver
+            : "continuous"),
     });
   }
   function open(p: Project) {
@@ -873,6 +897,28 @@ export default function App() {
                           {t("portraitMode")}
                         </label>
                         <p className="fineprint">{t("portraitHint")}</p>
+                        {portrait.enabled && mode !== "color" && (
+                          <label>
+                            {t("portraitSolver")}
+                            <select
+                              aria-label={t("portraitSolver")}
+                              value={portraitSolver}
+                              onChange={(e) =>
+                                setPortraitSolver(
+                                  e.target.value as "continuous" | "global",
+                                )
+                              }
+                            >
+                              <option value="continuous">
+                                {t("continuousSolver")}
+                              </option>
+                              <option value="global">
+                                {t("globalSolver")}
+                              </option>
+                            </select>
+                            <span className="fineprint">{t("globalHint")}</span>
+                          </label>
+                        )}
                         <div
                           className="target-frame"
                           style={{ aspectRatio: aspect }}
@@ -1340,6 +1386,32 @@ export default function App() {
                         {t("qualityHint")}
                       </p>
                       <Supply instruction={result} locale={locale} />
+                      {image &&
+                        result.params.portrait?.enabled &&
+                        result.params.mode !== "color" &&
+                        (result.algorithm !== "density-optical/5" ||
+                          result.metrics.stoppedReason === "compute-limit") && (
+                          <button
+                            className="outline full"
+                            disabled={busy}
+                            onClick={() => generate(result, "global")}
+                          >
+                            {t(
+                              result.algorithm === "density-optical/5"
+                                ? "continueGlobal"
+                                : "rerouteGlobal",
+                            )}
+                          </button>
+                        )}
+                      {result.metrics.densityFit && (
+                        <p className="fineprint">
+                          {t("globalResult")} ·{" "}
+                          {result.metrics.densityFit.routingConnections}{" "}
+                          {t("routingConnections")} ·{" "}
+                          {result.metrics.densityFit.removedConnections ?? 0}{" "}
+                          {t("removedConnections")}. {t("refinementNotice")}
+                        </p>
+                      )}
                       {result.metrics.refinement?.reason === "compute-limit" &&
                         image && (
                           <button
@@ -1893,6 +1965,11 @@ export default function App() {
                                 stockMeters: profile.stockMeters,
                                 edits: p.edits,
                                 portrait: p.instruction.params.portrait,
+                                portraitSolver:
+                                  p.instruction.algorithm ===
+                                  "density-optical/5"
+                                    ? "global"
+                                    : "continuous",
                               });
                               nav("create");
                               setNotice(t("reuseNotice"));

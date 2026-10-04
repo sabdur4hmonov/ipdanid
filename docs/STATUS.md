@@ -1,4 +1,16 @@
-## Current checkpoint: measured portrait optimization — 2026-10-04
+## Current checkpoint: reversible portrait contour fitting — 2026-10-04
+
+Read [PORTRAIT_FIDELITY_CHECKPOINT.md](PORTRAIT_FIDELITY_CHECKPOINT.md) for exact settings, hashes, measurements, rejected experiments and the next executable quality task. Commit `3ce5b0b`, original photo, v4 sequences and old report remain preserved. The complete product roadmap remains in force; no push, publication or photograph upload occurred.
+
+Experimental `density-optical/5` reversibly fits legal strand counts using actual optical mean-RGB tone/adjacent contrast and light-target darkening protection, then makes a connected Euler route with measured routing strands. Eight-sweep stages are bounded/yielding/cancellable; footprint cache ≤32 MiB. Provisional guards limit chord repeats to 32 and incident nail degree to 160; these are distribution safeguards, not physically measured capacity. Continuous v4 remains the default. Fresh global requests retain their basis as a comparison variant; rerouting creates new hashes and zero confirmed progress. UZ/RU/EN controls, presets and shared exports support both engines.
+
+Identical 240-pin / 0.1 mm / 400 mm / 160 px comparison: baseline `d6cb…13f1`, 4,364 connections / 1,026.573 m; selected `98e1…ffa6`, 4,153 connections / 1,042.581 m / 442.581 m shortage against 600 m stock. Global stage 33.6 s; production Worker 35.6 s (both exclude prior baseline creation). Eye/nose/mouth edge errors decrease 36.8% / 39.5% / 31.7%; global RGB MSE worsens slightly. Tight windows measure both eyes, jaw, skin overshoot and multiscale residuals. Nose/lips remain weak at ordinary size; quality acceptance is OPEN. Physical assembly and native device quality remain unverified. Earlier unguarded variants are preserved as experiments, not the selected guide.
+
+Verification: final production build, all 28 unit/domain/PDF tests and all 14 browser checks pass. Both v4 stages reproduce exact hashes (225.9 / 125.6 s this run). Final Worker offline reproduces `98e1…ffa6` in 36.2 s wall time. Selected PDF: 102 rendered/reviewed pages, all 4,153 ordered steps, matching hash and zero progress. Unchanged timing assertions have longer host allowances after observed timeouts; browser resume uses the existing explicit library flow. Android debug/instrumentation rebuilt after successful sync; all sixteen bundled web assets byte-match dist. APK SHA-256 `2ca645fb81d45d3b7a4b7b9c04717d81386ec009c8ba60886159f6cb3543d03d`, 5,787,105 bytes. No device/iOS/physical trial. Old v4 APK/evidence preserved. Detailed evidence: VERIFICATION.md, output/fidelity and output/mobile.
+
+Exact next quality experiment: a separately versioned multiscale local-contrast objective (2/4 px neighborhoods) on the identical processed pixels; evaluate tight mouth/nostril contrast and both-eye agreement. Then separately evaluate 192 px computation without changing materials. Independent M4 sandbox customer integration remains the next product task. All M3–M7 work is retained.
+
+## Previous checkpoint: measured portrait optimization — preserved history
 
 The exact photograph was supplied at `C:/Users/user/OneDrive/Pictures/rasm for ip.jpg`. It is copied only to ignored `output/portrait/source.jpg`, never uploaded or included in Git. The text brief is preserved in PORTRAIT_PRIORITY_BRIEF.txt. The entire master roadmap remains in force; this priority does not reduce the final scope.
 

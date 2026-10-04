@@ -1,5 +1,15 @@
 # Verification evidence
 
+Latest portrait fidelity checkpoint (2026-10-04): final strict production build, all 28 Vitest tests and all 14 Playwright checks pass. New tests cover reversible strand removal, deterministic stock-independent paths, legal Euler routing, repeat/degree guards, exact raster error, cancellation, accounting tamper rejection, immutable lineage, separate comparison variants, explicit resume and offline v5 PDF export. Test assertions were retained while host timing allowances increased after observed timeouts; the initial reload test assumption was corrected to use the existing My projects → Resume flow.
+
+Both preserved v4 baseline stages reproduce their exact hashes. Final production Worker offline reconstructs the same target SHA-256 and selected `98e1b615c19fc1f6742c60864b79b80beeb15f772214de18d26bc3578181ffa6` in 35.6 s stage / 36.2 s wall time. The new route has 4,153 legal connections, 1,042.581 m including allowances, and a 442.581 m stock shortage. These timings exclude prior baseline generation and do not measure a phone. Optical facial contour agreement improves; weak nose/lips keep quality acceptance open. See PORTRAIT_FIDELITY_CHECKPOINT.md and local output/fidelity/report.html.
+
+Selected JSON/TXT/player/raster/PNG/PDF refer to the same immutable sequence. TXT explicitly states starting and finishing knots. All 102 PDF pages rendered and reviewed; cover/template/first/final steps inspected at normal scale. Extraction verifies all 4,153 steps in order, matching hash metadata and confirmed 0/4153. No printer/assembly trial.
+
+Final Capacitor sync succeeded with host permissions after a sandboxed Windows user-information ENOMEM failure. Subsequent Gradle debug + instrumentation compilation succeeded in 39 s. APK: 5,787,105 bytes, SHA-256 `2ca645fb81d45d3b7a4b7b9c04717d81386ec009c8ba60886159f6cb3543d03d`; all sixteen assets match dist byte-for-byte, stale assets rejected, v4/v5 engine and target-dependent darkening policy verified. Previous v4 APK/evidence retained locally. Native device execution, iOS compilation, physical validation and production activation remain false. No push or photo upload.
+
+The evidence below describes preserved earlier increments.
+
 2026-10-04. Latest green checkpoint: production TypeScript/Vite build; 26 Vitest outcome tests; isolated sandbox HTTP checks; twelve Playwright outcomes. Android debug and instrumentation APKs rebuilt and verified against current assets; instrumentation not device-executed. GitHub CI is defined, not executed remotely.
 
 Portrait quality priority: tests/portrait-quality.test.ts verifies same-target eye/nose/mouth improvements against legacy /3, preprocessing/reset, useful paths above 3,000 lines, stock-independent paths and exact shortages, legal refinement, immutable continuation lineage, old instruction imports and incremental preview seek equivalence. These synthetic tests are not evidence of human likeness.

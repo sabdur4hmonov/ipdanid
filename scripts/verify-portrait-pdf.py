@@ -5,7 +5,7 @@ import pdfplumber
 from PIL import Image, ImageDraw
 
 prefix = sys.argv[1] if len(sys.argv) > 1 else 'continued'
-folder = Path('output/portrait')
+folder = Path('output')/(sys.argv[2] if len(sys.argv)>2 else 'portrait')
 project = json.loads((folder / f'{prefix}-guide.json').read_text(encoding='utf-8'))['project']
 instruction = project['instruction']
 steps = []
@@ -19,7 +19,7 @@ with pdfplumber.open(folder / f'{prefix}-guide.pdf') as pdf:
     assert pdf.metadata['Subject'] == 'Sequence SHA-256: '+instruction['sequenceHash']
     assert f"{project['progress']['confirmed']}/{instruction['metrics']['lines']}" in text
     pages = len(pdf.pages)
-files = sorted(folder.glob('stage2-page-*.png' if prefix == 'continued' else 'pdf-page-*.png'))
+files = sorted(folder.glob('stage2-page-*.png' if prefix == 'continued' else f'{prefix}-page-*.png' if len(sys.argv)>2 else 'pdf-page-*.png'))
 assert len(files) == pages, 'Render every PDF page before visual inspection'
 sheet = Image.new('RGB',(1000,((pages+5)//6)*248),'#ddd')
 draw=ImageDraw.Draw(sheet)
