@@ -24,9 +24,11 @@ try {
         ...source,
         id: crypto.randomUUID(),
         name:
-          instruction.algorithm === "density-optical/5"
-            ? "Global contour portrait variant"
-            : `Portrait refinement stage ${instruction.params.refinementStage ?? 1}`,
+          folder === "background"
+            ? `Background experiment — ${prefix} (quality unaccepted)`
+            : instruction.algorithm === "density-optical/5"
+              ? "Global contour portrait variant"
+              : `Portrait refinement stage ${instruction.params.refinementStage ?? 1}`,
         instruction,
         progress: progressFor(instruction),
       };

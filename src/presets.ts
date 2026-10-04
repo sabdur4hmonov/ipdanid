@@ -69,7 +69,7 @@ export async function readPresets(): Promise<MakerPreset[]> {
     ? (await Preferences.get({ key: KEY })).value
     : localStorage.getItem(KEY);
   if (!raw) return [];
-  if (raw.length > 40000) throw new Error("Preset storage exceeds limit");
+  if (raw.length > 80000) throw new Error("Preset storage exceeds limit");
   const data: MakerPreset[] = JSON.parse(raw);
   if (!Array.isArray(data) || data.length > 20)
     throw new Error("Invalid preset library");
@@ -88,6 +88,7 @@ export async function changePreset(
     if (preset) next.unshift(preset);
     if (next.length > 20) throw new Error("Maximum 20 presets");
     const value = JSON.stringify(next);
+    if (value.length > 80000) throw new Error("Preset storage exceeds limit");
     if (Capacitor.isNativePlatform())
       await Preferences.set({ key: KEY, value });
     else localStorage.setItem(KEY, value);

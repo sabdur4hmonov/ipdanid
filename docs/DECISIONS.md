@@ -2,6 +2,12 @@
 
 2026-10-04 (Asia/Tashkent)
 
+- Photo guidance is advisory in UZ/RU/EN, with patterned and existing photos welcome. A plain light background is preferred, never mandatory or a likeness guarantee.
+- The existing oval/background operation remains byte-compatible. Manual light-background selection is an optional, fixed-size 64×64 one-bit mask (1,024 hex characters) applied to that exact processed target. It contains selections, never photo pixels. Users paint only background and restore original grayscale subject pixels, including regions softened by the earlier oval, regardless of brightness; no automatic segmentation, invented features or pixel-brightness foreground classifier is claimed. A one-cell feather avoids a hard cut-out. Undo keeps at most twenty pairs of masks. Presets stay capped at twenty entries and 80,000 serialized characters, checked on read and write. New photo/crop edits clear selections; saved matching settings retain their mask. All processing is local.
+- Controlled preprocessing evidence starts fresh v4 paths for both targets, continues each once, then runs the unchanged v5 eight-sweep solver. It fixes crop/materials/face weighting/evaluation regions, verifies control replay hashes, and measures both reconstructions against identical foreground pixels. Any improvement belongs to preprocessing, not a new optimizer; each guide remains an immutable independent variant.
+- User priorities now run quality/diverse portraits → physical build → real Android and separate iOS requirements → complete long guides → customer/support then commerce/admin → all other engines. External dependencies do not stop independent local work. Quality and physical acceptance remain separate.
+
+
 - Route diagnostics rejected the unguarded 256-repeat / 247-visit prototype as the recommended guide. The selected variant includes provisional 32-repeat and 160-incident-edge guards. They preserve facial gains while distributing strands, not saving stock. Actual head/shaft wrapping capacity and coincident-strand coverage require physical measurements. Mean chord length grows rather than shrinks; strand length alone is not demonstrated as the cause of muddy shading.
 
 - Preserve commit 3ce5b0b and all old evidence. Fix source, crop, processed pixels and materials before optimizer comparisons. Source features survive processing; regional residuals, multiscale measurements and signed local contour agreement supplement global MSE. Reject washed-out from-blank/log-density trials despite higher line counts.

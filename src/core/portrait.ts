@@ -49,6 +49,63 @@ export function validPortrait(s: PortraitSettings) {
     s.localContrast > 1
   )
     throw new Error("Invalid portrait region");
+  if (
+    s.backgroundMode !== undefined &&
+    !["soften", "manual-light"].includes(s.backgroundMode)
+  )
+    throw new Error("Invalid background mode");
+  for (const mask of [s.backgroundMask, s.foregroundMask])
+    if (
+      mask !== undefined &&
+      (typeof mask !== "string" || !/^[0-9a-f]{1024}$/.test(mask))
+    )
+      throw new Error("Invalid background mask");
+}
+export const MASK_SIZE = 64;
+export const EMPTY_BACKGROUND_MASK = "0".repeat(1024);
+export function decodeBackgroundMask(mask = EMPTY_BACKGROUND_MASK) {
+  if (!/^[0-9a-f]{1024}$/.test(mask))
+    throw new Error("Invalid background mask");
+  return Float32Array.from(
+    { length: MASK_SIZE ** 2 },
+    (_, i) => (parseInt(mask[Math.floor(i / 4)], 16) >> (3 - (i % 4))) & 1,
+  );
+}
+export function encodeBackgroundMask(values: ArrayLike<number>) {
+  if (values.length !== MASK_SIZE ** 2) throw new Error("Invalid mask size");
+  let result = "";
+  for (let i = 0; i < values.length; i += 4) {
+    let v = 0;
+    for (let j = 0; j < 4; j++) v = v * 2 + (values[i + j] >= 0.5 ? 1 : 0);
+    result += v.toString(16);
+  }
+  return result;
+}
+export function paintBackgroundMask(
+  mask: string | undefined,
+  x: number,
+  y: number,
+  radius: number,
+  erase: boolean,
+) {
+  if (
+    ![x, y, radius].every(Number.isFinite) ||
+    x < 0 ||
+    y < 0 ||
+    x > 1 ||
+    y > 1 ||
+    radius < 0.005 ||
+    radius > 0.25
+  )
+    throw new Error("Invalid background brush");
+  const values = decodeBackgroundMask(mask);
+  for (let py = 0; py < MASK_SIZE; py++)
+    for (let px = 0; px < MASK_SIZE; px++)
+      if (
+        Math.hypot(px / (MASK_SIZE - 1) - x, py / (MASK_SIZE - 1) - y) <= radius
+      )
+        values[py * MASK_SIZE + px] = erase ? 1 : 0;
+  return encodeBackgroundMask(values);
 }
 function blur(input: Float32Array, n: number, r: number) {
   const temp = new Float32Array(input.length),
@@ -120,6 +177,71 @@ export function processPortrait(
       );
       for (let c = 0; c < 3; c++) out[i * 3 + c] = Math.round(value * 255);
     }
+  if (
+    s.backgroundMode === "manual-light" &&
+    s.backgroundMask &&
+    s.background > 0
+  ) {
+    // Only explicitly painted pixels change. Bright foreground is never inferred as background.
+    const mask = blur(decodeBackgroundMask(s.backgroundMask), MASK_SIZE, 1);
+    for (let y = 0; y < n; y++)
+      for (let x = 0; x < n; x++) {
+        const mx = (x / (n - 1)) * (MASK_SIZE - 1),
+          my = (y / (n - 1)) * (MASK_SIZE - 1);
+        const x0 = Math.floor(mx),
+          y0 = Math.floor(my),
+          x1 = Math.min(x0 + 1, MASK_SIZE - 1),
+          y1 = Math.min(y0 + 1, MASK_SIZE - 1);
+        const a = mx - x0,
+          b = my - y0;
+        const fade =
+          s.background *
+          ((1 - b) *
+            ((1 - a) * mask[y0 * MASK_SIZE + x0] +
+              a * mask[y0 * MASK_SIZE + x1]) +
+            b *
+              ((1 - a) * mask[y1 * MASK_SIZE + x0] +
+                a * mask[y1 * MASK_SIZE + x1]));
+        for (let c = 0; c < 3; c++) {
+          const i = (y * n + x) * 3 + c;
+          out[i] = Math.round(out[i] * (1 - fade) + 255 * fade);
+        }
+      }
+  }
+  if (s.backgroundMode === "manual-light" && s.foregroundMask) {
+    const mask = blur(decodeBackgroundMask(s.foregroundMask), MASK_SIZE, 1);
+    for (let y = 0; y < n; y++)
+      for (let x = 0; x < n; x++) {
+        const mx = (x / (n - 1)) * (MASK_SIZE - 1),
+          my = (y / (n - 1)) * (MASK_SIZE - 1),
+          x0 = Math.floor(mx),
+          y0 = Math.floor(my),
+          x1 = Math.min(x0 + 1, MASK_SIZE - 1),
+          y1 = Math.min(y0 + 1, MASK_SIZE - 1),
+          a = mx - x0,
+          b = my - y0;
+        const restore =
+          (1 - b) *
+            ((1 - a) * mask[y0 * MASK_SIZE + x0] +
+              a * mask[y0 * MASK_SIZE + x1]) +
+          b *
+            ((1 - a) * mask[y1 * MASK_SIZE + x0] +
+              a * mask[y1 * MASK_SIZE + x1]);
+        const i = y * n + x,
+          enhancement = Math.max(
+            -0.055,
+            Math.min(0.055, (gray[i] - local[i]) * s.localContrast),
+          );
+        // Recover the original grayscale/contrast pixels, including regions softened by the oval.
+        const original = Math.round(
+          Math.max(0, Math.min(1, gray[i] + enhancement)) * 255,
+        );
+        for (let c = 0; c < 3; c++)
+          out[i * 3 + c] = Math.round(
+            out[i * 3 + c] * (1 - restore) + original * restore,
+          );
+      }
+  }
   return out;
 }
 export function putRgb(

@@ -1,16 +1,31 @@
 import { chromium, expect } from "@playwright/test";
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
-const variant = process.argv[2] ?? "distributed-contours";
-const baseline = JSON.parse(
-    readFileSync("output/fidelity/baseline.json", "utf8"),
+const variant = process.argv[2] ?? "distributed-contours",
+  folder = process.argv[3] ?? "fidelity";
+const basePath = `output/${folder}`,
+  outputPrefix = folder === "background" ? `${variant}-` : "";
+const baselineData = JSON.parse(
+    readFileSync(
+      folder === "background"
+        ? `${basePath}/${variant}-stage2.json`
+        : `${basePath}/baseline.json`,
+      "utf8",
+    ),
   ),
   expected = JSON.parse(
-    readFileSync(`output/fidelity/${variant}.json`, "utf8"),
+    readFileSync(`${basePath}/${variant}.json`, "utf8"),
   ).instruction,
-  pixels = [...readFileSync("output/fidelity/target.bin")],
+  pixels = [
+    ...readFileSync(
+      folder === "background"
+        ? `${basePath}/${variant}-target.bin`
+        : `${basePath}/target.bin`,
+    ),
+  ],
   workerFile = readdirSync("dist/assets").find((n) =>
     n.startsWith("generator.worker-"),
   );
+const baseline = baselineData.instruction ?? baselineData;
 const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage();
@@ -77,7 +92,7 @@ try {
   expect(data.instruction.sequenceHash).toBe(expected.sequenceHash);
   expect(data.instruction.segments).toEqual(expected.segments);
   writeFileSync(
-    "output/fidelity/worker-result.json",
+    `${basePath}/${outputPrefix}worker-result.json`,
     JSON.stringify(data, null, 2),
   );
   const evidence = {
@@ -92,7 +107,7 @@ try {
     nativeDeviceTested: false,
   };
   writeFileSync(
-    "output/fidelity/worker-evidence.json",
+    `${basePath}/${outputPrefix}worker-evidence.json`,
     JSON.stringify(evidence, null, 2),
   );
   console.log(JSON.stringify(evidence));

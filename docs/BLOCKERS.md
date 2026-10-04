@@ -1,5 +1,7 @@
 # External dependencies
 
+Local background controls and exact-photo preprocessing comparisons need no provider credentials or new user input. No automatic separation claim is made. Physical materials and real Android access will be requested when those ordered acceptance tasks become actionable; iOS remains separately tracked. The weak nose/lips are engineering work, not a missing credential.
+
 The latest source is available and processed-target preservation is measured. Weak nose/mouth reconstruction is an engineering limitation with a concrete next experiment, not a missing user input. Reversible /5 variants are optical simulations; nail loading, material opacity, physical assembly and Android runtime remain unverified. No merchant/signing/publication input is needed for the next local quality experiment.
 
 The new route's 32-repeat / 160-incident-edge guards are provisional distribution limits, not a validated nail capacity. B-PHYSICAL includes usable nail wrapping height/head dimensions and coincident-strand coverage/spacing, in addition to measured thread diameter/opacity and assembly trials. This blocks physical claims, not independent optimizer work.

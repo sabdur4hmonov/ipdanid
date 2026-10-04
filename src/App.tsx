@@ -28,6 +28,7 @@ import {
   putRgb,
   portraitRegions,
 } from "./core/portrait";
+import { BackgroundEditor } from "./BackgroundEditor";
 import { MAX_LINES } from "./core/limits";
 import { deepFreeze, flatten } from "./core/engine";
 import { renderInstruction } from "./core/render";
@@ -433,6 +434,11 @@ export default function App() {
     setPhotoCandidates([...rememberEdits(), p].slice(-4));
     setPhotoId(p.id);
     setImage(c);
+    setPortrait((v) => ({
+      ...v,
+      backgroundMask: undefined,
+      foregroundMask: undefined,
+    }));
     setSample(isSample);
     setEdits(p.edits);
   }
@@ -445,6 +451,11 @@ export default function App() {
     setPhotoCandidates(rememberEdits());
     setPhotoId(p.id);
     setImage(p.image);
+    setPortrait((v) => ({
+      ...v,
+      backgroundMask: undefined,
+      foregroundMask: undefined,
+    }));
     setSample(p.sample);
     setEdits({ ...p.edits });
   }
@@ -828,6 +839,9 @@ export default function App() {
                         e.target.value = "";
                       }}
                     />
+                    <p className="photo-guidance" data-testid="photo-guidance">
+                      {t("photoGuidance")}
+                    </p>
                     {!image ? (
                       <div
                         className="upload-area"
@@ -955,12 +969,24 @@ export default function App() {
                           {t("processedTarget")} · 160 × 160 ·{" "}
                           {t("originalCrop")}
                         </p>
+                        <div hidden={!portrait.enabled}>
+                          <BackgroundEditor
+                            image={image}
+                            edits={edits}
+                            aspect={aspect}
+                            portrait={portrait}
+                            setPortrait={setPortrait}
+                            t={t}
+                          />
+                        </div>
                         {portrait.enabled && (
-                          <details className="edits" open>
-                            <summary>{t("faceRegion")}</summary>
-                            <p className="fineprint">{t("regionHint")}</p>
-                            {(["left", "top", "width", "height"] as const).map(
-                              (key) => (
+                          <>
+                            <details className="edits" open>
+                              <summary>{t("faceRegion")}</summary>
+                              <p className="fineprint">{t("regionHint")}</p>
+                              {(
+                                ["left", "top", "width", "height"] as const
+                              ).map((key) => (
                                 <label className="range-label" key={key}>
                                   <span>{t(key)}</span>
                                   <input
@@ -996,42 +1022,42 @@ export default function App() {
                                     {Math.round(portrait.face[key] * 100)}%
                                   </output>
                                 </label>
-                              ),
-                            )}
-                            {(["background", "localContrast"] as const).map(
-                              (key) => (
-                                <label className="range-label" key={key}>
-                                  <span>{t(key)}</span>
-                                  <input
-                                    aria-label={t(key)}
-                                    type="range"
-                                    min="0"
-                                    max="1"
-                                    step=".05"
-                                    value={portrait[key]}
-                                    onChange={(e) =>
-                                      setPortrait((v) => ({
-                                        ...v,
-                                        [key]: +e.target.value,
-                                      }))
-                                    }
-                                  />
-                                  <output>{portrait[key]}</output>
-                                </label>
-                              ),
-                            )}
-                            <button
-                              className="text-button"
-                              onClick={() =>
-                                setPortrait({
-                                  ...structuredClone(DEFAULT_PORTRAIT),
-                                  enabled: true,
-                                })
-                              }
-                            >
-                              {t("resetPortrait")}
-                            </button>
-                          </details>
+                              ))}
+                              {(["background", "localContrast"] as const).map(
+                                (key) => (
+                                  <label className="range-label" key={key}>
+                                    <span>{t(key)}</span>
+                                    <input
+                                      aria-label={t(key)}
+                                      type="range"
+                                      min="0"
+                                      max="1"
+                                      step=".05"
+                                      value={portrait[key]}
+                                      onChange={(e) =>
+                                        setPortrait((v) => ({
+                                          ...v,
+                                          [key]: +e.target.value,
+                                        }))
+                                      }
+                                    />
+                                    <output>{portrait[key]}</output>
+                                  </label>
+                                ),
+                              )}
+                              <button
+                                className="text-button"
+                                onClick={() =>
+                                  setPortrait({
+                                    ...structuredClone(DEFAULT_PORTRAIT),
+                                    enabled: true,
+                                  })
+                                }
+                              >
+                                {t("resetPortrait")}
+                              </button>
+                            </details>
+                          </>
                         )}
                         <div
                           className="photo-candidates"
@@ -1069,19 +1095,31 @@ export default function App() {
                                 type="range"
                                 {...{ min: r.min, max: r.max, step: r.step }}
                                 value={edits[r.key]}
-                                onChange={(e) =>
+                                onChange={(e) => {
+                                  setPortrait((v) => ({
+                                    ...v,
+                                    backgroundMask: undefined,
+                                    foregroundMask: undefined,
+                                  }));
                                   setEdits((v) => ({
                                     ...v,
                                     [r.key]: +e.target.value,
-                                  }))
-                                }
+                                  }));
+                                }}
                               />
                               <output>{edits[r.key]}</output>
                             </label>
                           ))}
                           <button
                             className="text-button"
-                            onClick={() => setEdits(DEFAULT_EDITS)}
+                            onClick={() => {
+                              setPortrait((v) => ({
+                                ...v,
+                                backgroundMask: undefined,
+                                foregroundMask: undefined,
+                              }));
+                              setEdits(DEFAULT_EDITS);
+                            }}
                           >
                             <RotateCcw size={14} />
                             {t("reset")}

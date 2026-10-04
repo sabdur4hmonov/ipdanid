@@ -11,6 +11,11 @@ export interface PortraitSettings {
   face: RegionBox;
   background: number;
   localContrast: number;
+  backgroundMode?: "soften" | "manual-light";
+  // 64×64 one-bit erase mask, hexadecimal. Contains selections, never photo pixels.
+  backgroundMask?: string;
+  // Recover source grayscale/contrast beneath explicitly restored subject.
+  foregroundMask?: string;
 }
 export interface Pin {
   id: number;

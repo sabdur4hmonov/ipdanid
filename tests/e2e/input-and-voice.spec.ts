@@ -9,7 +9,7 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
   await upload.setInputFiles("tests/fixtures/orientation-6.jpg");
   await expect(page.getByLabel("Edited photo")).toBeVisible();
   const colors = await page
-    .getByLabel('Edited photo',{exact:true})
+    .getByLabel("Edited photo", { exact: true })
     .evaluate((canvas: HTMLCanvasElement) => {
       const c = canvas.getContext("2d")!;
       return [
@@ -39,7 +39,7 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
     page.getByRole("button", { name: "transparency.png", exact: true }),
   ).toBeVisible();
   const corner = await page
-    .getByLabel('Edited photo',{exact:true})
+    .getByLabel("Edited photo", { exact: true })
     .evaluate((canvas: HTMLCanvasElement) => [
       ...canvas.getContext("2d")!.getImageData(5, 5, 1, 1).data,
     ]);
@@ -62,10 +62,18 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
   await expect(page.getByRole("alert")).toContainText(
     "safe decoded dimensions",
   );
-  await upload.setInputFiles({
-    name: "oversized.png",
-    mimeType: "image/png",
-    buffer: Buffer.alloc(15 * 1024 * 1024 + 1),
+  // Create the same oversized File in the browser: transferring a 20MB base64 CDP
+  // payload stalled before the application's change handler on this Windows host.
+  // The actual file input, handler and byte-limit rejection remain under test.
+  await upload.evaluate((input: HTMLInputElement) => {
+    const files = new DataTransfer();
+    files.items.add(
+      new File([new Uint8Array(15 * 1024 * 1024 + 1)], "oversized.png", {
+        type: "image/png",
+      }),
+    );
+    input.files = files.files;
+    input.dispatchEvent(new Event("change", { bubbles: true }));
   });
   await expect(page.getByRole("alert")).toContainText("Maximum file size");
   await page.getByLabel("Language").selectOption("uz");

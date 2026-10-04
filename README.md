@@ -4,6 +4,8 @@ Real on-device photo-to-continuous-thread instructions. Development build; physi
 
 Portrait mode shows the exact local grayscale target and lets you place the face region. Stock is a supply estimate; shortages are shown rather than reducing quality. The 20,000-line ceiling and bounded continuation stages control compute, not material consumption. Every stage creates a new sequence and keeps confirmed progress attached to its original hash. Exact-photo comparisons are local under ignored `output/portrait/report.html`; they do not establish physical likeness or production readiness.
 
+Upload advice is available in UZ/RU/EN. Plain light backgrounds are optional; patterned and existing photos are welcome. Portrait mode adds a local background brush, restore, undo, strength, clear and before/after inspection. Finish cropping before painting. Unpainted light skin, hair, ears, jaw and neck are preserved without automatic segmentation. Background processing does not guarantee likeness. The controlled experiment and exact resume task are in [docs/BACKGROUND_CHECKPOINT.md](docs/BACKGROUND_CHECKPOINT.md); its light-background variant was not accepted as a portrait improvement.
+
 ## Run locally
 
 Experimental global portrait fitting can remove misplaced strands and reroute a new immutable variant. It preserves its continuous comparison basis and never transfers old confirmed steps. Local same-source comparisons, enlarged facial regions, rejected trials and winding guards are documented in [docs/PORTRAIT_FIDELITY_CHECKPOINT.md](docs/PORTRAIT_FIDELITY_CHECKPOINT.md); report: ignored `output/fidelity/report.html`. Nose/mouth definition and physical winding validation remain open.

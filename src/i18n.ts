@@ -1,5 +1,21 @@
 import type { Locale } from "./core/types";
 const uz = {
+  photoGuidance:
+    "Bitta yuzi aniq ko‘rinadigan tiniq surat tanlang. Oq yoki och, sodda fon afzal, lekin shart emas. Yorug‘lik tekis bo‘lsin; kuchli soya va haddan ortiq yorug‘likdan saqlaning. Ko‘zlar ko‘rinsin, yuz kameraga qarasin. Mavjud suratlar ham mos: davom etishdan oldin natijani tekshiring.",
+  backgroundTools: "Fon bilan ishlash",
+  softBackground: "Yumshatish (mavjud usul)",
+  manualBackground: "Och fon: qo‘lda belgilash",
+  backgroundNotice:
+    "Ishlov faqat qurilmada. Fon ixtiyoriy; oq fon o‘xshashlikni kafolatlamaydi. Yuqoridagi aniq nishon hisoblashda ishlatiladi.",
+  brushHint:
+    "Avval cropni tugating. Pastdagi suratda faqat fonni bo‘yang; soch, quloq, iyak va bo‘yinni saqlang. Tiklash cho‘tkasi xatolarni qaytaradi. Yangi crop yoki surat belgilarni tozalaydi.",
+  paintBackground: "Fonni bo‘yash",
+  restoreSubject: "Surat qismini tiklash",
+  brushSize: "Cho‘tka o‘lchami",
+  beforeBackground: "Qo‘lda ishlovdan oldin",
+  afterBackground: "Qo‘lda ishlovdan keyin",
+  undoBrush: "Oxirgi cho‘tkani qaytarish",
+  resetBackground: "Fon belgilarini tozalash",
   portraitSolver: "Portret hisoblash usuli",
   continuousSolver: "Uzluksiz ip yo‘li",
   globalSolver: "Global ip joylashuvi (tajriba)",
@@ -97,7 +113,7 @@ const uz = {
   quality: "Simulyatsiyadagi xato",
   qualityHint: "Bu fizik sifat bahosi emas.",
   photoTips:
-    "Aniq, yaqin yuz va sodda fon tanlang. Bir nechta uzoq yuzlarni oldindan crop qiling.",
+    "Sodda och fon ixtiyoriy. Mavjud suratlardan foydalaning va hisoblangan natijani tekshiring.",
   lowContrast: "Kontrast past: kontrastni oshiring yoki boshqa rasm tanlang.",
   blur: "Chegaralar sust: rasm xira bo‘lishi mumkin.",
   shadow: "Kuchli soyalar ko‘p: yorqinlikni moslang.",
@@ -204,8 +220,24 @@ const uz = {
   conflict:
     "Boshqa oynada loyihalar o‘zgardi. Hozirgi loyiha JSON’ini zaxira oling, keyin saqlangan kutubxonani qayta yuklang.",
 };
-type Key = keyof typeof uz;
+export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
+  photoGuidance:
+    "Use a sharp photo with one clearly visible face. Prefer a plain white or light neutral background; it is optional. Use even lighting without strong shadows or overexposure. Keep the eyes visible and face directed toward the camera. Existing photographs are welcome; inspect your result before proceeding.",
+  backgroundTools: "Background controls",
+  softBackground: "Soften (existing method)",
+  manualBackground: "Light background: manual selection",
+  backgroundNotice:
+    "Processed locally. Background changes are optional; white does not guarantee likeness. The exact target above is used for generation.",
+  brushHint:
+    "Finish cropping first. Paint only background below; preserve hair, ears, jaw and neck. Use Restore subject to correct mistakes. Changing crop or photo clears selections.",
+  paintBackground: "Paint background",
+  restoreSubject: "Restore subject",
+  brushSize: "Brush size",
+  beforeBackground: "Before manual background",
+  afterBackground: "After manual background",
+  undoBrush: "Undo last brush",
+  resetBackground: "Clear background selections",
   portraitSolver: "Portrait optimization",
   continuousSolver: "Continuous path",
   globalSolver: "Global strand placement (experimental)",
@@ -303,7 +335,7 @@ const en: Record<Key, string> = {
   quality: "Simulated reconstruction error",
   qualityHint: "This is not a physical quality score.",
   photoTips:
-    "Choose a clear, close face and a simple background. Crop multiple distant faces first.",
+    "A plain light background is optional. Existing photos are welcome; inspect the generated result.",
   lowContrast: "Low contrast: increase contrast or choose another image.",
   blur: "Weak edges: the image may be blurred.",
   shadow: "Many deep shadows: adjust brightness.",
@@ -410,6 +442,22 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
+  photoGuidance:
+    "Выберите резкое фото с одним хорошо видимым лицом. Предпочтителен однотонный белый или светлый нейтральный фон, но это не обязательно. Используйте ровное освещение без сильных теней и пересвета. Глаза должны быть видны, лицо направлено к камере. Подойдут и имеющиеся фотографии: оцените результат, прежде чем продолжить.",
+  backgroundTools: "Настройки фона",
+  softBackground: "Смягчить (прежний метод)",
+  manualBackground: "Светлый фон: ручное выделение",
+  backgroundNotice:
+    "Обработка на устройстве. Изменение фона необязательно; белый фон не гарантирует сходство. Для расчёта используется точная цель выше.",
+  brushHint:
+    "Сначала закончите кадрирование. Закрашивайте только фон ниже; сохраните волосы, уши, челюсть и шею. Восстановите детали кистью. Новый кадр или фото очищает выделение.",
+  paintBackground: "Закрасить фон",
+  restoreSubject: "Восстановить портрет",
+  brushSize: "Размер кисти",
+  beforeBackground: "До ручной обработки фона",
+  afterBackground: "После ручной обработки фона",
+  undoBrush: "Отменить последнюю кисть",
+  resetBackground: "Очистить выделение фона",
   portraitSolver: "Оптимизация портрета",
   continuousSolver: "Непрерывный путь",
   globalSolver: "Глобальное размещение нитей (эксперимент)",
@@ -508,7 +556,7 @@ const ru: Record<Key, string> = {
   quality: "Ошибка цифровой реконструкции",
   qualityHint: "Это не оценка физического качества.",
   photoTips:
-    "Выберите чёткое крупное лицо и простой фон. Обрежьте фото с несколькими далёкими лицами.",
+    "Однотонный светлый фон необязателен. Подойдут имеющиеся фотографии; оцените рассчитанный результат.",
   lowContrast: "Низкий контраст: повысьте его или выберите другое фото.",
   blur: "Слабые контуры: фото может быть размытым.",
   shadow: "Много глубоких теней: измените яркость.",

@@ -25,5 +25,11 @@ export default defineConfig({
       },
     },
   ],
-  test: { include: ["tests/**/*.test.ts"], environment: "node" },
+  // Each optical test can allocate its own footprint cache; serialize to bound host usage.
+  test: {
+    include: ["tests/**/*.test.ts"],
+    environment: "node",
+    maxWorkers: 1,
+    fileParallelism: false,
+  },
 } as Parameters<typeof defineConfig>[0]);

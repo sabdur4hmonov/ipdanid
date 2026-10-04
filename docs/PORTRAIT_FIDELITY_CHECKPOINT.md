@@ -1,5 +1,7 @@
 # Portrait fidelity checkpoint — 2026-10-04
 
+Later background-only comparison: see BACKGROUND_CHECKPOINT.md. Control reproduces all three hashes; simplified background does not improve nose/mouth/right-eye agreement. The selected contour guide below remains unchanged. Quality acceptance stays OPEN.
+
 Latest selected variant is `distributed-contours`, hash `98e1b615c19fc1f6742c60864b79b80beeb15f772214de18d26bc3578181ffa6`: 4,153 connections, 1,042.581 m, shortage 442.581 m. Eight-sweep stage measured 33.6 s on this host; final production Worker timing is recorded separately. Identical target/profile/baseline; 55 routing strands, after 2,681 removal events. Removal events can include removing newly added strands; they are not counts of unique old strands.
 
 The earlier balanced prototype repeats one chord 256 times and visits its busiest nail 247 times. It remains a preserved experiment, not the recommended guide. New provisional diversity guards limit a chord to 32 traversals and a nail's incident degree to 160. The selected route's busiest nail has 80 visits. These computational distribution safeguards are not measured nail-head/thread capacities. Physical winding capacity remains unverified. They do not constrain stock or change materials.

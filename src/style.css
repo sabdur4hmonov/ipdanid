@@ -1186,3 +1186,31 @@ footer > span:last-child {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.photo-guidance {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #44564a;
+  margin: 12px 0;
+}
+.background-editor {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #d9dfd7;
+  border-radius: 12px;
+}
+.background-editor > canvas {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+}
+.background-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+.background-buttons [aria-pressed="true"] {
+  background: #e5f0df;
+  border-color: #52713e;
+}
