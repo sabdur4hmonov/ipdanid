@@ -31,7 +31,15 @@ public class PackagedAssetsTest {
         }
         boolean engine = false;
         for (String asset : context.getAssets().list("public/assets")) {
-            if (asset.startsWith("generator.worker-") && asset.endsWith(".js")) engine = true;
+            if (asset.startsWith("generator.worker-") && asset.endsWith(".js")) {
+                try (InputStream input = context.getAssets().open("public/assets/" + asset)) {
+                    String worker = new String(read(input), StandardCharsets.UTF_8);
+                    assertTrue("Portrait algorithm must be current", worker.contains("greedy-optical/4"));
+                    assertTrue("Supply estimate policy must be packaged", worker.contains("stockPolicy"));
+                    assertTrue("Immutable refinement lineage must be packaged", worker.contains("parentSequenceHash"));
+                }
+                engine = true;
+            }
         }
         assertTrue("Real Worker engine must be available offline", engine);
         try (InputStream font = context.getAssets().open("public/fonts/NotoSans-Regular.ttf")) {

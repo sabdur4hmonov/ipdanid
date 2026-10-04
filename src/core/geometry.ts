@@ -1,4 +1,5 @@
 import type { MaterialProfile, Shape } from "./types";
+import { MAX_LINES } from "./limits";
 export function inside(shape: Shape, x: number, y: number): boolean {
   if (shape === "circle") return (x - 0.5) ** 2 + (y - 0.5) ** 2 <= 0.25 + 1e-8;
   if (shape === "rectangle") return x >= 0 && x <= 1 && y >= 0 && y <= 1;
@@ -105,7 +106,7 @@ export function createProfile(
   }
   return {
     id: `dev-${shape}-${count}-${mode}`,
-    version: 3,
+    version: 4,
     provisional: true,
     shape,
     widthMm,
@@ -114,7 +115,7 @@ export function createProfile(
     shaftMm: 1.5,
     threadMm: 0.3,
     opacity: 0.85,
-    maxLines: 3000,
+    maxLines: MAX_LINES,
     minPinGap: 5,
     stockMeters: 1200,
     baseColor: mode === "light" ? "#18201d" : "#faf8ef",

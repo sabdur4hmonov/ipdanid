@@ -1,0 +1,80 @@
+Improve the actual portrait-to-string-art quality in the existing Ip Rasm project.
+
+Local project:
+D:\Coding projects\ipdan face yasaydigan app
+
+GitHub:
+https://github.com/sabdur4hmonov/ipdanid.git
+
+The attached photograph is the exact source image to reproduce. The previous result captured dark hair and clothing but lost the eyes, nose, lips and facial structure. Fix that actual problem, not merely the appearance of the preview.
+
+Read the repository instructions and docs/STATUS.md first. Inspect existing local changes and preserve them. A recent calibration increment introduced greedy-optical/3, 160×160 worker input, shared sequence-derived optical rendering and PDF previews. It passed existing tests, but recognizable real-portrait quality remains unverified. Do not repeat setup or assume these changes fully solved portrait reconstruction.
+
+Work autonomously through implementation and verification. Maintain a concise roadmap and resume checkpoint. Ask me only for essential missing information or consequential external actions. Do not push, publish, spend money or upload this personal photograph to external services without my explicit authorization.
+
+1. Reproduce and measure the failure
+
+Use the attached original photograph locally. If its attachment path is unavailable in this account, ask me to attach it again; do not substitute another photo and claim this face is fixed.
+
+Save the initial settings, immutable sequence, preview and generation duration. Identify why the facial features disappear. Investigate:
+
+- Patterned wallpaper competing with facial detail.
+- Large hair and clothing regions dominating the optimization.
+- Weak contrast around the nose and lips.
+- Crop and aspect handling.
+- Pin density and physical thread thickness.
+- Premature stopping at a continuous-path local minimum.
+- Differences between optical simulation and strand rendering.
+
+Treat these as hypotheses to test, not established causes.
+
+2. Implement a real portrait workflow
+
+Provide an editable face-focused crop that preserves the entire face, chin and useful hair outline. Show the exact processed target before generation.
+
+Implement appropriate background simplification and restrained local contrast enhancement. Keep facial proportions and likeness intact. Do not invent features, beautify the face or silently replace the original.
+
+Offer a clearly labeled portrait mode with useful defaults, while retaining ordinary artwork generation. If automatic face detection is unavailable, provide a practical manual face-region selection.
+
+Let the user compare the original crop and processed target, adjust settings and reset changes.
+
+3. Improve the string-path engine
+
+Evaluate face-region weighting, multiscale optimization and constrained lookahead or other methods that improve fine features without sacrificing a buildable continuous sequence.
+
+Use actual board dimensions, pin placement, thread thickness, opacity and available stock. Do not fake material values to improve the preview. Explain when the requested level of detail requires different materials or more pins.
+
+Evaluate eyes, nose, mouth and facial outline separately. Global reconstruction error alone is insufficient: dark hair can improve the score while the face remains unreadable.
+
+Retain legal connections, exact step ordering, accurate segment transitions and stock accounting. Any new knots or thread segments must appear explicitly in the assembly instructions.
+
+4. Keep the result honest and consistent
+
+Every result must be reconstructed exclusively from the generated nail sequence. Never overlay the source photograph behind the threads or use a separate decorative preview.
+
+Preview, assembly player, progress, PNG, JSON, TXT and PDF must refer to the same immutable instruction. Version algorithm changes appropriately. Existing saved projects must remain importable and must not silently receive new sequences.
+
+Keep photo processing local and preserve UZ/RU/EN guidance, offline use and the shared website/mobile workflow.
+
+5. Verify the actual improvement
+
+Produce an inspectable comparison for this attached photograph:
+
+- Original image and chosen crop.
+- Processed target.
+- Baseline string reconstruction.
+- Improved string reconstruction.
+- Actual pin/material settings, line count, thread length and generation time.
+- Facial-region measurements and remaining limitations.
+
+Compare baseline and improved results under identical material settings first. If you also change pins or materials, label that comparison separately.
+
+Add meaningful regressions for facial detail, continuity, early stopping, mask/aspect handling and export consistency. Keep personal photos and generated portrait artifacts out of Git.
+
+Run the relevant existing tests, production build and browser checks. Rebuild the Android debug APK if the shared implementation changes. Verify packaged assets, and clearly distinguish compilation from physical-device testing.
+
+Visually inspect the result at normal viewing size. If the eyes, nose and mouth are still indistinct, report that honestly and continue investigating. Do not present passing tests as proof of recognizable portrait quality.
+
+Deliver the working local website, updated APK where applicable, before/after evidence and a clear status checkpoint. Physical thread fidelity remains unverified until an actual assembly trial.
+
+Start with reproducing this exact photograph, then implement and test the improvement.

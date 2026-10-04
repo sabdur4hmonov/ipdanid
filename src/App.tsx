@@ -22,6 +22,13 @@ import {
   X,
 } from "lucide-react";
 import { createProfile } from "./core/geometry";
+import {
+  DEFAULT_PORTRAIT,
+  processPortrait,
+  putRgb,
+  portraitRegions,
+} from "./core/portrait";
+import { MAX_LINES } from "./core/limits";
 import { deepFreeze, flatten } from "./core/engine";
 import { renderInstruction } from "./core/render";
 import { loadPhoto, prepare, sampleCanvas, suitability } from "./core/image";
@@ -62,6 +69,47 @@ type PhotoCandidate = {
 };
 
 type View = "create" | "assemble" | "library" | "materials";
+function Supply({
+  instruction: i,
+  locale,
+}: {
+  instruction: Instruction;
+  locale: Locale;
+}) {
+  const t = translate(locale),
+    shortfall = Math.max(0, i.metrics.estimatedMeters - i.profile.stockMeters);
+  return (
+    <div className="supply" data-testid="supply">
+      <p>
+        {t("stockMeters")}: {i.profile.stockMeters.toFixed(1)} m ·{" "}
+        {t("stockShortfall")}:{" "}
+        <strong>{(Math.ceil(shortfall * 10) / 10).toFixed(1)} m</strong>
+      </p>
+      <p className="fineprint">{t("stockHint")}</p>
+      <p className="fineprint">
+        {t("stopReason")}:{" "}
+        {t(
+          i.metrics.stoppedReason === "compute-limit"
+            ? "computeLimit"
+            : ["quality-plateau", "no-improvement"].includes(
+                  i.metrics.stoppedReason,
+                )
+              ? "qualityPlateau"
+              : "legacyStop",
+        )}
+      </p>
+      {i.metrics.refinement?.reason === "compute-limit" && (
+        <p className="fineprint">{t("refineLimit")}</p>
+      )}
+      {Object.entries(i.metrics.perColorMeters).map(([color, m]) => (
+        <span key={color} className="color-length">
+          <i style={{ background: color }} />
+          {color}: {(Math.ceil(m * 10) / 10).toFixed(1)} m{" "}
+        </span>
+      ))}
+    </div>
+  );
+}
 function Preview({
   instruction,
   step = 0,
@@ -112,6 +160,8 @@ export default function App() {
     [mode, setMode] = useState<"dark" | "light" | "color">("dark"),
     [lines, setLines] = useState(1400),
     [preset, setPreset] = useState("balanced");
+  const [portrait, setPortrait] = useState(structuredClone(DEFAULT_PORTRAIT));
+  const targetCanvas = useRef<HTMLCanvasElement>(null);
   const [variants, setVariants] = useState<
       { instruction: Instruction; name: string; edits: EditParams }[]
     >([]),
@@ -254,8 +304,17 @@ export default function App() {
       setAnalysis(
         suitability(prepare(ctx, image, edits, aspect), photo.current.width),
       );
+      if (targetCanvas.current) {
+        const ctxTarget = targetCanvas.current.getContext("2d")!;
+        const pixels = processPortrait(
+          prepare(ctxTarget, image, edits, aspect),
+          160,
+          portrait,
+        );
+        putRgb(ctxTarget, pixels, 160);
+      }
     }
-  }, [image, edits, view, aspect]);
+  }, [image, edits, view, aspect, portrait]);
   useEffect(() => {
     speak();
     return stopSpeech;
@@ -396,6 +455,7 @@ export default function App() {
     setThreadMm(s.threadMm);
     setStockMeters(s.stockMeters);
     setEdits({ ...s.edits });
+    setPortrait(structuredClone(s.portrait ?? DEFAULT_PORTRAIT));
     setPreset("balanced");
   }
   async function savePreset() {
@@ -413,6 +473,7 @@ export default function App() {
           threadMm,
           stockMeters,
           edits: { ...edits },
+          portrait: structuredClone(portrait),
         },
       });
       setMakerPresets(next);
@@ -422,16 +483,20 @@ export default function App() {
       setError(String(e));
     }
   }
-  function generate() {
+  function generate(seed?: Instruction) {
     if (!image) return;
     let profile;
     try {
-      profile = createProfile(shape, pinCount, mode, {
-        widthMm,
-        heightMm: boardHeight,
-      });
-      profile.threadMm = threadMm;
-      profile.stockMeters = stockMeters;
+      profile = seed
+        ? structuredClone(seed.profile)
+        : createProfile(shape, pinCount, mode, {
+            widthMm,
+            heightMm: boardHeight,
+          });
+      if (!seed) {
+        profile.threadMm = threadMm;
+        profile.stockMeters = stockMeters;
+      }
     } catch (e) {
       setError(String(e));
       return;
@@ -440,8 +505,21 @@ export default function App() {
     setBusy(true);
     setFraction(0);
     const c = document.createElement("canvas");
-    c.width = c.height = 96;
-    const pixels = prepare(c.getContext("2d")!, image, edits, aspect);
+    c.width = c.height = 160;
+    const generationPortrait = seed?.params.portrait ?? portrait;
+    const generationEdits = seed
+      ? (variants.find((v) => v.instruction.id === seed.id)?.edits ?? edits)
+      : edits;
+    const pixels = processPortrait(
+      prepare(
+        c.getContext("2d")!,
+        image,
+        generationEdits,
+        seed ? profile.widthMm / profile.heightMm : aspect,
+      ),
+      160,
+      generationPortrait,
+    );
     const w = new Worker(
       new URL("./core/generator.worker.ts", import.meta.url),
       { type: "module" },
@@ -462,7 +540,7 @@ export default function App() {
                 {
                   instruction: i,
                   name: `${photoCandidates.find((p) => p.id === photoId)?.name ?? t("sample")} · ${t(preset as "balanced" | "lighter" | "detailed")}`,
-                  edits: { ...edits },
+                  edits: { ...generationEdits },
                 },
               ].slice(-6),
             );
@@ -481,10 +559,12 @@ export default function App() {
     };
     w.postMessage({
       pixels,
-      resolution: 96,
+      resolution: 160,
       profile,
-      lines,
-      mode,
+      lines: seed?.params.requestedLines ?? lines,
+      mode: seed?.params.mode ?? mode,
+      portrait: generationPortrait,
+      seed,
     });
   }
   function open(p: Project) {
@@ -778,6 +858,135 @@ export default function App() {
                         {sample && (
                           <p className="fineprint">{t("sampleNotice")}</p>
                         )}
+                        <label className="toggle">
+                          <input
+                            type="checkbox"
+                            checked={portrait.enabled}
+                            onChange={(e) => {
+                              setPortrait((v) => ({
+                                ...v,
+                                enabled: e.target.checked,
+                              }));
+                              if (e.target.checked) setLines(MAX_LINES);
+                            }}
+                          />
+                          {t("portraitMode")}
+                        </label>
+                        <p className="fineprint">{t("portraitHint")}</p>
+                        <div
+                          className="target-frame"
+                          style={{ aspectRatio: aspect }}
+                        >
+                          <canvas
+                            ref={targetCanvas}
+                            width={160}
+                            height={160}
+                            aria-label={t("processedTarget")}
+                          />
+                          {portrait.enabled &&
+                            Object.entries(portraitRegions(portrait.face))
+                              .filter(([key]) => key !== "outline")
+                              .map(([key, box]) => (
+                                <div
+                                  key={key}
+                                  className={`region-box region-${key}`}
+                                  style={{
+                                    left: `${box.left * 100}%`,
+                                    top: `${box.top * 100}%`,
+                                    width: `${box.width * 100}%`,
+                                    height: `${box.height * 100}%`,
+                                  }}
+                                >
+                                  <span>
+                                    {t(
+                                      key as "face" | "eyes" | "nose" | "mouth",
+                                    )}
+                                  </span>
+                                </div>
+                              ))}
+                        </div>
+                        <p className="fineprint">
+                          {t("processedTarget")} · 160 × 160 ·{" "}
+                          {t("originalCrop")}
+                        </p>
+                        {portrait.enabled && (
+                          <details className="edits" open>
+                            <summary>{t("faceRegion")}</summary>
+                            <p className="fineprint">{t("regionHint")}</p>
+                            {(["left", "top", "width", "height"] as const).map(
+                              (key) => (
+                                <label className="range-label" key={key}>
+                                  <span>{t(key)}</span>
+                                  <input
+                                    aria-label={`${t("faceRegion")} ${t(key)}`}
+                                    type="range"
+                                    min={
+                                      key === "width" || key === "height"
+                                        ? 0.1
+                                        : 0
+                                    }
+                                    max={
+                                      key === "left"
+                                        ? 1 - portrait.face.width
+                                        : key === "top"
+                                          ? 1 - portrait.face.height
+                                          : key === "width"
+                                            ? 1 - portrait.face.left
+                                            : 1 - portrait.face.top
+                                    }
+                                    step=".01"
+                                    value={portrait.face[key]}
+                                    onChange={(e) =>
+                                      setPortrait((v) => ({
+                                        ...v,
+                                        face: {
+                                          ...v.face,
+                                          [key]: +e.target.value,
+                                        },
+                                      }))
+                                    }
+                                  />
+                                  <output>
+                                    {Math.round(portrait.face[key] * 100)}%
+                                  </output>
+                                </label>
+                              ),
+                            )}
+                            {(["background", "localContrast"] as const).map(
+                              (key) => (
+                                <label className="range-label" key={key}>
+                                  <span>{t(key)}</span>
+                                  <input
+                                    aria-label={t(key)}
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step=".05"
+                                    value={portrait[key]}
+                                    onChange={(e) =>
+                                      setPortrait((v) => ({
+                                        ...v,
+                                        [key]: +e.target.value,
+                                      }))
+                                    }
+                                  />
+                                  <output>{portrait[key]}</output>
+                                </label>
+                              ),
+                            )}
+                            <button
+                              className="text-button"
+                              onClick={() =>
+                                setPortrait({
+                                  ...structuredClone(DEFAULT_PORTRAIT),
+                                  enabled: true,
+                                })
+                              }
+                            >
+                              {t("resetPortrait")}
+                            </button>
+                          </details>
+                        )}
                         <div
                           className="photo-candidates"
                           aria-label={t("photoCandidates")}
@@ -951,11 +1160,12 @@ export default function App() {
                       aria-label={t("density")}
                       type="range"
                       min="200"
-                      max="3000"
+                      max={MAX_LINES}
                       step="100"
                       value={lines}
                       onChange={(e) => setLines(+e.target.value)}
                     />
+                    <p className="fineprint">{t("computationHint")}</p>
                     <div className="preset-row">
                       {(["lighter", "balanced", "detailed"] as const).map(
                         (v, j) => (
@@ -1011,8 +1221,8 @@ export default function App() {
                           key: "stockMeters" as const,
                           value: stockMeters,
                           set: setStockMeters,
-                          min: 1,
-                          max: 5000,
+                          min: 0,
+                          max: 100000,
                           step: 1,
                         },
                       ].map((r) => (
@@ -1046,7 +1256,7 @@ export default function App() {
                     <button
                       className="primary full"
                       disabled={!image || busy}
-                      onClick={generate}
+                      onClick={() => generate()}
                     >
                       {busy
                         ? `${t("generating")} ${Math.round(fraction * 100)}%`
@@ -1129,6 +1339,55 @@ export default function App() {
                         → {result.metrics.reconstructionMse.toFixed(3)}.{" "}
                         {t("qualityHint")}
                       </p>
+                      <Supply instruction={result} locale={locale} />
+                      {result.metrics.refinement?.reason === "compute-limit" &&
+                        image && (
+                          <button
+                            className="outline full"
+                            disabled={busy}
+                            onClick={() => generate(result)}
+                          >
+                            {t("continueRefinement")}
+                          </button>
+                        )}
+                      {result.metrics.refinement && (
+                        <p className="fineprint">{t("refinementNotice")}</p>
+                      )}
+                      {result.metrics.regions && (
+                        <details className="edits">
+                          <summary>{t("regionMetrics")}</summary>
+                          <p className="fineprint">{t("regionHint")}</p>
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>{t("faceRegion")}</th>
+                                <th>MSE</th>
+                                <th>{t("edgeError")}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {Object.entries(result.metrics.regions.final).map(
+                                ([key, m]) => (
+                                  <tr key={key}>
+                                    <th>
+                                      {t(
+                                        key as
+                                          | "face"
+                                          | "eyes"
+                                          | "nose"
+                                          | "mouth"
+                                          | "outline",
+                                      )}
+                                    </th>
+                                    <td>{m.mse.toFixed(4)}</td>
+                                    <td>{m.edgeMse.toFixed(4)}</td>
+                                  </tr>
+                                ),
+                              )}
+                            </tbody>
+                          </table>
+                        </details>
+                      )}
                       <label className="field-label" htmlFor="project-name">
                         {t("projectName")}
                       </label>
@@ -1194,6 +1453,7 @@ export default function App() {
                 </section>
                 <div className="craft-grid">
                   <section className="card craft-preview">
+                    <Supply instruction={instruction} locale={locale} />
                     <div
                       className="craft-canvas"
                       style={{
@@ -1632,6 +1892,7 @@ export default function App() {
                                 threadMm: profile.threadMm,
                                 stockMeters: profile.stockMeters,
                                 edits: p.edits,
+                                portrait: p.instruction.params.portrait,
                               });
                               nav("create");
                               setNotice(t("reuseNotice"));

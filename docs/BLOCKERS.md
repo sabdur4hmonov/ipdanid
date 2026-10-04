@@ -2,6 +2,8 @@
 
 These do not block independent local implementation. No production integrations are active.
 
+Exact portrait source is now available and tested locally; it is not a blocker. One-image optical improvement does not resolve B-PHYSICAL or modest-device performance. Further diverse-photo quality work is implementation/verification work, not an external blocker.
+
 | ID | Dependency | Unlocks | Current handling |
 |---|---|---|---|
 | B-PHYSICAL | Real board dimensions, pin/shaft/thread/palette stock; representative human assembly | calibrated material profiles / physical quality claims | development profiles explicitly provisional; PHYSICAL_TRIAL.md ready; no assembly or physical printing performed |

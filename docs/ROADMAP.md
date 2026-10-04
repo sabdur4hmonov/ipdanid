@@ -14,3 +14,5 @@ Dependency graph: M0 → M1 → M2 → M3; M1 → M4 foundations; M2 + M4 → M5
 - M7: CI/E2E/security/performance/device/physical trials, cleanup/backup/restore, build artifacts, production prerequisites. Final production publication requires owner approval.
 
 Next task is always recorded in STATUS.md. Independent tasks continue when a provider, device, license, or physical trial is blocked. Features without evidence remain pending or partial.
+
+Current priority within M2/M7: measurable portrait accuracy over material consumption. Stock is a supply estimate. Complete exact-photo comparisons, manual target preparation, continuous face-weighted optimization and staged refinement, shared immutable exports, browser and rebuilt Android evidence. Representative portrait diversity and physical calibration remain separate acceptance gates. Resume M4 customer sandbox integration after this priority increment; no milestone or feature family is removed.

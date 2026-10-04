@@ -14,7 +14,9 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   // Exercise the actual validated PNG photo-upload path, using an original test fixture.
-  const png = await page.locator("canvas").screenshot();
+  const png = await page
+    .getByLabel("Edited photo", { exact: true })
+    .screenshot();
   await page.locator("input[type=file]").first().setInputFiles({
     name: "original-illustration.png",
     mimeType: "image/png",
@@ -32,6 +34,11 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
     path: `output/evidence/${testInfo.project.name}-generated.png`,
     fullPage: true,
   });
+  await page
+    .locator(".result-card")
+    .screenshot({
+      path: `output/evidence/${testInfo.project.name}-quality-result.png`,
+    });
   const previewHash = await page
     .locator("canvas[data-sequence-hash]")
     .getAttribute("data-sequence-hash");
@@ -76,6 +83,9 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
     page.getByRole("button", { name: "Project JSON", exact: true }).click(),
   ]);
   const path = await json.path();
+  const exported = JSON.parse(readFileSync(path!, "utf8"));
+  expect(exported.project.instruction.algorithm).toBe("greedy-optical/4");
+  expect(exported.project.instruction.params.resolution).toBe(160);
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.locator("input[type=file]").last().setInputFiles(path!);
   await expect(page.getByTestId("player-hash")).toHaveText(previewHash!);
@@ -101,7 +111,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   await testInfo.attach("generation-measurement", {
     body: JSON.stringify({
       generationMs,
-      resolution: 96,
+      resolution: 160,
       pins: 120,
       maxLines: 700,
       profile: "dev-circle-120-dark",
@@ -115,7 +125,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
       {
         generationMs,
         input: "Original test illustration via PNG upload",
-        resolution: 96,
+        resolution: 160,
         pins: 120,
         maxLines: 700,
         viewport: testInfo.project.name,
@@ -204,7 +214,9 @@ test("photo candidates retain edits and reusable settings persist without storin
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
-  const png = await page.locator("canvas").screenshot();
+  const png = await page
+    .getByLabel("Edited photo", { exact: true })
+    .screenshot();
   await page.getByLabel("Brightness", { exact: true }).fill("25");
   await page.locator("input[type=file]").first().setInputFiles({
     name: "second-photo.png",

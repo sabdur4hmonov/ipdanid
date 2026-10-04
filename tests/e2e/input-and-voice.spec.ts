@@ -9,7 +9,7 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
   await upload.setInputFiles("tests/fixtures/orientation-6.jpg");
   await expect(page.getByLabel("Edited photo")).toBeVisible();
   const colors = await page
-    .locator("canvas")
+    .getByLabel('Edited photo',{exact:true})
     .evaluate((canvas: HTMLCanvasElement) => {
       const c = canvas.getContext("2d")!;
       return [
@@ -39,7 +39,7 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
     page.getByRole("button", { name: "transparency.png", exact: true }),
   ).toBeVisible();
   const corner = await page
-    .locator("canvas")
+    .getByLabel('Edited photo',{exact:true})
     .evaluate((canvas: HTMLCanvasElement) => [
       ...canvas.getContext("2d")!.getImageData(5, 5, 1, 1).data,
     ]);

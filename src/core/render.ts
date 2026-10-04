@@ -1,5 +1,6 @@
 import type { Instruction } from "./types";
 import { flatten } from "./engine";
+import { rasterSequence } from "./optical";
 export function renderInstruction(
   ctx: CanvasRenderingContext2D,
   i: Instruction,
@@ -15,19 +16,36 @@ export function renderInstruction(
     sx = w - pad * 2,
     sy = h - padY * 2,
     steps = flatten(i);
-  ctx.lineWidth = Math.max(0.25, (p.threadMm / p.widthMm) * sx);
+  ctx.lineWidth = (p.threadMm / p.widthMm) * sx;
   ctx.lineCap = "round";
   const end = options.completed ?? steps.length;
-  for (const s of steps.slice(0, end)) {
-    const a = p.pins[s.from],
-      b = p.pins[s.to];
-    ctx.strokeStyle = s.color;
-    ctx.globalAlpha = p.opacity;
-    ctx.beginPath();
-    ctx.moveTo(pad + a.x * sx, padY + a.y * sy);
-    ctx.lineTo(pad + b.x * sx, padY + b.y * sy);
-    ctx.stroke();
-  }
+  if (["greedy-optical/3", "greedy-optical/4"].includes(i.algorithm)) {
+    const n = i.params.resolution,
+      raster = rasterSequence(i, end);
+    const surface = document.createElement("canvas");
+    surface.width = surface.height = n;
+    const source = surface.getContext("2d")!;
+    const pixels = source.createImageData(n, n);
+    for (let k = 0; k < n * n; k++) {
+      for (let c = 0; c < 3; c++)
+        pixels.data[k * 4 + c] = Math.round(raster[k * 3 + c] * 255);
+      pixels.data[k * 4 + 3] = 255;
+    }
+    source.putImageData(pixels, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(surface, pad, padY, sx, sy);
+  } else
+    for (const s of steps.slice(0, end)) {
+      const a = p.pins[s.from],
+        b = p.pins[s.to];
+      ctx.strokeStyle = s.color;
+      ctx.globalAlpha = p.opacity;
+      ctx.beginPath();
+      ctx.moveTo(pad + a.x * sx, padY + a.y * sy);
+      ctx.lineTo(pad + b.x * sx, padY + b.y * sy);
+      ctx.stroke();
+    }
   ctx.globalAlpha = 1;
   if (options.pins)
     for (const pin of p.pins) {

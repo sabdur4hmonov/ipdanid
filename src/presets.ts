@@ -1,6 +1,8 @@
 import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
-import type { EditParams, Shape } from "./core/types";
+import type { EditParams, Shape, PortraitSettings } from "./core/types";
+import { MAX_LINES } from "./core/limits";
+import { validPortrait } from "./core/portrait";
 export interface MakerSettings {
   shape: Shape;
   mode: "dark" | "light" | "color";
@@ -11,6 +13,7 @@ export interface MakerSettings {
   threadMm: number;
   stockMeters: number;
   edits: EditParams;
+  portrait?: PortraitSettings;
 }
 export interface MakerPreset {
   id: string;
@@ -35,12 +38,12 @@ function validate(p: MakerPreset) {
   )
     throw new Error("Invalid preset mode");
   for (const [v, min, max, integer] of [
-    [s.lines, 200, 3000, true],
+    [s.lines, 200, MAX_LINES, true],
     [s.widthMm, 50, 2000, false],
     [s.heightMm, 50, 2000, false],
     [s.pinCount, 24, 240, true],
     [s.threadMm, 0.1, 2, false],
-    [s.stockMeters, 1, 10000, false],
+    [s.stockMeters, 0, 100000, false],
     [s.edits?.zoom, 1, 3, false],
     [s.edits?.panX, -0.5, 0.5, false],
     [s.edits?.panY, -0.5, 0.5, false],
@@ -56,6 +59,7 @@ function validate(p: MakerPreset) {
     )
       throw new Error("Invalid preset parameters");
   }
+  if (s.portrait) validPortrait(s.portrait);
 }
 export async function readPresets(): Promise<MakerPreset[]> {
   const raw = Capacitor.isNativePlatform()

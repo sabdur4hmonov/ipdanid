@@ -2,6 +2,14 @@ import type { Locale } from "./core/types";
 // Domain/Worker messages remain stable for diagnostics; visible recovery text follows the chosen locale.
 const messages: [RegExp, Record<Locale, string>][] = [
   [
+    /Continuation requires|Invalid portrait/i,
+    {
+      uz: "Yuz hududini tekshiring. Davom ettirish uchun aynan shu surat, crop va materiallar kerak.",
+      ru: "Проверьте область лица. Для продолжения нужны то же фото, кадр и материалы.",
+      en: "Check the face region. Continuation requires the same photograph, crop and materials.",
+    },
+  ],
+  [
     /Maximum file size/i,
     {
       uz: "Fayl 15 MB dan katta. Kichikroq JPEG yoki PNG tanlang.",
@@ -68,17 +76,17 @@ const messages: [RegExp, Record<Locale, string>][] = [
   [
     /No.*improv|no.*path|stock.*small|No feasible/i,
     {
-      uz: "Bu rasm/material uchun mos ip yo‘li topilmadi. Kontrastni, rasmni yoki ip zaxirasini o‘zgartiring.",
-      ru: "Для изображения и материалов не найден допустимый путь. Измените контраст, фото или запас нити.",
-      en: "No feasible improving path. Change the photo, contrast, or available thread.",
+      uz: "Bu rasm/material uchun mos ip yo‘li topilmadi. Crop, kontrast yoki materialni o‘zgartiring.",
+      ru: "Для изображения и материалов не найден допустимый путь. Измените кадр, контраст или материалы.",
+      en: "No feasible improving path. Change the crop, contrast, or materials.",
     },
   ],
   [
     /Line limit|sequence limits|Invalid generation parameters/i,
     {
-      uz: "Chiziq yoki material chegarasi mos emas. 200–3000 chiziq va yetarli ip zaxirasini tanlang.",
-      ru: "Неверные ограничения линий или материала. Выберите 200–3000 линий и достаточный запас нити.",
-      en: "Invalid line/material limits. Choose 200–3000 lines and sufficient thread.",
+      uz: "Hisoblash chegarasi mos emas. 200–20 000 chiziq tanlang. Ip zaxirasi sifatni cheklamaydi.",
+      ru: "Неверный предел вычислений. Выберите 200–20 000 линий. Запас не ограничивает качество.",
+      en: "Invalid computation ceiling. Choose 200–20,000 lines. Stock does not constrain quality.",
     },
   ],
   [

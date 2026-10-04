@@ -2,6 +2,8 @@
 
 Real on-device photo-to-continuous-thread instructions. Development build; physical material profiles are provisional. Full scope is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md). Read [docs/STATUS.md](docs/STATUS.md) to resume.
 
+Portrait mode shows the exact local grayscale target and lets you place the face region. Stock is a supply estimate; shortages are shown rather than reducing quality. The 20,000-line ceiling and bounded continuation stages control compute, not material consumption. Every stage creates a new sequence and keeps confirmed progress attached to its original hash. Exact-photo comparisons are local under ignored `output/portrait/report.html`; they do not establish physical likeness or production readiness.
+
 ## Run locally
 
 Node 22.12+ (this host uses 24.18.0):

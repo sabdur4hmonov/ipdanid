@@ -4,6 +4,7 @@ import type { Instruction, Locale } from "./types";
 import { flatten } from "./engine";
 import { translate } from "../i18n";
 import { validateInstruction } from "./validation";
+import { previewPng } from "./preview-png";
 const MM = 72 / 25.4;
 export async function exportPdf(
   i: Instruction,
@@ -77,6 +78,7 @@ export async function exportPdf(
     t("provisional"),
     `${t(i.profile.shape)} · ${i.profile.widthMm} × ${i.profile.heightMm} mm · ${i.profile.pins.length} ${t("pdfPin")}`,
     `${i.metrics.lines} ${t("lines")} · ${i.metrics.estimatedMeters.toFixed(1)} ${t("meters")}`,
+    `${t("stockMeters")}: ${i.profile.stockMeters.toFixed(1)} m · ${t("stockShortfall")}: ${(Math.ceil(Math.max(0, i.metrics.estimatedMeters - i.profile.stockMeters) * 10) / 10).toFixed(1)} m`,
     `${t("confirmed")}: ${confirmed}/${i.metrics.lines}`,
     t("pdfNeed"),
     t("pdfWrap"),
@@ -109,17 +111,25 @@ export async function exportPdf(
       height: phs,
       color: hex(i.profile.baseColor),
     });
-    for (const s of flatten(i)) {
-      const a = i.profile.pins[s.from],
-        b = i.profile.pins[s.to];
-      cover.drawLine({
-        start: { x: margin + a.x * ps, y: bottom + (1 - a.y) * phs },
-        end: { x: margin + b.x * ps, y: bottom + (1 - b.y) * phs },
-        color: hex(s.color),
-        opacity: i.profile.opacity,
-        thickness: (i.profile.threadMm / i.profile.widthMm) * ps,
+    if (["greedy-optical/3", "greedy-optical/4"].includes(i.algorithm)) {
+      cover.drawImage(await doc.embedPng(previewPng(i)), {
+        x: margin,
+        y: bottom,
+        width: ps,
+        height: phs,
       });
-    }
+    } else
+      for (const s of flatten(i)) {
+        const a = i.profile.pins[s.from],
+          b = i.profile.pins[s.to];
+        cover.drawLine({
+          start: { x: margin + a.x * ps, y: bottom + (1 - a.y) * phs },
+          end: { x: margin + b.x * ps, y: bottom + (1 - b.y) * phs },
+          color: hex(s.color),
+          opacity: i.profile.opacity,
+          thickness: (i.profile.threadMm / i.profile.widthMm) * ps,
+        });
+      }
   }
   footer(cover);
   // Tile board coordinates in millimeters with 10 mm overlap. Never scale the board to page.

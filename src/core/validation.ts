@@ -1,6 +1,8 @@
 import { connectionAllowed } from "./geometry";
 import { deepFreeze, flatten, hash, sequencePayload } from "./engine";
 import type { Instruction, Progress, Project, ProjectFile } from "./types";
+import { MAX_LINES } from "./limits";
+import { validPortrait } from "./portrait";
 export async function validateInstruction(
   value: unknown,
 ): Promise<Instruction> {
@@ -10,9 +12,16 @@ export async function validateInstruction(
     p = i.profile;
   if (
     i.schema !== "iprasm.instruction/1" ||
-    !["greedy-optical/1", "greedy-optical/2"].includes(i.algorithm)
+    ![
+      "greedy-optical/1",
+      "greedy-optical/2",
+      "greedy-optical/3",
+      "greedy-optical/4",
+    ].includes(i.algorithm)
   )
     throw new Error("Unsupported instruction version");
+  const qualityFirst = i.algorithm === "greedy-optical/4",
+    limit = qualityFirst ? MAX_LINES : 3000;
   if (
     !p ||
     !["circle", "rectangle", "heart"].includes(p.shape) ||
@@ -29,7 +38,8 @@ export async function validateInstruction(
     p.opacity <= 0 ||
     p.opacity > 1 ||
     !Number.isFinite(p.stockMeters) ||
-    p.stockMeters <= 0 ||
+    p.stockMeters < 0 ||
+    (!qualityFirst && p.stockMeters === 0) ||
     !Number.isInteger(p.minPinGap) ||
     p.minPinGap < 1 ||
     !Number.isFinite(p.shaftMm) ||
@@ -45,7 +55,7 @@ export async function validateInstruction(
     p.version < 1 ||
     !Number.isInteger(p.maxLines) ||
     p.maxLines < 1 ||
-    p.maxLines > 3000
+    p.maxLines > limit
   )
     throw new Error("Invalid material dimensions");
   if (
@@ -83,7 +93,7 @@ export async function validateInstruction(
       !p.colors.includes(segment.color) ||
       !Array.isArray(segment.path) ||
       segment.path.length < 2 ||
-      segment.path.length > 3001
+      segment.path.length > limit + 1
     )
       throw new Error("Invalid thread segment");
     total += segment.path.length - 1;
@@ -98,12 +108,13 @@ export async function validateInstruction(
     }
   }
   if (
-    total > 3000 ||
+    total > limit ||
     total > p.maxLines ||
     !i.metrics ||
     i.metrics.lines !== total ||
     !Number.isFinite(i.metrics.estimatedMeters) ||
-    i.metrics.estimatedMeters > p.stockMeters ||
+    i.metrics.estimatedMeters < 0 ||
+    (!qualityFirst && i.metrics.estimatedMeters > p.stockMeters) ||
     !Number.isFinite(i.metrics.reconstructionMse) ||
     i.metrics.reconstructionMse < 0 ||
     !Number.isFinite(i.metrics.baselineMse) ||
@@ -119,9 +130,90 @@ export async function validateInstruction(
     i.params.resolution > 192 ||
     !Number.isInteger(i.params.requestedLines) ||
     i.params.requestedLines < total ||
-    i.params.requestedLines > 3000
+    i.params.requestedLines > limit
   )
     throw new Error("Invalid generation parameters");
+  if (qualityFirst) {
+    if (
+      i.params.parentSequenceHash &&
+      (!/^[a-f0-9]{64}$/.test(i.params.parentSequenceHash) ||
+        !Number.isSafeInteger(i.params.refinementStage) ||
+        i.params.refinementStage! < 2)
+    )
+      throw new Error("Invalid generation parameters");
+    if (
+      i.params.stockPolicy !== "estimate" ||
+      !i.params.optimization ||
+      i.params.optimization.lookahead !== 8 ||
+      i.params.optimization.coarseScale !== 4 ||
+      i.params.optimization.minimumRelativeGain !== 1e-7
+    )
+      throw new Error("Invalid generation parameters");
+    if (i.params.portrait) validPortrait(i.params.portrait);
+    let meters = 0;
+    const perColor: Record<string, number> = {};
+    for (const segment of i.segments) {
+      let length = 0.5;
+      for (let j = 1; j < segment.path.length; j++) {
+        const a = p.pins[segment.path[j - 1]],
+          b = p.pins[segment.path[j]];
+        length +=
+          ((Math.hypot((b.x - a.x) * p.widthMm, (b.y - a.y) * p.heightMm) +
+            p.wrapAllowanceMm) /
+            1000) *
+          (1 + p.wasteFraction);
+      }
+      meters += length;
+      perColor[segment.color] = (perColor[segment.color] ?? 0) + length;
+    }
+    if (
+      Math.abs(meters - i.metrics.estimatedMeters) > 1e-5 ||
+      !Number.isFinite(i.metrics.stockShortfallMeters) ||
+      Math.abs(
+        i.metrics.stockShortfallMeters! - Math.max(0, meters - p.stockMeters),
+      ) > 1e-5 ||
+      !i.metrics.perColorMeters ||
+      Object.keys(i.metrics.perColorMeters).length !==
+        Object.keys(perColor).length ||
+      Object.entries(perColor).some(
+        ([c, m]) =>
+          !Number.isFinite(i.metrics.perColorMeters[c]) ||
+          Math.abs(m - i.metrics.perColorMeters[c]) > 1e-5,
+      )
+    )
+      throw new Error("Invalid material accounting");
+    if (
+      !i.metrics.weightedError ||
+      !Number.isFinite(i.metrics.weightedError.baseline) ||
+      !Number.isFinite(i.metrics.weightedError.final) ||
+      i.metrics.weightedError.final < 0 ||
+      i.metrics.weightedError.final > i.metrics.weightedError.baseline + 1e-5
+    )
+      throw new Error("Invalid optimization metrics");
+    if (i.metrics.regions) {
+      for (const phase of [
+        i.metrics.regions.baseline,
+        i.metrics.regions.final,
+      ]) {
+        if (
+          !phase ||
+          ["face", "eyes", "nose", "mouth", "outline"].some(
+            (name) =>
+              !phase[name] ||
+              ![phase[name].mse, phase[name].edgeMse, phase[name].pixels].every(
+                Number.isFinite,
+              ) ||
+              phase[name].mse < 0 ||
+              phase[name].edgeMse < 0 ||
+              !Number.isInteger(phase[name].pixels) ||
+              phase[name].pixels < 0 ||
+              phase[name].pixels > i.params.resolution ** 2,
+          )
+        )
+          throw new Error("Invalid regional metrics");
+      }
+    }
+  }
   if ((await hash(sequencePayload(i))) !== i.sequenceHash)
     throw new Error("Sequence integrity mismatch");
   return deepFreeze(i);

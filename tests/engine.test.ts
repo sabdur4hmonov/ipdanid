@@ -123,7 +123,7 @@ describe("real photo-to-path outcomes", () => {
     await validateInstruction(a);
     expect(Object.keys(a.metrics.perColorMeters)).toHaveLength(3);
   });
-  it("honors stock cap and bounded computation and cancellation", async () => {
+  it("treats stock as supply, independently bounds computation and supports cancellation", async () => {
     const p = createProfile("circle", 48);
     p.stockMeters = 2;
     const a = await generate({
@@ -133,13 +133,18 @@ describe("real photo-to-path outcomes", () => {
       lines: 150,
       mode: "dark",
     });
-    expect(a.metrics.estimatedMeters).toBeLessThanOrEqual(2);
+    expect(a.metrics.estimatedMeters).toBeGreaterThan(2);
+    expect(a.metrics.stockShortfallMeters).toBeCloseTo(a.metrics.estimatedMeters - 2, 8);
+    const ample = await generate({ pixels, resolution:n, profile:{...p, stockMeters:10000}, lines:150, mode:'dark' });
+    expect(a.segments).toEqual(ample.segments);
+    expect(a.metrics.reconstructionMse).toBe(ample.metrics.reconstructionMse);
+    await validateInstruction(a);
     await expect(
       generate({
         pixels,
         resolution: n,
         profile: p,
-        lines: 3001,
+        lines: 20001,
         mode: "dark",
       }),
     ).rejects.toThrow();
@@ -171,7 +176,7 @@ describe("real photo-to-path outcomes", () => {
     await expect(validateInstruction(bad)).rejects.toThrow();
     const tampered = structuredClone(a);
     tampered.profile.widthMm = 450;
-    await expect(validateInstruction(tampered)).rejects.toThrow(/integrity/);
+    await expect(validateInstruction(tampered)).rejects.toThrow(/integrity|accounting/);
     const version = structuredClone(a);
     (version as unknown as { schema: string }).schema = "future";
     await expect(validateInstruction(version)).rejects.toThrow(/version/);

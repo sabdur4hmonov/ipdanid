@@ -1,5 +1,17 @@
 export type Shape = "circle" | "rectangle" | "heart";
 export type Locale = "uz" | "ru" | "en";
+export interface RegionBox {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+export interface PortraitSettings {
+  enabled: boolean;
+  face: RegionBox;
+  background: number;
+  localContrast: number;
+}
 export interface Pin {
   id: number;
   x: number;
@@ -38,7 +50,11 @@ export interface Segment {
 }
 export interface Instruction {
   schema: "iprasm.instruction/1";
-  algorithm: "greedy-optical/1" | "greedy-optical/2";
+  algorithm:
+    | "greedy-optical/1"
+    | "greedy-optical/2"
+    | "greedy-optical/3"
+    | "greedy-optical/4";
   id: string;
   createdAt: string;
   imageHash: string;
@@ -49,6 +65,15 @@ export interface Instruction {
     resolution: number;
     requestedLines: number;
     mode: "dark" | "light" | "color";
+    portrait?: PortraitSettings;
+    stockPolicy?: "estimate";
+    parentSequenceHash?: string;
+    refinementStage?: number;
+    optimization?: {
+      lookahead: number;
+      coarseScale: number;
+      minimumRelativeGain: number;
+    };
   };
   metrics: {
     baselineMse: number;
@@ -56,7 +81,31 @@ export interface Instruction {
     estimatedMeters: number;
     perColorMeters: Record<string, number>;
     lines: number;
-    stoppedReason: "requested" | "no-improvement" | "stock";
+    stoppedReason:
+      | "requested"
+      | "no-improvement"
+      | "stock"
+      | "compute-limit"
+      | "quality-plateau";
+    stockShortfallMeters?: number;
+    weightedError?: { baseline: number; final: number };
+    regions?: {
+      baseline: Record<
+        string,
+        { mse: number; edgeMse: number; pixels: number }
+      >;
+      final: Record<string, { mse: number; edgeMse: number; pixels: number }>;
+    };
+    durationMs?: number;
+    lookaheadPairs?: number;
+    peakCacheBytes?: number;
+    refinement?: {
+      nextAt: number;
+      evaluations: number;
+      replacements: number;
+      gain: number;
+      reason: "plateau" | "compute-limit";
+    };
   };
 }
 export interface Step {

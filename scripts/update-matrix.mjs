@@ -49,7 +49,7 @@ const updates = {
   "IMG-03": [
     "partial",
     "partial",
-    "measured contrast/edges/shadow; face/background detection pending",
+    "local manual face region/background/contrast/reset and exact target; real-photo paired evidence and synthetic regional regression; automatic small/multiple-face detection and diverse-photo evaluation pending",
   ],
   "IMG-04": [
     "partial",
@@ -59,17 +59,17 @@ const updates = {
   "ENG-01": [
     "partial",
     "yes",
-    "MaterialProfile v3; immutable geometry/materials; head/winding detail and physical calibration pending",
+    "MaterialProfile v4; immutable geometry/materials; stock supply estimate and recomputed winding allowances; head/winding detail and physical calibration pending",
   ],
   "ENG-02": [
     "yes",
     "yes",
-    "greedy-optical/2; tests/engine.test.ts determinism/error reduction",
+    "greedy-optical/4 face-weighted fine/coarse loss, pair lookahead and legal coordinate refinement; exact-photo baseline/paired comparison; tests/portrait-quality.test.ts; diverse-photo likeness still unverified",
   ],
   "ENG-03": [
     "yes",
     "partial",
-    "worker/cancellation/bounds; recorded desktop benchmark; real modest phone pending",
+    "20k connection CPU ceiling, 32 MiB typed-footprint cache, cancel and staged refinement checkpoints; actual portrait 101.5s and exact replay 81.2s on desktop; real modest phone and total memory measurement pending",
   ],
   "ENG-04": [
     "yes",
@@ -84,7 +84,7 @@ const updates = {
   "ENG-06": [
     "partial",
     "partial",
-    "dimension-relative thread; wraps/waste/stock and adjustable pace; shaft winding is approximate",
+    "actual-sequence lengths, per-color estimates and shortages independent of stock; exact portrait needs 1023.3m against 600m; accounting/tamper tests; shaft winding remains approximate",
   ],
   "ENG-07": [
     "partial",
@@ -204,7 +204,7 @@ const updates = {
   "QA-01": [
     "partial",
     "yes",
-    "21 domain/PDF tests + HTTP sandbox + ten E2E outcomes on two browser profiles; VERIFICATION.md; broader security/mobile coverage pending",
+    "26 domain/portrait/PDF tests + HTTP sandbox + twelve E2E outcomes on two browser profiles; local exact-photo paired evidence; VERIFICATION.md; broader security/mobile/portrait-diversity coverage pending",
   ],
   "QA-02": [
     "partial",

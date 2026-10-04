@@ -1,5 +1,41 @@
 import type { Locale } from "./core/types";
 const uz = {
+  continueRefinement: "Ip yo‘lini keyingi bosqichda tuzatish",
+  refinementNotice:
+    "Yangi yo‘riqnoma yaratiladi. Eski tasdiqlangan qadamlar yangi ip yo‘liga ko‘chirilmaydi.",
+  portraitMode: "Portretni ustuvor hisoblash",
+  portraitHint:
+    "Yuz, iyak va sochni crop ichida saqlang. Barcha ishlov qurilmada bajariladi. Fon va kontrast ishlovi kulrang nishon yaratadi.",
+  processedTarget: "Hisoblashning aniq nishoni",
+  originalCrop: "Yuqorida asl crop bilan solishtiring",
+  faceRegion: "Yuz hududi",
+  face: "Yuz",
+  eyes: "Ko‘zlar",
+  nose: "Burun",
+  mouth: "Og‘iz",
+  outline: "Yuz chegarasi",
+  regionHint:
+    "Hududlarni qo‘lda joylashtiring. Ichki zonalar yuzga nisbatan taxminiy o‘lchovlar; avtomatik aniqlash yoki o‘xshashlik bahosi emas.",
+  left: "Chap",
+  top: "Tepa",
+  width: "Kenglik",
+  height: "Balandlik",
+  background: "Fonni soddalashtirish",
+  localContrast: "Mahalliy kontrast",
+  resetPortrait: "Portret ishlovini tiklash",
+  computationHint:
+    "Bu hisoblash chegarasi, sifat maqsadi emas. Zaxira sifatni cheklamaydi. Foydali yaxshilanish to‘xtasa, hisoblash erta tugaydi.",
+  stockShortfall: "Qo‘shimcha kerakli ip",
+  stockHint:
+    "Zaxira — ta’minot taxmini. Uzunlik o‘ram va chiqindini ham hisobga oladi; fizik tekshirilmagan.",
+  regionMetrics: "Hududlar bo‘yicha simulyatsiya xatosi",
+  edgeError: "Chegara xatosi",
+  stopReason: "To‘xtash sababi",
+  computeLimit: "Hisoblash chegarasi; optimal sifat tasdiqlanmagan",
+  qualityPlateau: "Hozirgi qidiruvda foydali qo‘shimcha ip topilmadi",
+  legacyStop: "Eski algoritm chegarasi",
+  refineLimit:
+    "Ip yo‘lini tuzatish hisoblash chegarasiga yetdi; keyingi bosqichda davom ettirish mumkin.",
   create: "Yaratish",
   assemble: "Yig‘ish",
   library: "Loyihalarim",
@@ -160,6 +196,42 @@ const uz = {
 };
 type Key = keyof typeof uz;
 const en: Record<Key, string> = {
+  continueRefinement: "Continue path refinement",
+  refinementNotice:
+    "Creates a new instruction. Confirmed steps from an older path do not transfer to the new path.",
+  portraitMode: "Prioritize portrait",
+  portraitHint:
+    "Keep face, chin and useful hair in the crop. Processing stays on this device. Background and contrast preparation produces a grayscale target.",
+  processedTarget: "Exact generation target",
+  originalCrop: "Compare with the original crop above",
+  faceRegion: "Face region",
+  face: "Face",
+  eyes: "Eyes",
+  nose: "Nose",
+  mouth: "Mouth",
+  outline: "Face outline",
+  regionHint:
+    "Place the region manually. Inner zones are approximate face-relative measurement bands, not detected landmarks or likeness scores.",
+  left: "Left",
+  top: "Top",
+  width: "Width",
+  height: "Height",
+  background: "Simplify background",
+  localContrast: "Local contrast",
+  resetPortrait: "Reset portrait preparation",
+  computationHint:
+    "This is a computation ceiling, not a quality target. Stock does not constrain quality. Computation stops early when useful improvement stalls.",
+  stockShortfall: "Additional thread needed",
+  stockHint:
+    "Stock is a supply estimate. Length includes wraps and waste; physically unvalidated.",
+  regionMetrics: "Regional simulation errors",
+  edgeError: "Edge error",
+  stopReason: "Stop reason",
+  computeLimit: "Computation ceiling; optimum not established",
+  qualityPlateau: "No useful additional connection found in the current search",
+  legacyStop: "Legacy algorithm limit",
+  refineLimit:
+    "Path refinement reached its computation ceiling; another stage can continue it.",
   create: "Create",
   assemble: "Assemble",
   library: "My projects",
@@ -318,6 +390,42 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
+  continueRefinement: "Продолжить уточнение пути",
+  refinementNotice:
+    "Создаёт новую инструкцию. Подтверждённые шаги старого пути не переносятся в новый.",
+  portraitMode: "Приоритет портрета",
+  portraitHint:
+    "Сохраните в кадре лицо, подбородок и волосы. Обработка выполняется на устройстве. Подготовка фона и контраста создаёт серую целевую картинку.",
+  processedTarget: "Точная цель расчёта",
+  originalCrop: "Сравните с исходным кадром выше",
+  faceRegion: "Область лица",
+  face: "Лицо",
+  eyes: "Глаза",
+  nose: "Нос",
+  mouth: "Рот",
+  outline: "Контур лица",
+  regionHint:
+    "Разместите область вручную. Внутренние зоны — приблизительные полосы измерения, а не распознанные ориентиры или оценка сходства.",
+  left: "Слева",
+  top: "Сверху",
+  width: "Ширина",
+  height: "Высота",
+  background: "Упростить фон",
+  localContrast: "Локальный контраст",
+  resetPortrait: "Сбросить обработку портрета",
+  computationHint:
+    "Это предел вычислений, не цель качества. Запас не ограничивает качество. Расчёт останавливается, когда полезное улучшение прекращается.",
+  stockShortfall: "Дополнительно нужно нити",
+  stockHint:
+    "Запас — оценка снабжения. Длина учитывает обороты и отходы; физически не проверена.",
+  regionMetrics: "Ошибки симуляции по областям",
+  edgeError: "Ошибка границ",
+  stopReason: "Причина остановки",
+  computeLimit: "Предел вычислений; оптимум не подтверждён",
+  qualityPlateau: "В текущем поиске полезное дополнительное соединение не найдено",
+  legacyStop: "Ограничение старого алгоритма",
+  refineLimit:
+    "Уточнение пути достигло предела вычислений; можно продолжить следующим этапом.",
   create: "Создать",
   assemble: "Сборка",
   library: "Мои проекты",
