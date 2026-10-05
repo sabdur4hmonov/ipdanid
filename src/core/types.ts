@@ -16,6 +16,14 @@ export interface PortraitSettings {
   backgroundMask?: string;
   // Recover source grayscale/contrast beneath explicitly restored subject.
   foregroundMask?: string;
+  // Independent manual boxes on the processed target. 0 and 1 are the first/last sample centers.
+  regions?: {
+    reference: "processed-target/sample-centers-v1";
+    placement?: "manual" | "proportional-estimate";
+    eyes: RegionBox;
+    nose: RegionBox;
+    mouth: RegionBox;
+  };
 }
 export interface Pin {
   id: number;

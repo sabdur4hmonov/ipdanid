@@ -46,7 +46,7 @@ export async function generateLogDensity(
     ink = rgb(p.colors[0]),
     bl = base.reduce((a, b) => a + b, 0) / 3,
     il = ink.reduce((a, b) => a + b, 0) / 3;
-  const regions = portraitRegions(portrait.face),
+  const regions = portraitRegions(portrait),
     size = n * n;
   const target = new Float64Array(size),
     density = new Float64Array(size),
@@ -414,8 +414,8 @@ export async function generateLogDensity(
   result.metrics.baselineMse = empty / num;
   result.metrics.reconstructionMse = error / num;
   result.metrics.regions = {
-    baseline: regionMeasurements(o.pixels, baseline, n, p, portrait.face),
-    final: regionMeasurements(o.pixels, raster, n, p, portrait.face),
+    baseline: regionMeasurements(o.pixels, baseline, n, p, portrait),
+    final: regionMeasurements(o.pixels, raster, n, p, portrait),
   };
   result.sequenceHash = await hash(sequencePayload(result));
   o.onProgress?.(1);

@@ -6,7 +6,7 @@ self.onmessage = async ({ data }) => {
     const options = {
       ...data,
       onProgress: (fraction: number) =>
-        self.postMessage({ type: "progress", fraction }),
+        self.postMessage({ type: "progress", jobId: data.jobId, fraction }),
     };
     let baseline;
     if (data.strategy === "global" && !data.seed) {
@@ -24,13 +24,18 @@ self.onmessage = async ({ data }) => {
       });
       options.seed = baseline;
       options.onProgress = (fraction: number) =>
-        self.postMessage({ type: "progress", fraction: 0.5 + fraction * 0.5 });
+        self.postMessage({
+          type: "progress",
+          jobId: data.jobId,
+          fraction: 0.5 + fraction * 0.5,
+        });
     }
     const instruction = await (
       data.strategy === "global" ? generateDensity : generate
     )(options);
     self.postMessage({
       type: "done",
+      jobId: data.jobId,
       instruction,
       baseline,
       durationMs: performance.now() - started,
@@ -38,6 +43,7 @@ self.onmessage = async ({ data }) => {
   } catch (error) {
     self.postMessage({
       type: "error",
+      jobId: data.jobId,
       message: error instanceof Error ? error.message : "Generation failed",
     });
   }

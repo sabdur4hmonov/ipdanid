@@ -1,3 +1,5 @@
+> Active checkpoint: REGION_ALIGNMENT_CHECKPOINT.md. Earlier proportional-band facial percentages below are historical, superseded as anatomical improvement claims. Use the corrected remeasurement and active next task there. Historical sequences remain unchanged.
+
 # Local photo guidance and controlled background checkpoint
 
 2026-10-04–05. Preserve `3ce5b0b`, `e6d7b49`, all output/portrait and output/fidelity evidence. No push, publication, external photograph upload or photo synthesis. Full roadmap remains in force; the acceptance order is in ROADMAP.md.

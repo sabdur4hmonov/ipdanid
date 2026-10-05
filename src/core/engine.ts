@@ -125,7 +125,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
     rendered = Float32Array.from({ length: n * n * 3 }, (_, k) => base[k % 3]);
   const mask = new Uint8Array(n * n),
     weight = new Float32Array(n * n),
-    regions = portrait ? portraitRegions(portrait.face) : undefined;
+    regions = portrait ? portraitRegions(portrait) : undefined;
   const coarseScale = 4,
     cn = Math.ceil(n / coarseScale),
     cells = cn * cn,
@@ -217,7 +217,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
   const baselineMse = mse(),
     initialLoss = weightedLoss(),
     baselineRegions = portrait
-      ? regionMeasurements(o.pixels, rendered, n, p, portrait.face)
+      ? regionMeasurements(o.pixels, rendered, n, p, portrait)
       : undefined;
   let stageAt = 0,
     progressAt = 0;
@@ -512,13 +512,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
         ? {
             regions: {
               baseline: baselineRegions!,
-              final: regionMeasurements(
-                o.pixels,
-                rendered,
-                n,
-                p,
-                portrait.face,
-              ),
+              final: regionMeasurements(o.pixels, rendered, n, p, portrait),
             },
           }
         : {}),

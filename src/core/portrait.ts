@@ -6,7 +6,11 @@ export const DEFAULT_PORTRAIT: PortraitSettings = {
   background: 0.75,
   localContrast: 0.35,
 };
-export function portraitRegions(face: RegionBox): Record<string, RegionBox> {
+export function portraitRegions(
+  settings: RegionBox | PortraitSettings,
+): Record<string, RegionBox> {
+  const face = "face" in settings ? settings.face : settings;
+  const custom = "face" in settings ? settings.regions : undefined;
   const part = (left: number, top: number, width: number, height: number) => ({
     left: face.left + left * face.width,
     top: face.top + top * face.height,
@@ -15,9 +19,9 @@ export function portraitRegions(face: RegionBox): Record<string, RegionBox> {
   });
   return {
     face,
-    eyes: part(0.08, 0.23, 0.84, 0.18),
-    nose: part(0.27, 0.4, 0.46, 0.28),
-    mouth: part(0.18, 0.67, 0.64, 0.18),
+    eyes: custom?.eyes ?? part(0.08, 0.23, 0.84, 0.18),
+    nose: custom?.nose ?? part(0.27, 0.4, 0.46, 0.28),
+    mouth: custom?.mouth ?? part(0.18, 0.67, 0.64, 0.18),
     outline: face,
   };
 }
@@ -49,6 +53,29 @@ export function validPortrait(s: PortraitSettings) {
     s.localContrast > 1
   )
     throw new Error("Invalid portrait region");
+  if (s.regions !== undefined) {
+    if (s.regions.reference !== "processed-target/sample-centers-v1")
+      throw new Error("Invalid portrait coordinate reference");
+    if (
+      s.regions.placement !== undefined &&
+      !["manual", "proportional-estimate"].includes(s.regions.placement)
+    )
+      throw new Error("Invalid region placement method");
+    for (const key of ["eyes", "nose", "mouth"] as const) {
+      const b = s.regions[key];
+      if (
+        !b ||
+        ![b.left, b.top, b.width, b.height].every(Number.isFinite) ||
+        b.left < 0 ||
+        b.top < 0 ||
+        b.width < 0.01 ||
+        b.height < 0.01 ||
+        b.left + b.width > 1.00001 ||
+        b.top + b.height > 1.00001
+      )
+        throw new Error("Invalid manual portrait region");
+    }
+  }
   if (
     s.backgroundMode !== undefined &&
     !["soften", "manual-light"].includes(s.backgroundMode)
@@ -60,6 +87,20 @@ export function validPortrait(s: PortraitSettings) {
       (typeof mask !== "string" || !/^[0-9a-f]{1024}$/.test(mask))
     )
       throw new Error("Invalid background mask");
+}
+export function snapshotPortrait(s: PortraitSettings): PortraitSettings {
+  const copy = structuredClone(s);
+  if (copy.enabled && !copy.regions) {
+    const b = portraitRegions(copy);
+    copy.regions = {
+      reference: "processed-target/sample-centers-v1",
+      placement: "proportional-estimate",
+      eyes: b.eyes,
+      nose: b.nose,
+      mouth: b.mouth,
+    };
+  }
+  return copy;
 }
 export const MASK_SIZE = 64;
 export const EMPTY_BACKGROUND_MASK = "0".repeat(1024);
@@ -261,13 +302,14 @@ export function regionMeasurements(
   raster: Float32Array,
   n: number,
   p: MaterialProfile,
-  face: RegionBox,
+  settings: RegionBox | PortraitSettings,
 ) {
+  const face = "face" in settings ? settings.face : settings;
   const result: Record<
     string,
     { mse: number; edgeMse: number; pixels: number }
   > = {};
-  for (const [name, box] of Object.entries(portraitRegions(face))) {
+  for (const [name, box] of Object.entries(portraitRegions(settings))) {
     let sum = 0,
       edge = 0,
       count = 0;

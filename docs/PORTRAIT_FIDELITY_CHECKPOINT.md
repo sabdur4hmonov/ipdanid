@@ -1,3 +1,5 @@
+> Active checkpoint: REGION_ALIGNMENT_CHECKPOINT.md. Earlier proportional-band facial percentages below are historical, superseded as anatomical improvement claims. Use the corrected remeasurement and active next task there. Historical sequences remain unchanged.
+
 # Portrait fidelity checkpoint — 2026-10-04
 
 Later background-only comparison: see BACKGROUND_CHECKPOINT.md. Control reproduces all three hashes; simplified background does not improve nose/mouth/right-eye agreement. The selected contour guide below remains unchanged. Quality acceptance stays OPEN.

@@ -1,5 +1,7 @@
 # External dependencies
 
+Region alignment/variant audit completed locally; see REGION_ALIGNMENT_CHECKPOINT.md. The corrected diagnostic basis reaches repeat106/incident degree288, exceeding the unchanged v5 provisional32/160 guards; its adapter refusal is an engineering constraint, not a missing credential. Next: a separately versioned guarded fresh basis. Original photograph is available. Nose/lips, varied portraits, physical wrapping/tension and native runtime acceptance remain open. No external input is required for this next local task.
+
 Local background controls and exact-photo preprocessing comparisons need no provider credentials or new user input. No automatic separation claim is made. Physical materials and real Android access will be requested when those ordered acceptance tasks become actionable; iOS remains separately tracked. The weak nose/lips are engineering work, not a missing credential.
 
 The latest source is available and processed-target preservation is measured. Weak nose/mouth reconstruction is an engineering limitation with a concrete next experiment, not a missing user input. Reversible /5 variants are optical simulations; nail loading, material opacity, physical assembly and Android runtime remain unverified. No merchant/signing/publication input is needed for the next local quality experiment.

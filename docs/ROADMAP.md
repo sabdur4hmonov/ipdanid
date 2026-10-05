@@ -2,14 +2,14 @@
 
 Active priority order (user update, 2026-10-04):
 
-1. Demonstrate recognizable facial detail on this exact photograph and a varied portrait set. Current work: reversible local background correction and a controlled preprocessing comparison. Continue nose/lip reconstruction independently; quality acceptance stays OPEN.
+1. Demonstrate recognizable facial detail on this exact photograph and a varied portrait set. Current checkpoint: corrected manual feature coordinates, audited historical regions and genuine preset convergence. Next: version a guarded fresh continuous basis, then independently test multiscale local contrast; quality acceptance stays OPEN.
 2. Validate an actual physical assembly: measured thread use, nail wrapping capacity and tension. Request materials when the chosen digital guide is ready for that trial; simulation and buildability checks alone are not validation.
 3. Test performance, persistence, offline exports and audio on a real Android device. Track iOS build/device/signing requirements separately.
 4. Improve long-guide usability while retaining every ordered assembly step and segment transition.
 5. Connect the tested customer session/code/progress/support flows, then finish commerce and admin.
 6. Continue the other engines and every remaining feature family below.
 
-These acceptance priorities overlay the dependency graph; they remove no scope. Continue independent local work when physical, device or provider tasks are blocked. Preserve commits 3ce5b0b/e6d7b49, old sequences and reports. See BACKGROUND_CHECKPOINT.md and PORTRAIT_FIDELITY_CHECKPOINT.md for evidence and exact resume commands.
+These acceptance priorities overlay the dependency graph; they remove no scope. Continue independent local work when physical, device or provider tasks are blocked. Preserve commits 3ce5b0b/e6d7b49, old sequences and reports. Read REGION_ALIGNMENT_CHECKPOINT.md first for the active resume task; earlier BACKGROUND_CHECKPOINT.md and PORTRAIT_FIDELITY_CHECKPOINT.md remain historical evidence.
 
 The complete attached master spec is the implementation contract. Research is evidence, not instructions; competitor marketing is not validation. No milestone reduces the final scope. Status is maintained in FEATURE_MATRIX and STATUS.
 

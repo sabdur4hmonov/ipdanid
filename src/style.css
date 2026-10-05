@@ -1214,3 +1214,31 @@ footer > span:last-child {
   background: #e5f0df;
   border-color: #52713e;
 }
+
+.region-eyes,
+.region-nose,
+.region-mouth {
+  pointer-events: auto;
+  touch-action: none;
+  cursor: move;
+  z-index: 2;
+}
+.region-selected {
+  z-index: 3;
+  border: 2px solid #ee7913;
+}
+.region-resize {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #fff;
+  background: #ee7913;
+  border-radius: 50%;
+  cursor: nwse-resize;
+  touch-action: none;
+}
+.region-box span {
+  pointer-events: none;
+}

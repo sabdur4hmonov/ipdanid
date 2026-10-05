@@ -1,4 +1,18 @@
-## Current checkpoint: optional photo guidance and reversible local background handling — 2026-10-05
+## Current checkpoint: portrait region alignment and variant audit — 2026-10-05
+
+Read REGION_ALIGNMENT_CHECKPOINT.md first. It supersedes all previous next-task commands and proportional-band facial-improvement claims below. Commits 3ce5b0b/e6d7b49/3519c4b, saved projects and immutable sequences remain preserved. No push/publication/photo upload.
+
+Independent eye/nose/mouth boxes now share an explicit processed-target pixel-center reference with overlays, both engines, measurements and exported comparison crops. Mouse/touch move/resize and bounded numerical correction work in UZ/RU/EN. Defaults remain clearly labeled proportional estimates. Fresh variants snapshot regions/reference; legacy guides preserve their hashes. Crop/photo/aspect changes clear manual corrections. Job IDs invalidate cancelled Worker results through asynchronous validation; one ID-based transaction appends/trims/selects variants. Preview pixels, metrics, saving and export selection are tested together.
+
+Actual normal website audit: Balanced 1400 and Detailed 2500 genuinely produce identical physical paths and canvas pixels, 1,083 connections / 336.531 m, continuous v4 / default 120 pins/.3 mm/zoom 1. Both plateau before the smaller requested ceiling. Hashes differ because requested budgets are stored. This proves duplicate results are valid under measured settings, but does not recover the screenshots' exact 1,074/~303 m settings. The earlier portrait experiment ran a different profile/crop and v5 engine; Detailed alone does not dispatch it.
+
+Preserved 240-pin/.1 mm target remains byte-identical (5e111…ddf9). Historical 36.8/39.5/31.7% eye/nose/mouth band claims are superseded; corrected-region recalculation of the old v5 versus v4 yields 31.0/48.0/35.4% edge reductions, still not recognizable-feature acceptance. New fresh corrected-region v4 two-stage hash 9bd17…3222: 5,550 connections / 1,077.872 m / 477.872 m additional beyond 600 m stock; 238.9 s total. Eye/lip edge error improves 17.0/8.7%, nose worsens 1.4% versus the preserved v4 on identical pixels. Visually, nose/lips remain indistinct. Quality stays OPEN. The new path exceeds v5's provisional winding guards (repeat 106/incident degree 288), so v5 correctly refuses it. It is a diagnostic, not an accepted physical-trial guide. All old guides remain available; new confirmed progress is zero.
+
+Verification: final production build, 37 tests and 20 browser outcomes pass; offline Worker reproduces the exact corrected sequence; 134 PDF pages/all 5,550 steps verified. Android debug/instrumentation rebuilt, 16 web assets byte-match dist, prior signing certificate retained. APK SHA-256 `46989c0c9bf09532abdd2cf56f4d9f46077f4c946979d7f55bb49800bb003e05`. No native-device/iOS/physical trial.
+
+Exact next task: separately version a fresh continuous basis that enforces existing 32-repeat/160-incident-edge distribution guards during additions/lookahead/refinement, preserving legacy behavior and cancellation. Keep this source/crop/target/materials/corrected regions; evaluate eyes/nose/lips/skin and routing before a multiscale 2/4 px reversible experiment. Do not relax guards or forge old seed parameters. Then varied consented portraits and the full ordered roadmap. Verification/APK facts: VERIFICATION.md. Local report: http://127.0.0.1:5173/output/regions/report.html; website: http://127.0.0.1:5173/.
+
+## Previous checkpoint: optional photo guidance and reversible local background handling — 2026-10-05
 
 Read BACKGROUND_CHECKPOINT.md for exact settings, hashes, paired measurements, rejected trials, verification and the next executable quality task. Commits `3ce5b0b` and `e6d7b49`, original photograph, immutable old guides and output/fidelity/report.html are preserved. No push, publication or external photo upload. The full master roadmap remains in force.
 

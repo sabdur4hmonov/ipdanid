@@ -1,5 +1,18 @@
 import type { Locale } from "./core/types";
 const uz = {
+  requestedStop: "So‘ralgan hisoblash chegarasiga yetdi",
+  estimatedRegions:
+    "Bu zonalar faqat taxmin. Yuz a’zolari avtomatik aniqlanmagan.",
+  manualRegions: "Qo‘lda joylashtirilgan zonalar.",
+  regionEditHint:
+    "Har bir zonani nishonda suring, pastki tutqich bilan o‘lchamini o‘zgartiring yoki sonlarni kiriting. Crop, burilish va nisbat o‘zgarsa, zonalarni qayta tekshiring: qo‘lda tuzatishlar tozalanadi.",
+  resizeRegion: "O‘lchamini o‘zgartirish",
+  resetRegions: "Taxminiy zonalarni tiklash",
+  variantDetails: "Variant ma’lumotlari",
+  requestedConnections: "So‘ralgan maksimal ulanishlar",
+  plateauHint:
+    "Kattaroq hisoblash chegarasi bir xil ip yo‘lini berishi mumkin. Bu qidiruvda foydali ip topilmasa, yangi ulanishlar qo‘shilmaydi.",
+
   photoGuidance:
     "Bitta yuzi aniq ko‘rinadigan tiniq surat tanlang. Oq yoki och, sodda fon afzal, lekin shart emas. Yorug‘lik tekis bo‘lsin; kuchli soya va haddan ortiq yorug‘likdan saqlaning. Ko‘zlar ko‘rinsin, yuz kameraga qarasin. Mavjud suratlar ham mos: davom etishdan oldin natijani tekshiring.",
   backgroundTools: "Fon bilan ishlash",
@@ -222,6 +235,19 @@ const uz = {
 };
 export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
+  requestedStop: "Requested computation ceiling reached",
+  estimatedRegions:
+    "These regions are proportional estimates, not detected facial anatomy.",
+  manualRegions: "Manually positioned regions.",
+  regionEditHint:
+    "Move each box on the target, resize using its bottom handle, or enter coordinates. Crop, rotation or aspect changes clear manual corrections; check the regions again.",
+  resizeRegion: "Resize",
+  resetRegions: "Reset estimated regions",
+  variantDetails: "Variant details",
+  requestedConnections: "Requested maximum connections",
+  plateauHint:
+    "A larger computation ceiling can produce the same path. Connections stop when the current search finds no useful addition.",
+
   photoGuidance:
     "Use a sharp photo with one clearly visible face. Prefer a plain white or light neutral background; it is optional. Use even lighting without strong shadows or overexposure. Keep the eyes visible and face directed toward the camera. Existing photographs are welcome; inspect your result before proceeding.",
   backgroundTools: "Background controls",
@@ -442,6 +468,19 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
+  requestedStop: "Достигнут запрошенный предел вычисления",
+  estimatedRegions:
+    "Зоны приблизительные; черты лица автоматически не определялись.",
+  manualRegions: "Зоны размещены вручную.",
+  regionEditHint:
+    "Перемещайте зоны на цели, меняйте размер нижним маркером или вводите координаты. Смена кадра, поворота или пропорций сбрасывает ручные зоны; проверьте их снова.",
+  resizeRegion: "Изменить размер",
+  resetRegions: "Сбросить приблизительные зоны",
+  variantDetails: "Данные варианта",
+  requestedConnections: "Запрошенный максимум соединений",
+  plateauHint:
+    "Больший предел вычисления может дать тот же путь. Новые соединения не добавляются, если текущий поиск не находит полезного улучшения.",
+
   photoGuidance:
     "Выберите резкое фото с одним хорошо видимым лицом. Предпочтителен однотонный белый или светлый нейтральный фон, но это не обязательно. Используйте ровное освещение без сильных теней и пересвета. Глаза должны быть видны, лицо направлено к камере. Подойдут и имеющиеся фотографии: оцените результат, прежде чем продолжить.",
   backgroundTools: "Настройки фона",

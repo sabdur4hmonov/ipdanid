@@ -26,8 +26,10 @@ import {
   DEFAULT_PORTRAIT,
   processPortrait,
   putRgb,
-  portraitRegions,
+  snapshotPortrait,
 } from "./core/portrait";
+import { RegionEditor } from "./RegionEditor";
+import { appendVariants, GenerationJobs, type Variants } from "./core/variants";
 import { BackgroundEditor } from "./BackgroundEditor";
 import { MAX_LINES } from "./core/limits";
 import { deepFreeze, flatten } from "./core/engine";
@@ -90,13 +92,15 @@ function Supply({
       <p className="fineprint">
         {t("stopReason")}:{" "}
         {t(
-          i.metrics.stoppedReason === "compute-limit"
-            ? "computeLimit"
-            : ["quality-plateau", "no-improvement"].includes(
-                  i.metrics.stoppedReason,
-                )
-              ? "qualityPlateau"
-              : "legacyStop",
+          i.metrics.stoppedReason === "requested"
+            ? "requestedStop"
+            : i.metrics.stoppedReason === "compute-limit"
+              ? "computeLimit"
+              : ["quality-plateau", "no-improvement"].includes(
+                    i.metrics.stoppedReason,
+                  )
+                ? "qualityPlateau"
+                : "legacyStop",
         )}
       </p>
       {i.metrics.refinement?.reason === "compute-limit" && (
@@ -166,11 +170,10 @@ export default function App() {
     "continuous",
   );
   const targetCanvas = useRef<HTMLCanvasElement>(null);
-  const [variants, setVariants] = useState<
-      { instruction: Instruction; name: string; edits: EditParams }[]
-    >([]),
-    [variant, setVariant] = useState(0),
-    [busy, setBusy] = useState(false),
+  const [variantState, setVariantState] = useState<Variants>({ items: [] });
+  const variants = variantState.items;
+  const jobs = useRef(new GenerationJobs());
+  const [busy, setBusy] = useState(false),
     [fraction, setFraction] = useState(0);
   const [projects, setProjects] = useState<Project[]>([]),
     [loaded, setLoaded] = useState(false),
@@ -217,7 +220,9 @@ export default function App() {
     audio = useRef<AudioContext | null>(null),
     gain = useRef<GainNode | null>(null),
     drag = useRef<{ x: number; y: number } | null>(null);
-  const result = variants[variant]?.instruction,
+  const result = variants.find(
+      (v) => v.instruction.id === variantState.selectedId,
+    )?.instruction,
     project = projects.find((p) => p.id === selected && !p.deletedAt),
     instruction = project?.instruction,
     steps = instruction ? flatten(instruction) : [],
@@ -262,6 +267,7 @@ export default function App() {
       })
       .catch((e) => setError(String(e)));
     return () => {
+      jobs.current.cancel();
       worker.current?.terminate();
       window.speechSynthesis?.cancel();
     };
@@ -396,6 +402,7 @@ export default function App() {
     setView(v);
   };
   async function selectPhoto(file: File) {
+    jobs.current.cancel();
     worker.current?.terminate();
     worker.current = null;
     setBusy(false);
@@ -418,6 +425,10 @@ export default function App() {
     label: string,
     isSample: boolean,
   ) {
+    jobs.current.cancel();
+    worker.current?.terminate();
+    worker.current = null;
+    setBusy(false);
     // Keep only four bounded working images in memory, never original photos in storage.
     const c = document.createElement("canvas"),
       ratio = Math.min(1, 1536 / Math.max(source.width, source.height));
@@ -438,12 +449,14 @@ export default function App() {
       ...v,
       backgroundMask: undefined,
       foregroundMask: undefined,
+      regions: undefined,
     }));
     setSample(isSample);
     setEdits(p.edits);
   }
   function switchPhoto(p: PhotoCandidate) {
     if (p.id === photoId) return;
+    jobs.current.cancel();
     worker.current?.terminate();
     worker.current = null;
     setBusy(false);
@@ -455,6 +468,7 @@ export default function App() {
       ...v,
       backgroundMask: undefined,
       foregroundMask: undefined,
+      regions: undefined,
     }));
     setSample(p.sample);
     setEdits({ ...p.edits });
@@ -522,7 +536,9 @@ export default function App() {
     setFraction(0);
     const c = document.createElement("canvas");
     c.width = c.height = 160;
-    const generationPortrait = seed?.params.portrait ?? portrait;
+    const generationPortrait = seed
+      ? structuredClone(seed.params.portrait ?? portrait)
+      : snapshotPortrait(portrait);
     const generationEdits = seed
       ? (variants.find((v) => v.instruction.id === seed.id)?.edits ?? edits)
       : edits;
@@ -540,52 +556,72 @@ export default function App() {
       new URL("./core/generator.worker.ts", import.meta.url),
       { type: "module" },
     );
+    worker.current?.terminate();
     worker.current = w;
+    const jobId = jobs.current.begin();
+    const label = `${photoCandidates.find((p) => p.id === photoId)?.name ?? t("sample")} · ${t(preset as "balanced" | "lighter" | "detailed")}`;
+    const globalLabel = t("globalSolver"),
+      baselineLabel = t("continuousSolver");
+    const currentJob = () =>
+      jobs.current.accepts(jobId) && worker.current === w;
+    const finish = () => {
+      if (!currentJob()) return;
+      w.terminate();
+      worker.current = null;
+      setBusy(false);
+    };
     w.onmessage = async ({ data }) => {
-      if (data.type === "progress") setFraction(data.fraction);
-      else {
-        setBusy(false);
-        w.terminate();
-        worker.current = null;
-        if (data.type === "done") {
-          try {
-            const i = await validateInstruction(data.instruction);
-            const baseline = data.baseline
-              ? await validateInstruction(data.baseline)
-              : undefined;
-            setVariants((v) =>
-              [
-                ...v,
-                ...(baseline
-                  ? [
-                      {
-                        instruction: baseline,
-                        name: t("continuousSolver"),
-                        edits: { ...generationEdits },
-                      },
-                    ]
-                  : []),
-                {
-                  instruction: i,
-                  name: `${photoCandidates.find((p) => p.id === photoId)?.name ?? t("sample")} · ${i.algorithm === "density-optical/5" ? t("globalSolver") : t(preset as "balanced" | "lighter" | "detailed")}`,
-                  edits: { ...generationEdits },
-                },
-              ].slice(-6),
-            );
-            setVariant(Math.min(variants.length + (baseline ? 1 : 0), 5));
-          } catch (e) {
-            setError(String(e));
-          }
-        } else setError(data.message);
+      if (!currentJob() || data.jobId !== jobId) return;
+      if (data.type === "progress") {
+        setFraction(data.fraction);
+        return;
+      }
+      if (data.type !== "done") {
+        setError(data.message);
+        finish();
+        return;
+      }
+      try {
+        const i = await validateInstruction(data.instruction);
+        const baseline = data.baseline
+          ? await validateInstruction(data.baseline)
+          : undefined;
+        if (!currentJob()) return;
+        setVariantState((v) =>
+          appendVariants(v, [
+            ...(baseline
+              ? [
+                  {
+                    instruction: baseline,
+                    name: baselineLabel,
+                    edits: { ...generationEdits },
+                  },
+                ]
+              : []),
+            {
+              instruction: i,
+              name:
+                i.algorithm === "density-optical/5"
+                  ? `${label} · ${globalLabel}`
+                  : label,
+              edits: { ...generationEdits },
+            },
+          ]),
+        );
+      } catch (e) {
+        if (currentJob()) setError(String(e));
+      } finally {
+        finish();
       }
     };
     w.onerror = (e) => {
-      setBusy(false);
-      setError(e.message);
-      w.terminate();
-      worker.current = null;
+      if (currentJob()) {
+        setError(e.message);
+        finish();
+      }
     };
     w.postMessage({
+      jobId,
       pixels,
       resolution: 160,
       profile,
@@ -933,9 +969,13 @@ export default function App() {
                             <span className="fineprint">{t("globalHint")}</span>
                           </label>
                         )}
-                        <div
-                          className="target-frame"
-                          style={{ aspectRatio: aspect }}
+                        <RegionEditor
+                          portrait={portrait}
+                          setPortrait={setPortrait}
+                          image={image}
+                          edits={edits}
+                          aspect={aspect}
+                          t={t}
                         >
                           <canvas
                             ref={targetCanvas}
@@ -943,28 +983,7 @@ export default function App() {
                             height={160}
                             aria-label={t("processedTarget")}
                           />
-                          {portrait.enabled &&
-                            Object.entries(portraitRegions(portrait.face))
-                              .filter(([key]) => key !== "outline")
-                              .map(([key, box]) => (
-                                <div
-                                  key={key}
-                                  className={`region-box region-${key}`}
-                                  style={{
-                                    left: `${box.left * 100}%`,
-                                    top: `${box.top * 100}%`,
-                                    width: `${box.width * 100}%`,
-                                    height: `${box.height * 100}%`,
-                                  }}
-                                >
-                                  <span>
-                                    {t(
-                                      key as "face" | "eyes" | "nose" | "mouth",
-                                    )}
-                                  </span>
-                                </div>
-                              ))}
-                        </div>
+                        </RegionEditor>
                         <p className="fineprint">
                           {t("processedTarget")} · 160 × 160 ·{" "}
                           {t("originalCrop")}
@@ -1353,6 +1372,7 @@ export default function App() {
                         <button
                           className="text-button"
                           onClick={() => {
+                            jobs.current.cancel();
                             worker.current?.terminate();
                             worker.current = null;
                             setBusy(false);
@@ -1411,8 +1431,17 @@ export default function App() {
                         {variants.map((v, j) => (
                           <button
                             key={v.instruction.id}
-                            className={variant === j ? "chip selected" : "chip"}
-                            onClick={() => setVariant(j)}
+                            className={
+                              variantState.selectedId === v.instruction.id
+                                ? "chip selected"
+                                : "chip"
+                            }
+                            onClick={() =>
+                              setVariantState((s) => ({
+                                ...s,
+                                selectedId: v.instruction.id,
+                              }))
+                            }
                           >
                             {v.name} {j + 1}
                           </button>
@@ -1423,6 +1452,34 @@ export default function App() {
                         → {result.metrics.reconstructionMse.toFixed(3)}.{" "}
                         {t("qualityHint")}
                       </p>
+                      <details
+                        className="edits"
+                        data-testid="variant-audit"
+                        data-sequence-hash={result.sequenceHash}
+                      >
+                        <summary>{t("variantDetails")}</summary>
+                        <p>
+                          {t("requestedConnections")}:{" "}
+                          {result.params.requestedLines.toLocaleString(locale)}{" "}
+                          · {result.metrics.lines.toLocaleString(locale)}{" "}
+                          {t("lines")}
+                        </p>
+                        <p>
+                          {result.algorithm} · {result.profile.pins.length} pins
+                          · {result.profile.threadMm} mm ·{" "}
+                          {result.profile.widthMm} × {result.profile.heightMm}{" "}
+                          mm
+                        </p>
+                        <p className="fineprint">{t("plateauHint")}</p>
+                        <p
+                          className="fineprint"
+                          style={{ overflowWrap: "anywhere" }}
+                        >
+                          Target: {result.imageHash}
+                          <br />
+                          Sequence: {result.sequenceHash}
+                        </p>
+                      </details>
                       <Supply instruction={result} locale={locale} />
                       {image &&
                         result.params.portrait?.enabled &&

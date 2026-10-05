@@ -3,12 +3,16 @@ import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 const variant = process.argv[2] ?? "distributed-contours",
   folder = process.argv[3] ?? "fidelity";
 const basePath = `output/${folder}`,
-  outputPrefix = folder === "background" ? `${variant}-` : "";
+  outputPrefix = ["background", "regions"].includes(folder)
+    ? `${variant}-`
+    : "";
 const baselineData = JSON.parse(
     readFileSync(
-      folder === "background"
-        ? `${basePath}/${variant}-stage2.json`
-        : `${basePath}/baseline.json`,
+      folder === "regions"
+        ? `${basePath}/${variant}-stage1.json`
+        : folder === "background"
+          ? `${basePath}/${variant}-stage2.json`
+          : `${basePath}/baseline.json`,
       "utf8",
     ),
   ),
@@ -40,7 +44,7 @@ try {
   await page.context().setOffline(true);
   const started = Date.now(),
     data = await page.evaluate(
-      async ({ baseline, pixels, workerFile }) => {
+      async ({ baseline, pixels, workerFile, strategy }) => {
         const bytes = new Uint8Array(pixels),
           digest = await crypto.subtle.digest("SHA-256", bytes),
           targetHash = [...new Uint8Array(digest)]
@@ -61,6 +65,12 @@ try {
             reject(new Error(e.message));
           };
           w.onmessage = ({ data }) => {
+            if (data.jobId !== 719) {
+              clearTimeout(timer);
+              w.terminate();
+              reject(new Error("Worker job association mismatch"));
+              return;
+            }
             if (data.type === "progress") {
               const step = Math.floor(data.fraction * 10);
               if (last !== step) {
@@ -76,6 +86,7 @@ try {
             }
           };
           w.postMessage({
+            jobId: 719,
             pixels: bytes,
             resolution: baseline.params.resolution,
             profile: baseline.profile,
@@ -83,11 +94,16 @@ try {
             portrait: baseline.params.portrait,
             mode: baseline.params.mode,
             seed: baseline,
-            strategy: "global",
+            strategy,
           });
         });
       },
-      { baseline, pixels, workerFile },
+      {
+        baseline,
+        pixels,
+        workerFile,
+        strategy: folder === "regions" ? "continuous" : "global",
+      },
     );
   expect(data.instruction.sequenceHash).toBe(expected.sequenceHash);
   expect(data.instruction.segments).toEqual(expected.segments);
@@ -97,6 +113,8 @@ try {
   );
   const evidence = {
     offline: data.offline,
+    jobId: data.jobId,
+    strategy: folder === "regions" ? "continuous" : "global",
     workerFile,
     targetHash: data.targetHash,
     sequenceHash: data.instruction.sequenceHash,
