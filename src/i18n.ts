@@ -30,6 +30,10 @@ const uz = {
   undoBrush: "Oxirgi cho‘tkani qaytarish",
   resetBackground: "Fon belgilarini tozalash",
   portraitSolver: "Portret hisoblash usuli",
+  guardedSolver: "Cheklangan uzluksiz yo‘l (v6)",
+  multiscaleSolver: "Ko‘p masshtabli kontrast (v7, tajriba)",
+  guardHint:
+    "Har bir xorda ko‘pi bilan 32 marta, har bir mixga 160 ta ulanish. Bu chegaralar vaqtinchalik, fizik sig‘im tekshirilmagan.",
   continuousSolver: "Uzluksiz ip yo‘li",
   globalSolver: "Global ip joylashuvi (tajriba)",
   globalHint:
@@ -265,6 +269,10 @@ const en: Record<Key, string> = {
   undoBrush: "Undo last brush",
   resetBackground: "Clear background selections",
   portraitSolver: "Portrait optimization",
+  guardedSolver: "Guarded continuous path (v6)",
+  multiscaleSolver: "Multiscale contrast (v7, experimental)",
+  guardHint:
+    "At most 32 traversals per chord and 160 incident connections per nail. These provisional limits are not physically validated capacities.",
   continuousSolver: "Continuous path",
   globalSolver: "Global strand placement (experimental)",
   globalHint:
@@ -498,6 +506,10 @@ const ru: Record<Key, string> = {
   undoBrush: "Отменить последнюю кисть",
   resetBackground: "Очистить выделение фона",
   portraitSolver: "Оптимизация портрета",
+  guardedSolver: "Непрерывный путь с ограничениями (v6)",
+  multiscaleSolver: "Многомасштабный контраст (v7, эксперимент)",
+  guardHint:
+    "Не более 32 проходов по хорде и 160 соединений на гвоздь. Эти временные ограничения не подтверждают физическую вместимость.",
   continuousSolver: "Непрерывный путь",
   globalSolver: "Глобальное размещение нитей (эксперимент)",
   globalHint:

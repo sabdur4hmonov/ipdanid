@@ -35,6 +35,9 @@ public class PackagedAssetsTest {
                 try (InputStream input = context.getAssets().open("public/assets/" + asset)) {
                     String worker = new String(read(input), StandardCharsets.UTF_8);
                     assertTrue("Portrait algorithm must be current", worker.contains("greedy-optical/4"));
+                    assertTrue("Guarded continuous basis must be packaged", worker.contains("continuous-guarded/6"));
+                    assertTrue("Multiscale portrait fitting must be packaged", worker.contains("density-multiscale/7"));
+                    assertTrue("Versioned distribution and contrast settings must be packaged", worker.contains("pairLimit") && worker.contains("pinDegreeLimit") && worker.contains("contrastScales"));
                     assertTrue("Supply estimate policy must be packaged", worker.contains("stockPolicy"));
                     assertTrue("Immutable refinement lineage must be packaged", worker.contains("parentSequenceHash"));
                 }

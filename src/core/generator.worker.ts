@@ -8,8 +8,10 @@ self.onmessage = async ({ data }) => {
       onProgress: (fraction: number) =>
         self.postMessage({ type: "progress", jobId: data.jobId, fraction }),
     };
+    options.guarded =
+      data.strategy === "guarded" || data.strategy === "multiscale";
     let baseline;
-    if (data.strategy === "global" && !data.seed) {
+    if (["global", "multiscale"].includes(data.strategy) && !data.seed) {
       baseline = await generate({
         ...options,
         lines: Math.max(
@@ -30,9 +32,15 @@ self.onmessage = async ({ data }) => {
           fraction: 0.5 + fraction * 0.5,
         });
     }
-    const instruction = await (
-      data.strategy === "global" ? generateDensity : generate
-    )(options);
+    const instruction = ["global", "multiscale"].includes(data.strategy)
+      ? await generateDensity(options, {
+          edgeWeight:
+            data.seed?.params.optimization?.edgeWeight ??
+            (data.strategy === "multiscale" ? 2 : 1),
+          sweeps: data.seed?.params.optimization?.sweeps ?? 8,
+          multiscale: data.strategy === "multiscale",
+        })
+      : await generate(options);
     self.postMessage({
       type: "done",
       jobId: data.jobId,

@@ -1,3 +1,19 @@
+# Guarded distribution verification — 2026-10-05
+
+Final strict TypeScript/Vite build succeeds (worker generator.worker-BWVa-Dh8.js). Existing PDF chunk-size and mixed dynamic/static validation-import notices are nonfatal. Final 40-test regression suite (139.5 s) and 24 desktop/Pixel-browser outcomes (6.7 minutes) pass. New tests cover traversal direction/segment sharing, combined lookahead limits, net replacement deltas, missing guard metadata, exact RGB raster error, all-route multiscale objective, zero-stock estimates, seed immutability,cancellation and a legacy-v4 hash fixture obtained from real6c128d2 source. Browser tests run actual v6/v7 Workers, cancel/retry,switch/save/resume/offline PDF with progress0 and retain prior touch/regions/localization/job-association tests.
+
+Production offline Worker job 719 reproduces selected hash 6a6683c9…dd6fca exactly:98.0 s wall/97.15 s solver replay of the fit. Every image in the report loads; all four report PNGs have exact browser-preview RGBA pixels. Production guide import, reused regions/exact target and offline instruction equality/progress0 pass without page errors. The report is open in the in-app browser. Browser viewport checks are Windows execution, not Android devices.
+
+All 118 basis PDF pages and 93 diagnostic pages rendered. Digital extraction verifies all 4865+3777=8642 ordered steps, matching hashes and confirmed 0. Contact sheets reviewed, plus readable cover/template/first/last instruction pages. Dense 240-pin template labels still require real print legibility checks; no printer/physical assembly evidence. Start/finish knots and every routing connection are explicit in the complete guides.
+
+Android debug/instrumentation compilation succeeds (4m9s);16 packaged assets match dist byte-for-byte, no stale compiled assets, current6/7/contrast/guard markers present. APK **336cc3ba3d0cca77f4670bab17909ebba12dccbb1bbf77b4359eddd691a79995**, 5,787,132 bytes, output/mobile/ip-rasm-debug.apk. Existing signing certificate remains8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90. Prior region APK/evidence archived as ip-rasm-regions-debug.apk/build-evidence-regions.json without overwrite. No device,emulator,iOS,physical or production execution. Earlier guides/APKs remain preserved.
+
+Legacy v4 exact-source replay fixture hashc0ed28ac…819f29 matches current default implementation; exact-photo v5 replay still matches98e1b615…ffa6. Evidence: output/guarded/legacy-v4-replay.json,legacy-v5-replay.json,experiment.json,measurements.json,assessment.md,report.html,multiscale-2-worker-evidence.json,browser-evidence.json,*-guide.{json,txt,png,pdf},*-pdf-evidence.json,apk-signing-evidence.json; output/mobile/build-evidence.json. Personal evidence remains ignored by Git.
+
+Build reproduction uses existing JDK21 under tmp/toolchains, SDK C:/Users/user/AppData/Local/Android/Sdk, GRADLE_USER_HOME=(Resolve-Path tmp/gradle-cache).Path and ANDROID_USER_HOME=C:/Users/user/.android. npm run build → npx cap sync → android/gradlew.bat -p android --offline --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest → bundled Python -X utf8 scripts/verify-apk.py. On this host native/tsx operations need unsandboxed OS/SDK reads. Preserve the signing identity; never reset the keystore or claim compiled instrumentation was device-executed.
+
+Historical evidence below is preserved. Active resume: STRAND_DISTRIBUTION_CHECKPOINT.md.
+
 ## Region alignment / variant audit verification — 2026-10-05
 
 Active resume: REGION_ALIGNMENT_CHECKPOINT.md. Old proportional-band facial-improvement percentages below are historical and superseded by the corrected-region audit. Existing sequence JSON and commits remain unchanged; original report HTML is backed up before adding an audit notice.

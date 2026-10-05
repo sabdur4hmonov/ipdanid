@@ -1,3 +1,4 @@
+import { Distribution } from "./distribution";
 import type { Instruction, MaterialProfile, Segment, Step } from "./types";
 import { strandFootprint, rasterSequence, type Footprint } from "./optical";
 import { MAX_LINES, MAX_FOOTPRINT_BYTES } from "./limits";
@@ -69,6 +70,7 @@ export interface GenerateOptions {
   seed?: Instruction;
   onProgress?: (fraction: number) => void;
   cancelled?: () => boolean;
+  guarded?: boolean;
 }
 export async function generate(o: GenerateOptions): Promise<Instruction> {
   const started = performance.now(),
@@ -109,7 +111,8 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
   const portrait = o.portrait?.enabled ? o.portrait : undefined;
   if (
     o.seed &&
-    (o.seed.algorithm !== "greedy-optical/4" ||
+    (o.seed.algorithm !==
+      (o.guarded ? "continuous-guarded/6" : "greedy-optical/4") ||
       !portrait ||
       o.mode === "color" ||
       o.seed.imageHash !== (await hash(o.pixels)) ||
@@ -120,6 +123,15 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
     throw new Error(
       "Continuation requires the same portrait target and materials",
     );
+  const distribution = o.guarded
+    ? new Distribution(p.pins.length, o.seed?.segments)
+    : undefined;
+  if (o.guarded && o.seed) {
+    const { validateInstruction } = await import("./validation");
+    await validateInstruction(o.seed);
+    if (o.lines < o.seed.metrics.lines)
+      throw new Error("Continuation ceiling is below the existing sequence");
+  }
   const base = rgb(p.baseColor),
     target = Float32Array.from(o.pixels, (x) => x / 255),
     rendered = Float32Array.from({ length: n * n * 3 }, (_, k) => base[k % 3]);
@@ -326,7 +338,12 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
     const choices: Choice[] = [];
     for (let to = 0; to < p.pins.length; to++) {
       check();
-      if (to === previous || !allowed(from, to)) continue;
+      if (
+        to === previous ||
+        !allowed(from, to) ||
+        (distribution && !distribution.canChange([[from, to]]))
+      )
+        continue;
       const f = footprint(from, to);
       choices.push({ to, gain: score(f, ink), f });
     }
@@ -366,6 +383,9 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
           1000) *
           (1 + p.wasteFraction) +
         (path.length === 1 ? 0.5 : 0);
+      if (distribution && !distribution.canChange([[from, choice.to]]))
+        throw new Error("Exceeded provisional winding guards");
+      distribution?.apply([[from, choice.to]]);
       apply(choice.f, ink);
       path.push(choice.to);
       meters += length;
@@ -389,7 +409,13 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
         if (path.length + 1 <= budget)
           for (const bridge of choices.slice(0, 8)) {
             apply(bridge.f, ink);
-            const second = scan(bridge.to, from, ink)[0];
+            distribution?.apply([[from, bridge.to]]);
+            let second: Choice | undefined;
+            try {
+              second = scan(bridge.to, from, ink)[0];
+            } finally {
+              distribution?.apply([], [[from, bridge.to]]);
+            }
             if (second && bridge.gain + second.gain > pairGain) {
               pair = [bridge, second];
               pairGain = bridge.gain + second.gain;
@@ -448,6 +474,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
       allowed,
       check,
       startAt: o.seed?.metrics.refinement?.nextAt,
+      distribution,
       onProgress: (f) => o.onProgress?.(0.8 + f * 0.19),
     });
     coarseRendered.fill(0);
@@ -475,7 +502,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: "greedy-optical/4",
+    algorithm: o.guarded ? "continuous-guarded/6" : "greedy-optical/4",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -494,7 +521,12 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
           }
         : {}),
       ...(portrait ? { portrait: structuredClone(portrait) } : {}),
-      optimization: { lookahead: 8, coarseScale, minimumRelativeGain },
+      optimization: {
+        lookahead: 8,
+        coarseScale,
+        minimumRelativeGain,
+        ...(o.guarded ? { pairLimit: 32, pinDegreeLimit: 160 } : {}),
+      },
     },
     metrics: {
       baselineMse,

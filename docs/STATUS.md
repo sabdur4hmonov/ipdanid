@@ -1,3 +1,15 @@
+## Active checkpoint: guarded distribution and multiscale portrait contrast — 2026-10-05
+
+Read STRAND_DISTRIBUTION_CHECKPOINT.md first. This increment follows6c128d2 and preserves all prior commits/projects/sequences/diagnostics. Fresh continuous-guarded/6 enforces32 undirected chord traversals and160 incident connections per nail during additions, paired lookahead and net two-edge refinement. Independent import/distribution checks include all segments. These are provisional safeguards, not physical nail capacities.
+
+Same original/crop/materials/corrected regions and exact target5e111…ddf9. Fresh/refined feasible basis4865 connections/1049.952491 m,max32/142. Separately versioned density-multiscale/7 fits real1/2/4 px contrast and includes every routing edge in the objective,render,degrees and length. Two trials are retained. Weight2 diagnostic6a6683c9…dd6fca:3777 connections incl.54 routing,1014.132460 m,414.132460 m beyond600 m stock,max32/158;193.2 s fit,656.7 s including its fresh basis/refinement. Every new guide starts at confirmed0. No old high-degree seed was admitted or guard relaxed.
+
+Visual assessment: eye/lip/jaw contours improve versus feasible v6, but nose and lip separation remain weak and cross-face texture persists. Global RGB MSE worsens; nose RGB is1.2% worse than prior guarded v5 despite1.7% better nose gradient error.1593 chords exceed300 mm. Portrait/varied-photo/physical/device/production acceptance remains OPEN. The website exposes separate UZ/RU/EN v6/v7 choices; v7 defaults to diagnostic weight2 and continuations retain recorded objective settings. All legacy guides remain immutable.
+
+Verification: strict production build,40 unit/domain/PDF tests and24 desktop/Pixel-browser checks pass. Offline production Worker matches the exact selected sequence; all211 PDF pages/all8642 steps verified. Android rebuilt; all16 assets byte-match dist and the signing certificate is preserved. APK SHA256 336cc3ba3d0cca77f4670bab17909ebba12dccbb1bbf77b4359eddd691a79995. Final exact-photo Worker/export/APK evidence is recorded in STRAND_DISTRIBUTION_CHECKPOINT.md and VERIFICATION.md. Local report: http://127.0.0.1:5173/output/guarded/report.html; website: http://127.0.0.1:5173/.
+
+Exact next task: a separately labeled240-pin half-spacing circle rotation(0.75°) experiment with unchanged target/materials and32/160 guards; compare angular chord sampling before considering extra pins or other real materials. Keep quality open, record layout coordinates, generate a new basis and progress0, preserve all existing physical templates. This is a hypothesis, not a promised improvement. Then the full ordered roadmap below. No external input is needed for that next local experiment; no background execution is promised. No push/publication/photo upload.
+
 ## Current checkpoint: portrait region alignment and variant audit — 2026-10-05
 
 Read REGION_ALIGNMENT_CHECKPOINT.md first. It supersedes all previous next-task commands and proportional-band facial-improvement claims below. Commits 3ce5b0b/e6d7b49/3519c4b, saved projects and immutable sequences remain preserved. No push/publication/photo upload.

@@ -1,3 +1,4 @@
+import type { Distribution } from "./distribution";
 import type { MaterialProfile } from "./types";
 import type { Footprint } from "./optical";
 
@@ -18,6 +19,7 @@ export async function refinePath(o: {
   check: () => void;
   onProgress?: (p: number) => void;
   startAt?: number;
+  distribution?: Distribution;
 }) {
   const {
     path,
@@ -185,7 +187,18 @@ export async function refinePath(o: {
           pin === path[at + 2] ||
           a === c ||
           !allowed(a, pin) ||
-          !allowed(pin, c)
+          !allowed(pin, c) ||
+          (o.distribution &&
+            !o.distribution.canChange(
+              [
+                [a, pin],
+                [pin, c],
+              ],
+              [
+                [a, b],
+                [b, c],
+              ],
+            ))
         )
           continue;
         evaluations++;
@@ -197,6 +210,16 @@ export async function refinePath(o: {
         }
       }
       if (best !== b) {
+        o.distribution?.apply(
+          [
+            [a, best],
+            [best, c],
+          ],
+          [
+            [a, b],
+            [b, c],
+          ],
+        );
         evaluate(oldA, oldB, footprint(a, best), footprint(best, c), true);
         path[at] = best;
         changed++;

@@ -68,7 +68,9 @@ export interface Instruction {
     | "greedy-optical/2"
     | "greedy-optical/3"
     | "greedy-optical/4"
-    | "density-optical/5";
+    | "density-optical/5"
+    | "continuous-guarded/6"
+    | "density-multiscale/7";
   id: string;
   createdAt: string;
   imageHash: string;
@@ -89,6 +91,7 @@ export interface Instruction {
       overshoot?: "target-luminance-v1";
       pairLimit?: 32;
       pinDegreeLimit?: 160;
+      contrastScales?: [1, 2, 4];
       edgeWeight?: number;
       sweeps?: number;
       lookahead: number;

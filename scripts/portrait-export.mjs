@@ -1,8 +1,15 @@
 import { chromium } from "@playwright/test";
-import { writeFileSync } from "node:fs";
+import { writeFileSync, existsSync } from "node:fs";
 const prefix = process.argv[2] ?? "continued",
   folder = process.argv[3] ?? "portrait",
   browser = await chromium.launch({ headless: true });
+if (
+  folder === "guarded" &&
+  existsSync(`output/${folder}/${prefix}-guide.json`)
+) {
+  await browser.close();
+  throw new Error("Preserve completed immutable guide export");
+}
 try {
   const page = await browser.newPage();
   await page.route("**/@vite/client", (route) => route.abort());
@@ -24,13 +31,15 @@ try {
         ...source,
         id: crypto.randomUUID(),
         name:
-          folder === "regions"
-            ? `Corrected regions — ${prefix} (quality unaccepted)`
-            : folder === "background"
-              ? `Background experiment — ${prefix} (quality unaccepted)`
-              : instruction.algorithm === "density-optical/5"
-                ? "Global contour portrait variant"
-                : `Portrait refinement stage ${instruction.params.refinementStage ?? 1}`,
+          folder === "guarded"
+            ? `Guarded distribution — ${prefix} (quality unaccepted)`
+            : folder === "regions"
+              ? `Corrected regions — ${prefix} (quality unaccepted)`
+              : folder === "background"
+                ? `Background experiment — ${prefix} (quality unaccepted)`
+                : instruction.algorithm === "density-optical/5"
+                  ? "Global contour portrait variant"
+                  : `Portrait refinement stage ${instruction.params.refinementStage ?? 1}`,
         instruction,
         progress: progressFor(instruction),
       };

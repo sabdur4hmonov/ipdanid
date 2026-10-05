@@ -11,12 +11,16 @@ import {
 import { MAX_FOOTPRINT_BYTES, MAX_LINES } from "./limits";
 import type { Instruction } from "./types";
 import { validateInstruction } from "./validation";
+import { PAIR_LIMIT, INCIDENT_LIMIT } from "./distribution";
 
 // Reversible integer strand counts, evaluated against the actual optical mean-RGB raster.
 // The chosen multigraph is connected and made Eulerian with explicit, measured routing strands.
 export async function generateDensity(
   o: GenerateOptions,
-  tuning = { edgeWeight: 1, sweeps: 8 },
+  tuning: { edgeWeight: number; sweeps: number; multiscale?: boolean } = {
+    edgeWeight: 1,
+    sweeps: 8,
+  },
 ): Promise<Instruction> {
   const started = performance.now(),
     { resolution: n, profile: p } = o,
@@ -123,14 +127,37 @@ export async function generateDensity(
   const neighbors = (i: number, visit: (j: number, w: number) => void) => {
     const x = i % n,
       y = Math.floor(i / n);
-    if (x && mask[i - 1])
-      visit(i - 1, (weight[i] + weight[i - 1]) * 0.5 * tuning.edgeWeight);
-    if (x < n - 1 && mask[i + 1])
-      visit(i + 1, (weight[i] + weight[i + 1]) * 0.5 * tuning.edgeWeight);
-    if (y && mask[i - n])
-      visit(i - n, (weight[i] + weight[i - n]) * 0.5 * tuning.edgeWeight);
-    if (y < n - 1 && mask[i + n])
-      visit(i + n, (weight[i] + weight[i + n]) * 0.5 * tuning.edgeWeight);
+    if (tuning.multiscale) {
+      // Symmetric differences at 1/2/4 px. Equal derivative units (1 / distance²).
+      // Every affected pair is evaluated once by gain(), including pixels outside the footprint.
+      for (const step of [1, 2, 4]) {
+        for (const [dx, dy] of [
+          [-step, 0],
+          [step, 0],
+          [0, -step],
+          [0, step],
+        ]) {
+          const xx = x + dx,
+            yy = y + dy,
+            j = yy * n + xx;
+          if (xx >= 0 && xx < n && yy >= 0 && yy < n && mask[j])
+            visit(
+              j,
+              ((weight[i] + weight[j]) * 0.5 * tuning.edgeWeight) /
+                (step * step),
+            );
+        }
+      }
+    } else {
+      if (x && mask[i - 1])
+        visit(i - 1, (weight[i] + weight[i - 1]) * 0.5 * tuning.edgeWeight);
+      if (x < n - 1 && mask[i + 1])
+        visit(i + 1, (weight[i] + weight[i + 1]) * 0.5 * tuning.edgeWeight);
+      if (y && mask[i - n])
+        visit(i - n, (weight[i] + weight[i - n]) * 0.5 * tuning.edgeWeight);
+      if (y < n - 1 && mask[i + n])
+        visit(i + n, (weight[i] + weight[i + n]) * 0.5 * tuning.edgeWeight);
+    }
   };
   let objective = 0;
   for (let i = 0; i < size; i++)
@@ -143,8 +170,8 @@ export async function generateDensity(
   const initial = objective,
     counts = new Int32Array(p.pins.length ** 2),
     pinDegree = new Int32Array(p.pins.length),
-    pairLimit = 32,
-    pinDegreeLimit = 160,
+    pairLimit = PAIR_LIMIT,
+    pinDegreeLimit = INCIDENT_LIMIT,
     pairs: [number, number][] = [];
   for (let a = 0; a < p.pins.length; a++)
     for (let b = a + 1; b < p.pins.length; b++)
@@ -492,7 +519,7 @@ export async function generateDensity(
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: "density-optical/5",
+    algorithm: tuning.multiscale ? "density-multiscale/7" : "density-optical/5",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -522,6 +549,9 @@ export async function generateDensity(
         overshoot: "target-luminance-v1",
         pairLimit,
         pinDegreeLimit,
+        ...(tuning.multiscale
+          ? { contrastScales: [1, 2, 4] as [1, 2, 4] }
+          : {}),
       },
     },
     metrics: {

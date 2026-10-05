@@ -1,6 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 export default defineConfig({
+  // Native build caches and private evidence are served on demand, never source watched.
+  server: {
+    watch: {
+      ignored: ["**/tmp/**", "**/output/**", "**/android/**", "**/ios/**"],
+    },
+  },
   plugins: [
     react(),
     {

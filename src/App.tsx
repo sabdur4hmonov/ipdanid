@@ -166,9 +166,9 @@ export default function App() {
     [lines, setLines] = useState(1400),
     [preset, setPreset] = useState("balanced");
   const [portrait, setPortrait] = useState(structuredClone(DEFAULT_PORTRAIT));
-  const [portraitSolver, setPortraitSolver] = useState<"continuous" | "global">(
-    "continuous",
-  );
+  const [portraitSolver, setPortraitSolver] = useState<
+    "continuous" | "global" | "guarded" | "multiscale"
+  >("continuous");
   const targetCanvas = useRef<HTMLCanvasElement>(null);
   const [variantState, setVariantState] = useState<Variants>({ items: [] });
   const variants = variantState.items;
@@ -513,7 +513,10 @@ export default function App() {
       setError(String(e));
     }
   }
-  function generate(seed?: Instruction, strategyOverride?: "global") {
+  function generate(
+    seed?: Instruction,
+    strategyOverride?: "global" | "multiscale",
+  ) {
     if (!image) return;
     let profile;
     try {
@@ -593,7 +596,10 @@ export default function App() {
               ? [
                   {
                     instruction: baseline,
-                    name: baselineLabel,
+                    name:
+                      baseline.algorithm === "continuous-guarded/6"
+                        ? t("guardedSolver")
+                        : baselineLabel,
                     edits: { ...generationEdits },
                   },
                 ]
@@ -601,9 +607,13 @@ export default function App() {
             {
               instruction: i,
               name:
-                i.algorithm === "density-optical/5"
-                  ? `${label} · ${globalLabel}`
-                  : label,
+                i.algorithm === "density-multiscale/7"
+                  ? `${label} · ${t("multiscaleSolver")}`
+                  : i.algorithm === "continuous-guarded/6"
+                    ? `${label} · ${t("guardedSolver")}`
+                    : i.algorithm === "density-optical/5"
+                      ? `${label} · ${globalLabel}`
+                      : label,
               edits: { ...generationEdits },
             },
           ]),
@@ -631,11 +641,15 @@ export default function App() {
       seed,
       strategy:
         strategyOverride ??
-        (seed?.algorithm === "density-optical/5"
-          ? "global"
-          : !seed && generationPortrait.enabled && mode !== "color"
-            ? portraitSolver
-            : "continuous"),
+        (seed?.algorithm === "density-multiscale/7"
+          ? "multiscale"
+          : seed?.algorithm === "continuous-guarded/6"
+            ? "guarded"
+            : seed?.algorithm === "density-optical/5"
+              ? "global"
+              : !seed && generationPortrait.enabled && mode !== "color"
+                ? portraitSolver
+                : "continuous"),
     });
   }
   function open(p: Project) {
@@ -955,18 +969,30 @@ export default function App() {
                               value={portraitSolver}
                               onChange={(e) =>
                                 setPortraitSolver(
-                                  e.target.value as "continuous" | "global",
+                                  e.target.value as
+                                    | "continuous"
+                                    | "global"
+                                    | "guarded"
+                                    | "multiscale",
                                 )
                               }
                             >
                               <option value="continuous">
                                 {t("continuousSolver")}
                               </option>
+                              <option value="guarded">
+                                {t("guardedSolver")}
+                              </option>
+                              <option value="multiscale">
+                                {t("multiscaleSolver")}
+                              </option>
                               <option value="global">
                                 {t("globalSolver")}
                               </option>
                             </select>
-                            <span className="fineprint">{t("globalHint")}</span>
+                            <span className="fineprint">
+                              {t("globalHint")} {t("guardHint")}
+                            </span>
                           </label>
                         )}
                         <RegionEditor
@@ -1484,15 +1510,31 @@ export default function App() {
                       {image &&
                         result.params.portrait?.enabled &&
                         result.params.mode !== "color" &&
-                        (result.algorithm !== "density-optical/5" ||
+                        (![
+                          "density-optical/5",
+                          "density-multiscale/7",
+                        ].includes(result.algorithm) ||
                           result.metrics.stoppedReason === "compute-limit") && (
                           <button
                             className="outline full"
                             disabled={busy}
-                            onClick={() => generate(result, "global")}
+                            onClick={() =>
+                              generate(
+                                result,
+                                [
+                                  "continuous-guarded/6",
+                                  "density-multiscale/7",
+                                ].includes(result.algorithm)
+                                  ? "multiscale"
+                                  : "global",
+                              )
+                            }
                           >
                             {t(
-                              result.algorithm === "density-optical/5"
+                              [
+                                "density-optical/5",
+                                "density-multiscale/7",
+                              ].includes(result.algorithm)
                                 ? "continueGlobal"
                                 : "rerouteGlobal",
                             )}
@@ -2062,9 +2104,15 @@ export default function App() {
                                 portrait: p.instruction.params.portrait,
                                 portraitSolver:
                                   p.instruction.algorithm ===
-                                  "density-optical/5"
-                                    ? "global"
-                                    : "continuous",
+                                  "density-multiscale/7"
+                                    ? "multiscale"
+                                    : p.instruction.algorithm ===
+                                        "continuous-guarded/6"
+                                      ? "guarded"
+                                      : p.instruction.algorithm ===
+                                          "density-optical/5"
+                                        ? "global"
+                                        : "continuous",
                               });
                               nav("create");
                               setNotice(t("reuseNotice"));

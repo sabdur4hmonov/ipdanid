@@ -18,13 +18,13 @@ with zipfile.ZipFile(apk) as archive:
     assert actual == expected, 'Stale or missing compiled assets in APK'
     worker_name = next(n for n in expected if '/generator.worker-' in n)
     worker = archive.read(worker_name).decode()
-    assert all(marker in worker for marker in ['greedy-optical/4', 'density-optical/5', 'stockPolicy', 'parentSequenceHash', 'target-luminance-v1', 'manual-light', 'backgroundMask', 'foregroundMask', 'processed-target/sample-centers-v1', 'jobId']), 'Portrait engine missing'
+    assert all(marker in worker for marker in ['greedy-optical/4', 'density-optical/5', 'continuous-guarded/6', 'density-multiscale/7', 'contrastScales', 'pairLimit', 'pinDegreeLimit', 'stockPolicy', 'parentSequenceHash', 'target-luminance-v1', 'manual-light', 'backgroundMask', 'foregroundMask', 'processed-target/sample-centers-v1', 'jobId']), 'Portrait engine missing'
 out.mkdir(parents=True, exist_ok=True)
 shutil.copy2(apk, out / 'ip-rasm-debug.apk')
 shutil.copy2(test_apk, out / 'ip-rasm-debug-androidTest.apk')
 evidence = dict(builtAt=datetime.now(timezone.utc).isoformat(), debug=True,
     webAssetsVerified=len(files), bytes=apk.stat().st_size,
-    apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5'],
+    apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5','continuous-guarded/6','density-multiscale/7'],
     backgroundSelection="manual 64x64 background and foreground masks",
     regionReference="processed-target/sample-centers-v1", workerJobAssociation=True,
     resolution=160, maxLines=20000, stockPolicy='estimate', instrumentationCompiled=True,

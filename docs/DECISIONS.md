@@ -1,5 +1,13 @@
 # Decisions
 
+2026-10-05 — guarded portrait checkpoint:
+
+- Keep legacy4/5 algorithms and metadata unchanged. New6 is a fresh continuous path with global traversal/incident counters; new7 adds separately versioned real-target1/2/4 px contrast. Reversed chords count twice, interior visits count two incident edges, colors share counters, and refinement checks removal+addition net deltas. Never reinterpret32/160 as physical capacity.
+- Same exact target,manual regions,crop and real configured materials isolate optimization; no background or thickness substitution. V7 route connectors affect its objective and every final metric/export. Stock only estimates supply. Every new project has progress0.
+- Diagnostic weight2 favors measured eye/lip/jaw contours after ordinary/enlarged visual review. Global MSE worsens and nose remains weak; the candidate is not accepted likeness. Weight1 and both v6 stages remain available. V7 UI uses weight2 by default; continuation preserves recorded weight/sweeps.
+- Next hypothesized remedy tests a separately labeled half-spacing angular pin-layout phase, without increasing pins or altering thickness. No optimum, physical trial or broad portrait success is claimed. All remaining roadmap families are retained.
+- Native-cache/private-output directories are excluded from development source watching after observed stale-server CPU activity. Evidence remains locally served on demand.
+
 2026-10-04 (Asia/Tashkent)
 
 - Photo guidance is advisory in UZ/RU/EN, with patterned and existing photos welcome. A plain light background is preferred, never mandatory or a likeness guarantee.

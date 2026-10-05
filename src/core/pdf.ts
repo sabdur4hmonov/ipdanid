@@ -111,7 +111,15 @@ export async function exportPdf(
       height: phs,
       color: hex(i.profile.baseColor),
     });
-    if (["greedy-optical/3", "greedy-optical/4", "density-optical/5"].includes(i.algorithm)) {
+    if (
+      [
+        "greedy-optical/3",
+        "greedy-optical/4",
+        "density-optical/5",
+        "continuous-guarded/6",
+        "density-multiscale/7",
+      ].includes(i.algorithm)
+    ) {
       cover.drawImage(await doc.embedPng(previewPng(i)), {
         x: margin,
         y: bottom,

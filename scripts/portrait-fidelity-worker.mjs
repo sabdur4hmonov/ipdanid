@@ -3,16 +3,18 @@ import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 const variant = process.argv[2] ?? "distributed-contours",
   folder = process.argv[3] ?? "fidelity";
 const basePath = `output/${folder}`,
-  outputPrefix = ["background", "regions"].includes(folder)
+  outputPrefix = ["background", "regions", "guarded"].includes(folder)
     ? `${variant}-`
     : "";
 const baselineData = JSON.parse(
     readFileSync(
-      folder === "regions"
-        ? `${basePath}/${variant}-stage1.json`
-        : folder === "background"
-          ? `${basePath}/${variant}-stage2.json`
-          : `${basePath}/baseline.json`,
+      folder === "guarded"
+        ? `${basePath}/basis-refined.json`
+        : folder === "regions"
+          ? `${basePath}/${variant}-stage1.json`
+          : folder === "background"
+            ? `${basePath}/${variant}-stage2.json`
+            : `${basePath}/baseline.json`,
       "utf8",
     ),
   ),
@@ -102,7 +104,12 @@ try {
         baseline,
         pixels,
         workerFile,
-        strategy: folder === "regions" ? "continuous" : "global",
+        strategy:
+          folder === "guarded"
+            ? "multiscale"
+            : folder === "regions"
+              ? "continuous"
+              : "global",
       },
     );
   expect(data.instruction.sequenceHash).toBe(expected.sequenceHash);
@@ -114,7 +121,12 @@ try {
   const evidence = {
     offline: data.offline,
     jobId: data.jobId,
-    strategy: folder === "regions" ? "continuous" : "global",
+    strategy:
+      folder === "guarded"
+        ? "multiscale"
+        : folder === "regions"
+          ? "continuous"
+          : "global",
     workerFile,
     targetHash: data.targetHash,
     sequenceHash: data.instruction.sequenceHash,

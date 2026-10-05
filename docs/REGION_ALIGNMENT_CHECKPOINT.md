@@ -1,3 +1,5 @@
+Historical checkpoint; active resume is STRAND_DISTRIBUTION_CHECKPOINT.md. Region/variant fixes and every diagnostic below remain preserved; its next guarded-basis task has now been implemented separately.
+
 # Region alignment and variant audit — 2026-10-05
 
 This checkpoint supersedes the previous next-task instructions. Portrait quality acceptance remains **OPEN**. Preserve commits 3ce5b0b, e6d7b49 and 3519c4b, all saved projects and every old sequence. No push, publication or personal photograph upload occurred. The complete master roadmap remains in force.

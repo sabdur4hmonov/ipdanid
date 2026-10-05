@@ -1,3 +1,4 @@
+import { Distribution } from "./distribution";
 import { connectionAllowed } from "./geometry";
 import { deepFreeze, flatten, hash, sequencePayload } from "./engine";
 import type { Instruction, Progress, Project, ProjectFile } from "./types";
@@ -18,12 +19,17 @@ export async function validateInstruction(
       "greedy-optical/3",
       "greedy-optical/4",
       "density-optical/5",
+      "continuous-guarded/6",
+      "density-multiscale/7",
     ].includes(i.algorithm)
   )
     throw new Error("Unsupported instruction version");
-  const qualityFirst = ["greedy-optical/4", "density-optical/5"].includes(
-      i.algorithm,
-    ),
+  const qualityFirst = [
+      "greedy-optical/4",
+      "density-optical/5",
+      "continuous-guarded/6",
+      "density-multiscale/7",
+    ].includes(i.algorithm),
     limit = qualityFirst ? MAX_LINES : 3000;
   if (
     !p ||
@@ -136,8 +142,24 @@ export async function validateInstruction(
     i.params.requestedLines > limit
   )
     throw new Error("Invalid generation parameters");
+  if (["continuous-guarded/6", "density-multiscale/7"].includes(i.algorithm)) {
+    if (
+      i.params.optimization?.pairLimit !== 32 ||
+      i.params.optimization.pinDegreeLimit !== 160
+    )
+      throw new Error("Invalid winding guards");
+    new Distribution(p.pins.length, i.segments);
+    if (
+      i.algorithm === "density-multiscale/7" &&
+      (JSON.stringify(i.params.optimization.contrastScales) !== "[1,2,4]" ||
+        i.params.optimization.kind !== "optical-coordinate" ||
+        i.params.optimization.order !== "dispersed-v1" ||
+        i.params.optimization.overshoot !== "target-luminance-v1")
+    )
+      throw new Error("Invalid multiscale contrast settings");
+  }
   if (qualityFirst) {
-    if (i.algorithm === "density-optical/5") {
+    if (["density-optical/5", "density-multiscale/7"].includes(i.algorithm)) {
       if (i.params.optimization?.pairLimit !== undefined) {
         if (
           i.params.optimization.pairLimit !== 32 ||
@@ -201,7 +223,7 @@ export async function validateInstruction(
     if (
       i.params.stockPolicy !== "estimate" ||
       !i.params.optimization ||
-      (i.algorithm === "greedy-optical/4"
+      (["greedy-optical/4", "continuous-guarded/6"].includes(i.algorithm)
         ? i.params.optimization.lookahead !== 8 ||
           i.params.optimization.coarseScale !== 4 ||
           i.params.optimization.minimumRelativeGain !== 1e-7
@@ -326,15 +348,18 @@ export function mergeProgress(
   return { progress: local, conflict: true };
 }
 export function toTxt(i: Instruction): string {
-  const knots =
-    i.algorithm === "density-optical/5"
-      ? i.segments
-          .map(
-            (s, j) =>
-              `# Segment ${j + 1}: tie ${s.color} to pin ${s.path[0]}; follow its ordered steps without cutting; secure a finishing knot at pin ${s.path.at(-1)}.`,
-          )
-          .join("\n") + "\n"
-      : "";
+  const knots = [
+    "density-optical/5",
+    "continuous-guarded/6",
+    "density-multiscale/7",
+  ].includes(i.algorithm)
+    ? i.segments
+        .map(
+          (s, j) =>
+            `# Segment ${j + 1}: tie ${s.color} to pin ${s.path[0]}; follow its ordered steps without cutting; secure a finishing knot at pin ${s.path.at(-1)}.`,
+        )
+        .join("\n") + "\n"
+    : "";
   return `IP_RASM_TXT_V1\n${JSON.stringify(i)}\n\n${knots}# Ordered steps: step from to color\n${flatten(
     i,
   )
