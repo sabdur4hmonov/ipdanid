@@ -1,10 +1,20 @@
-import { PDFDocument, rgb as pdfRgb, type PDFPage } from "pdf-lib";
+import {
+  PDFDocument,
+  rgb as pdfRgb,
+  type PDFPage,
+  pushGraphicsState,
+  popGraphicsState,
+  rectangle,
+  clip,
+  endPath,
+} from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import type { Instruction, Locale } from "./types";
 import { flatten } from "./engine";
 import { translate } from "../i18n";
 import { validateInstruction } from "./validation";
 import { previewPng } from "./preview-png";
+import { templateLabel } from "./pin-layout";
 const MM = 72 / 25.4;
 export async function exportPdf(
   i: Instruction,
@@ -140,6 +150,63 @@ export async function exportPdf(
       }
   }
   footer(cover);
+  if (i.profile.pinLayout) {
+    const layout = i.profile.pinLayout,
+      p = page(),
+      pin0 = i.profile.pins[0];
+    text(p, t("pdfTemplate"), margin, ph - margin, 18);
+    let yy = ph - margin - 35;
+    for (const line of [
+      t("layoutNotice") + ` ${layout.phaseDegreesClockwise}°`,
+      `${layout.version} / ${layout.templateVersion}; profile ${i.profile.id} v${i.profile.version}`,
+      `TOP = y 0 mm. Origin (0,0) = board top-left. +x right; +y down.`,
+      `Pin 0: x ${(pin0.x * i.profile.widthMm).toFixed(6)} mm; y ${(pin0.y * i.profile.heightMm).toFixed(6)} mm.`,
+      `Nail radius: ${(0.48 * i.profile.widthMm).toFixed(3)} mm. Spacing: ${(360 / i.profile.pins.length).toFixed(3)}°.`,
+      `IDs: 0..${i.profile.pins.length - 1}, clockwise when viewed from the FRONT. Never flip the template.`,
+      `Pin 0 is an orientation reference. Starting knot: pin ${i.segments[0].path[0]}.`,
+      `Use only these tiles for this new board. ${t("confirmed")}: ${confirmed}/${i.metrics.lines}.`,
+      `Photo/crop stays upright. The rotated perimeter does not rotate the photo.`,
+    ])
+      yy = wrapped(p, line, yy - 7);
+    const side = Math.min(pw - 2 * margin, yy - 110),
+      left = margin,
+      bottom = 65;
+    p.drawRectangle({
+      x: left,
+      y: bottom,
+      width: side,
+      height: side,
+      borderWidth: 0.6,
+      borderColor: pdfRgb(0.2, 0.3, 0.2),
+    });
+    p.drawLine({
+      start: { x: left + side / 2, y: bottom + side },
+      end: { x: left + side / 2, y: bottom + side / 2 },
+      thickness: 0.5,
+      color: pdfRgb(0.5, 0.5, 0.5),
+    });
+    text(p, "TOP / y=0", left + side / 2 - 25, bottom + side + 10, 9);
+    text(p, t("orientationMap"), margin, bottom + side + 27, 8);
+    for (const pin of i.profile.pins) {
+      const x = left + pin.x * side,
+        y = bottom + (1 - pin.y) * side;
+      p.drawCircle({
+        x,
+        y,
+        size: pin.id === 0 ? 2.5 : 1,
+        color: pdfRgb(0.1, 0.25, 0.18),
+      });
+      if (pin.id % 30 === 0)
+        text(
+          p,
+          String(pin.id),
+          x + (pin.x > 0.5 ? -22 : 5),
+          y + (pin.y > 0.5 ? 7 : -12),
+          8,
+        );
+    }
+    footer(p);
+  }
   // Tile board coordinates in millimeters with 10 mm overlap. Never scale the board to page.
   const tileW = (pw - 2 * margin) / MM,
     tileH = (ph - 2 * margin - 40) / MM,
@@ -161,23 +228,72 @@ export async function exportPdf(
         ph - margin,
         14,
       );
-      text(p, t("pdfAlign"), margin, ph - margin - 20, 8);
-      for (const pin of i.profile.pins) {
-        const x = pin.x * i.profile.widthMm - ox,
-          y = pin.y * i.profile.heightMm - oy;
-        if (x < 0 || x > tileW || y < 0 || y > tileH) continue;
-        const px = margin + x * MM,
-          py = top - y * MM;
-        p.drawCircle({
-          x: px,
-          y: py,
-          size: (i.profile.shaftMm / 2) * MM,
-          borderWidth: 0.5,
-          borderColor: pdfRgb(0, 0, 0),
-        });
-        text(p, String(pin.id), px + 3, py + 3, 7);
-        if (pin.id === 0) text(p, `0 / ${t("pdfStart")}`, px + 3, py - 8, 5);
-      }
+      text(
+        p,
+        t("pdfAlign") +
+          (i.profile.pinLayout
+            ? ` | TOP y=0; pin 0: +${i.profile.pinLayout.phaseDegreesClockwise}° clockwise`
+            : ""),
+        margin,
+        ph - margin - 20,
+        i.profile.pinLayout ? 6 : 8,
+      );
+      if (i.profile.pinLayout) {
+        // Clip board-space marks/leaders to tile. The 10 mm overlap exceeds a
+        // complete 6 pt label, so every ID has an intact copy on some tile.
+        p.pushOperators(
+          pushGraphicsState(),
+          rectangle(margin, top - tileH * MM, tileW * MM, tileH * MM),
+          clip(),
+          endPath(),
+        );
+        for (const pin of i.profile.pins) {
+          const x = margin + (pin.x * i.profile.widthMm - ox) * MM,
+            y = top - (pin.y * i.profile.heightMm - oy) * MM;
+          const label = templateLabel(i.profile, pin.id),
+            lx = margin + (label.x - ox) * MM,
+            ly = top - (label.y - oy) * MM;
+          p.drawLine({
+            start: { x, y },
+            end: { x: lx, y: ly },
+            thickness: 0.35,
+            color: pdfRgb(0.3, 0.3, 0.3),
+          });
+          p.drawCircle({
+            x,
+            y,
+            size: (i.profile.shaftMm / 2) * MM,
+            borderWidth: 0.5,
+            borderColor: pdfRgb(0, 0, 0),
+            ...(pin.id === 0 ? { color: pdfRgb(0, 0, 0) } : {}),
+          });
+          const labelText = String(pin.id);
+          text(
+            p,
+            labelText,
+            lx - font.widthOfTextAtSize(labelText, 6) / 2,
+            ly - 2,
+            6,
+          );
+        }
+        p.pushOperators(popGraphicsState());
+      } else
+        for (const pin of i.profile.pins) {
+          const x = pin.x * i.profile.widthMm - ox,
+            y = pin.y * i.profile.heightMm - oy;
+          if (x < 0 || x > tileW || y < 0 || y > tileH) continue;
+          const px = margin + x * MM,
+            py = top - y * MM;
+          p.drawCircle({
+            x: px,
+            y: py,
+            size: (i.profile.shaftMm / 2) * MM,
+            borderWidth: 0.5,
+            borderColor: pdfRgb(0, 0, 0),
+          });
+          text(p, String(pin.id), px + 3, py + 3, 7);
+          if (pin.id === 0) text(p, `0 / ${t("pdfStart")}`, px + 3, py - 8, 5);
+        }
       // Board-space 50 mm grid crosses match neighboring overlapping tiles.
       const xMarks = [
         ...Array.from(

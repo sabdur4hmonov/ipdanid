@@ -1,6 +1,14 @@
 import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
-import type { EditParams, Shape, PortraitSettings } from "./core/types";
+import type {
+  EditParams,
+  Shape,
+  PortraitSettings,
+  CircleLayout,
+  Pin,
+} from "./core/types";
+import { validateLayout, withCircleLayout } from "./core/pin-layout";
+import { createProfile } from "./core/geometry";
 import { MAX_LINES } from "./core/limits";
 import { validPortrait } from "./core/portrait";
 export interface MakerSettings {
@@ -15,6 +23,9 @@ export interface MakerSettings {
   edits: EditParams;
   portrait?: PortraitSettings;
   portraitSolver?: "continuous" | "global" | "guarded" | "multiscale";
+  pinLayout?: CircleLayout;
+  // Preserve exact imported coordinates, avoiding cross-runtime trig rounding.
+  pinCoordinates?: Pin[];
 }
 export interface MakerPreset {
   id: string;
@@ -61,6 +72,25 @@ function validate(p: MakerPreset) {
       throw new Error("Invalid preset parameters");
   }
   if (s.portrait) validPortrait(s.portrait);
+  if (s.pinLayout) {
+    validateLayout(s.pinLayout);
+    if (s.shape !== "circle" || s.widthMm !== s.heightMm)
+      throw new Error("Invalid layout board");
+  }
+  if (s.pinCoordinates) {
+    if (
+      !s.pinLayout ||
+      !Array.isArray(s.pinCoordinates) ||
+      s.pinCoordinates.length !== s.pinCount
+    )
+      throw new Error("Invalid saved layout coordinates");
+    const profile = createProfile(s.shape, s.pinCount, s.mode, {
+      widthMm: s.widthMm,
+      heightMm: s.heightMm,
+    });
+    profile.threadMm = s.threadMm;
+    withCircleLayout(profile, s.pinLayout, s.pinCoordinates);
+  }
   if (
     s.portraitSolver &&
     !["continuous", "global", "guarded", "multiscale"].includes(
@@ -74,7 +104,7 @@ export async function readPresets(): Promise<MakerPreset[]> {
     ? (await Preferences.get({ key: KEY })).value
     : localStorage.getItem(KEY);
   if (!raw) return [];
-  if (raw.length > 80000) throw new Error("Preset storage exceeds limit");
+  if (raw.length > 512000) throw new Error("Preset storage exceeds limit");
   const data: MakerPreset[] = JSON.parse(raw);
   if (!Array.isArray(data) || data.length > 20)
     throw new Error("Invalid preset library");
@@ -93,7 +123,7 @@ export async function changePreset(
     if (preset) next.unshift(preset);
     if (next.length > 20) throw new Error("Maximum 20 presets");
     const value = JSON.stringify(next);
-    if (value.length > 80000) throw new Error("Preset storage exceeds limit");
+    if (value.length > 512000) throw new Error("Preset storage exceeds limit");
     if (Capacitor.isNativePlatform())
       await Preferences.set({ key: KEY, value });
     else localStorage.setItem(KEY, value);

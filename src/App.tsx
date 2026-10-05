@@ -22,6 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { createProfile } from "./core/geometry";
+import { withCircleLayout } from "./core/pin-layout";
 import {
   DEFAULT_PORTRAIT,
   processPortrait,
@@ -50,6 +51,8 @@ import {
   type Locale,
   type Project,
   type Shape,
+  type CircleLayout,
+  type Pin,
 } from "./core/types";
 import { spokenPin, translate } from "./i18n";
 import { readProjects, writeProjects, StorageConflictError } from "./storage";
@@ -83,6 +86,12 @@ function Supply({
     shortfall = Math.max(0, i.metrics.estimatedMeters - i.profile.stockMeters);
   return (
     <div className="supply" data-testid="supply">
+      {i.profile.pinLayout && (
+        <p>
+          {t("layoutNotice")} {i.profile.pinLayout.phaseDegreesClockwise}° ·{" "}
+          {i.profile.pinLayout.version}
+        </p>
+      )}
       <p>
         {t("stockMeters")}: {i.profile.stockMeters.toFixed(1)} m ·{" "}
         {t("stockShortfall")}:{" "}
@@ -166,6 +175,8 @@ export default function App() {
     [lines, setLines] = useState(1400),
     [preset, setPreset] = useState("balanced");
   const [portrait, setPortrait] = useState(structuredClone(DEFAULT_PORTRAIT));
+  const [pinLayout, setPinLayout] = useState<CircleLayout>();
+  const [pinCoordinates, setPinCoordinates] = useState<Pin[]>();
   const [portraitSolver, setPortraitSolver] = useState<
     "continuous" | "global" | "guarded" | "multiscale"
   >("continuous");
@@ -482,6 +493,10 @@ export default function App() {
     setPinCount(s.pinCount);
     setThreadMm(s.threadMm);
     setStockMeters(s.stockMeters);
+    setPinLayout(s.pinLayout ? structuredClone(s.pinLayout) : undefined);
+    setPinCoordinates(
+      s.pinCoordinates ? structuredClone(s.pinCoordinates) : undefined,
+    );
     setEdits({ ...s.edits });
     setPortrait(structuredClone(s.portrait ?? DEFAULT_PORTRAIT));
     setPortraitSolver(s.portraitSolver ?? "continuous");
@@ -504,6 +519,11 @@ export default function App() {
           edits: { ...edits },
           portrait: structuredClone(portrait),
           portraitSolver,
+          pinLayout,
+          pinCoordinates:
+            pinLayout && pinCoordinates?.length === pinCount
+              ? pinCoordinates
+              : undefined,
         },
       });
       setMakerPresets(next);
@@ -529,6 +549,12 @@ export default function App() {
       if (!seed) {
         profile.threadMm = threadMm;
         profile.stockMeters = stockMeters;
+        if (pinLayout)
+          profile = withCircleLayout(
+            profile,
+            pinLayout,
+            pinCoordinates?.length === pinCount ? pinCoordinates : undefined,
+          );
       }
     } catch (e) {
       setError(String(e));
@@ -1251,6 +1277,23 @@ export default function App() {
                       </div>
                       <p className="fineprint">{t("presetPrivacy")}</p>
                     </details>
+                    {pinLayout && (
+                      <div className="notice" data-testid="layout-settings">
+                        <p>
+                          {t("layoutNotice")} {pinLayout.phaseDegreesClockwise}°
+                          · {pinLayout.version}
+                        </p>
+                        <button
+                          className="outline"
+                          onClick={() => {
+                            setPinLayout(undefined);
+                            setPinCoordinates(undefined);
+                          }}
+                        >
+                          {t("defaultLayout")}
+                        </button>
+                      </div>
+                    )}
                     <label className="field-label">{t("shape")}</label>
                     <div className="shape-buttons">
                       {(
@@ -1731,6 +1774,13 @@ export default function App() {
                       </label>
                     </div>
                     <p className="fineprint">{t("provisional")}</p>
+                    {instruction.profile.pinLayout && (
+                      <p data-testid="board-layout">
+                        {t("layoutNotice")}{" "}
+                        {instruction.profile.pinLayout.phaseDegreesClockwise}° ·{" "}
+                        {instruction.profile.pinLayout.version}
+                      </p>
+                    )}
                     <code className="hash" data-testid="player-hash">
                       {instruction.sequenceHash}
                     </code>
@@ -2100,6 +2150,10 @@ export default function App() {
                                 pinCount: profile.pins.length,
                                 threadMm: profile.threadMm,
                                 stockMeters: profile.stockMeters,
+                                pinLayout: profile.pinLayout,
+                                pinCoordinates: profile.pinLayout
+                                  ? profile.pins
+                                  : undefined,
                                 edits: p.edits,
                                 portrait: p.instruction.params.portrait,
                                 portraitSolver:

@@ -3,12 +3,14 @@ import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 const variant = process.argv[2] ?? "distributed-contours",
   folder = process.argv[3] ?? "fidelity";
 const basePath = `output/${folder}`,
-  outputPrefix = ["background", "regions", "guarded"].includes(folder)
+  outputPrefix = ["background", "regions", "guarded", "pin-phase"].includes(
+    folder,
+  )
     ? `${variant}-`
     : "";
 const baselineData = JSON.parse(
     readFileSync(
-      folder === "guarded"
+      ["guarded", "pin-phase"].includes(folder)
         ? `${basePath}/basis-refined.json`
         : folder === "regions"
           ? `${basePath}/${variant}-stage1.json`
@@ -104,12 +106,11 @@ try {
         baseline,
         pixels,
         workerFile,
-        strategy:
-          folder === "guarded"
-            ? "multiscale"
-            : folder === "regions"
-              ? "continuous"
-              : "global",
+        strategy: ["guarded", "pin-phase"].includes(folder)
+          ? "multiscale"
+          : folder === "regions"
+            ? "continuous"
+            : "global",
       },
     );
   expect(data.instruction.sequenceHash).toBe(expected.sequenceHash);
@@ -121,12 +122,11 @@ try {
   const evidence = {
     offline: data.offline,
     jobId: data.jobId,
-    strategy:
-      folder === "guarded"
-        ? "multiscale"
-        : folder === "regions"
-          ? "continuous"
-          : "global",
+    strategy: ["guarded", "pin-phase"].includes(folder)
+      ? "multiscale"
+      : folder === "regions"
+        ? "continuous"
+        : "global",
     workerFile,
     targetHash: data.targetHash,
     sequenceHash: data.instruction.sequenceHash,

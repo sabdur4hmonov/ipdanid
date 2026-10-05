@@ -1,5 +1,7 @@
 # Guarded strand distribution and multiscale contrast — 2026-10-05
 
+Historical7118eb1 checkpoint, preserved. The0.75-degree experiment now has a documented INCONCLUSIVE decision and fresh immutable evidence; read **PIN_PHASE_CHECKPOINT.md** for the current exact resume task.
+
 This active checkpoint follows local `6c128d2`. Preserve all earlier commits, saved projects, immutable sequences, diagnostics and reports. No push, publication or personal-photo upload. The full master roadmap remains in force. Portrait likeness, varied portraits and physical acceptance remain **OPEN**.
 
 ## Exact unchanged comparison

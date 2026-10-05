@@ -38,6 +38,8 @@ export interface MaterialProfile {
   widthMm: number;
   heightMm: number;
   pins: Pin[];
+  // Optional for legacy compatibility. Board top is y=0; IDs increase clockwise.
+  pinLayout?: CircleLayout;
   shaftMm: number;
   threadMm: number;
   opacity: number;
@@ -48,6 +50,13 @@ export interface MaterialProfile {
   colors: string[];
   wrapAllowanceMm: number;
   wasteFraction: number;
+}
+export interface CircleLayout {
+  version: "circle-phase/1";
+  phaseDegreesClockwise: number;
+  reference: "board-top/y-down/clockwise";
+  radiusNormalized: 0.48;
+  templateVersion: "radial-leaders/1";
 }
 export interface EditParams {
   zoom: number;

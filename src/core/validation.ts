@@ -4,6 +4,7 @@ import { deepFreeze, flatten, hash, sequencePayload } from "./engine";
 import type { Instruction, Progress, Project, ProjectFile } from "./types";
 import { MAX_LINES } from "./limits";
 import { validPortrait } from "./portrait";
+import { validateProfileLayout } from "./pin-layout";
 export async function validateInstruction(
   value: unknown,
 ): Promise<Instruction> {
@@ -83,6 +84,7 @@ export async function validateInstruction(
     )
   )
     throw new Error("Invalid pin geometry");
+  validateProfileLayout(p);
   if (
     !/^#[0-9a-f]{6}$/i.test(p.baseColor) ||
     !Array.isArray(p.colors) ||

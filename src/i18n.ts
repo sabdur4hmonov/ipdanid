@@ -1,5 +1,9 @@
 import type { Locale } from "./core/types";
 const uz = {
+  orientationMap: "Yo‘nalish xaritasi. Mixlar uchun asl o‘lchamdagi raqamli varaqlardan foydalaning.",
+  layoutNotice:
+    "Alohida sinov taxtasi: mix 0 tepaga nisbatan soat yo‘nalishida surilgan; raqamlar soat yo‘nalishida oshadi. Faqat yangi mos shablondan foydalaning. Burilish:",
+  defaultLayout: "Standart mix joylashuviga qaytish (yangi taxta)",
   requestedStop: "So‘ralgan hisoblash chegarasiga yetdi",
   estimatedRegions:
     "Bu zonalar faqat taxmin. Yuz a’zolari avtomatik aniqlanmagan.",
@@ -239,6 +243,10 @@ const uz = {
 };
 export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
+  orientationMap: "Orientation map only. Drill using the numbered actual-size tiles.",
+  layoutNotice:
+    "Separate experimental board: pin 0 is clockwise from board top; numbers increase clockwise. Use only its new matching template. Phase:",
+  defaultLayout: "Use default pin layout (new board)",
   requestedStop: "Requested computation ceiling reached",
   estimatedRegions:
     "These regions are proportional estimates, not detected facial anatomy.",
@@ -476,6 +484,10 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
+  orientationMap: "Схема ориентации. Сверлите по нумерованным листам в натуральном масштабе.",
+  layoutNotice:
+    "Отдельная экспериментальная доска: гвоздь 0 смещён от верха по часовой стрелке; номера растут по часовой стрелке. Используйте только новый соответствующий шаблон. Угол:",
+  defaultLayout: "Стандартное расположение гвоздей (новая доска)",
   requestedStop: "Достигнут запрошенный предел вычисления",
   estimatedRegions:
     "Зоны приблизительные; черты лица автоматически не определялись.",
