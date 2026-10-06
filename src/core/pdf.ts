@@ -128,6 +128,8 @@ export async function exportPdf(
         "density-optical/5",
         "continuous-guarded/6",
         "density-multiscale/7",
+        "density-physical/8",
+        "assembly-prune/9",
       ].includes(i.algorithm)
     ) {
       cover.drawImage(await doc.embedPng(previewPng(i)), {
@@ -215,6 +217,20 @@ export async function exportPdf(
     strideY = tileH - overlap;
   const cols = Math.max(1, Math.ceil((i.profile.widthMm - overlap) / strideX)),
     rows = Math.max(1, Math.ceil((i.profile.heightMm - overlap) / strideY));
+  // Rendering improvement only: retain legacy profiles/coordinates/hashes.
+  // New physical/pruned guides on the exact canonical unrotated perimeter can
+  // use separated leaders without inventing layout metadata for old boards.
+  const canonicalNewCircle =
+    ["density-physical/8", "assembly-prune/9"].includes(i.algorithm) &&
+    i.profile.shape === "circle" &&
+    i.profile.pins.every((pin, id) => {
+      const a = (id / i.profile.pins.length) * Math.PI * 2;
+      return (
+        Math.abs(pin.x - (0.5 + 0.48 * Math.sin(a))) < 1e-10 &&
+        Math.abs(pin.y - (0.5 - 0.48 * Math.cos(a))) < 1e-10
+      );
+    });
+  const radialLabels = !!i.profile.pinLayout || canonicalNewCircle;
   for (let row = 0; row < rows; row++)
     for (let col = 0; col < cols; col++) {
       const p = page(),
@@ -231,14 +247,16 @@ export async function exportPdf(
       text(
         p,
         t("pdfAlign") +
-          (i.profile.pinLayout
-            ? ` | TOP y=0; pin 0: +${i.profile.pinLayout.phaseDegreesClockwise}° clockwise`
-            : ""),
+          (canonicalNewCircle && !i.profile.pinLayout
+            ? ` | TOP y=0; IDs clockwise FRONT; pin0 filled; knot ${i.segments[0].path[0]}; radial-leaders/1`
+            : i.profile.pinLayout
+              ? ` | TOP y=0; pin 0: +${i.profile.pinLayout.phaseDegreesClockwise}° clockwise`
+              : ""),
         margin,
         ph - margin - 20,
-        i.profile.pinLayout ? 6 : 8,
+        radialLabels ? 6 : 8,
       );
-      if (i.profile.pinLayout) {
+      if (radialLabels) {
         // Clip board-space marks/leaders to tile. The 10 mm overlap exceeds a
         // complete 6 pt label, so every ID has an intact copy on some tile.
         p.pushOperators(
@@ -317,6 +335,22 @@ export async function exportPdf(
       ].filter((y) => y >= oy && y <= oy + tileH && y <= i.profile.heightMm);
       for (const gx of xMarks)
         for (const gy of yMarks) {
+          // Alignment labels must not obscure the pin IDs or physical holes.
+          // Decide in board space so overlapping tiles omit the same mark.
+          if (
+            radialLabels &&
+            i.profile.pins.some((pin) => {
+              const label = templateLabel(i.profile, pin.id);
+              return (
+                Math.hypot(gx - label.x, gy - label.y) < 10 ||
+                Math.hypot(
+                  gx - pin.x * i.profile.widthMm,
+                  gy - pin.y * i.profile.heightMm,
+                ) < 5
+              );
+            })
+          )
+            continue;
           const x = margin + (gx - ox) * MM,
             y = top - (gy - oy) * MM;
           p.drawLine({

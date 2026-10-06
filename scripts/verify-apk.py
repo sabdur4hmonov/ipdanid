@@ -18,7 +18,7 @@ with zipfile.ZipFile(apk) as archive:
     assert actual == expected, 'Stale or missing compiled assets in APK'
     worker_name = next(n for n in expected if '/generator.worker-' in n)
     worker = archive.read(worker_name).decode()
-    assert all(marker in worker for marker in ['greedy-optical/4', 'density-optical/5', 'continuous-guarded/6', 'density-multiscale/7', 'contrastScales', 'pairLimit', 'pinDegreeLimit', 'stockPolicy', 'parentSequenceHash', 'target-luminance-v1', 'manual-light', 'backgroundMask', 'foregroundMask', 'processed-target/sample-centers-v1', 'jobId', 'circle-phase/1', 'radial-leaders/1', 'phaseDegreesClockwise']), 'Portrait engine missing'
+    assert all(marker in worker for marker in ['greedy-optical/4', 'density-optical/5', 'continuous-guarded/6', 'density-multiscale/7', 'density-physical/8', 'assembly-prune/9', 'density-fit-checkpoint/1', 'board-mm-forward/1', 'route-prune/1', 'contrastScales', 'pairLimit', 'pinDegreeLimit', 'stockPolicy', 'parentSequenceHash', 'target-luminance-v1', 'manual-light', 'backgroundMask', 'foregroundMask', 'processed-target/sample-centers-v1', 'jobId', 'circle-phase/1', 'radial-leaders/1', 'phaseDegreesClockwise']), 'Portrait engine missing'
     main_name = next(n for n in expected if '/index-' in n and n.endswith('.js'))
     main = archive.read(main_name).decode()
     assert 'Computation resolution' in main and 'resolution' in main and '192' in main, 'Resolution control missing'
@@ -27,7 +27,8 @@ shutil.copy2(apk, out / 'ip-rasm-debug.apk')
 shutil.copy2(test_apk, out / 'ip-rasm-debug-androidTest.apk')
 evidence = dict(builtAt=datetime.now(timezone.utc).isoformat(), debug=True,
     webAssetsVerified=len(files), bytes=apk.stat().st_size,
-    apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5','continuous-guarded/6','density-multiscale/7'],
+    apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5','continuous-guarded/6','density-multiscale/7','density-physical/8','assembly-prune/9'],
+    optimizerRecovery='local IndexedDB; exact processed target/material/seed/tuning binding', simplification='complete-route regional-equivalence/1; human acceptance separate',
     backgroundSelection="manual 64x64 background and foreground masks",
     regionReference="processed-target/sample-centers-v1", workerJobAssociation=True,
     pinLayoutVersion="circle-phase/1", defaultPinLayoutUnchanged=True, templateVersion="radial-leaders/1",

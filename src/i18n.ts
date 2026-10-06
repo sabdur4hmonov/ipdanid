@@ -40,6 +40,21 @@ const uz = {
   resetBackground: "Fon belgilarini tozalash",
   portraitSolver: "Portret hisoblash usuli",
   guardedSolver: "Cheklangan uzluksiz yo‘l (v6)",
+  recoveryNotice:
+    "Hisoblashning tugagan bosqichi va ishlov berilgan rasm shu qurilmada saqlangan. Bu yig‘ish yo‘riqnomasi emas.",
+  resumeOptimization: "Saqlangan hisoblashni davom ettirish",
+  discardOptimization: "Faqat hisoblash nuqtasini o‘chirish",
+  recoveryFailed:
+    "Bosqichni qurilmaga saqlab bo‘lmadi. Hisoblash davom etadi; tiklash kafolatlanmaydi.",
+  simplificationSolver: "Sifatni saqlovchi qadamlarni kamaytirish (tajriba)",
+  simplificationStage:
+    "Tekshirilgan takliflar / chegara / tejalgan ulanishlar:",
+  simplificationCaution:
+    "Raqamli chegaralar tekshirildi; ko‘z bilan solishtirish kerak. Eski variant saqlanadi.",
+  connectionsSaved: "tejalgan ulanish",
+  physicalSolver: "Fizik masofali kontrast (v8, tajriba)",
+  physicalStage: "Kontrast bosqichi / jami / baholashlar:",
+  routingStage: "Barcha haqiqiy ulanishlarni yo‘naltirish va tekshirish…",
   multiscaleSolver: "Ko‘p masshtabli kontrast (v7, tajriba)",
   guardHint:
     "Har bir xorda ko‘pi bilan 32 marta, har bir mixga 160 ta ulanish. Bu chegaralar vaqtinchalik, fizik sig‘im tekshirilmagan.",
@@ -53,6 +68,8 @@ const uz = {
   routingConnections: "yo‘lni ulash qadami",
   removedConnections: "olib tashlangan ip",
   continueRefinement: "Ip yo‘lini keyingi bosqichda tuzatish",
+  continuationSource:
+    "Davom ettirish tanlangan yo‘riqnomaning asl surati, crop va materiallaridan foydalanadi. Surat ochiq bo‘lmasa, aynan o‘sha suratni qayta yuklang.",
   refinementNotice:
     "Yangi yo‘riqnoma yaratiladi. Eski tasdiqlangan qadamlar yangi ip yo‘liga ko‘chirilmaydi.",
   portraitMode: "Portretni ustuvor hisoblash",
@@ -288,6 +305,21 @@ const en: Record<Key, string> = {
   resetBackground: "Clear background selections",
   portraitSolver: "Portrait optimization",
   guardedSolver: "Guarded continuous path (v6)",
+  recoveryNotice:
+    "A completed optimization sweep and processed target are stored on this device. This is not an assembly guide.",
+  resumeOptimization: "Resume saved optimization",
+  discardOptimization: "Discard optimizer checkpoint only",
+  recoveryFailed:
+    "Could not store this sweep locally. Computation continues; recovery is unavailable.",
+  simplificationSolver:
+    "Quality-preserving assembly simplification (experimental)",
+  simplificationStage: "Evaluated proposals / limit / connections saved:",
+  simplificationCaution:
+    "Simulation tolerances checked; visual review still required. Original variant preserved.",
+  connectionsSaved: "connections saved",
+  physicalSolver: "Physical-distance contrast (v8, experimental)",
+  physicalStage: "Contrast sweep / planned / evaluations:",
+  routingStage: "Routing and checking every physical connection…",
   multiscaleSolver: "Multiscale contrast (v7, experimental)",
   guardHint:
     "At most 32 traversals per chord and 160 incident connections per nail. These provisional limits are not physically validated capacities.",
@@ -301,6 +333,8 @@ const en: Record<Key, string> = {
   routingConnections: "routing connections",
   removedConnections: "removed strands",
   continueRefinement: "Continue path refinement",
+  continuationSource:
+    "Continuation uses the selected guide’s original photo, crop and materials. If that photo is no longer open, reload the same photo.",
   refinementNotice:
     "Creates a new instruction. Confirmed steps from an older path do not transfer to the new path.",
   portraitMode: "Prioritize portrait",
@@ -534,6 +568,20 @@ const ru: Record<Key, string> = {
   resetBackground: "Очистить выделение фона",
   portraitSolver: "Оптимизация портрета",
   guardedSolver: "Непрерывный путь с ограничениями (v6)",
+  recoveryNotice:
+    "Завершённый проход и обработанное изображение сохранены на этом устройстве. Это не инструкция сборки.",
+  resumeOptimization: "Продолжить сохранённую оптимизацию",
+  discardOptimization: "Удалить только контрольную точку вычисления",
+  recoveryFailed:
+    "Не удалось сохранить проход локально. Вычисление продолжается; восстановление недоступно.",
+  simplificationSolver: "Упрощение сборки с сохранением качества (эксперимент)",
+  simplificationStage: "Проверено / лимит / сэкономлено соединений:",
+  simplificationCaution:
+    "Допуски симуляции проверены; требуется визуальное сравнение. Исходный вариант сохранён.",
+  connectionsSaved: "сэкономленных соединений",
+  physicalSolver: "Контраст по физическим расстояниям (v8, эксперимент)",
+  physicalStage: "Проход / запланировано / оценок:",
+  routingStage: "Прокладка и проверка всех физических соединений…",
   multiscaleSolver: "Многомасштабный контраст (v7, эксперимент)",
   guardHint:
     "Не более 32 проходов по хорде и 160 соединений на гвоздь. Эти временные ограничения не подтверждают физическую вместимость.",
@@ -547,6 +595,8 @@ const ru: Record<Key, string> = {
   routingConnections: "соединений для маршрута",
   removedConnections: "удалённых нитей",
   continueRefinement: "Продолжить уточнение пути",
+  continuationSource:
+    "Продолжение использует исходное фото, кадр и материалы выбранной инструкции. Если фото уже закрыто, загрузите его снова.",
   refinementNotice:
     "Создаёт новую инструкцию. Подтверждённые шаги старого пути не переносятся в новый.",
   portraitMode: "Приоритет портрета",

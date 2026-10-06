@@ -1,4 +1,5 @@
 import { Distribution } from "./distribution";
+import { assertContinuation } from "./continuation";
 import type { Instruction, MaterialProfile, Segment, Step } from "./types";
 import { strandFootprint, rasterSequence, type Footprint } from "./optical";
 import { MAX_LINES, MAX_FOOTPRINT_BYTES } from "./limits";
@@ -71,6 +72,7 @@ export interface GenerateOptions {
   onProgress?: (fraction: number) => void;
   cancelled?: () => boolean;
   guarded?: boolean;
+  onDiagnostic?: (data: Record<string, unknown>) => void;
 }
 export async function generate(o: GenerateOptions): Promise<Instruction> {
   const started = performance.now(),
@@ -109,26 +111,17 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
   if (o.portrait) validPortrait(o.portrait);
   assertPinSpacing(p);
   const portrait = o.portrait?.enabled ? o.portrait : undefined;
-  if (
-    o.seed &&
-    (o.seed.algorithm !==
-      (o.guarded ? "continuous-guarded/6" : "greedy-optical/4") ||
-      !portrait ||
-      o.mode === "color" ||
-      o.seed.imageHash !== (await hash(o.pixels)) ||
-      o.seed.params.resolution !== n ||
-      JSON.stringify(o.seed.profile) !== JSON.stringify(p) ||
-      JSON.stringify(o.seed.params.portrait) !== JSON.stringify(portrait))
-  )
-    throw new Error(
-      "Continuation requires the same portrait target and materials",
-    );
+  if (o.seed) {
+    assertContinuation(o, await hash(o.pixels), [
+      o.guarded ? "continuous-guarded/6" : "greedy-optical/4",
+    ]);
+    const { validateInstruction } = await import("./validation");
+    await validateInstruction(o.seed);
+  }
   const distribution = o.guarded
     ? new Distribution(p.pins.length, o.seed?.segments)
     : undefined;
   if (o.guarded && o.seed) {
-    const { validateInstruction } = await import("./validation");
-    await validateInstruction(o.seed);
     if (o.lines < o.seed.metrics.lines)
       throw new Error("Continuation ceiling is below the existing sequence");
   }

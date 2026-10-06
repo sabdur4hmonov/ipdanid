@@ -2,6 +2,22 @@ import type { Locale } from "./core/types";
 // Domain/Worker messages remain stable for diagnostics; visible recovery text follows the chosen locale.
 const messages: [RegExp, Record<Locale, string>][] = [
   [
+    /\[(?:[^\]]*,)?target(?:,|\])/i,
+    {
+      uz: "Surat/crop tanlangan yo‘riqnomaga mos emas. Asl suratni qayta yuklang. Oldingi yo‘riqnoma va jarayon saqlanadi.",
+      ru: "Фото/кадр не соответствует выбранной инструкции. Загрузите исходное фото. Инструкция и прогресс сохранены.",
+      en: "This photo/crop does not match the selected guide. Reload its original photo. The previous guide and progress are preserved.",
+    },
+  ],
+  [
+    /\[(?:[^\]]*,)?profile(?:,|\])/i,
+    {
+      uz: "Materiallar yoki mix joylashuvi tanlangan yo‘riqnomaga mos emas. Saqlangan sozlamalarni tiklang.",
+      ru: "Материалы или гвозди не соответствуют инструкции. Восстановите сохранённые параметры.",
+      en: "Materials or pin coordinates do not match the selected guide. Restore its recorded settings.",
+    },
+  ],
+  [
     /Continuation requires|Invalid portrait/i,
     {
       uz: "Yuz hududini tekshiring. Davom ettirish uchun aynan shu surat, crop va materiallar kerak.",

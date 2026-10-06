@@ -12,12 +12,38 @@ import { MAX_FOOTPRINT_BYTES, MAX_LINES } from "./limits";
 import type { Instruction } from "./types";
 import { validateInstruction } from "./validation";
 import { PAIR_LIMIT, INCIDENT_LIMIT } from "./distribution";
+import { assertContinuation } from "./continuation";
+import {
+  PhysicalContrast,
+  type PhysicalContrastSettings,
+} from "./physical-contrast";
 
 // Reversible integer strand counts, evaluated against the actual optical mean-RGB raster.
 // The chosen multigraph is connected and made Eulerian with explicit, measured routing strands.
+export interface DensityCheckpoint {
+  version: "density-fit-checkpoint/1";
+  binding: string;
+  checksum: string;
+  counts: number[];
+  density: number[];
+  objective: number;
+  sweeps: number;
+  evaluations: number;
+  removedConnections: number;
+  plateau: boolean;
+  elapsedMs: number;
+}
+export interface DensityTuning {
+  edgeWeight: number;
+  sweeps: number;
+  multiscale?: boolean;
+  physical?: PhysicalContrastSettings;
+  resume?: DensityCheckpoint;
+  onCheckpoint?: (checkpoint: DensityCheckpoint) => Promise<void> | void;
+}
 export async function generateDensity(
   o: GenerateOptions,
-  tuning: { edgeWeight: number; sweeps: number; multiscale?: boolean } = {
+  tuning: DensityTuning = {
     edgeWeight: 1,
     sweeps: 8,
   },
@@ -27,19 +53,7 @@ export async function generateDensity(
     portrait = o.portrait;
   if (!portrait?.enabled || !["dark", "light"].includes(o.mode))
     throw new Error("Density optimization requires a new monochrome portrait");
-  if (
-    o.seed &&
-    (o.seed.params.resolution !== n ||
-      o.seed.params.mode !== o.mode ||
-      o.seed.segments.length !== 1 ||
-      o.seed.segments[0].color !== p.colors[0] ||
-      o.seed.imageHash !== (await hash(o.pixels)) ||
-      JSON.stringify(o.seed.profile) !== JSON.stringify(p) ||
-      JSON.stringify(o.seed.params.portrait) !== JSON.stringify(portrait))
-  )
-    throw new Error(
-      "Global rerouting requires the same portrait and materials",
-    );
+  if (o.seed) assertContinuation(o, await hash(o.pixels));
   validPortrait(portrait);
   if (o.seed) await validateInstruction(o.seed);
   assertPinSpacing(p);
@@ -124,10 +138,24 @@ export async function generateDensity(
     weight[i] = importance;
     weightSum += weight[i];
   }
+  const physical = tuning.physical
+    ? new PhysicalContrast(
+        n,
+        p,
+        mask,
+        weight,
+        tuning.edgeWeight,
+        tuning.physical,
+      )
+    : undefined;
+  const fractional = physical && !physical.legacyEquivalent;
+  const contrastObjective = () =>
+    physical!.objective(Float64Array.from(density, (v, i) => v - target[i]));
   const neighbors = (i: number, visit: (j: number, w: number) => void) => {
+    if (fractional) return;
     const x = i % n,
       y = Math.floor(i / n);
-    if (tuning.multiscale) {
+    if (tuning.multiscale || physical) {
       // Symmetric differences at 1/2/4 px. Equal derivative units (1 / distance²).
       // Every affected pair is evaluated once by gain(), including pixels outside the footprint.
       for (const step of [1, 2, 4]) {
@@ -167,6 +195,7 @@ export async function generateDensity(
         if (j > i) objective += w * (target[i] - target[j]) ** 2;
       });
     }
+  if (fractional) objective += contrastObjective();
   const initial = objective,
     counts = new Int32Array(p.pins.length ** 2),
     pinDegree = new Int32Array(p.pins.length),
@@ -258,7 +287,12 @@ export async function generateDensity(
         }
       });
     }
-    return value;
+    return (
+      value +
+      (fractional
+        ? physical.gain(density, target, sparse, marks, epoch, f.pixels)
+        : 0)
+    );
   };
   const candidate = (id: number, f: Footprint, a: number, b: number) => {
     let num = 0,
@@ -345,6 +379,7 @@ export async function generateDensity(
               w * (density[i] - density[j] - (target[i] - target[j])) ** 2;
         });
       }
+    if (fractional) objective += contrastObjective();
     if (total > o.lines)
       throw new Error("Seed leaves insufficient routing capacity");
     if (
@@ -355,8 +390,110 @@ export async function generateDensity(
         "Existing sequence exceeds provisional winding guards; generate a new continuous basis",
       );
   }
-  let plateau = false;
-  for (let sweep = 0; sweep < tuning.sweeps; sweep++) {
+  let plateau = false,
+    priorElapsed = 0;
+  const binding =
+    tuning.resume || tuning.onCheckpoint
+      ? await hash(
+          JSON.stringify({
+            version: "density-fit-checkpoint/1",
+            target: await hash(o.pixels),
+            resolution: n,
+            profile: p,
+            portrait,
+            mode: o.mode,
+            lines: o.lines,
+            seed: o.seed?.sequenceHash,
+            edgeWeight: tuning.edgeWeight,
+            sweeps: tuning.sweeps,
+            multiscale: tuning.multiscale ?? false,
+            physical: tuning.physical,
+          }),
+        )
+      : "";
+  if (tuning.resume) {
+    const s = tuning.resume,
+      { checksum, ...payload } = s;
+    if (
+      s.version !== "density-fit-checkpoint/1" ||
+      s.binding !== binding ||
+      (await hash(JSON.stringify(payload))) !== checksum ||
+      s.counts.length !== counts.length ||
+      s.density.length !== size ||
+      !Number.isSafeInteger(s.sweeps) ||
+      s.sweeps < 1 ||
+      s.sweeps > tuning.sweeps ||
+      !Number.isSafeInteger(s.evaluations) ||
+      s.evaluations !== s.sweeps * pairs.length ||
+      !Number.isSafeInteger(s.removedConnections) ||
+      s.removedConnections < 0 ||
+      typeof s.plateau !== "boolean" ||
+      !Number.isFinite(s.elapsedMs) ||
+      s.elapsedMs < 0 ||
+      !Number.isFinite(s.objective) ||
+      s.objective < 0
+    )
+      throw Error("Incompatible or corrupt optimizer checkpoint");
+    const expected = density.slice(),
+      oldCounts = counts.slice();
+    let resumedTotal = 0;
+    pinDegree.fill(0);
+    for (let id = 0; id < counts.length; id++) {
+      const c = s.counts[id],
+        a = Math.floor(id / p.pins.length),
+        b = id % p.pins.length;
+      if (
+        !Number.isInteger(c) ||
+        c < 0 ||
+        c > pairLimit ||
+        (c && (a >= b || !connectionAllowed(p, a, b)))
+      )
+        throw Error("Invalid checkpoint distribution");
+      if (!c && !oldCounts[id]) continue;
+      resumedTotal += c;
+      pinDegree[a] += c;
+      pinDegree[b] += c;
+      const delta = c - oldCounts[id],
+        f = footprint(a, b);
+      for (let j = 0; j < f.pixels.length; j++) {
+        const i = f.pixels[j];
+        if (mask[i])
+          expected[i] =
+            il + (expected[i] - il) * Math.exp(-delta * f.density[j]);
+      }
+    }
+    if (
+      resumedTotal > fitLimit ||
+      pinDegree.some((d) => d > pinDegreeLimit) ||
+      s.density.some(
+        (v, i) => !Number.isFinite(v) || Math.abs(v - expected[i]) > 1e-7,
+      )
+    )
+      throw Error("Invalid checkpoint reconstruction");
+    counts.set(s.counts);
+    density.set(s.density);
+    total = resumedTotal;
+    let actual = 0;
+    for (let i = 0; i < size; i++)
+      if (mask[i]) {
+        actual += weight[i] * penalty(density[i], target[i]);
+        neighbors(i, (j, w) => {
+          if (j > i)
+            actual +=
+              w * (density[i] - density[j] - (target[i] - target[j])) ** 2;
+        });
+      }
+    if (fractional) actual += contrastObjective();
+    if (Math.abs(actual - s.objective) > 1e-6 * Math.max(1, actual))
+      throw Error("Invalid checkpoint objective");
+    objective = s.objective;
+    sweeps = s.sweeps;
+    evaluations = s.evaluations;
+    removedConnections = s.removedConnections;
+    plateau = s.plateau;
+    priorElapsed = s.elapsedMs;
+  }
+  for (let sweep = sweeps; !plateau && sweep < tuning.sweeps; sweep++) {
     let changed = 0;
     const old = objective;
     // Reverse order each sweep reduces bias from early, unrefined dark connections.
@@ -377,12 +514,38 @@ export async function generateDensity(
       }
     }
     sweeps++;
-    if (!changed || (old > 0 && (old - objective) / old < 0.0001)) {
-      plateau = true;
-      break;
+    o.onDiagnostic?.({
+      stage: "fit",
+      sweep: sweeps,
+      plannedSweeps: tuning.sweeps,
+      changed,
+      fittedConnections: total,
+      objective: objective / weightSum,
+      evaluations,
+    });
+    plateau = !changed || (old > 0 && (old - objective) / old < 0.0001);
+    if (tuning.onCheckpoint) {
+      const payload = {
+        version: "density-fit-checkpoint/1" as const,
+        binding,
+        counts: Array.from(counts),
+        density: Array.from(density),
+        objective,
+        sweeps,
+        evaluations,
+        removedConnections,
+        plateau,
+        elapsedMs: priorElapsed + performance.now() - started,
+      };
+      await tuning.onCheckpoint({
+        ...payload,
+        checksum: await hash(JSON.stringify(payload)),
+      });
     }
   }
   const fittedConnections = total;
+  const fitObjective = objective;
+  const routingCounts = new Map<number, number>();
   if (!total) throw new Error("No improving feasible density path");
   const degree = () => {
     const d = new Int32Array(p.pins.length);
@@ -423,6 +586,7 @@ export async function generateDensity(
     if (total + amount > o.lines)
       throw new Error("Line limit exceeded by physical routing");
     apply(a, b, amount, footprint(a, b));
+    routingCounts.set(key(a, b), (routingCounts.get(key(a, b)) ?? 0) + amount);
   };
   // Connect disconnected fitted components using an out-and-back bridge, preserving all degree parity.
   let groups = components();
@@ -484,6 +648,18 @@ export async function generateDensity(
     }
     await new Promise((r) => setTimeout(r, 0));
   }
+  const routingPairs = [...routingCounts].map(([id, count]) => ({
+    from: Math.floor(id / p.pins.length),
+    to: id % p.pins.length,
+    count,
+  }));
+  o.onDiagnostic?.({
+    stage: "routing",
+    fitObjective: fitObjective / weightSum,
+    completeObjective: objective / weightSum,
+    routingConnections: total - fittedConnections,
+    routingPairs,
+  });
   const remaining = counts.slice(),
     start = degree().findIndex((d) => d > 0),
     stack = [start],
@@ -519,7 +695,11 @@ export async function generateDensity(
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: tuning.multiscale ? "density-multiscale/7" : "density-optical/5",
+    algorithm: tuning.physical
+      ? "density-physical/8"
+      : tuning.multiscale
+        ? "density-multiscale/7"
+        : "density-optical/5",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -549,7 +729,10 @@ export async function generateDensity(
         overshoot: "target-luminance-v1",
         pairLimit,
         pinDegreeLimit,
-        ...(tuning.multiscale
+        ...(tuning.physical
+          ? { contrastPhysical: structuredClone(tuning.physical) }
+          : {}),
+        ...(tuning.multiscale && !tuning.physical
           ? { contrastScales: [1, 2, 4] as [1, 2, 4] }
           : {}),
       },
@@ -566,14 +749,16 @@ export async function generateDensity(
         baseline: initial / weightSum,
         final: Math.max(0, objective) / weightSum,
       },
-      durationMs: performance.now() - started,
+      durationMs: priorElapsed + performance.now() - started,
       peakCacheBytes,
+      ...(physical ? { physicalContrastBytes: physical.bytes } : {}),
       densityFit: {
         sweeps,
         evaluations,
         fittedConnections,
         routingConnections: total - fittedConnections,
         removedConnections,
+        ...(physical ? { routingPairs } : {}),
       },
     },
   };
@@ -599,7 +784,7 @@ export async function generateDensity(
     final: regionMeasurements(o.pixels, raster, n, p, portrait),
   };
   result.sequenceHash = await hash(sequencePayload(result));
-  result.metrics.durationMs = performance.now() - started;
+  result.metrics.durationMs = priorElapsed + performance.now() - started;
   o.onProgress?.(1);
   return deepFreeze(result);
 }

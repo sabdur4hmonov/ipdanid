@@ -165,6 +165,8 @@ it("result transactions select the returned id through trimming and reject cance
     [v("basis"), v("new")],
   );
   expect(state.items.map((x) => x.instruction.id)).toEqual([
+    "a",
+    "b",
     "c",
     "d",
     "e",

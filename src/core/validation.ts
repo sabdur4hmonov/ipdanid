@@ -5,6 +5,8 @@ import type { Instruction, Progress, Project, ProjectFile } from "./types";
 import { MAX_LINES } from "./limits";
 import { validPortrait } from "./portrait";
 import { validateProfileLayout } from "./pin-layout";
+import { validPhysicalContrast } from "./physical-contrast";
+import { SIMPLIFICATION_TOLERANCES, withinQualityTolerance } from "./simplify";
 export async function validateInstruction(
   value: unknown,
 ): Promise<Instruction> {
@@ -22,6 +24,8 @@ export async function validateInstruction(
       "density-optical/5",
       "continuous-guarded/6",
       "density-multiscale/7",
+      "density-physical/8",
+      "assembly-prune/9",
     ].includes(i.algorithm)
   )
     throw new Error("Unsupported instruction version");
@@ -30,6 +34,8 @@ export async function validateInstruction(
       "density-optical/5",
       "continuous-guarded/6",
       "density-multiscale/7",
+      "density-physical/8",
+      "assembly-prune/9",
     ].includes(i.algorithm),
     limit = qualityFirst ? MAX_LINES : 3000;
   if (
@@ -144,7 +150,14 @@ export async function validateInstruction(
     i.params.requestedLines > limit
   )
     throw new Error("Invalid generation parameters");
-  if (["continuous-guarded/6", "density-multiscale/7"].includes(i.algorithm)) {
+  if (
+    [
+      "continuous-guarded/6",
+      "density-multiscale/7",
+      "density-physical/8",
+      "assembly-prune/9",
+    ].includes(i.algorithm)
+  ) {
     if (
       i.params.optimization?.pairLimit !== 32 ||
       i.params.optimization.pinDegreeLimit !== 160
@@ -159,9 +172,116 @@ export async function validateInstruction(
         i.params.optimization.overshoot !== "target-luminance-v1")
     )
       throw new Error("Invalid multiscale contrast settings");
+    if (i.algorithm === "density-physical/8") {
+      validPhysicalContrast(i.params.optimization.contrastPhysical!);
+      if (
+        i.params.optimization.contrastScales !== undefined ||
+        i.params.optimization.kind !== "optical-coordinate" ||
+        i.params.optimization.order !== "dispersed-v1" ||
+        i.params.optimization.overshoot !== "target-luminance-v1"
+      )
+        throw new Error("Invalid physical contrast settings");
+      const routes = i.metrics.densityFit?.routingPairs;
+      if (
+        !Array.isArray(routes) ||
+        routes.reduce((s, r) => s + r.count, 0) !==
+          i.metrics.densityFit?.routingConnections
+      )
+        throw new Error("Invalid routing accounting");
+      const available = new Map<string, number>();
+      for (const segment of i.segments)
+        for (let j = 1; j < segment.path.length; j++) {
+          const k = [segment.path[j - 1], segment.path[j]]
+            .sort((a, b) => a - b)
+            .join(":");
+          available.set(k, (available.get(k) ?? 0) + 1);
+        }
+      const used = new Set<string>();
+      for (const r of routes) {
+        const k = [r.from, r.to].sort((a, b) => a - b).join(":");
+        if (
+          !Number.isInteger(r.from) ||
+          !Number.isInteger(r.to) ||
+          !p.pins[r.from] ||
+          !p.pins[r.to] ||
+          !connectionAllowed(p, r.from, r.to) ||
+          !Number.isInteger(r.count) ||
+          r.count < 1 ||
+          r.count > (available.get(k) ?? 0) ||
+          used.has(k)
+        )
+          throw new Error("Invalid routing accounting");
+        used.add(k);
+      }
+    }
   }
   if (qualityFirst) {
-    if (["density-optical/5", "density-multiscale/7"].includes(i.algorithm)) {
+    if (i.algorithm === "assembly-prune/9") {
+      const s = i.params.simplification,
+        d = i.metrics.simplificationDifferences;
+      if (
+        !s ||
+        s.version !== "route-prune/1" ||
+        s.referenceHash !== i.params.parentSequenceHash ||
+        ![
+          "density-multiscale/7",
+          "density-physical/8",
+          "continuous-guarded/6",
+        ].includes(s.sourceAlgorithm) ||
+        JSON.stringify(s.tolerances) !==
+          JSON.stringify(SIMPLIFICATION_TOLERANCES) ||
+        s.gateReference !== "complete-original-native-raster/1" ||
+        s.visualAccepted !== false ||
+        s.routingAdded !== 0 ||
+        ![
+          "not-identifiable-from-legacy-guide",
+          "preserved-pair-provenance",
+        ].includes(s.remainingRoutingClassification) ||
+        ![
+          s.proposals,
+          s.accepted,
+          s.connectionsSaved,
+          s.replacementConnections,
+          s.removedTraversals,
+        ].every((v) => Number.isSafeInteger(v) && v >= 0) ||
+        s.proposals > 2000 ||
+        s.accepted > s.proposals ||
+        s.connectionsSaved !== s.removedTraversals - s.replacementConnections ||
+        !d ||
+        ![
+          "face",
+          "leftEye",
+          "rightEye",
+          "nose",
+          "lips",
+          "jaw",
+          "lightSkin",
+        ].every((k) => d[k] && Object.values(d[k]).every(Number.isFinite)) ||
+        !withinQualityTolerance(d) ||
+        i.metrics.densityFit ||
+        i.metrics.weightedError
+      )
+        throw Error("Invalid simplification evidence");
+      if (
+        s.remainingRoutingClassification === "preserved-pair-provenance"
+          ? s.routingOccurrenceConvention !== "earliest-Euler-occurrence/1" ||
+            !Number.isSafeInteger(s.remainingRoutingConnections) ||
+            s.remainingRoutingConnections! < 0 ||
+            s.remainingRoutingConnections! > total ||
+            !Number.isSafeInteger(s.originalRoutingConnections) ||
+            s.remainingRoutingConnections! > s.originalRoutingConnections!
+          : s.routingOccurrenceConvention !== "unavailable" ||
+            s.remainingRoutingConnections !== null
+      )
+        throw Error("Invalid simplification routing provenance");
+    }
+    if (
+      [
+        "density-optical/5",
+        "density-multiscale/7",
+        "density-physical/8",
+      ].includes(i.algorithm)
+    ) {
       if (i.params.optimization?.pairLimit !== undefined) {
         if (
           i.params.optimization.pairLimit !== 32 ||
@@ -277,11 +397,12 @@ export async function validateInstruction(
     )
       throw new Error("Invalid material accounting");
     if (
-      !i.metrics.weightedError ||
-      !Number.isFinite(i.metrics.weightedError.baseline) ||
-      !Number.isFinite(i.metrics.weightedError.final) ||
-      i.metrics.weightedError.final < 0 ||
-      i.metrics.weightedError.final > i.metrics.weightedError.baseline + 1e-5
+      i.algorithm !== "assembly-prune/9" &&
+      (!i.metrics.weightedError ||
+        !Number.isFinite(i.metrics.weightedError.baseline) ||
+        !Number.isFinite(i.metrics.weightedError.final) ||
+        i.metrics.weightedError.final < 0 ||
+        i.metrics.weightedError.final > i.metrics.weightedError.baseline + 1e-5)
     )
       throw new Error("Invalid optimization metrics");
     if (i.metrics.regions) {
@@ -354,6 +475,8 @@ export function toTxt(i: Instruction): string {
     "density-optical/5",
     "continuous-guarded/6",
     "density-multiscale/7",
+    "density-physical/8",
+    "assembly-prune/9",
   ].includes(i.algorithm)
     ? i.segments
         .map(

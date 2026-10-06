@@ -23,7 +23,8 @@ export interface MakerSettings {
   stockMeters: number;
   edits: EditParams;
   portrait?: PortraitSettings;
-  portraitSolver?: "continuous" | "global" | "guarded" | "multiscale";
+  portraitSolver?:
+    "continuous" | "global" | "guarded" | "multiscale" | "physical";
   pinLayout?: CircleLayout;
   // Preserve exact imported coordinates, avoiding cross-runtime trig rounding.
   pinCoordinates?: Pin[];
@@ -99,7 +100,7 @@ function validate(p: MakerPreset) {
   }
   if (
     s.portraitSolver &&
-    !["continuous", "global", "guarded", "multiscale"].includes(
+    !["continuous", "global", "guarded", "multiscale", "physical"].includes(
       s.portraitSolver,
     )
   )

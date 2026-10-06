@@ -1,3 +1,5 @@
+Active resume: PHYSICAL_CONTRAST_CHECKPOINT.md (continues71eb641). Physical v8 comparison is INCONCLUSIVE; default160/unrotated retained on quality/reliability evidence,not speed. Separate route-prune v9 saves91actions without changing actual eye/nose/lip pixels; accepted only for simulated equivalence within v8.50 regressions plus focused repair checks,14 final browser scenarios,81/79page exact exports and rebuilt Android/16matched assets/unchanged certificate provide software evidence. Historical same-photo refusal remains unproven; reproduced changed-source association and new recovery-budget mistakes are fixed with strict validation. Full M0–M7 and quality/physical/device/production acceptance stay OPEN. Next test unfinished v8 convergence before paired chord-exchange hypothesis; do not repeat setup or this completed experiment.
+
 # Decisions
 
 2026-10-05 — guarded portrait checkpoint:

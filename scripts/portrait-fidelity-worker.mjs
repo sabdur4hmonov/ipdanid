@@ -9,12 +9,13 @@ const basePath = `output/${folder}`,
     "guarded",
     "pin-phase",
     "resolution",
+    "contrast",
   ].includes(folder)
     ? `${variant}-`
     : "";
 const baselineData = JSON.parse(
     readFileSync(
-      ["guarded", "pin-phase", "resolution"].includes(folder)
+      folder === "contrast" ? (variant === "simplified" ? `${basePath}/physical-2.json` : "output/resolution/basis-refined.json") : ["guarded", "pin-phase", "resolution"].includes(folder)
         ? `${basePath}/basis-refined.json`
         : folder === "regions"
           ? `${basePath}/${variant}-stage1.json`
@@ -29,7 +30,7 @@ const baselineData = JSON.parse(
   ).instruction,
   pixels = [
     ...readFileSync(
-      folder === "background"
+      folder === "contrast" ? "output/resolution/target.bin" : folder === "background"
         ? `${basePath}/${variant}-target.bin`
         : `${basePath}/target.bin`,
     ),
@@ -79,6 +80,7 @@ try {
               reject(new Error("Worker job association mismatch"));
               return;
             }
+            if (["stage", "fit-checkpoint", "checkpoint"].includes(data.type)) return;
             if (data.type === "progress") {
               const step = Math.floor(data.fraction * 10);
               if (last !== step) {
@@ -110,7 +112,7 @@ try {
         baseline,
         pixels,
         workerFile,
-        strategy: ["guarded", "pin-phase", "resolution"].includes(folder)
+        strategy: folder === "contrast" ? (variant === "simplified" ? "simplify" : "physical") : ["guarded", "pin-phase", "resolution"].includes(folder)
           ? "multiscale"
           : folder === "regions"
             ? "continuous"
@@ -126,7 +128,7 @@ try {
   const evidence = {
     offline: data.offline,
     jobId: data.jobId,
-    strategy: ["guarded", "pin-phase", "resolution"].includes(folder)
+    strategy: folder === "contrast" ? (variant === "simplified" ? "simplify" : "physical") : ["guarded", "pin-phase", "resolution"].includes(folder)
       ? "multiscale"
       : folder === "regions"
         ? "continuous"

@@ -26,6 +26,8 @@ export function renderInstruction(
       "density-optical/5",
       "continuous-guarded/6",
       "density-multiscale/7",
+      "density-physical/8",
+      "assembly-prune/9",
     ].includes(i.algorithm)
   ) {
     const n = i.params.resolution,

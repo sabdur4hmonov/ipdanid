@@ -1,5 +1,15 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
+test.afterEach(async ({ page }, info) => {
+  if (page.isClosed()) return;
+  const requests = await page
+    .evaluate(() => (window as any).__continuationAudit ?? [])
+    .catch(() => []);
+  await info.attach("all-real-worker-requests", {
+    body: JSON.stringify(requests, null, 2),
+    contentType: "application/json",
+  });
+});
 test("portrait target, manual regions, low stock, cancellation and immutable stage continuation", async ({
   page,
 }, info) => {
@@ -17,6 +27,9 @@ test("portrait target, manual regions, low stock, cancellation and immutable sta
             resolution: message.resolution,
             seedResolution: message.seed?.params.resolution,
             seedAlgorithm: message.seed?.algorithm,
+            mode: message.mode,
+            seedMode: message.seed?.params.mode,
+            portraitEnabled: message.portrait?.enabled,
             seedImageHash: message.seed?.imageHash,
             profileMatches:
               !message.seed ||

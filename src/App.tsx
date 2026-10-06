@@ -58,6 +58,12 @@ import { spokenPin, translate } from "./i18n";
 import { readProjects, writeProjects, StorageConflictError } from "./storage";
 import { download } from "./download";
 import { PRODUCT_NAME } from "./config";
+import {
+  readOptimizerRecovery,
+  saveOptimizerRecovery,
+  clearOptimizerRecovery,
+  type OptimizerRecovery,
+} from "./optimizer-storage";
 import { customerError } from "./errors";
 import {
   readPresets,
@@ -179,8 +185,14 @@ export default function App() {
   const [pinLayout, setPinLayout] = useState<CircleLayout>();
   const [pinCoordinates, setPinCoordinates] = useState<Pin[]>();
   const [portraitSolver, setPortraitSolver] = useState<
-    "continuous" | "global" | "guarded" | "multiscale"
+    "continuous" | "global" | "guarded" | "multiscale" | "physical"
   >("continuous");
+  const [recovery, setRecovery] = useState<OptimizerRecovery>();
+  useEffect(() => {
+    readOptimizerRecovery()
+      .then(setRecovery)
+      .catch(() => {});
+  }, []);
   const targetCanvas = useRef<HTMLCanvasElement>(null);
   const [variantState, setVariantState] = useState<Variants>({ items: [] });
   const variants = variantState.items;
@@ -538,9 +550,10 @@ export default function App() {
   }
   function generate(
     seed?: Instruction,
-    strategyOverride?: "global" | "multiscale",
+    strategyOverride?: "global" | "multiscale" | "physical" | "simplify",
+    resume?: OptimizerRecovery,
   ) {
-    if (!image) return;
+    if (!image && !resume) return;
     let profile;
     try {
       profile = seed
@@ -568,23 +581,34 @@ export default function App() {
     setFraction(0);
     const c = document.createElement("canvas");
     const generationResolution = seed?.params.resolution ?? resolution;
+    const seedVariant = seed
+      ? variants.find((v) => v.instruction.id === seed.id)
+      : undefined;
+    const generationPhoto = photoCandidates.find(
+      (p) => p.id === (seedVariant?.photoId ?? photoId),
+    );
+    const generationImage = generationPhoto?.image ?? image;
     c.width = c.height = generationResolution;
     const generationPortrait = seed
       ? structuredClone(seed.params.portrait ?? portrait)
       : snapshotPortrait(portrait);
-    const generationEdits = seed
-      ? (variants.find((v) => v.instruction.id === seed.id)?.edits ?? edits)
-      : edits;
-    const pixels = processPortrait(
-      prepare(
-        c.getContext("2d")!,
-        image,
-        generationEdits,
-        seed ? profile.widthMm / profile.heightMm : aspect,
-      ),
-      generationResolution,
-      generationPortrait,
-    );
+    const generationEdits =
+      resume?.edits ??
+      (seed
+        ? (variants.find((v) => v.instruction.id === seed.id)?.edits ?? edits)
+        : edits);
+    const pixels =
+      resume?.pixels ??
+      processPortrait(
+        prepare(
+          c.getContext("2d")!,
+          generationImage!,
+          generationEdits,
+          seed ? profile.widthMm / profile.heightMm : aspect,
+        ),
+        generationResolution,
+        generationPortrait,
+      );
     const w = new Worker(
       new URL("./core/generator.worker.ts", import.meta.url),
       { type: "module" },
@@ -592,7 +616,11 @@ export default function App() {
     worker.current?.terminate();
     worker.current = w;
     const jobId = jobs.current.begin();
-    const label = `${photoCandidates.find((p) => p.id === photoId)?.name ?? t("sample")} · ${t(preset as "balanced" | "lighter" | "detailed")}`;
+    const label =
+      resume?.name ??
+      seedVariant?.name ??
+      `${generationPhoto?.name ?? t("sample")} · ${t(preset as "balanced" | "lighter" | "detailed")}`;
+    if (seed) setNotice(t("continuationSource"));
     const globalLabel = t("globalSolver"),
       baselineLabel = t("continuousSolver");
     const currentJob = () =>
@@ -609,6 +637,57 @@ export default function App() {
         setFraction(data.fraction);
         return;
       }
+      if (data.type === "fit-checkpoint") {
+        const value: OptimizerRecovery = {
+          version: "iprasm.optimizer-recovery/1",
+          checkpoint: data.checkpoint,
+          seed: data.seed,
+          pixels,
+          lines: data.lines,
+          strategy: "physical",
+          edits: generationEdits,
+          name: label,
+        };
+        try {
+          await saveOptimizerRecovery(value);
+          if (currentJob()) setRecovery(value);
+        } catch {
+          if (currentJob()) setNotice(t("recoveryFailed"));
+        }
+        return;
+      }
+      if (data.type === "stage") {
+        if (data.diagnostic.stage === "fit")
+          setNotice(
+            `${t("physicalStage")} ${data.diagnostic.sweep}/${data.diagnostic.plannedSweeps} · ${data.diagnostic.evaluations}`,
+          );
+        else if (data.diagnostic.stage === "simplify") {
+          setFraction(data.diagnostic.proposals / data.diagnostic.limit);
+          setNotice(
+            `${t("simplificationStage")} ${data.diagnostic.proposals}/${data.diagnostic.limit} · ${data.diagnostic.connectionsSaved}`,
+          );
+        } else setNotice(t("routingStage"));
+        return;
+      }
+      if (data.type === "checkpoint") {
+        try {
+          const i = await validateInstruction(data.instruction);
+          if (currentJob())
+            setVariantState((v) =>
+              appendVariants(v, [
+                {
+                  instruction: i,
+                  name: `${label} · ${t("simplificationSolver")}`,
+                  edits: { ...generationEdits },
+                  photoId: generationPhoto?.id,
+                },
+              ]),
+            );
+        } catch (e) {
+          if (currentJob()) setError(String(e));
+        }
+        return;
+      }
       if (data.type !== "done") {
         setError(data.message);
         finish();
@@ -620,6 +699,11 @@ export default function App() {
           ? await validateInstruction(data.baseline)
           : undefined;
         if (!currentJob()) return;
+        if (i.algorithm === "density-physical/8") {
+          await clearOptimizerRecovery();
+          if (!currentJob()) return;
+          setRecovery(undefined);
+        }
         setVariantState((v) =>
           appendVariants(v, [
             ...(baseline
@@ -631,20 +715,26 @@ export default function App() {
                         ? t("guardedSolver")
                         : baselineLabel,
                     edits: { ...generationEdits },
+                    photoId: generationPhoto?.id,
                   },
                 ]
               : []),
             {
               instruction: i,
               name:
-                i.algorithm === "density-multiscale/7"
-                  ? `${label} · ${t("multiscaleSolver")}`
-                  : i.algorithm === "continuous-guarded/6"
-                    ? `${label} · ${t("guardedSolver")}`
-                    : i.algorithm === "density-optical/5"
-                      ? `${label} · ${globalLabel}`
-                      : label,
+                i.algorithm === "assembly-prune/9"
+                  ? `${label} · ${t("simplificationSolver")}`
+                  : i.algorithm === "density-physical/8"
+                    ? `${label} · ${t("physicalSolver")}`
+                    : i.algorithm === "density-multiscale/7"
+                      ? `${label} · ${t("multiscaleSolver")}`
+                      : i.algorithm === "continuous-guarded/6"
+                        ? `${label} · ${t("guardedSolver")}`
+                        : i.algorithm === "density-optical/5"
+                          ? `${label} · ${globalLabel}`
+                          : label,
               edits: { ...generationEdits },
+              photoId: generationPhoto?.id,
             },
           ]),
         );
@@ -665,21 +755,24 @@ export default function App() {
       pixels,
       resolution: generationResolution,
       profile,
-      lines: seed?.params.requestedLines ?? lines,
+      lines: resume?.lines ?? seed?.params.requestedLines ?? lines,
       mode: seed?.params.mode ?? mode,
       portrait: generationPortrait,
       seed,
+      resume: resume?.checkpoint,
       strategy:
         strategyOverride ??
-        (seed?.algorithm === "density-multiscale/7"
-          ? "multiscale"
-          : seed?.algorithm === "continuous-guarded/6"
-            ? "guarded"
-            : seed?.algorithm === "density-optical/5"
-              ? "global"
-              : !seed && generationPortrait.enabled && mode !== "color"
-                ? portraitSolver
-                : "continuous"),
+        (seed?.algorithm === "density-physical/8"
+          ? "physical"
+          : seed?.algorithm === "density-multiscale/7"
+            ? "multiscale"
+            : seed?.algorithm === "continuous-guarded/6"
+              ? "guarded"
+              : seed?.algorithm === "density-optical/5"
+                ? "global"
+                : !seed && generationPortrait.enabled && mode !== "color"
+                  ? portraitSolver
+                  : "continuous"),
     });
   }
   function open(p: Project) {
@@ -1003,7 +1096,8 @@ export default function App() {
                                     | "continuous"
                                     | "global"
                                     | "guarded"
-                                    | "multiscale",
+                                    | "multiscale"
+                                    | "physical",
                                 )
                               }
                             >
@@ -1012,6 +1106,9 @@ export default function App() {
                               </option>
                               <option value="guarded">
                                 {t("guardedSolver")}
+                              </option>
+                              <option value="physical">
+                                {t("physicalSolver")}
                               </option>
                               <option value="multiscale">
                                 {t("multiscaleSolver")}
@@ -1462,6 +1559,31 @@ export default function App() {
                         : t("generate")}
                       <ArrowRight size={18} />
                     </button>
+                    {recovery && (
+                      <div className="fineprint">
+                        <p>{t("recoveryNotice")}</p>
+                        <button
+                          disabled={busy}
+                          className="outline full"
+                          onClick={() =>
+                            generate(recovery.seed, "physical", recovery)
+                          }
+                        >
+                          {t("resumeOptimization")}
+                        </button>
+                        <button
+                          disabled={busy}
+                          className="text-button"
+                          onClick={() =>
+                            clearOptimizerRecovery().then(() =>
+                              setRecovery(undefined),
+                            )
+                          }
+                        >
+                          {t("discardOptimization")}
+                        </button>
+                      </div>
+                    )}
                     {busy && (
                       <>
                         <progress max="1" value={fraction} />
@@ -1578,11 +1700,34 @@ export default function App() {
                       </details>
                       <Supply instruction={result} locale={locale} />
                       {image &&
+                        [
+                          "continuous-guarded/6",
+                          "density-multiscale/7",
+                          "density-physical/8",
+                        ].includes(result.algorithm) && (
+                          <button
+                            className="outline full"
+                            disabled={busy}
+                            onClick={() => generate(result, "simplify")}
+                          >
+                            {t("simplificationSolver")}
+                          </button>
+                        )}
+                      {result.params.simplification && (
+                        <p className="fineprint">
+                          {t("simplificationCaution")} ·{" "}
+                          {result.params.simplification.connectionsSaved}{" "}
+                          {t("connectionsSaved")}
+                        </p>
+                      )}
+                      {image &&
+                        result.algorithm !== "assembly-prune/9" &&
                         result.params.portrait?.enabled &&
                         result.params.mode !== "color" &&
                         (![
                           "density-optical/5",
                           "density-multiscale/7",
+                          "density-physical/8",
                         ].includes(result.algorithm) ||
                           result.metrics.stoppedReason === "compute-limit") && (
                           <button
@@ -1591,12 +1736,14 @@ export default function App() {
                             onClick={() =>
                               generate(
                                 result,
-                                [
-                                  "continuous-guarded/6",
-                                  "density-multiscale/7",
-                                ].includes(result.algorithm)
-                                  ? "multiscale"
-                                  : "global",
+                                result.algorithm === "density-physical/8"
+                                  ? "physical"
+                                  : [
+                                        "continuous-guarded/6",
+                                        "density-multiscale/7",
+                                      ].includes(result.algorithm)
+                                    ? "multiscale"
+                                    : "global",
                               )
                             }
                           >
@@ -1604,6 +1751,7 @@ export default function App() {
                               [
                                 "density-optical/5",
                                 "density-multiscale/7",
+                                "density-physical/8",
                               ].includes(result.algorithm)
                                 ? "continueGlobal"
                                 : "rerouteGlobal",
@@ -2186,15 +2334,20 @@ export default function App() {
                                 portrait: p.instruction.params.portrait,
                                 portraitSolver:
                                   p.instruction.algorithm ===
-                                  "density-multiscale/7"
-                                    ? "multiscale"
+                                    "density-physical/8" ||
+                                  p.instruction.params.simplification
+                                    ?.sourceAlgorithm === "density-physical/8"
+                                    ? "physical"
                                     : p.instruction.algorithm ===
-                                        "continuous-guarded/6"
-                                      ? "guarded"
+                                        "density-multiscale/7"
+                                      ? "multiscale"
                                       : p.instruction.algorithm ===
-                                          "density-optical/5"
-                                        ? "global"
-                                        : "continuous",
+                                          "continuous-guarded/6"
+                                        ? "guarded"
+                                        : p.instruction.algorithm ===
+                                            "density-optical/5"
+                                          ? "global"
+                                          : "continuous",
                               });
                               nav("create");
                               setNotice(t("reuseNotice"));

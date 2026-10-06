@@ -79,7 +79,9 @@ export interface Instruction {
     | "greedy-optical/4"
     | "density-optical/5"
     | "continuous-guarded/6"
-    | "density-multiscale/7";
+    | "density-multiscale/7"
+    | "density-physical/8"
+    | "assembly-prune/9";
   id: string;
   createdAt: string;
   imageHash: string;
@@ -94,6 +96,7 @@ export interface Instruction {
     stockPolicy?: "estimate";
     parentSequenceHash?: string;
     refinementStage?: number;
+    simplification?: import("./simplify").SimplificationSettings;
     optimization?: {
       kind?: "density-coordinate" | "optical-coordinate";
       order?: "dispersed-v1";
@@ -101,6 +104,7 @@ export interface Instruction {
       pairLimit?: 32;
       pinDegreeLimit?: 160;
       contrastScales?: [1, 2, 4];
+      contrastPhysical?: import("./physical-contrast").PhysicalContrastSettings;
       edgeWeight?: number;
       sweeps?: number;
       lookahead: number;
@@ -111,6 +115,7 @@ export interface Instruction {
   metrics: {
     densityFit?: {
       removedConnections?: number;
+      routingPairs?: { from: number; to: number; count: number }[];
       sweeps: number;
       evaluations: number;
       fittedConnections: number;
@@ -139,6 +144,11 @@ export interface Instruction {
     durationMs?: number;
     lookaheadPairs?: number;
     peakCacheBytes?: number;
+    physicalContrastBytes?: number;
+    simplificationDifferences?: Record<
+      string,
+      import("./simplify").RegionDifference
+    >;
     refinement?: {
       nextAt: number;
       evaluations: number;
