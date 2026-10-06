@@ -1,6 +1,11 @@
 import type { Locale } from "./core/types";
 const uz = {
-  orientationMap: "Yo‘nalish xaritasi. Mixlar uchun asl o‘lchamdagi raqamli varaqlardan foydalaning.",
+  computationResolution: "Hisoblash aniqligi",
+  experimental: "tajriba",
+  resolutionHint:
+    "Aniqlik mix yoki ipni o‘zgartirmaydi. 192 — tajriba: sekinroq, kontrastning piksel masshtabi o‘zgaradi; sifat kafolatlanmagan.",
+  orientationMap:
+    "Yo‘nalish xaritasi. Mixlar uchun asl o‘lchamdagi raqamli varaqlardan foydalaning.",
   layoutNotice:
     "Alohida sinov taxtasi: mix 0 tepaga nisbatan soat yo‘nalishida surilgan; raqamlar soat yo‘nalishida oshadi. Faqat yangi mos shablondan foydalaning. Burilish:",
   defaultLayout: "Standart mix joylashuviga qaytish (yangi taxta)",
@@ -243,7 +248,12 @@ const uz = {
 };
 export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
-  orientationMap: "Orientation map only. Drill using the numbered actual-size tiles.",
+  computationResolution: "Computation resolution",
+  experimental: "experimental",
+  resolutionHint:
+    "Pins and thread stay unchanged. 192 is experimental: slower, with a changed pixel contrast scale; quality is unproven.",
+  orientationMap:
+    "Orientation map only. Drill using the numbered actual-size tiles.",
   layoutNotice:
     "Separate experimental board: pin 0 is clockwise from board top; numbers increase clockwise. Use only its new matching template. Phase:",
   defaultLayout: "Use default pin layout (new board)",
@@ -484,7 +494,12 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
-  orientationMap: "Схема ориентации. Сверлите по нумерованным листам в натуральном масштабе.",
+  computationResolution: "Разрешение расчёта",
+  experimental: "эксперимент",
+  resolutionHint:
+    "Гвозди и нить не меняются. 192 — эксперимент: медленнее, пиксельный масштаб контраста меняется; качество не гарантировано.",
+  orientationMap:
+    "Схема ориентации. Сверлите по нумерованным листам в натуральном масштабе.",
   layoutNotice:
     "Отдельная экспериментальная доска: гвоздь 0 смещён от верха по часовой стрелке; номера растут по часовой стрелке. Используйте только новый соответствующий шаблон. Угол:",
   defaultLayout: "Стандартное расположение гвоздей (новая доска)",

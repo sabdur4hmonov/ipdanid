@@ -2,8 +2,43 @@ import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 test("portrait target, manual regions, low stock, cancellation and immutable stage continuation", async ({
   page,
-}) => {
+}, info) => {
   test.setTimeout(180000);
+  // Observe the real worker request; no replacement results or source-photo data.
+  await page.addInitScript(() => {
+    const NativeWorker = window.Worker;
+    (window as any).__continuationAudit = [];
+    window.Worker = class extends NativeWorker {
+      postMessage(message: any, ...rest: any[]) {
+        if (message.pixels) {
+          const record = {
+            jobId: message.jobId,
+            strategy: message.strategy,
+            resolution: message.resolution,
+            seedResolution: message.seed?.params.resolution,
+            seedAlgorithm: message.seed?.algorithm,
+            seedImageHash: message.seed?.imageHash,
+            profileMatches:
+              !message.seed ||
+              JSON.stringify(message.profile) ===
+                JSON.stringify(message.seed.profile),
+            portraitMatches:
+              !message.seed ||
+              JSON.stringify(message.portrait) ===
+                JSON.stringify(message.seed.params.portrait),
+            targetHash: "pending",
+          };
+          (window as any).__continuationAudit.push(record);
+          crypto.subtle.digest("SHA-256", message.pixels).then((buffer) => {
+            record.targetHash = Array.from(new Uint8Array(buffer), (b) =>
+              b.toString(16).padStart(2, "0"),
+            ).join("");
+          });
+        }
+        super.postMessage(message, ...(rest as [any]));
+      }
+    } as typeof Worker;
+  });
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
   await page
@@ -55,6 +90,18 @@ test("portrait target, manual regions, low stock, cancellation and immutable sta
     await expect(
       page.getByRole("button", { name: "Cancel", exact: true }),
     ).toBeHidden({ timeout: 120000 });
+    const audit = await page.evaluate(
+      () => (window as any).__continuationAudit,
+    );
+    await info.attach("continuation-request-audit", {
+      body: JSON.stringify(audit, null, 2),
+      contentType: "application/json",
+    });
+    const request = audit.at(-1);
+    expect(request.profileMatches).toBe(true);
+    expect(request.portraitMatches).toBe(true);
+    expect(request.resolution).toBe(request.seedResolution);
+    expect(request.targetHash).toBe(request.seedImageHash);
     await expect(page.locator(".variant-tabs button")).toHaveCount(2);
     await page.locator(".variant-tabs button").first().click();
     await expect(page.locator("canvas[data-sequence-hash]")).toHaveAttribute(

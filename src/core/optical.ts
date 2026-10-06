@@ -84,18 +84,39 @@ export function strandFootprint(
 
 const rasterCache = new WeakMap<
   Instruction,
-  { raster: Float32Array; mask: Uint8Array; completed: number }
+  Map<number, { raster: Float32Array; mask: Uint8Array; completed: number }>
 >();
 export function rasterSequence(
   i: Instruction,
   completed = i.metrics.lines,
 ): Float32Array {
+  return rasterSequenceAtResolution(i, i.params.resolution, completed);
+}
+
+// Evaluation only: reconstruct the actual immutable path on a common sample-center grid.
+// This does not change a guide's optimization resolution, metadata, hash or valid seed.
+export function rasterSequenceAtResolution(
+  i: Instruction,
+  n: number,
+  completed = i.metrics.lines,
+): Float32Array {
+  if (!Number.isInteger(n) || n < 32 || n > 384)
+    throw new Error("Invalid bounded evaluation resolution");
   completed = Math.max(0, Math.min(i.metrics.lines, Math.floor(completed)));
-  const n = i.params.resolution,
-    base = [1, 3, 5].map(
-      (k) => parseInt(i.profile.baseColor.slice(k, k + 2), 16) / 255,
-    );
-  let state = rasterCache.get(i);
+  const base = [1, 3, 5].map(
+    (k) => parseInt(i.profile.baseColor.slice(k, k + 2), 16) / 255,
+  );
+  let grids = rasterCache.get(i);
+  if (!grids) {
+    grids = new Map();
+    rasterCache.set(i, grids);
+  }
+  // Bound optional evaluation grids per instruction; normal assembly retains its grid.
+  if (!grids.has(n) && grids.size >= 3) {
+    const extra = [...grids.keys()].find((k) => k !== i.params.resolution);
+    if (extra !== undefined) grids.delete(extra);
+  }
+  let state = grids.get(n);
   if (!state || completed < state.completed) {
     const mask = Uint8Array.from(
       { length: n * n },
@@ -111,7 +132,7 @@ export function rasterSequence(
       mask,
       completed: 0,
     };
-    rasterCache.set(i, state);
+    grids.set(n, state);
   }
   const { raster, mask } = state;
   let step = 0;

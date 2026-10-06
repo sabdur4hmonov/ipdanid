@@ -3,14 +3,18 @@ import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 const variant = process.argv[2] ?? "distributed-contours",
   folder = process.argv[3] ?? "fidelity";
 const basePath = `output/${folder}`,
-  outputPrefix = ["background", "regions", "guarded", "pin-phase"].includes(
-    folder,
-  )
+  outputPrefix = [
+    "background",
+    "regions",
+    "guarded",
+    "pin-phase",
+    "resolution",
+  ].includes(folder)
     ? `${variant}-`
     : "";
 const baselineData = JSON.parse(
     readFileSync(
-      ["guarded", "pin-phase"].includes(folder)
+      ["guarded", "pin-phase", "resolution"].includes(folder)
         ? `${basePath}/basis-refined.json`
         : folder === "regions"
           ? `${basePath}/${variant}-stage1.json`
@@ -106,7 +110,7 @@ try {
         baseline,
         pixels,
         workerFile,
-        strategy: ["guarded", "pin-phase"].includes(folder)
+        strategy: ["guarded", "pin-phase", "resolution"].includes(folder)
           ? "multiscale"
           : folder === "regions"
             ? "continuous"
@@ -122,7 +126,7 @@ try {
   const evidence = {
     offline: data.offline,
     jobId: data.jobId,
-    strategy: ["guarded", "pin-phase"].includes(folder)
+    strategy: ["guarded", "pin-phase", "resolution"].includes(folder)
       ? "multiscale"
       : folder === "regions"
         ? "continuous"

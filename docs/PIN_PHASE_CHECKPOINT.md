@@ -1,5 +1,7 @@
 # Controlled circular pin phase checkpoint - 2026-10-05
 
+Historical checkpoint. For active resume, read COMPUTATION_RESOLUTION_CHECKPOINT.md; the192 experiment below has now been performed and retained as inconclusive. Keep the unrotated160 default. Historical evidence and next-task rationale below remain preserved.
+
 This increment follows local **7118eb1**. All earlier commits, immutable sequences, reports, physical templates and saved projects/progress remain preserved. No push, publication or personal-photo upload. Read this file first on resume. The full master roadmap is unchanged; likeness and physical acceptance are **OPEN**.
 
 ## Completed isolated experiment and decision

@@ -174,6 +174,7 @@ export default function App() {
     [mode, setMode] = useState<"dark" | "light" | "color">("dark"),
     [lines, setLines] = useState(1400),
     [preset, setPreset] = useState("balanced");
+  const [resolution, setResolution] = useState(160);
   const [portrait, setPortrait] = useState(structuredClone(DEFAULT_PORTRAIT));
   const [pinLayout, setPinLayout] = useState<CircleLayout>();
   const [pinCoordinates, setPinCoordinates] = useState<Pin[]>();
@@ -329,13 +330,13 @@ export default function App() {
         const ctxTarget = targetCanvas.current.getContext("2d")!;
         const pixels = processPortrait(
           prepare(ctxTarget, image, edits, aspect),
-          160,
+          resolution,
           portrait,
         );
-        putRgb(ctxTarget, pixels, 160);
+        putRgb(ctxTarget, pixels, resolution);
       }
     }
-  }, [image, edits, view, aspect, portrait]);
+  }, [image, edits, view, aspect, portrait, resolution]);
   useEffect(() => {
     speak();
     return stopSpeech;
@@ -485,6 +486,7 @@ export default function App() {
     setEdits({ ...p.edits });
   }
   function applySettings(s: MakerSettings) {
+    setResolution(s.resolution ?? 160);
     setShape(s.shape);
     setMode(s.mode);
     setLines(s.lines);
@@ -508,6 +510,7 @@ export default function App() {
         id: crypto.randomUUID(),
         name: presetName.trim(),
         settings: {
+          resolution,
           shape,
           mode,
           lines,
@@ -564,7 +567,8 @@ export default function App() {
     setBusy(true);
     setFraction(0);
     const c = document.createElement("canvas");
-    c.width = c.height = 160;
+    const generationResolution = seed?.params.resolution ?? resolution;
+    c.width = c.height = generationResolution;
     const generationPortrait = seed
       ? structuredClone(seed.params.portrait ?? portrait)
       : snapshotPortrait(portrait);
@@ -578,7 +582,7 @@ export default function App() {
         generationEdits,
         seed ? profile.widthMm / profile.heightMm : aspect,
       ),
-      160,
+      generationResolution,
       generationPortrait,
     );
     const w = new Worker(
@@ -659,7 +663,7 @@ export default function App() {
     w.postMessage({
       jobId,
       pixels,
-      resolution: 160,
+      resolution: generationResolution,
       profile,
       lines: seed?.params.requestedLines ?? lines,
       mode: seed?.params.mode ?? mode,
@@ -1021,7 +1025,30 @@ export default function App() {
                             </span>
                           </label>
                         )}
+                        <label>
+                          <span>{t("computationResolution")}</span>
+                          <select
+                            aria-label={t("computationResolution")}
+                            value={resolution}
+                            disabled={busy}
+                            onChange={(e) => setResolution(+e.target.value)}
+                          >
+                            {![160, 192].includes(resolution) && (
+                              <option value={resolution}>
+                                {resolution} × {resolution}
+                              </option>
+                            )}
+                            <option value={160}>160 × 160</option>
+                            <option value={192}>
+                              192 × 192 · {t("experimental")}
+                            </option>
+                          </select>
+                          <span className="fineprint">
+                            {t("resolutionHint")}
+                          </span>
+                        </label>
                         <RegionEditor
+                          resolution={resolution}
                           portrait={portrait}
                           setPortrait={setPortrait}
                           image={image}
@@ -1031,13 +1058,13 @@ export default function App() {
                         >
                           <canvas
                             ref={targetCanvas}
-                            width={160}
-                            height={160}
+                            width={resolution}
+                            height={resolution}
                             aria-label={t("processedTarget")}
                           />
                         </RegionEditor>
                         <p className="fineprint">
-                          {t("processedTarget")} · 160 × 160 ·{" "}
+                          {t("processedTarget")} · {resolution} × {resolution} ·{" "}
                           {t("originalCrop")}
                         </p>
                         <div hidden={!portrait.enabled}>
@@ -2142,6 +2169,7 @@ export default function App() {
                             onClick={() => {
                               const profile = p.instruction.profile;
                               applySettings({
+                                resolution: p.instruction.params.resolution,
                                 shape: profile.shape,
                                 mode: p.instruction.params.mode,
                                 lines: p.instruction.params.requestedLines,

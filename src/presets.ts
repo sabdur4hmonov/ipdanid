@@ -12,6 +12,7 @@ import { createProfile } from "./core/geometry";
 import { MAX_LINES } from "./core/limits";
 import { validPortrait } from "./core/portrait";
 export interface MakerSettings {
+  resolution?: number;
   shape: Shape;
   mode: "dark" | "light" | "color";
   lines: number;
@@ -71,6 +72,11 @@ function validate(p: MakerPreset) {
     )
       throw new Error("Invalid preset parameters");
   }
+  if (
+    s.resolution !== undefined &&
+    (!Number.isInteger(s.resolution) || s.resolution < 32 || s.resolution > 192)
+  )
+    throw new Error("Invalid saved computation resolution");
   if (s.portrait) validPortrait(s.portrait);
   if (s.pinLayout) {
     validateLayout(s.pinLayout);

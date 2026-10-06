@@ -14,6 +14,7 @@ import type { Key } from "./i18n";
 const keys = ["eyes", "nose", "mouth"] as const;
 type Feature = (typeof keys)[number];
 export function RegionEditor({
+  resolution = 160,
   portrait,
   setPortrait,
   image,
@@ -22,6 +23,7 @@ export function RegionEditor({
   t,
   children,
 }: {
+  resolution?: number;
   portrait: PortraitSettings;
   setPortrait: Dispatch<SetStateAction<PortraitSettings>>;
   image: object;
@@ -73,8 +75,8 @@ export function RegionEditor({
   function point(e: PointerEvent) {
     const r = frame.current!.getBoundingClientRect();
     return {
-      x: displayToSample((e.clientX - r.left) / r.width, 160),
-      y: displayToSample((e.clientY - r.top) / r.height, 160),
+      x: displayToSample((e.clientX - r.left) / r.width, resolution),
+      y: displayToSample((e.clientY - r.top) / r.height, resolution),
     };
   }
   function start(
@@ -112,7 +114,7 @@ export function RegionEditor({
           Object.entries(boxes)
             .filter(([key]) => key !== "outline")
             .map(([key, box]) => {
-              const d = displayBox(box);
+              const d = displayBox(box, resolution);
               return (
                 <div
                   key={key}
