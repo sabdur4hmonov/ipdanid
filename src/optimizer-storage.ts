@@ -1,4 +1,8 @@
-import type { DensityCheckpoint } from "./core/density";
+import type {
+  DensityCheckpoint,
+  DensityTuning,
+  ChordExchangeSettings,
+} from "./core/density";
 import type { EditParams, Instruction } from "./core/types";
 export interface OptimizerRecovery {
   version: "iprasm.optimizer-recovery/1";
@@ -9,6 +13,9 @@ export interface OptimizerRecovery {
   strategy: "physical";
   edits: EditParams;
   name: string;
+  extension?: DensityTuning["extension"];
+  totalSweeps?: number;
+  exchange?: ChordExchangeSettings;
 }
 async function database() {
   return new Promise<IDBDatabase>((resolve, reject) => {

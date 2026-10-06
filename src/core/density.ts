@@ -32,6 +32,21 @@ export interface DensityCheckpoint {
   removedConnections: number;
   plateau: boolean;
   elapsedMs: number;
+  exchange?: {
+    version: "chord-exchange-state/1";
+    cursor: number;
+    proposals: [number, number][];
+    poolEvaluations: number;
+    proposalEvaluations: number;
+    accepted: number;
+  };
+}
+export interface ChordExchangeSettings {
+  version: "chord-exchange/1";
+  mode: "single" | "paired";
+  evaluationLimit: number;
+  poolSize: number;
+  selection: "initial-full-objective-gain/1" | "nose-lip-residual/1";
 }
 export interface DensityTuning {
   edgeWeight: number;
@@ -40,6 +55,14 @@ export interface DensityTuning {
   physical?: PhysicalContrastSettings;
   resume?: DensityCheckpoint;
   onCheckpoint?: (checkpoint: DensityCheckpoint) => Promise<void> | void;
+  extension?: {
+    checkpoint: DensityCheckpoint;
+    priorSweepLimit: number;
+    reference: Instruction;
+  };
+  // Route a validated saved graph for inspection without consuming more sweeps.
+  materializeOnly?: boolean;
+  exchange?: ChordExchangeSettings;
 }
 export async function generateDensity(
   o: GenerateOptions,
@@ -56,6 +79,72 @@ export async function generateDensity(
   if (o.seed) assertContinuation(o, await hash(o.pixels));
   validPortrait(portrait);
   if (o.seed) await validateInstruction(o.seed);
+  if (tuning.materializeOnly && !tuning.resume)
+    throw Error("A materialized snapshot requires a bound saved state");
+  const extension = tuning.extension;
+  const exchange = tuning.exchange;
+  if (
+    exchange &&
+    (extension ||
+      !o.seed ||
+      !tuning.physical ||
+      tuning.sweeps !== 1 ||
+      exchange.version !== "chord-exchange/1" ||
+      !["single", "paired"].includes(exchange.mode) ||
+      !["initial-full-objective-gain/1", "nose-lip-residual/1"].includes(
+        exchange.selection,
+      ) ||
+      !Number.isSafeInteger(exchange.evaluationLimit) ||
+      exchange.evaluationLimit < 100 ||
+      exchange.evaluationLimit > 200000 ||
+      !Number.isSafeInteger(exchange.poolSize) ||
+      exchange.poolSize < 8 ||
+      exchange.poolSize > 256)
+  )
+    throw Error("Invalid bounded chord-exchange settings");
+  if (extension) {
+    const { checkpoint, priorSweepLimit, reference } = extension;
+    await validateInstruction(reference);
+    if (
+      !tuning.physical ||
+      reference.algorithm !== "density-physical/8" ||
+      reference.params.optimization?.convergence ||
+      !Number.isSafeInteger(priorSweepLimit) ||
+      priorSweepLimit < 1 ||
+      priorSweepLimit >= tuning.sweeps ||
+      tuning.sweeps > 24 ||
+      checkpoint.sweeps !== priorSweepLimit ||
+      reference.params.optimization?.sweeps !== priorSweepLimit ||
+      reference.metrics.densityFit?.sweeps !== priorSweepLimit ||
+      reference.params.parentSequenceHash !== o.seed?.sequenceHash
+    )
+      throw Error("Invalid explicit convergence extension");
+    // Never rewrite the old binding/checksum. Validate and route it under the
+    // EXACT old budget; no fit sweep is repeated. The executable hash must match.
+    const prior = await generateDensity(
+      {
+        ...o,
+        onProgress: undefined,
+        onDiagnostic: (d) =>
+          o.onDiagnostic?.({
+            ...d,
+            stage: "extension-validation",
+            originalStage: d.stage,
+          }),
+      },
+      {
+        edgeWeight: tuning.edgeWeight,
+        sweeps: priorSweepLimit,
+        multiscale: tuning.multiscale,
+        physical: tuning.physical,
+        resume: checkpoint,
+      },
+    );
+    if (prior.sequenceHash !== reference.sequenceHash)
+      throw Error(
+        "Extension state does not reproduce its executable reference",
+      );
+  }
   assertPinSpacing(p);
   if (
     !Number.isInteger(n) ||
@@ -263,7 +352,10 @@ export async function generateDensity(
     const e = r - t;
     return e * e * (e < 0 ? overshoot(t) : 1);
   };
-  const gain = (f: Footprint, delta: number) => {
+  const gain = (
+    f: Pick<Footprint, "pixels"> & { density: Float32Array | Float64Array },
+    delta: number,
+  ) => {
     epoch++;
     let value = 0;
     for (let k = 0; k < f.pixels.length; k++) {
@@ -339,9 +431,15 @@ export async function generateDensity(
       }
     return best;
   };
-  const apply = (a: number, b: number, delta: number, f: Footprint) => {
+  const apply = (
+    a: number,
+    b: number,
+    delta: number,
+    f: Footprint,
+    knownGain?: number,
+  ) => {
     const id = key(a, b);
-    objective -= gain(f, delta);
+    objective -= knownGain ?? gain(f, delta);
     counts[id] += delta;
     pinDegree[a] += delta;
     pinDegree[b] += delta;
@@ -393,7 +491,7 @@ export async function generateDensity(
   let plateau = false,
     priorElapsed = 0;
   const binding =
-    tuning.resume || tuning.onCheckpoint
+    tuning.resume || tuning.onCheckpoint || extension
       ? await hash(
           JSON.stringify({
             version: "density-fit-checkpoint/1",
@@ -408,23 +506,36 @@ export async function generateDensity(
             sweeps: tuning.sweeps,
             multiscale: tuning.multiscale ?? false,
             physical: tuning.physical,
+            ...(exchange ? { exchange } : {}),
+            ...(extension
+              ? {
+                  extension: {
+                    version: "density-convergence/1",
+                    reference: extension.reference.sequenceHash,
+                    checkpointChecksum: extension.checkpoint.checksum,
+                    priorSweepLimit: extension.priorSweepLimit,
+                  },
+                }
+              : {}),
           }),
         )
       : "";
-  if (tuning.resume) {
-    const s = tuning.resume,
+  if (tuning.resume || extension) {
+    const s = tuning.resume ?? extension!.checkpoint,
       { checksum, ...payload } = s;
     if (
       s.version !== "density-fit-checkpoint/1" ||
-      s.binding !== binding ||
+      s.binding !== (tuning.resume ? binding : extension!.checkpoint.binding) ||
       (await hash(JSON.stringify(payload))) !== checksum ||
       s.counts.length !== counts.length ||
       s.density.length !== size ||
       !Number.isSafeInteger(s.sweeps) ||
-      s.sweeps < 1 ||
+      s.sweeps < (exchange ? 0 : 1) ||
       s.sweeps > tuning.sweeps ||
       !Number.isSafeInteger(s.evaluations) ||
-      s.evaluations !== s.sweeps * pairs.length ||
+      (exchange
+        ? s.evaluations > exchange.evaluationLimit
+        : s.evaluations !== s.sweeps * pairs.length) ||
       !Number.isSafeInteger(s.removedConnections) ||
       s.removedConnections < 0 ||
       typeof s.plateau !== "boolean" ||
@@ -493,7 +604,11 @@ export async function generateDensity(
     plateau = s.plateau;
     priorElapsed = s.elapsedMs;
   }
-  for (let sweep = sweeps; !plateau && sweep < tuning.sweeps; sweep++) {
+  for (
+    let sweep = sweeps;
+    !exchange && !tuning.materializeOnly && !plateau && sweep < tuning.sweeps;
+    sweep++
+  ) {
     let changed = 0;
     const old = objective;
     // Reverse order each sweep reduces bias from early, unrefined dark connections.
@@ -542,6 +657,266 @@ export async function generateDensity(
         checksum: await hash(JSON.stringify(payload)),
       });
     }
+  }
+  let exchangeState = tuning.resume?.exchange;
+  if (exchange) {
+    const eligibleId = (id: number) => {
+      const a = Math.floor(id / p.pins.length),
+        b = id % p.pins.length;
+      return (
+        Number.isSafeInteger(id) &&
+        a >= 0 &&
+        a < b &&
+        b < p.pins.length &&
+        connectionAllowed(p, a, b)
+      );
+    };
+    if (
+      tuning.resume &&
+      (!exchangeState ||
+        exchangeState.version !== "chord-exchange-state/1" ||
+        ![
+          exchangeState.cursor,
+          exchangeState.poolEvaluations,
+          exchangeState.proposalEvaluations,
+          exchangeState.accepted,
+        ].every((v) => Number.isSafeInteger(v) && v >= 0) ||
+        !Array.isArray(exchangeState.proposals) ||
+        exchangeState.cursor > exchangeState.proposals.length ||
+        exchangeState.accepted > exchangeState.proposalEvaluations ||
+        exchangeState.proposals.length > exchange.poolSize ** 2 ||
+        exchangeState.proposals.some(
+          (pair) =>
+            !Array.isArray(pair) ||
+            pair.length !== 2 ||
+            pair[0] === pair[1] ||
+            !pair.every(eligibleId),
+        ) ||
+        exchangeState.poolEvaluations + exchangeState.proposalEvaluations !==
+          evaluations)
+    )
+      throw Error("Invalid chord-exchange recovery state");
+    const checkpoint = async () => {
+      if (!tuning.onCheckpoint) return;
+      const payload = {
+        version: "density-fit-checkpoint/1" as const,
+        binding,
+        counts: Array.from(counts),
+        density: Array.from(density),
+        objective,
+        sweeps,
+        evaluations,
+        removedConnections,
+        plateau,
+        elapsedMs: priorElapsed + performance.now() - started,
+        exchange: structuredClone(exchangeState!),
+      };
+      await tuning.onCheckpoint({
+        ...payload,
+        checksum: await hash(JSON.stringify(payload)),
+      });
+    };
+    if (!exchangeState) {
+      const feature = Uint8Array.from(
+        { length: size },
+        (_, i) =>
+          +(
+            contains(
+              regions.nose,
+              (i % n) / (n - 1),
+              Math.floor(i / n) / (n - 1),
+            ) ||
+            contains(
+              regions.mouth,
+              (i % n) / (n - 1),
+              Math.floor(i / n) / (n - 1),
+            )
+          ),
+      );
+      const localPriority = (f: Footprint, delta: number) => {
+        let value = 0;
+        for (let k = 0; k < f.pixels.length; k++) {
+          const i = f.pixels[k];
+          if (!mask[i] || !feature[i]) continue;
+          const next = il + (density[i] - il) * Math.exp(-delta * f.density[k]);
+          value +=
+            weight[i] *
+            (penalty(density[i], target[i]) - penalty(next, target[i]));
+        }
+        return value;
+      };
+      const adds: { id: number; g: number }[] = [],
+        drops: { id: number; g: number }[] = [];
+      for (let j = 0; j < pairs.length; j++) {
+        check();
+        const [a, b] = pairs[j],
+          id = key(a, b),
+          f = footprint(a, b);
+        // Both modes pay for exactly the same initial pool construction.
+        const qualified =
+          exchange.selection !== "nose-lip-residual/1" ||
+          f.pixels.some((i) => !!feature[i] && !!mask[i]);
+        if (qualified && evaluations < exchange.evaluationLimit) {
+          const full = gain(f, 1);
+          adds.push({
+            id,
+            g:
+              exchange.selection === "nose-lip-residual/1"
+                ? localPriority(f, 1)
+                : full,
+          });
+          evaluations++;
+        }
+        if (qualified && counts[id] && evaluations < exchange.evaluationLimit) {
+          const full = gain(f, -1);
+          drops.push({
+            id,
+            g:
+              exchange.selection === "nose-lip-residual/1"
+                ? localPriority(f, -1)
+                : full,
+          });
+          evaluations++;
+        }
+        if (j % 128 === 0) {
+          o.onProgress?.((0.9 * evaluations) / exchange.evaluationLimit);
+          await new Promise((r) => setTimeout(r, 0));
+        }
+      }
+      const rank = (
+        a: { id: number; g: number },
+        b: { id: number; g: number },
+      ) => b.g - a.g || a.id - b.id;
+      adds.sort(rank);
+      drops.sort(rank);
+      const pool = adds.slice(0, exchange.poolSize).flatMap((a) =>
+        drops
+          .slice(0, exchange.poolSize)
+          .filter((d) => d.id !== a.id)
+          .map((d) => ({ a: a.id, d: d.id, g: a.g + d.g })),
+      );
+      pool.sort((a, b) => b.g - a.g || a.a - b.a || a.d - b.d);
+      exchangeState = {
+        version: "chord-exchange-state/1",
+        cursor: 0,
+        proposals: pool.map((v) => [v.a, v.d]),
+        poolEvaluations: evaluations,
+        proposalEvaluations: 0,
+        accepted: 0,
+      };
+      await checkpoint();
+    }
+    const feasibleChange = (addId: number, dropId: number) => {
+      if (counts[dropId] < 1 || counts[addId] >= pairLimit) return false;
+      const changes = new Map<number, number>();
+      for (const [id, delta] of [
+        [dropId, -1],
+        [addId, 1],
+      ])
+        for (const nail of [Math.floor(id / p.pins.length), id % p.pins.length])
+          changes.set(nail, (changes.get(nail) ?? 0) + delta);
+      return [...changes].every(
+        ([nail, delta]) => pinDegree[nail] + delta <= pinDegreeLimit,
+      );
+    };
+    const combined = (addId: number, dropId: number) => {
+      const a = footprint(
+          Math.floor(addId / p.pins.length),
+          addId % p.pins.length,
+        ),
+        d = footprint(
+          Math.floor(dropId / p.pins.length),
+          dropId % p.pins.length,
+        );
+      const map = new Map<number, number>();
+      for (let k = 0; k < a.pixels.length; k++)
+        map.set(a.pixels[k], a.density[k]);
+      for (let k = 0; k < d.pixels.length; k++)
+        map.set(d.pixels[k], (map.get(d.pixels[k]) ?? 0) - d.density[k]);
+      return {
+        pixels: Uint32Array.from(map.keys()),
+        density: Float64Array.from(map.values()),
+      };
+    };
+    for (
+      ;
+      !tuning.materializeOnly &&
+      exchangeState.cursor < exchangeState.proposals.length;
+      exchangeState.cursor++
+    ) {
+      check();
+      const [addId, dropId] = exchangeState.proposals[exchangeState.cursor];
+      const needed = exchange.mode === "paired" ? 1 : 2;
+      if (evaluations + needed > exchange.evaluationLimit) break;
+      if (exchange.mode === "paired") {
+        {
+          const f = combined(addId, dropId),
+            g = gain(f, 1);
+          evaluations++;
+          exchangeState.proposalEvaluations++;
+          if (feasibleChange(addId, dropId) && g > 1e-7) {
+            objective -= g;
+            counts[addId]++;
+            counts[dropId]--;
+            removedConnections++;
+            exchangeState.accepted++;
+            for (const [id, delta] of [
+              [dropId, -1],
+              [addId, 1],
+            ]) {
+              pinDegree[Math.floor(id / p.pins.length)] += delta;
+              pinDegree[id % p.pins.length] += delta;
+            }
+            for (let k = 0; k < f.pixels.length; k++) {
+              const i = f.pixels[k];
+              if (mask[i])
+                density[i] = il + (density[i] - il) * Math.exp(-f.density[k]);
+            }
+          }
+        }
+      } else {
+        for (const [id, delta] of [
+          [dropId, -1],
+          [addId, 1],
+        ]) {
+          const a = Math.floor(id / p.pins.length),
+            b = id % p.pins.length,
+            f = footprint(a, b);
+          const legal =
+            delta < 0
+              ? counts[id] > 0
+              : counts[id] < pairLimit &&
+                pinDegree[a] < pinDegreeLimit &&
+                pinDegree[b] < pinDegreeLimit &&
+                total < fitLimit;
+          // Charge an exact objective evaluation even if this independent change
+          // is infeasible, matching the declared evaluation budget.
+          const g = gain(f, delta);
+          evaluations++;
+          exchangeState.proposalEvaluations++;
+          if (legal && g > 1e-7) {
+            apply(a, b, delta, f, g);
+            exchangeState.accepted++;
+          }
+        }
+      }
+      if (exchangeState.cursor % 128 === 127) {
+        exchangeState.cursor++;
+        await checkpoint();
+        exchangeState.cursor--;
+        o.onDiagnostic?.({
+          stage: "exchange",
+          mode: exchange.mode,
+          evaluations,
+          evaluationLimit: exchange.evaluationLimit,
+          accepted: exchangeState.accepted,
+          objective: objective / weightSum,
+        });
+        o.onProgress?.((0.9 * evaluations) / exchange.evaluationLimit);
+        await new Promise((r) => setTimeout(r, 0));
+      }
+    }
+    await checkpoint();
   }
   const fittedConnections = total;
   const fitObjective = objective;
@@ -729,6 +1104,21 @@ export async function generateDensity(
         overshoot: "target-luminance-v1",
         pairLimit,
         pinDegreeLimit,
+        ...(exchange ? { exchange: structuredClone(exchange) } : {}),
+        ...(extension
+          ? {
+              convergence: {
+                version: "density-convergence/1" as const,
+                rootSequenceHash: extension.reference.sequenceHash,
+                originalCheckpointChecksum: extension.checkpoint.checksum,
+                priorSweeps: extension.checkpoint.sweeps,
+                priorSweepLimit: extension.priorSweepLimit,
+                plannedTotalSweeps: tuning.sweeps,
+                additionalSweeps: sweeps - extension.checkpoint.sweeps,
+                snapshot: !!tuning.materializeOnly,
+              },
+            }
+          : {}),
         ...(tuning.physical
           ? { contrastPhysical: structuredClone(tuning.physical) }
           : {}),
@@ -752,6 +1142,21 @@ export async function generateDensity(
       durationMs: priorElapsed + performance.now() - started,
       peakCacheBytes,
       ...(physical ? { physicalContrastBytes: physical.bytes } : {}),
+      ...(exchange && exchangeState
+        ? {
+            exchange: {
+              evaluations,
+              accepted: exchangeState.accepted,
+              proposals: exchangeState.cursor,
+              poolEvaluations: exchangeState.poolEvaluations,
+              proposalEvaluations: exchangeState.proposalEvaluations,
+              stop:
+                evaluations >= exchange.evaluationLimit - 1
+                  ? ("evaluation-limit" as const)
+                  : ("candidate-pool-exhausted" as const),
+            },
+          }
+        : {}),
       densityFit: {
         sweeps,
         evaluations,

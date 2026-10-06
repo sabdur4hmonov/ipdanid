@@ -306,6 +306,70 @@ export async function validateInstruction(
           throw new Error("Exceeded winding guards");
       }
       const fit = i.metrics.densityFit;
+      const exchange = i.params.optimization?.exchange;
+      if (exchange) {
+        const evidence = i.metrics.exchange;
+        if (
+          i.algorithm !== "density-physical/8" ||
+          i.params.optimization?.convergence ||
+          exchange.version !== "chord-exchange/1" ||
+          !["single", "paired"].includes(exchange.mode) ||
+          !["initial-full-objective-gain/1", "nose-lip-residual/1"].includes(
+            exchange.selection,
+          ) ||
+          !Number.isSafeInteger(exchange.evaluationLimit) ||
+          exchange.evaluationLimit < 100 ||
+          exchange.evaluationLimit > 200000 ||
+          !Number.isSafeInteger(exchange.poolSize) ||
+          exchange.poolSize < 8 ||
+          exchange.poolSize > 256 ||
+          !evidence ||
+          ![
+            evidence.evaluations,
+            evidence.accepted,
+            evidence.proposals,
+            evidence.poolEvaluations,
+            evidence.proposalEvaluations,
+          ].every((v) => Number.isSafeInteger(v) && v >= 0) ||
+          evidence.evaluations > exchange.evaluationLimit ||
+          evidence.accepted > evidence.proposalEvaluations ||
+          evidence.proposals > exchange.poolSize ** 2 ||
+          evidence.evaluations !==
+            evidence.poolEvaluations + evidence.proposalEvaluations ||
+          !["evaluation-limit", "candidate-pool-exhausted"].includes(
+            evidence.stop,
+          ) ||
+          fit?.sweeps !== 0 ||
+          fit?.evaluations !== evidence.evaluations ||
+          !i.params.parentSequenceHash
+        )
+          throw Error("Invalid chord-exchange provenance");
+      } else if (i.metrics.exchange)
+        throw Error("Unbound chord-exchange evidence");
+      const convergence = i.params.optimization?.convergence;
+      if (
+        convergence &&
+        (i.algorithm !== "density-physical/8" ||
+          convergence.version !== "density-convergence/1" ||
+          !/^[a-f0-9]{64}$/.test(convergence.rootSequenceHash) ||
+          !/^[a-f0-9]{64}$/.test(convergence.originalCheckpointChecksum) ||
+          ![
+            convergence.priorSweeps,
+            convergence.priorSweepLimit,
+            convergence.plannedTotalSweeps,
+            convergence.additionalSweeps,
+          ].every(Number.isSafeInteger) ||
+          convergence.priorSweeps < 1 ||
+          convergence.priorSweeps !== convergence.priorSweepLimit ||
+          convergence.plannedTotalSweeps <= convergence.priorSweepLimit ||
+          convergence.plannedTotalSweeps > 24 ||
+          convergence.plannedTotalSweeps !== i.params.optimization?.sweeps ||
+          convergence.additionalSweeps < 0 ||
+          convergence.priorSweeps + convergence.additionalSweeps !==
+            fit?.sweeps ||
+          typeof convergence.snapshot !== "boolean")
+      )
+        throw Error("Invalid convergence provenance");
       if (
         !i.params.portrait?.enabled ||
         i.params.mode === "color" ||
@@ -316,7 +380,7 @@ export async function validateInstruction(
           fit.fittedConnections,
           fit.routingConnections,
         ].every((v) => Number.isSafeInteger(v) && v >= 0) ||
-        fit.sweeps < 1 ||
+        fit.sweeps < (exchange ? 0 : 1) ||
         fit.sweeps > 24 ||
         fit.fittedConnections + fit.routingConnections !== total ||
         (fit.removedConnections !== undefined &&

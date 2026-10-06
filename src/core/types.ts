@@ -107,12 +107,31 @@ export interface Instruction {
       contrastPhysical?: import("./physical-contrast").PhysicalContrastSettings;
       edgeWeight?: number;
       sweeps?: number;
+      convergence?: {
+        version: "density-convergence/1";
+        rootSequenceHash: string;
+        originalCheckpointChecksum: string;
+        priorSweeps: number;
+        priorSweepLimit: number;
+        plannedTotalSweeps: number;
+        additionalSweeps: number;
+        snapshot: boolean;
+      };
+      exchange?: import("./density").ChordExchangeSettings;
       lookahead: number;
       coarseScale: number;
       minimumRelativeGain: number;
     };
   };
   metrics: {
+    exchange?: {
+      evaluations: number;
+      accepted: number;
+      proposals: number;
+      poolEvaluations: number;
+      proposalEvaluations: number;
+      stop: "evaluation-limit" | "candidate-pool-exhausted";
+    };
     densityFit?: {
       removedConnections?: number;
       routingPairs?: { from: number; to: number; count: number }[];

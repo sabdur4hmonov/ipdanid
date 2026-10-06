@@ -54,6 +54,8 @@ const uz = {
   connectionsSaved: "tejalgan ulanish",
   physicalSolver: "Fizik masofali kontrast (v8, tajriba)",
   physicalStage: "Kontrast bosqichi / jami / baholashlar:",
+  extensionStage: "Saqlangan holat va asl yo‘riqnoma tekshirilmoqda…",
+  exchangeStage: "Tajriba: ip joylashuvi variantlari tekshirilmoqda:",
   routingStage: "Barcha haqiqiy ulanishlarni yo‘naltirish va tekshirish…",
   multiscaleSolver: "Ko‘p masshtabli kontrast (v7, tajriba)",
   guardHint:
@@ -319,6 +321,8 @@ const en: Record<Key, string> = {
   connectionsSaved: "connections saved",
   physicalSolver: "Physical-distance contrast (v8, experimental)",
   physicalStage: "Contrast sweep / planned / evaluations:",
+  extensionStage: "Checking saved state against its original instructions…",
+  exchangeStage: "Experimental strand placement search:",
   routingStage: "Routing and checking every physical connection…",
   multiscaleSolver: "Multiscale contrast (v7, experimental)",
   guardHint:
@@ -581,6 +585,8 @@ const ru: Record<Key, string> = {
   connectionsSaved: "сэкономленных соединений",
   physicalSolver: "Контраст по физическим расстояниям (v8, эксперимент)",
   physicalStage: "Проход / запланировано / оценок:",
+  extensionStage: "Проверка сохранённого состояния и исходной инструкции…",
+  exchangeStage: "Экспериментальный поиск расположения нитей:",
   routingStage: "Прокладка и проверка всех физических соединений…",
   multiscaleSolver: "Многомасштабный контраст (v7, эксперимент)",
   guardHint:

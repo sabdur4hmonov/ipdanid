@@ -1,10 +1,10 @@
 """Actual PDF circles/complete glyph coverage; unchanged physical coordinates, no print trial."""
 from pathlib import Path
-import json,math
+import json,math,sys
 import pdfplumber
-folder=Path('output/contrast');mm=72/25.4;pw=210*mm;ph=297*mm;margin=18*mm;top=ph-margin-35
+folder=Path('output')/(sys.argv[1] if len(sys.argv)>1 else 'contrast');mm=72/25.4;pw=210*mm;ph=297*mm;margin=18*mm;top=ph-margin-35
 tilew=(pw-2*margin)/mm;tileh=(ph-2*margin-40)/mm
-for name in ['physical-2','simplified']:
+for name in (sys.argv[2:] or ['physical-2','simplified']):
  i=json.loads((folder/f'{name}.json').read_text())['instruction'];pins=i['profile']['pins'];p=i['profile'];covered=set();geometry=0
  with pdfplumber.open(folder/f'{name}-guide.pdf') as pdf:
   assert pdf.metadata['Subject']=='Sequence SHA-256: '+i['sequenceHash']

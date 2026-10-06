@@ -5,7 +5,9 @@ const prefix = process.argv[2] ?? "continued",
   browser = await chromium.launch({ headless: true });
 const refreshPdf = process.argv[4] === "--refresh-pdf";
 if (
-  ["guarded", "pin-phase", "resolution", "contrast"].includes(folder) &&
+  ["guarded", "pin-phase", "resolution", "contrast", "convergence"].includes(
+    folder,
+  ) &&
   existsSync(`output/${folder}/${prefix}-guide.json`) &&
   !refreshPdf
 ) {
@@ -22,10 +24,10 @@ try {
           await import("/src/core/validation.ts"),
         { exportPdf } = await import("/src/core/pdf.ts"),
         { renderInstruction } = await import("/src/core/render.ts");
-      const instruction = await validateInstruction(
-        (await (await fetch(`/output/${folder}/${prefix}.json`)).json())
-          .instruction,
-      );
+      const record = await (
+        await fetch(`/output/${folder}/${prefix}.json`)
+      ).json();
+      const instruction = await validateInstruction(record.instruction);
       const source = (
         await (await fetch("/output/portrait/browser-guide.json")).json()
       ).project;
@@ -33,22 +35,25 @@ try {
         ...source,
         id: crypto.randomUUID(),
         name:
-          folder === "contrast"
-            ? `Physical-distance / separate assembly experiment — ${prefix} (quality acceptance open)`
-            : folder === "resolution"
-              ? `192px unrotated experiment — ${prefix} (quality unaccepted)`
-              : folder === "pin-phase"
-                ? `Experimental NEW board +0.75° clockwise — ${prefix} (quality unaccepted)`
-                : folder === "guarded"
-                  ? `Guarded distribution — ${prefix} (quality unaccepted)`
-                  : folder === "regions"
-                    ? `Corrected regions — ${prefix} (quality unaccepted)`
-                    : folder === "background"
-                      ? `Background experiment — ${prefix} (quality unaccepted)`
-                      : instruction.algorithm === "density-optical/5"
-                        ? "Global contour portrait variant"
-                        : `Portrait refinement stage ${instruction.params.refinementStage ?? 1}`,
+          folder === "convergence"
+            ? `Bounded quality diagnostic — ${prefix} (quality acceptance open)`
+            : folder === "contrast"
+              ? `Physical-distance / separate assembly experiment — ${prefix} (quality acceptance open)`
+              : folder === "resolution"
+                ? `192px unrotated experiment — ${prefix} (quality unaccepted)`
+                : folder === "pin-phase"
+                  ? `Experimental NEW board +0.75° clockwise — ${prefix} (quality unaccepted)`
+                  : folder === "guarded"
+                    ? `Guarded distribution — ${prefix} (quality unaccepted)`
+                    : folder === "regions"
+                      ? `Corrected regions — ${prefix} (quality unaccepted)`
+                      : folder === "background"
+                        ? `Background experiment — ${prefix} (quality unaccepted)`
+                        : instruction.algorithm === "density-optical/5"
+                          ? "Global contour portrait variant"
+                          : `Portrait refinement stage ${instruction.params.refinementStage ?? 1}`,
         instruction,
+        ...(folder === "convergence" ? { edits: record.edits } : {}),
         progress: progressFor(instruction),
       };
       const c = document.createElement("canvas");

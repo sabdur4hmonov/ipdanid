@@ -1,3 +1,5 @@
+Current resume pointer: **QUALITY_CONVERGENCE_CHECKPOINT.md**. The bounded19-total-sweep extension and separately versioned exchange probes are now complete and retained. This document remains historical evidence; its next-task instructions are superseded. Do not repeat its completed8comparison/512proposal simplification. Quality/physical/fullroadmap acceptance remains open.
+
 # Physical-distance contrast and assembly simplification checkpoint — 2026-10-06
 
 Continues local **71eb641**. Existing commits, projects/progress, all diagnostic sequences, reports and templates are preserved. No push, publication or external photograph upload. Default resolution remains160/unrotated based on mixed visual evidence/reliability, not speed. Full M0–M7 scope and acceptance order remain open. Priority: likeness/buildability → fewer unnecessary customer actions → computation speed. Physical assembly, varied portraits, Android/iOS device and production acceptance remain separate and OPEN.

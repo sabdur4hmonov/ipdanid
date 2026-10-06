@@ -66,6 +66,11 @@ self.onmessage = async ({ data }) => {
                 (["multiscale", "physical"].includes(data.strategy) ? 2 : 1),
               sweeps: data.seed?.params.optimization?.sweeps ?? 8,
               multiscale: data.strategy === "multiscale",
+              ...(data.extension
+                ? { extension: data.extension, sweeps: data.totalSweeps }
+                : {}),
+              ...(data.exchange ? { exchange: data.exchange, sweeps: 1 } : {}),
+              ...(data.materializeOnly ? { materializeOnly: true } : {}),
               ...(data.strategy === "physical"
                 ? {
                     physical:
@@ -83,6 +88,9 @@ self.onmessage = async ({ data }) => {
                         checkpoint,
                         seed: options.seed,
                         lines: data.lines,
+                        extension: data.extension,
+                        totalSweeps: data.totalSweeps,
+                        exchange: data.exchange,
                       }),
                   }
                 : {}),

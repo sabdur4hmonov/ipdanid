@@ -647,6 +647,9 @@ export default function App() {
           strategy: "physical",
           edits: generationEdits,
           name: label,
+          extension: data.extension,
+          totalSweeps: data.totalSweeps,
+          exchange: data.exchange,
         };
         try {
           await saveOptimizerRecovery(value);
@@ -657,7 +660,13 @@ export default function App() {
         return;
       }
       if (data.type === "stage") {
-        if (data.diagnostic.stage === "fit")
+        if (data.diagnostic.stage === "extension-validation")
+          setNotice(t("extensionStage"));
+        else if (data.diagnostic.stage === "exchange")
+          setNotice(
+            `${t("exchangeStage")} ${data.diagnostic.evaluations}/${data.diagnostic.evaluationLimit}`,
+          );
+        else if (data.diagnostic.stage === "fit")
           setNotice(
             `${t("physicalStage")} ${data.diagnostic.sweep}/${data.diagnostic.plannedSweeps} · ${data.diagnostic.evaluations}`,
           );
@@ -760,6 +769,9 @@ export default function App() {
       portrait: generationPortrait,
       seed,
       resume: resume?.checkpoint,
+      extension: resume?.extension,
+      totalSweeps: resume?.totalSweeps,
+      exchange: resume?.exchange,
       strategy:
         strategyOverride ??
         (seed?.algorithm === "density-physical/8"
