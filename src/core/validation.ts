@@ -589,7 +589,7 @@ export async function parseProjectFile(
     throw new Error("Invalid project progress");
   confirm(p.progress, p.progress.confirmed, p.instruction);
   const limits = {
-    zoom: [1, 3],
+    zoom: [0.25, 6],
     panX: [-0.5, 0.5],
     panY: [-0.5, 0.5],
     rotation: [-180, 180],

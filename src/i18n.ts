@@ -1,5 +1,16 @@
 import type { Locale } from "./core/types";
 const uz = {
+  shapeCropHint:
+    "Suratni shakl ichida suring; ikki barmoq yoki sichqoncha g‘ildiragi bilan kattalashtiring.",
+  markFace: "Yuz chegarasini belgilash",
+  fitFaceShape: "Belgilangan yuzni shaklga moslash",
+  undoShapeFit: "Moslashni bekor qilish",
+  shapeFaceEstimate:
+    "Yuz belgisi — boshlang‘ich taxmin, avtomatik aniqlash emas. Butun yuz, quloqlar va iyakni qamrab oladigan qilib suring va o‘lchamini o‘zgartiring.",
+  shapeFitNotice:
+    "Surat nisbatlari saqlandi, belgilangan yuz shakl ichiga joylashtirildi. Fon belgilari tozalandi; kerak bo‘lsa qayta belgilang. Bu o‘xshashlik kafolati emas.",
+  shapeFitUnavailable:
+    "Belgilangan yuz bu sozlamalarda sig‘madi. Belgini va surat joylashuvini tekshiring.",
   computationResolution: "Hisoblash aniqligi",
   experimental: "tajriba",
   resolutionHint:
@@ -267,6 +278,17 @@ const uz = {
 };
 export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
+  shapeCropHint:
+    "Drag the photo inside the shape; pinch or use the mouse wheel to zoom.",
+  markFace: "Mark face bounds",
+  fitFaceShape: "Fit marked face to shape",
+  undoShapeFit: "Undo shape fit",
+  shapeFaceEstimate:
+    "The face box is an initial estimate, not automatic detection. Move and resize it to include the whole face, ears and jaw.",
+  shapeFitNotice:
+    "Photo proportions preserved; the marked face is inside the shape. Background marks were cleared; correct them again if needed. This does not guarantee likeness.",
+  shapeFitUnavailable:
+    "The marked face cannot fit with these controls. Check the box and photo framing.",
   computationResolution: "Computation resolution",
   experimental: "experimental",
   resolutionHint:
@@ -532,6 +554,17 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
+  shapeCropHint:
+    "Перемещайте фото внутри формы; масштабируйте двумя пальцами или колёсиком мыши.",
+  markFace: "Отметить границы лица",
+  fitFaceShape: "Вписать отмеченное лицо в форму",
+  undoShapeFit: "Отменить вписывание",
+  shapeFaceEstimate:
+    "Рамка лица — начальное предположение, не автоматическое распознавание. Переместите и измените её, охватив всё лицо, уши и подбородок.",
+  shapeFitNotice:
+    "Пропорции фото сохранены; отмеченное лицо вписано в форму. Метки фона очищены; при необходимости исправьте их снова. Это не гарантия сходства.",
+  shapeFitUnavailable:
+    "Отмеченное лицо не помещается при этих настройках. Проверьте рамку и положение фото.",
   computationResolution: "Разрешение расчёта",
   experimental: "эксперимент",
   resolutionHint:

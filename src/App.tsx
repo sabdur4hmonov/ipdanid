@@ -36,6 +36,8 @@ import { MAX_LINES } from "./core/limits";
 import { deepFreeze, flatten } from "./core/engine";
 import { renderInstruction } from "./core/render";
 import { loadPhoto, prepare, sampleCanvas, suitability } from "./core/image";
+import { ShapeCropEditor } from "./ShapeCropEditor";
+import { remapPortrait, CROP_ZOOM_MIN, CROP_ZOOM_MAX } from "./core/shape-crop";
 import {
   confirm,
   parseProjectFile,
@@ -852,13 +854,33 @@ export default function App() {
       setPdfBusy(false);
     }
   }
+  function applyCrop(next: EditParams) {
+    if (image) {
+      const moved = ["zoom", "panX", "panY", "rotation"].some(
+        (k) => next[k as keyof EditParams] !== edits[k as keyof EditParams],
+      );
+      if (moved)
+        setPortrait(
+          remapPortrait(
+            portrait,
+            edits,
+            next,
+            image.width,
+            image.height,
+            aspect,
+            resolution,
+          ),
+        );
+    }
+    setEdits(next);
+  }
   const ranges: {
     key: keyof EditParams;
     min: number;
     max: number;
     step: number;
   }[] = [
-    { key: "zoom", min: 1, max: 3, step: 0.05 },
+    { key: "zoom", min: CROP_ZOOM_MIN, max: CROP_ZOOM_MAX, step: 0.05 },
     { key: "panX", min: -0.5, max: 0.5, step: 0.01 },
     { key: "panY", min: -0.5, max: 0.5, step: 0.01 },
     { key: "rotation", min: -180, max: 180, step: 1 },
@@ -1060,9 +1082,22 @@ export default function App() {
                       </div>
                     ) : (
                       <>
-                        <div
-                          className="photo-frame"
-                          style={{ aspectRatio: aspect }}
+                        <ShapeCropEditor
+                          key={`${photoId ?? "sample"}-${shape}`}
+                          shape={shape}
+                          edits={edits}
+                          portrait={portrait}
+                          aspect={aspect}
+                          widthMm={widthMm}
+                          heightMm={boardHeight}
+                          resolution={resolution}
+                          t={t}
+                          onCrop={applyCrop}
+                          onFace={setPortrait}
+                          onRestore={(e, s) => {
+                            setEdits(e);
+                            setPortrait(s);
+                          }}
                         >
                           <canvas
                             ref={photo}
@@ -1077,7 +1112,7 @@ export default function App() {
                           >
                             <Upload size={17} />
                           </button>
-                        </div>
+                        </ShapeCropEditor>
                         {sample && (
                           <p className="fineprint">{t("sampleNotice")}</p>
                         )}
@@ -1303,15 +1338,10 @@ export default function App() {
                                 {...{ min: r.min, max: r.max, step: r.step }}
                                 value={edits[r.key]}
                                 onChange={(e) => {
-                                  setPortrait((v) => ({
-                                    ...v,
-                                    backgroundMask: undefined,
-                                    foregroundMask: undefined,
-                                  }));
-                                  setEdits((v) => ({
-                                    ...v,
+                                  applyCrop({
+                                    ...edits,
                                     [r.key]: +e.target.value,
-                                  }));
+                                  });
                                 }}
                               />
                               <output>{edits[r.key]}</output>
@@ -1320,12 +1350,7 @@ export default function App() {
                           <button
                             className="text-button"
                             onClick={() => {
-                              setPortrait((v) => ({
-                                ...v,
-                                backgroundMask: undefined,
-                                foregroundMask: undefined,
-                              }));
-                              setEdits(DEFAULT_EDITS);
+                              applyCrop(DEFAULT_EDITS);
                             }}
                           >
                             <RotateCcw size={14} />

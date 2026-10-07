@@ -77,6 +77,21 @@ export function validateProfileLayout(p: MaterialProfile) {
 }
 // Labels alternate inward rings. 240 IDs remain separated with a leader to each nail.
 export function templateLabel(p: MaterialProfile, id: number) {
+  if (p.shape === "heart") {
+    // The concave notch has no useful radial inward direction. Use the actual
+    // clockwise perimeter tangent in physical millimeters, including aspect.
+    const pin = p.pins[id],
+      a = p.pins[(id + p.pins.length - 1) % p.pins.length],
+      b = p.pins[(id + 1) % p.pins.length],
+      dx = (b.x - a.x) * p.widthMm,
+      dy = (b.y - a.y) * p.heightMm,
+      length = Math.hypot(dx, dy),
+      inset = id % 2 ? 14 : 8;
+    return {
+      x: pin.x * p.widthMm - (dy / length) * inset,
+      y: pin.y * p.heightMm + (dx / length) * inset,
+    };
+  }
   const pin = p.pins[id],
     dx = pin.x - 0.5,
     dy = pin.y - 0.5;

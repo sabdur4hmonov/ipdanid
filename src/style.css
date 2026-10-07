@@ -555,6 +555,34 @@ input[type="checkbox"] {
   overflow: hidden;
   background: #f5f1e6;
 }
+.shape-crop-frame {
+  touch-action: none;
+  cursor: grab;
+}
+.shape-crop-frame:active {
+  cursor: grabbing;
+}
+.shape-crop-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.crop-face-box {
+  position: absolute;
+  border: 2px dashed #ffd275;
+  cursor: move;
+}
+.crop-face-box span {
+  background: #18201dcc;
+  color: white;
+  font-size: 11px;
+  padding: 3px;
+}
+.shape-crop-frame .floating {
+  z-index: 3;
+}
 .photo-frame canvas {
   width: 100%;
   height: 100%;

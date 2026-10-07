@@ -1,8 +1,10 @@
 """Verify the freshly built APK against dist; compilation is not device execution."""
 from pathlib import Path
-import zipfile, hashlib, json, shutil
+import zipfile, hashlib, json, shutil, argparse
 from datetime import datetime, timezone
 
+parser=argparse.ArgumentParser();parser.add_argument('--archive-name',default='ip-rasm');args=parser.parse_args()
+assert args.archive_name.replace('-','').isalnum(), 'Archive name must be a basename'
 root = Path(__file__).resolve().parent.parent
 apk = root / 'android/app/build/outputs/apk/debug/app-debug.apk'
 test_apk = root / 'android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk'
@@ -23,9 +25,18 @@ with zipfile.ZipFile(apk) as archive:
     main_name = next(n for n in expected if '/index-' in n and n.endswith('.js'))
     main = archive.read(main_name).decode()
     assert 'Computation resolution' in main and 'resolution' in main and '192' in main, 'Resolution control missing'
+    if args.archive_name=='ip-rasm-shape-fit':
+        assert 'marked-face-shape-fit/1' in main and 'Fit marked face to shape' in main and 'not automatic detection' in main, 'Shape framing controls missing'
 out.mkdir(parents=True, exist_ok=True)
-shutil.copy2(apk, out / 'ip-rasm-debug.apk')
-shutil.copy2(test_apk, out / 'ip-rasm-debug-androidTest.apk')
+if args.archive_name!='ip-rasm':
+    # Never discard a previously verified fixed-name local build.
+    for suffix in ['-debug.apk','-debug-androidTest.apk']:
+        old=out/(args.archive_name+suffix)
+        if old.exists():
+            digest=hashlib.sha256(old.read_bytes()).hexdigest();backup=out/(args.archive_name+'-previous-'+digest[:12]+suffix)
+            if not backup.exists():backup.write_bytes(old.read_bytes())
+shutil.copy2(apk, out / (args.archive_name+'-debug.apk'))
+shutil.copy2(test_apk, out / (args.archive_name+'-debug-androidTest.apk'))
 evidence = dict(builtAt=datetime.now(timezone.utc).isoformat(), debug=True,
     webAssetsVerified=len(files), bytes=apk.stat().st_size,
     apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5','continuous-guarded/6','density-multiscale/7','density-physical/8','assembly-prune/9'],
@@ -36,5 +47,5 @@ evidence = dict(builtAt=datetime.now(timezone.utc).isoformat(), debug=True,
     defaultResolution=160, experimentalResolution=192, importedResolutionPreserved=True, maxLines=20000, stockPolicy='estimate', instrumentationCompiled=True,
     nativeDeviceTested=False, physicallyValidated=False, productionActive=False,
     assets=[dict(path=f.relative_to(dist).as_posix(),sha256=hashlib.sha256(f.read_bytes()).hexdigest()) for f in files])
-(out / 'build-evidence.json').write_text(json.dumps(evidence, indent=2), encoding='utf-8')
+(out / ('build-evidence.json' if args.archive_name=='ip-rasm' else args.archive_name+'-build-evidence.json')).write_text(json.dumps(evidence, indent=2), encoding='utf-8')
 print(json.dumps({k:v for k,v in evidence.items() if k != 'assets'}))

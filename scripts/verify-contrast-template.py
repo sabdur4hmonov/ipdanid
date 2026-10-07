@@ -10,14 +10,18 @@ for name in (sys.argv[2:] or ['physical-2','simplified']):
   assert pdf.metadata['Subject']=='Sequence SHA-256: '+i['sequenceHash']
   for row in range(2):
    for col in range(3):
-    page=pdf.pages[1+row*3+col];assert 'radial-leaders/1' in page.extract_text();ox=col*(tilew-10);oy=row*(tileh-10)
+    page=pdf.pages[1+row*3+col];assert ('heart-normal-leaders/1' if p['shape']=='heart' else 'radial-leaders/1') in page.extract_text();ox=col*(tilew-10);oy=row*(tileh-10)
     for pin in pins:
      x=margin+(pin['x']*p['widthMm']-ox)*mm;y=top-(pin['y']*p['heightMm']-oy)*mm
      curves=[c for c in page.curves if abs((c['x0']+c['x1'])/2-x)<.002 and abs((c['y0']+c['y1'])/2-y)<.002 and abs((c['x1']-c['x0'])/2-p['shaftMm']/2*mm)<.002]
      assert curves,f'Wrong actual nail coordinate {pin["id"]}';geometry+=1
-     dx=(pin['x']-.5)*p['widthMm'];dy=(pin['y']-.5)*p['heightMm'];r=math.hypot(dx,dy);ratio=(r-(16 if pin['id']%2 else 8))/r
-     lx=margin+(p['widthMm']/2+dx*ratio-ox)*mm;ly=top-(p['heightMm']/2+dy*ratio-oy)*mm
+     if p['shape']=='heart':
+      prev=pins[(pin['id']-1)%len(pins)];nxt=pins[(pin['id']+1)%len(pins)];dx=(nxt['x']-prev['x'])*p['widthMm'];dy=(nxt['y']-prev['y'])*p['heightMm'];r=math.hypot(dx,dy);distance=14 if pin['id']%2 else 8
+      labelx=pin['x']*p['widthMm']-dy/r*distance;labely=pin['y']*p['heightMm']+dx/r*distance
+     else:
+      dx=(pin['x']-.5)*p['widthMm'];dy=(pin['y']-.5)*p['heightMm'];r=math.hypot(dx,dy);ratio=(r-(16 if pin['id']%2 else 8))/r;labelx=p['widthMm']/2+dx*ratio;labely=p['heightMm']/2+dy*ratio
+     lx=margin+(labelx-ox)*mm;ly=top-(labely-oy)*mm
      chars=[c for c in page.chars if abs(c['size']-6)<.01 and abs(c['y0']-(ly-2+6*(-.293)))<3 and abs((c['x0']+c['x1'])/2-lx)<7];chars.sort(key=lambda c:c['x0'])
      if ''.join(c['text'] for c in chars)==str(pin['id']) and all(margin<=c['x0'] and c['x1']<=margin+tilew*mm and top-tileh*mm<=c['y0'] and c['y1']<=top for c in chars):covered.add(pin['id'])
- assert covered==set(range(240)),f'Missing intact labels {set(range(240))-covered}'
- evidence={'sequenceHash':i['sequenceHash'],'unchangedProfile':p,'coordinateChecks':geometry,'completePinLabels':len(covered),'labelRenderingVersion':'radial-leaders/1','immutableLayoutMetadataChanged':False,'physicallyPrinted':False};(folder/f'{name}-template-evidence.json').write_text(json.dumps(evidence,indent=2));print(json.dumps({k:v for k,v in evidence.items() if k!='unchangedProfile'}))
+ assert covered==set(range(len(pins))),f'Missing intact labels {set(range(len(pins)))-covered}'
+ evidence={'sequenceHash':i['sequenceHash'],'unchangedProfile':p,'coordinateChecks':geometry,'completePinLabels':len(covered),'labelRenderingVersion':'heart-normal-leaders/1' if p['shape']=='heart' else 'radial-leaders/1','immutableLayoutMetadataChanged':False,'physicallyPrinted':False};(folder/f'{name}-template-evidence.json').write_text(json.dumps(evidence,indent=2));print(json.dumps({k:v for k,v in evidence.items() if k!='unchangedProfile'}))

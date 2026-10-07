@@ -230,7 +230,9 @@ export async function exportPdf(
         Math.abs(pin.y - (0.5 - 0.48 * Math.cos(a))) < 1e-10
       );
     });
-  const radialLabels = !!i.profile.pinLayout || canonicalNewCircle;
+  const heartLabels = i.profile.shape === "heart";
+  const radialLabels =
+    !!i.profile.pinLayout || canonicalNewCircle || heartLabels;
   for (let row = 0; row < rows; row++)
     for (let col = 0; col < cols; col++) {
       const p = page(),
@@ -247,11 +249,13 @@ export async function exportPdf(
       text(
         p,
         t("pdfAlign") +
-          (canonicalNewCircle && !i.profile.pinLayout
-            ? ` | TOP y=0; IDs clockwise FRONT; pin0 filled; knot ${i.segments[0].path[0]}; radial-leaders/1`
-            : i.profile.pinLayout
-              ? ` | TOP y=0; pin 0: +${i.profile.pinLayout.phaseDegreesClockwise}° clockwise`
-              : ""),
+          (heartLabels
+            ? ` | TOP y=0; IDs clockwise FRONT; pin0 notch filled; knot ${i.segments[0].path[0]}; heart-normal-leaders/1`
+            : canonicalNewCircle && !i.profile.pinLayout
+              ? ` | TOP y=0; IDs clockwise FRONT; pin0 filled; knot ${i.segments[0].path[0]}; radial-leaders/1`
+              : i.profile.pinLayout
+                ? ` | TOP y=0; pin 0: +${i.profile.pinLayout.phaseDegreesClockwise}° clockwise`
+                : ""),
         margin,
         ph - margin - 20,
         radialLabels ? 6 : 8,

@@ -58,6 +58,26 @@ it("rotates only the circular nail basis, retains material and preserves the def
   expect(() => circleLayout(NaN)).toThrow();
   expect(() => circleLayout(360)).toThrow();
 });
+it("heart template leaders follow the actual concave perimeter rather than circle radius", () => {
+  const p = createProfile("heart", 160);
+  const original = structuredClone(p.pins),
+    labels = p.pins.map((pin) => templateLabel(p, pin.id));
+  expect(labels[0].x).toBeCloseTo(200, 6);
+  expect(labels[0].y).toBeCloseTo(p.pins[0].y * 400 + 8, 6);
+  for (let j = 0; j < labels.length; j++) {
+    const pin = p.pins[j],
+      label = labels[j];
+    expect(
+      Math.hypot(label.x - pin.x * 400, label.y - pin.y * 400),
+    ).toBeCloseTo(j % 2 ? 14 : 8, 6);
+    for (let k = j + 1; k < labels.length; k++)
+      expect(
+        Math.abs(label.x - labels[k].x) > 4 ||
+          Math.abs(label.y - labels[k].y) > 2.2,
+      ).toBe(true);
+  }
+  expect(p.pins).toEqual(original);
+});
 it("hash binds actual layout metadata and coordinates; imports reject mislabeled boards even with a valid rehash", async () => {
   const p = withCircleLayout(createProfile("circle", 48), circleLayout(0.75));
   const i = await generate({

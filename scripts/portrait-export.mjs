@@ -5,9 +5,14 @@ const prefix = process.argv[2] ?? "continued",
   browser = await chromium.launch({ headless: true });
 const refreshPdf = process.argv[4] === "--refresh-pdf";
 if (
-  ["guarded", "pin-phase", "resolution", "contrast", "convergence"].includes(
-    folder,
-  ) &&
+  [
+    "guarded",
+    "pin-phase",
+    "resolution",
+    "contrast",
+    "convergence",
+    "shape-fit",
+  ].includes(folder) &&
   existsSync(`output/${folder}/${prefix}-guide.json`) &&
   !refreshPdf
 ) {
@@ -35,25 +40,29 @@ try {
         ...source,
         id: crypto.randomUUID(),
         name:
-          folder === "convergence"
-            ? `Bounded quality diagnostic — ${prefix} (quality acceptance open)`
-            : folder === "contrast"
-              ? `Physical-distance / separate assembly experiment — ${prefix} (quality acceptance open)`
-              : folder === "resolution"
-                ? `192px unrotated experiment — ${prefix} (quality unaccepted)`
-                : folder === "pin-phase"
-                  ? `Experimental NEW board +0.75° clockwise — ${prefix} (quality unaccepted)`
-                  : folder === "guarded"
-                    ? `Guarded distribution — ${prefix} (quality unaccepted)`
-                    : folder === "regions"
-                      ? `Corrected regions — ${prefix} (quality unaccepted)`
-                      : folder === "background"
-                        ? `Background experiment — ${prefix} (quality unaccepted)`
-                        : instruction.algorithm === "density-optical/5"
-                          ? "Global contour portrait variant"
-                          : `Portrait refinement stage ${instruction.params.refinementStage ?? 1}`,
+          folder === "shape-fit"
+            ? `NEW 160-pin heart / shape framing — ${prefix} (portrait quality acceptance open)`
+            : folder === "convergence"
+              ? `Bounded quality diagnostic — ${prefix} (quality acceptance open)`
+              : folder === "contrast"
+                ? `Physical-distance / separate assembly experiment — ${prefix} (quality acceptance open)`
+                : folder === "resolution"
+                  ? `192px unrotated experiment — ${prefix} (quality unaccepted)`
+                  : folder === "pin-phase"
+                    ? `Experimental NEW board +0.75° clockwise — ${prefix} (quality unaccepted)`
+                    : folder === "guarded"
+                      ? `Guarded distribution — ${prefix} (quality unaccepted)`
+                      : folder === "regions"
+                        ? `Corrected regions — ${prefix} (quality unaccepted)`
+                        : folder === "background"
+                          ? `Background experiment — ${prefix} (quality unaccepted)`
+                          : instruction.algorithm === "density-optical/5"
+                            ? "Global contour portrait variant"
+                            : `Portrait refinement stage ${instruction.params.refinementStage ?? 1}`,
         instruction,
-        ...(folder === "convergence" ? { edits: record.edits } : {}),
+        ...(["convergence", "shape-fit"].includes(folder)
+          ? { edits: record.edits }
+          : {}),
         progress: progressFor(instruction),
       };
       const c = document.createElement("canvas");

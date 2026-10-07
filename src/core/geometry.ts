@@ -33,7 +33,7 @@ function heartPolygon() {
     };
   });
 }
-const HEART_POLYGON = heartPolygon();
+export const HEART_POLYGON = heartPolygon();
 export function assertPinSpacing(p: MaterialProfile) {
   for (let i = 0; i < p.pins.length; i++)
     for (let j = i + 1; j < p.pins.length; j++) {
