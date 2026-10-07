@@ -4,6 +4,28 @@ import type { EditParams, PortraitSettings, RegionBox, Shape } from "./types";
 export const CROP_ZOOM_MIN = 0.25,
   CROP_ZOOM_MAX = 6;
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+// Measures missing SOURCE coverage, not white skin/background or portrait quality.
+export function missingPhotoCoverage(
+  shape: Shape,
+  e: EditParams,
+  width: number,
+  height: number,
+  aspect: number,
+  n: number,
+) {
+  let missing = 0,
+    total = 0;
+  for (let y = 0; y < 48; y++)
+    for (let x = 0; x < 48; x++) {
+      const px = (x + 0.5) / 48,
+        py = (y + 0.5) / 48;
+      if (!inside(shape, px, py)) continue;
+      total++;
+      const p = targetToSource(px, py, width, height, e, aspect, n);
+      if (p.x < 0 || p.y < 0 || p.x >= width || p.y >= height) missing++;
+    }
+  return total ? missing / total : 0;
+}
 export function boardDelta(
   dx: number,
   dy: number,
@@ -82,6 +104,8 @@ export function remapPortrait(
   height: number,
   aspect: number,
   n: number,
+  oldAspect = aspect,
+  oldResolution = n,
 ): PortraitSettings {
   const map = (b: RegionBox): RegionBox => {
     const corners = [
@@ -90,7 +114,15 @@ export function remapPortrait(
       [b.left, b.top + b.height],
       [b.left + b.width, b.top + b.height],
     ].map(([x, y]) => {
-      const q = targetToSource(x, y, width, height, old, aspect, n);
+      const q = targetToSource(
+        x,
+        y,
+        width,
+        height,
+        old,
+        oldAspect,
+        oldResolution,
+      );
       return sourceToTarget(q.x, q.y, width, height, next, aspect, n);
     });
     const left = clamp(Math.min(...corners.map((p) => p.x)), 0, 0.99),

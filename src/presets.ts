@@ -10,6 +10,7 @@ import type {
 import { validateLayout, withCircleLayout } from "./core/pin-layout";
 import { createProfile } from "./core/geometry";
 import { MAX_LINES } from "./core/limits";
+import { CROP_ZOOM_MIN, CROP_ZOOM_MAX } from "./core/shape-crop";
 import { validPortrait } from "./core/portrait";
 export interface MakerSettings {
   resolution?: number;
@@ -58,7 +59,7 @@ function validate(p: MakerPreset) {
     [s.pinCount, 24, 240, true],
     [s.threadMm, 0.1, 2, false],
     [s.stockMeters, 0, 100000, false],
-    [s.edits?.zoom, 1, 3, false],
+    [s.edits?.zoom, CROP_ZOOM_MIN, CROP_ZOOM_MAX, false],
     [s.edits?.panX, -0.5, 0.5, false],
     [s.edits?.panY, -0.5, 0.5, false],
     [s.edits?.rotation, -180, 180, false],

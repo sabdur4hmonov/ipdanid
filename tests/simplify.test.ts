@@ -57,6 +57,9 @@ it("full executable candidate is tested against immutable reference, progress ze
   expect(assemblyEffort(result).starts).toBe(1);
   expect(assemblyEffort(result).colorChanges).toBe(0);
   expect(assemblyEffort(result).actions).toBe(result.metrics.lines + 2);
+  expect(assemblyEffort(result, 8).estimatedMinutes).toBe((result.metrics.lines * 8 + 40) / 60);
+  expect(assemblyEffort(result, 8).assumptions.measuredCustomerTime).toBe(false);
+  expect(() => assemblyEffort(result, 0)).toThrow("pace");
   await expect(
     simplifySequence(source, target, {
       maxProposals: 12,

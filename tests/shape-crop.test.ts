@@ -4,11 +4,91 @@ import {
   panCrop,
   zoomCrop,
   remapPortrait,
+  missingPhotoCoverage,
 } from "../src/core/shape-crop";
 import { inside } from "../src/core/geometry";
 import { sourceToTarget, targetToSource } from "../src/core/coordinates";
 import { DEFAULT_EDITS } from "../src/core/types";
 import { DEFAULT_PORTRAIT, validPortrait } from "../src/core/portrait";
+it("a restored photo maps its independent annotations from its recorded board aspect and sample reference", () => {
+  const settings = {
+    ...DEFAULT_PORTRAIT,
+    face: { left: 0.4, top: 0.4, width: 0.2, height: 0.2 },
+    regions: {
+      reference: "processed-target/sample-centers-v1" as const,
+      placement: "manual" as const,
+      eyes: { left: 0.43, top: 0.44, width: 0.1, height: 0.03 },
+      nose: { left: 0.46, top: 0.48, width: 0.04, height: 0.05 },
+      mouth: { left: 0.43, top: 0.54, width: 0.1, height: 0.03 },
+    },
+  };
+  const restored = remapPortrait(
+    settings,
+    DEFAULT_EDITS,
+    DEFAULT_EDITS,
+    960,
+    1280,
+    1.25,
+    192,
+    0.75,
+    160,
+  );
+  for (const name of ["eyes", "nose", "mouth"] as const) {
+    const old = settings.regions[name],
+      box = restored.regions![name];
+    const a = targetToSource(
+      old.left,
+      old.top,
+      960,
+      1280,
+      DEFAULT_EDITS,
+      0.75,
+      160,
+    );
+    const b = targetToSource(
+      box.left,
+      box.top,
+      960,
+      1280,
+      DEFAULT_EDITS,
+      1.25,
+      192,
+    );
+    expect(b.x).toBeCloseTo(a.x, 9);
+    expect(b.y).toBeCloseTo(a.y, 9);
+  }
+  validPortrait(restored);
+});
+it("detects missing source coverage independently of photo colors across shapes, rotations and board aspect", () => {
+  for (const shape of ["heart", "circle", "rectangle"] as const) {
+    expect(missingPhotoCoverage(shape, DEFAULT_EDITS, 960, 1280, 1, 160)).toBe(
+      0,
+    );
+    expect(
+      missingPhotoCoverage(
+        shape,
+        { ...DEFAULT_EDITS, zoom: 0.67957, panX: -0.1738, panY: 0.02364 },
+        960,
+        1280,
+        1,
+        160,
+      ),
+    ).toBeGreaterThan(0.1);
+  }
+  expect(
+    missingPhotoCoverage("rectangle", DEFAULT_EDITS, 960, 1280, 1.5, 192),
+  ).toBe(0);
+  expect(
+    missingPhotoCoverage(
+      "rectangle",
+      { ...DEFAULT_EDITS, rotation: 45 },
+      960,
+      1280,
+      1,
+      192,
+    ),
+  ).toBeGreaterThan(0);
+});
 it("fits marked facial bounds inside the actual concave heart without warping the image", () => {
   const face = { left: 0.21, top: 0.18, width: 0.64, height: 0.73 },
     e = { ...DEFAULT_EDITS, zoom: 1.3 };

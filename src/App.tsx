@@ -35,6 +35,7 @@ import { BackgroundEditor } from "./BackgroundEditor";
 import { MAX_LINES } from "./core/limits";
 import { deepFreeze, flatten } from "./core/engine";
 import { renderInstruction } from "./core/render";
+import { assemblyEffort } from "./core/simplify";
 import { loadPhoto, prepare, sampleCanvas, suitability } from "./core/image";
 import { ShapeCropEditor } from "./ShapeCropEditor";
 import { remapPortrait, CROP_ZOOM_MIN, CROP_ZOOM_MAX } from "./core/shape-crop";
@@ -55,6 +56,7 @@ import {
   type Shape,
   type CircleLayout,
   type Pin,
+  type PortraitSettings,
 } from "./core/types";
 import { spokenPin, translate } from "./i18n";
 import { readProjects, writeProjects, StorageConflictError } from "./storage";
@@ -80,6 +82,9 @@ type PhotoCandidate = {
   image: HTMLCanvasElement;
   sample: boolean;
   edits: EditParams;
+  portrait: PortraitSettings;
+  aspect: number;
+  resolution: number;
 };
 
 type View = "create" | "assemble" | "library" | "materials";
@@ -184,11 +189,13 @@ export default function App() {
     [preset, setPreset] = useState("balanced");
   const [resolution, setResolution] = useState(160);
   const [portrait, setPortrait] = useState(structuredClone(DEFAULT_PORTRAIT));
+  const cropRef = useRef(edits);
+  cropRef.current = edits;
   const [pinLayout, setPinLayout] = useState<CircleLayout>();
   const [pinCoordinates, setPinCoordinates] = useState<Pin[]>();
   const [portraitSolver, setPortraitSolver] = useState<
     "continuous" | "global" | "guarded" | "multiscale" | "physical"
-  >("continuous");
+  >("guarded");
   const [recovery, setRecovery] = useState<OptimizerRecovery>();
   useEffect(() => {
     readOptimizerRecovery()
@@ -443,7 +450,15 @@ export default function App() {
   }
   function rememberEdits() {
     return photoCandidates.map((p) =>
-      p.id === photoId ? { ...p, edits: { ...edits } } : p,
+      p.id === photoId
+        ? {
+            ...p,
+            edits: { ...edits },
+            portrait: structuredClone(portrait),
+            aspect,
+            resolution,
+          }
+        : p,
     );
   }
   function addPhoto(
@@ -467,16 +482,19 @@ export default function App() {
       image: c,
       sample: isSample,
       edits: { ...DEFAULT_EDITS },
+      portrait: {
+        ...structuredClone(DEFAULT_PORTRAIT),
+        enabled: portrait.enabled,
+        background: portrait.background,
+        localContrast: portrait.localContrast,
+      },
+      aspect,
+      resolution,
     };
     setPhotoCandidates([...rememberEdits(), p].slice(-4));
     setPhotoId(p.id);
     setImage(c);
-    setPortrait((v) => ({
-      ...v,
-      backgroundMask: undefined,
-      foregroundMask: undefined,
-      regions: undefined,
-    }));
+    setPortrait(structuredClone(p.portrait));
     setSample(isSample);
     setEdits(p.edits);
   }
@@ -490,12 +508,21 @@ export default function App() {
     setPhotoCandidates(rememberEdits());
     setPhotoId(p.id);
     setImage(p.image);
-    setPortrait((v) => ({
-      ...v,
-      backgroundMask: undefined,
-      foregroundMask: undefined,
-      regions: undefined,
-    }));
+    setPortrait(
+      p.aspect === aspect && p.resolution === resolution
+        ? structuredClone(p.portrait)
+        : remapPortrait(
+            p.portrait,
+            p.edits,
+            p.edits,
+            p.image.width,
+            p.image.height,
+            aspect,
+            resolution,
+            p.aspect,
+            p.resolution,
+          ),
+    );
     setSample(p.sample);
     setEdits({ ...p.edits });
   }
@@ -855,15 +882,17 @@ export default function App() {
     }
   }
   function applyCrop(next: EditParams) {
+    const previous = cropRef.current;
+    cropRef.current = next;
     if (image) {
       const moved = ["zoom", "panX", "panY", "rotation"].some(
-        (k) => next[k as keyof EditParams] !== edits[k as keyof EditParams],
+        (k) => next[k as keyof EditParams] !== previous[k as keyof EditParams],
       );
       if (moved)
-        setPortrait(
+        setPortrait((currentPortrait) =>
           remapPortrait(
-            portrait,
-            edits,
+            currentPortrait,
+            previous,
             next,
             image.width,
             image.height,
@@ -1091,6 +1120,8 @@ export default function App() {
                           widthMm={widthMm}
                           heightMm={boardHeight}
                           resolution={resolution}
+                          imageWidth={image.width}
+                          imageHeight={image.height}
                           t={t}
                           onCrop={applyCrop}
                           onFace={setPortrait}
@@ -1131,6 +1162,24 @@ export default function App() {
                           {t("portraitMode")}
                         </label>
                         <p className="fineprint">{t("portraitHint")}</p>
+                        {!portrait.enabled && (
+                          <p role="status" className="workflow-notice">
+                            {t("portraitOffNotice")}
+                          </p>
+                        )}
+                        <p
+                          className="workflow-notice"
+                          data-testid="actual-settings"
+                        >
+                          {t("actualSettings")}: {shape} · {widthMm} ×{" "}
+                          {boardHeight} mm · {pinCount} {t("pinCount")} ·{" "}
+                          {threadMm} mm ·{" "}
+                          {portrait.enabled && mode !== "color"
+                            ? t(
+                                `${portraitSolver === "global" ? "global" : portraitSolver}Solver` as import("./i18n").Key,
+                              )
+                            : t("continuousSolver")}
+                        </p>
                         {portrait.enabled && mode !== "color" && (
                           <label>
                             {t("portraitSolver")}
@@ -1677,11 +1726,21 @@ export default function App() {
                         </div>
                         <div>
                           <strong>
-                            {Math.ceil((result.metrics.lines * pace) / 60)}
+                            {Math.ceil(
+                              assemblyEffort(result, pace).estimatedMinutes,
+                            )}
                           </strong>
                           <span>{t("minutes")}</span>
                         </div>
                       </div>
+                      <p className="fineprint" data-testid="assembly-effort">
+                        {t("assemblyEstimateHint")} {pace} s ·{" "}
+                        {assemblyEffort(result).actions} {t("assemblyActions")}{" "}
+                        · {assemblyEffort(result).starts} {t("assemblyStarts")}{" "}
+                        · {assemblyEffort(result).knots} {t("assemblyKnots")} ·{" "}
+                        {assemblyEffort(result).colorChanges}{" "}
+                        {t("assemblyColors")}
+                      </p>
                       <div className="variant-tabs">
                         {variants.map((v, j) => (
                           <button
@@ -2098,10 +2157,14 @@ export default function App() {
                     </button>
                     <p className="fineprint">
                       {Math.ceil(
-                        ((steps.length - project.progress.confirmed) * pace) /
-                          60,
+                        assemblyEffort(instruction, pace).estimatedMinutes -
+                          (project.progress.confirmed * pace) / 60,
                       )}{" "}
                       {t("minutes")} {t("remaining")}
+                    </p>
+                    <p className="fineprint">
+                      {t("assemblyEstimateHint")} {pace} s.{" "}
+                      {t("remainingKnotsHint")}
                     </p>
                     <label className="field-label" htmlFor="jump">
                       {t("jump")}

@@ -141,10 +141,25 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
     .locator("nav")
     .getByRole("button", { name: "Create", exact: true })
     .click();
+  const beforeCrop = JSON.parse(
+    (await page.getByTestId("shape-crop").getAttribute("data-portrait"))!,
+  );
   await page.getByLabel("Zoom", { exact: true }).fill("1.2");
   await expect(page.getByTestId("region-editor")).toContainText(
-    "proportional estimates",
+    "Manually positioned regions",
   );
+  const afterCrop = JSON.parse(
+    (await page.getByTestId("shape-crop").getAttribute("data-portrait"))!,
+  );
+  expect(afterCrop.regions.mouth.left).toBeCloseTo(
+    0.5 + (beforeCrop.regions.mouth.left - 0.5) * 1.2,
+    5,
+  );
+  expect(afterCrop.regions.mouth.width).toBeCloseTo(
+    beforeCrop.regions.mouth.width * 1.2,
+    5,
+  );
+  expect(afterCrop.regions.reference).toBe(beforeCrop.regions.reference);
   await page.reload();
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.getByRole("button", { name: "Resume", exact: true }).click();

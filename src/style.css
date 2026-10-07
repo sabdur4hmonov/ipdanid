@@ -1270,3 +1270,11 @@ footer > span:last-child {
 .region-box span {
   pointer-events: none;
 }
+.workflow-notice {
+  padding: 0.75rem;
+  border-left: 3px solid #b88632;
+  background: #fff8e8;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}

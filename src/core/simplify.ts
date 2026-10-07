@@ -184,14 +184,16 @@ export function withinQualityTolerance(d: Record<string, RegionDifference>) {
       r.darkExcessChange <= t.darkExcess,
   );
 }
-export function assemblyEffort(i: Instruction) {
+export function assemblyEffort(i: Instruction, secondsPerConnection = 5) {
+  if (!Number.isFinite(secondsPerConnection) || secondsPerConnection <= 0)
+    throw Error("Invalid assembly pace");
   const starts = i.segments.length,
     knots = starts * 2,
     colorChanges = i.segments
       .slice(1)
       .filter((s, j) => s.color !== i.segments[j].color).length;
   const assumptions = {
-    secondsPerConnection: 5,
+    secondsPerConnection,
     secondsPerKnot: 20,
     secondsPerColorChange: 30,
     includes:
@@ -205,7 +207,10 @@ export function assemblyEffort(i: Instruction) {
     colorChanges,
     actions: i.metrics.lines + knots + colorChanges,
     estimatedMinutes:
-      (i.metrics.lines * 5 + knots * 20 + colorChanges * 30) / 60,
+      (i.metrics.lines * secondsPerConnection +
+        knots * 20 +
+        colorChanges * 30) /
+      60,
     assumptions,
   };
 }

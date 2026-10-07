@@ -7,8 +7,14 @@ import {
   type PointerEvent,
 } from "react";
 import type { EditParams, PortraitSettings, Shape } from "./core/types";
-import { changeRegion, displayBox } from "./core/coordinates";
-import { fitMarkedFace, panCrop, shapePath, zoomCrop } from "./core/shape-crop";
+import { changeRegion, displayBox, displayToSample } from "./core/coordinates";
+import {
+  fitMarkedFace,
+  missingPhotoCoverage,
+  panCrop,
+  shapePath,
+  zoomCrop,
+} from "./core/shape-crop";
 import type { Key } from "./i18n";
 export function ShapeCropEditor({
   shape,
@@ -18,6 +24,8 @@ export function ShapeCropEditor({
   widthMm,
   heightMm,
   resolution,
+  imageWidth,
+  imageHeight,
   onCrop,
   onFace,
   onRestore,
@@ -31,6 +39,8 @@ export function ShapeCropEditor({
   widthMm: number;
   heightMm: number;
   resolution: number;
+  imageWidth: number;
+  imageHeight: number;
   onCrop: (e: EditParams) => void;
   onFace: (s: PortraitSettings) => void;
   onRestore: (e: EditParams, s: PortraitSettings) => void;
@@ -45,15 +55,17 @@ export function ShapeCropEditor({
       y: number;
       face: PortraitSettings["face"];
       resize: boolean;
+      draw: boolean;
     } | null>(null);
   const [mark, setMark] = useState(false),
+    [corrected, setCorrected] = useState(false),
     [undo, setUndo] = useState<{
       edits: EditParams;
       portrait: PortraitSettings;
     }>(),
     [message, setMessage] = useState("");
-  const latest = useRef({ edits, onCrop, mark, aspect });
-  latest.current = { edits, onCrop, mark, aspect };
+  const latest = useRef({ edits, onCrop, mark, aspect, portrait });
+  latest.current = { edits, onCrop, mark, aspect, portrait };
   useEffect(() => {
     const element = frame.current!;
     const wheel = (e: WheelEvent) => {
@@ -92,8 +104,9 @@ export function ShapeCropEditor({
     if (mark)
       mode.current = {
         ...p,
-        face: { ...portrait.face },
+        face: { ...latest.current.portrait.face },
         resize: !!(e.target as HTMLElement).closest("[data-face-resize]"),
+        draw: !(e.target as HTMLElement).closest(".crop-face-box"),
       };
   };
   const move = (e: PointerEvent<HTMLDivElement>) => {
@@ -102,19 +115,31 @@ export function ShapeCropEditor({
     const p = point(e);
     if (mark && mode.current) {
       const d = mode.current;
-      const b = changeRegion(
-        d.face,
-        ((p.x - d.x) * resolution) / (resolution - 1),
-        ((p.y - d.y) * resolution) / (resolution - 1),
-        d.resize,
-      );
+      const b = d.draw
+        ? {
+            left: Math.max(0, displayToSample(Math.min(p.x, d.x), resolution)),
+            top: Math.max(0, displayToSample(Math.min(p.y, d.y), resolution)),
+            width: (Math.abs(p.x - d.x) * resolution) / (resolution - 1),
+            height: (Math.abs(p.y - d.y) * resolution) / (resolution - 1),
+          }
+        : changeRegion(
+            d.face,
+            ((p.x - d.x) * resolution) / (resolution - 1),
+            ((p.y - d.y) * resolution) / (resolution - 1),
+            d.resize,
+          );
       b.width = Math.max(0.1, b.width);
       b.height = Math.max(0.1, b.height);
+      b.width = Math.min(1, b.width);
+      b.height = Math.min(1, b.height);
       b.left = Math.min(b.left, 1 - b.width);
       b.top = Math.min(b.top, 1 - b.height);
       // Moving the outer head box does not move the photo or its anatomy.
       // Preserve separately corrected feature windows on the same pixels.
-      onFace({ ...portrait, face: b });
+      const nextPortrait = { ...latest.current.portrait, face: b };
+      latest.current.portrait = nextPortrait;
+      onFace(nextPortrait);
+      setCorrected(true);
     } else if (points.current.size === 2) {
       const other = [...points.current.entries()].find(
           ([k]) => k !== e.pointerId,
@@ -127,16 +152,25 @@ export function ShapeCropEditor({
             y: (old.y + other.y) / 2,
           },
           newCenter = { x: (p.x + other.x) / 2, y: (p.y + other.y) / 2 };
-        onCrop(
-          panCrop(
-            zoomCrop(edits, after / before, oldCenter, aspect),
-            newCenter.x - oldCenter.x,
-            newCenter.y - oldCenter.y,
-            aspect,
-          ),
+        const next = panCrop(
+          zoomCrop(latest.current.edits, after / before, oldCenter, aspect),
+          newCenter.x - oldCenter.x,
+          newCenter.y - oldCenter.y,
+          aspect,
         );
+        latest.current.edits = next;
+        onCrop(next);
       }
-    } else onCrop(panCrop(edits, p.x - old.x, p.y - old.y, aspect));
+    } else {
+      const next = panCrop(
+        latest.current.edits,
+        p.x - old.x,
+        p.y - old.y,
+        aspect,
+      );
+      latest.current.edits = next;
+      onCrop(next);
+    }
     points.current.set(e.pointerId, p);
   };
   const end = (e: PointerEvent) => {
@@ -144,7 +178,15 @@ export function ShapeCropEditor({
     mode.current = null;
   };
   const b = displayBox(portrait.face, resolution),
-    path = shapePath(shape, resolution);
+    path = shapePath(shape, resolution),
+    missing = missingPhotoCoverage(
+      shape,
+      edits,
+      imageWidth,
+      imageHeight,
+      aspect,
+      resolution,
+    );
   return (
     <>
       <div
@@ -204,7 +246,31 @@ export function ShapeCropEditor({
         )}
       </div>
       <p className="fineprint">{t("shapeCropHint")}</p>
+      {missing > 0.02 && (
+        <p
+          role="status"
+          className="workflow-notice"
+          data-testid="missing-photo"
+        >
+          {t("missingPhoto")} {Math.round(missing * 100)}%.{" "}
+          {t("missingPhotoHint")}
+        </p>
+      )}
       <div className="preset-row">
+        <button
+          type="button"
+          className="outline"
+          onClick={() => {
+            setUndo({
+              edits: { ...edits },
+              portrait: structuredClone(portrait),
+            });
+            onCrop({ ...edits, zoom: 1, panX: 0, panY: 0, rotation: 0 });
+            setMessage(t("centerPhotoNotice"));
+          }}
+        >
+          {t("centerPhoto")}
+        </button>
         <button
           type="button"
           className="outline"
@@ -220,6 +286,11 @@ export function ShapeCropEditor({
           type="button"
           className="outline"
           onClick={() => {
+            if (!corrected) {
+              setMark(true);
+              setMessage(t("markBeforeFit"));
+              return;
+            }
             try {
               const fitted = fitMarkedFace(
                 shape,
@@ -258,6 +329,7 @@ export function ShapeCropEditor({
         )}
       </div>
       <p className="fineprint">{t("shapeFaceEstimate")}</p>
+      {mark && <p className="workflow-notice">{t("drawHeadHint")}</p>}
       {message && (
         <p role="status" className="fineprint">
           {message}

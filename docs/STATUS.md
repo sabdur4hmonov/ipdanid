@@ -1,4 +1,14 @@
-## Active checkpoint: shape-aware photo framing / public Qbrix audit — 2026-10-07
+## Active checkpoint: workflow repair and actual website portrait — 2026-10-07
+
+Read WORKFLOW_REPAIR_CHECKPOINT.md first. Continues preserved1766b69; current completion fixes stale burst crop, untouched approximate head fitting, per-photo region/crop loss, small-crop preset validation, stale online offline-shell HTML and incomplete assembly-time accounting. Reversible source-coverage warning, practical head correction and UZ/RU/EN solver/material guidance are software tested. No Gemini or accessible Qbrix solver claim; physical defaults unchanged.
+
+Separate explicitly selected160-pin heart/.1mm/400mm/160computation website diagnostic e739731c…1b4d0a:2579connections incl44routing,618.698m/+18.698m beyond600m,max32/140,137.609s full UI/eight-sweep compute-limit,2581actions/345estimated minutes at8s+knots. Exact target d4535650…49a357 reproduced. Same-sequence player/JSON/TXT/PNG/66-page PDF/new template,progress0,production offline exports verified. Old513-line displayed guide was NOT exactly recovered; one519-line/hash mismatch rejected. No false historical percentage gain or material equivalence.
+
+Workflow accepted; portrait quality INCONCLUSIVE: eyes/likeness/lip line present, nostrils/nose volume/upper-lower lip separation/crossings and hair-notch containment unresolved.58full regressions plus final7focused checks pass;18unique relevant desktop/touch scenarios pass including final8workflow/persistence cases. Final production build and Android compile pass; all16APK assets/hash/signer verified, fixed output/mobile/ip-rasm-workflow-debug.apk SHA9b543e1f…78a5eb. Real device/physical/iOS/production/fullroadmap OPEN.
+
+Exact next: source-relative retained-head silhouette placement versus rectangular containment at SAME160heart/.1material/preprocessing/v8 allowance, using sealed current guide; no completed8sweeps/convergence/prune repetition. Historical circular2-switch remains separate. Finish checkpoint/local browser handoff now; no background promise. All historical records below are preserved; their next-task directions are superseded.
+
+## Historical checkpoint: shape-aware photo framing / public Qbrix audit — 2026-10-07
 
 Read SHAPE_FIT_CHECKPOINT.md first, then QBRIX_API_AND_SHAPE_FIT.md. Continues preserved50f56c1; latest user steers to face/shape fitting. Previous next-task instructions below are historical, with all evidence retained. Working local shape outline, touch/mouse crop, manual head bounds, reversible uniform fit and source-aligned independent regions. Public Qbrix /upload is a photo endpoint; no accessible String Art solver API established or private code bypassed. MIT reference inspected, unlicensed tools not adopted, implementation independent.
 

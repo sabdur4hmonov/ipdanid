@@ -1,5 +1,25 @@
 import type { Locale } from "./core/types";
 const uz = {
+  assemblyEstimateHint:
+    "Vaqt — sinovsiz taxmin: har bir ulanishga o‘ram va surish bilan, har tugunga 20 s, rang almashtirishga 30 s. Ulanish:",
+  assemblyActions: "amal",
+  assemblyStarts: "boshlash",
+  assemblyKnots: "tugun",
+  assemblyColors: "rang almashtirish",
+  remainingKnotsHint:
+    "Qolgan vaqt ehtiyotkor hisob: tugunlar hali bajarilmagan deb olinadi.",
+  centerPhoto: "Suratni markazga to‘ldirish",
+  centerPhotoNotice: "Surat markazlandi. Yuz va soch kesilmaganini tekshiring.",
+  missingPhoto: "Shakl ichida surat yetishmaydigan maydon taxminan",
+  missingPhotoHint:
+    "Bu oq fon emas, cropdan tashqari bo‘sh joy. Ataylab qoldirish mumkin; aks holda markazlang yoki suring.",
+  markBeforeFit:
+    "Avval butun boshni belgilang: soch, quloqlar va iyak. Moslash tugmasini keyin yana bosing.",
+  drawHeadHint:
+    "Yangi bosh chegarasini chizish uchun belgi tashqarisidan suring. Ichidan surib ko‘chiring; tutqichdan o‘lchamini o‘zgartiring.",
+  portraitOffNotice:
+    "Portret ustuvorligi o‘chiq: oddiy uzluksiz generator ishlaydi. Yuz uchun portret rejimini yoqing va a’zo zonalarini tekshiring.",
+  actualSettings: "Hozirgi hisoblash sozlamalari",
   shapeCropHint:
     "Suratni shakl ichida suring; ikki barmoq yoki sichqoncha g‘ildiragi bilan kattalashtiring.",
   markFace: "Yuz chegarasini belgilash",
@@ -25,7 +45,7 @@ const uz = {
     "Bu zonalar faqat taxmin. Yuz a’zolari avtomatik aniqlanmagan.",
   manualRegions: "Qo‘lda joylashtirilgan zonalar.",
   regionEditHint:
-    "Har bir zonani nishonda suring, pastki tutqich bilan o‘lchamini o‘zgartiring yoki sonlarni kiriting. Crop, burilish va nisbat o‘zgarsa, zonalarni qayta tekshiring: qo‘lda tuzatishlar tozalanadi.",
+    "Har bir zonani nishonda suring, tutqich bilan o‘lchamini o‘zgartiring yoki sonlarni kiriting. Bir xil nisbatdagi crop va burishda zonalar surat bilan ko‘chadi. Nisbat o‘zgarsa qayta tekshiring; eski zonalar tozalanadi.",
   resizeRegion: "O‘lchamini o‘zgartirish",
   resetRegions: "Taxminiy zonalarni tiklash",
   variantDetails: "Variant ma’lumotlari",
@@ -278,6 +298,27 @@ const uz = {
 };
 export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
+  assemblyEstimateHint:
+    "Time is an unmeasured estimate: connection includes wrap/reposition, each knot20s, color change30s. Connection:",
+  assemblyActions: "actions",
+  assemblyStarts: "starts",
+  assemblyKnots: "knots",
+  assemblyColors: "color changes",
+  remainingKnotsHint:
+    "Remaining time conservatively counts all knots as outstanding.",
+  centerPhoto: "Fill and center photo",
+  centerPhotoNotice:
+    "Photo centered. Check that the face and hair are not clipped.",
+  missingPhoto: "Approximate area inside the shape without photo coverage",
+  missingPhotoHint:
+    "This is outside the crop, not a white background. It may be intentional; otherwise center or move the photo.",
+  markBeforeFit:
+    "First mark the whole head, including hair, ears and jaw. Then press Fit again.",
+  drawHeadHint:
+    "Drag outside the box to draw new head bounds. Drag inside to move the box; use its handle to resize.",
+  portraitOffNotice:
+    "Portrait priority is off: the ordinary continuous generator will run. For faces, enable portrait mode and check the feature regions.",
+  actualSettings: "Current generation settings",
   shapeCropHint:
     "Drag the photo inside the shape; pinch or use the mouse wheel to zoom.",
   markFace: "Mark face bounds",
@@ -303,7 +344,7 @@ const en: Record<Key, string> = {
     "These regions are proportional estimates, not detected facial anatomy.",
   manualRegions: "Manually positioned regions.",
   regionEditHint:
-    "Move each box on the target, resize using its bottom handle, or enter coordinates. Crop, rotation or aspect changes clear manual corrections; check the regions again.",
+    "Move each box on the target, resize with its handle, or enter coordinates. Same-aspect crop and rotation move regions with the source. Aspect changes clear the old regions; check them again.",
   resizeRegion: "Resize",
   resetRegions: "Reset estimated regions",
   variantDetails: "Variant details",
@@ -554,6 +595,27 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
+  assemblyEstimateHint:
+    "Время — непроверенная оценка: переход включает обмотку/перемещение, узел20с, смена цвета30с. Переход:",
+  assemblyActions: "действий",
+  assemblyStarts: "начал",
+  assemblyKnots: "узлов",
+  assemblyColors: "смен цвета",
+  remainingKnotsHint:
+    "Оставшееся время консервативно включает все узлы как невыполненные.",
+  centerPhoto: "Заполнить и центрировать фото",
+  centerPhotoNotice:
+    "Фото центрировано. Проверьте, что лицо и волосы не обрезаны.",
+  missingPhoto: "Приблизительная площадь внутри формы без фотографии",
+  missingPhotoHint:
+    "Это область вне кадра, а не белый фон. Её можно оставить; иначе центрируйте или переместите фото.",
+  markBeforeFit:
+    "Сначала отметьте всю голову: волосы, уши и подбородок. Затем снова нажмите Подогнать.",
+  drawHeadHint:
+    "Потяните вне рамки, чтобы нарисовать новую границу головы. Внутри — перемещение, за маркер — изменение размера.",
+  portraitOffNotice:
+    "Приоритет портрета выключен: работает обычный непрерывный генератор. Для лица включите портрет и проверьте зоны черт.",
+  actualSettings: "Текущие параметры генерации",
   shapeCropHint:
     "Перемещайте фото внутри формы; масштабируйте двумя пальцами или колёсиком мыши.",
   markFace: "Отметить границы лица",
@@ -579,7 +641,7 @@ const ru: Record<Key, string> = {
     "Зоны приблизительные; черты лица автоматически не определялись.",
   manualRegions: "Зоны размещены вручную.",
   regionEditHint:
-    "Перемещайте зоны на цели, меняйте размер нижним маркером или вводите координаты. Смена кадра, поворота или пропорций сбрасывает ручные зоны; проверьте их снова.",
+    "Перемещайте зоны на цели, меняйте размер маркером или вводите координаты. При кадрировании и повороте с теми же пропорциями зоны следуют за фото. Смена пропорций сбрасывает зоны; проверьте их снова.",
   resizeRegion: "Изменить размер",
   resetRegions: "Сбросить приблизительные зоны",
   variantDetails: "Данные варианта",
