@@ -1,6 +1,6 @@
 # Product completion work — 2026-10-08
 
-Owner requested direct implementation in this chat. Baseline 3315a9e is preserved in an isolated checkout on codex/product-completion. Another agent's checkout is not modified.
+Owner requested direct implementation in this chat. Baseline 3315a9e is preserved in an isolated checkout on codex/product-completion. After a clean-state check, original main was fast-forwarded to the tested commit4172e04. Existing private files, old outputs and other services were preserved.
 
 Priority: likeness/buildability → unnecessary customer actions → computation speed. Provisional name Ip Rasm. Existing immutable sequences and progress stay intact.
 

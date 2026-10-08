@@ -1,6 +1,6 @@
 # Customer, guide and native integration checkpoint — 2026-10-08
 
-Owner explicitly requested implementation in this chat, replacing the earlier prompt-only preference. Starting main3315a9e is preserved. Work uses isolated branch codex/product-completion; no push, publication or personal-photo upload. Provisional name remains Ip Rasm.
+Owner explicitly requested implementation in this chat, replacing the earlier prompt-only preference. Starting main3315a9e is preserved. Tested implementation commit4172e04 was fast-forwarded into clean original main; worktree branch codex/product-completion is retained; no push, publication or personal-photo upload. Provisional name remains Ip Rasm.
 
 ## Working increment
 
@@ -35,3 +35,9 @@ Android: JDK21/SDK36, `npx cap copy android`, then `android/gradlew.bat --offlin
 5. Full master M0–M7 remains: independent brick/diamond/paint/book/model/QR/guided engines, content/license inputs, advanced gallery/moderation/animation/frame/B2B/referrals/analytics, production auth/retention/backups/security, configured shipping/COD/discount policies, actual Click/Payme/message adapters and deployment. Current commerce is a local functional sandbox, not a live business.
 
 Existing portrait sequences, templates, private evidence and progress are preserved. Full product acceptance remains OPEN. No background execution is scheduled.
+
+## Local handoff locations
+
+Original source: `D:/Coding projects/ipdan face yasaydigan app`, main contains the verified implementation. Current running4183/4311 services use the retained Documents/Codex task worktree and its separate private SQLite/config. Old4310database/secrets and4173/5173services were not copied, cleared or stopped. To preserve the current phone sandbox session, restart from this retained worktree; a different local database creates a separate sandbox.
+
+Owner-facing APK/report/checkpoint/evidence: current task `outputs/ip-rasm-product/`. A matching named APK/build evidence is also in original output/mobile; previous named artifacts remain. No Git push.
