@@ -24,6 +24,13 @@ allprojects {
     }
 }
 
+// Keep native plugin build outputs inside this checkout even when dependencies are shared.
+subprojects {
+    if (project.projectDir.absolutePath.contains('node_modules')) {
+        project.layout.buildDirectory.set(file("${rootProject.projectDir}/../tmp/native-build/${project.name}"))
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

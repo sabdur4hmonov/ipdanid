@@ -244,10 +244,10 @@ const uz = {
     "400 × 400 mm, 120 mix va 0.3 mm ip — dastlabki sinov profili. Hozircha bu sotuvdagi to‘plam emas. Haqiqiy buyurtma va kod faollashtirish keyingi bosqichda.",
   code: "To‘plam kodi",
   codeInfo:
-    "Kod faollashtirish hali ulanmagan. Foto preview bepul va kodsiz ishlaydi.",
+    "Kodni Hisob ekranida mahalliy sinov serveri orqali faollashtiring. Foto preview bepul va kodsiz ishlaydi.",
   privacy: "Maxfiylik",
   privacyText:
-    "Suratlar serverga yuborilmaydi. Saqlangan yo‘riqnomalar shu qurilmada saqlanadi. JSON eksport orqali zaxira oling. Ma’lumotlar tashqi tahlil xizmatiga yuborilmaydi.",
+    "Asl surat serverga yuborilmaydi. Yo‘riqnoma va progress avval shu qurilmada saqlanadi. Hisob ekranida faqat o‘zingiz tanlab serverga yuborasiz. JSON orqali zaxira oling. Tashqi tahlil xizmatlari ishlatilmaydi.",
   pinLabels: "Mixlarni ko‘rsatish",
   download: "Yuklab olish",
   estimate: "Taxminlar",
@@ -543,10 +543,10 @@ const en: Record<Key, string> = {
     "400 × 400 mm, 120 pins and 0.3 mm thread are provisional engineering settings. This is not a kit on sale. Ordering and code activation are later milestones.",
   code: "Kit code",
   codeInfo:
-    "Code activation is not connected yet. Photo previews are free without a code.",
+    "Redeem codes through the local sandbox in Account. Photo previews are free without a code.",
   privacy: "Privacy",
   privacyText:
-    "Photos are not uploaded. Saved instructions stay on this device. Export JSON for backup. No data is sent to external analytics.",
+    "Original photos are not uploaded. Instructions and progress are saved on this device first. Only your explicit choices in Account send instructions or progress to the server. Export JSON for backup. No external analytics are used.",
   pinLabels: "Show pins",
   download: "Download",
   estimate: "Estimates",
@@ -838,10 +838,10 @@ const ru: Record<Key, string> = {
   materialText:
     "400 × 400 мм, 120 гвоздей, нить 0.3 мм — предварительные тестовые параметры. Это не продающийся набор. Заказы и активация кодов будут позже.",
   code: "Код набора",
-  codeInfo: "Активация кодов пока не подключена. Превью бесплатно без кода.",
+  codeInfo: "Активируйте код через локальный тестовый сервер в аккаунте. Превью бесплатно без кода.",
   privacy: "Конфиденциальность",
   privacyText:
-    "Фото не загружаются на сервер. Инструкции хранятся на этом устройстве. Экспортируйте JSON для резервной копии. Внешней аналитики нет.",
+    "Исходные фото не загружаются. Инструкции и прогресс сначала хранятся на устройстве. На сервер они передаются только по вашему выбору в аккаунте. Экспортируйте JSON для резервной копии. Внешняя аналитика не используется.",
   pinLabels: "Показать гвозди",
   download: "Скачать",
   estimate: "Оценки",

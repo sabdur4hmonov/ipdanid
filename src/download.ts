@@ -16,7 +16,16 @@ export async function download(
       data: btoa(binary),
       directory: Directory.Cache,
     });
-    await Share.share({ title: name, url: result.uri });
+    try {
+      await Share.share({ title: name, url: result.uri });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : (error as { message?: string })?.message;
+      if (message !== "Share canceled" && message !== "Share cancelled")
+        throw error;
+    }
   } else {
     const url = URL.createObjectURL(blob),
       a = document.createElement("a");

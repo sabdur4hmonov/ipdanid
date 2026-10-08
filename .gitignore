@@ -9,6 +9,7 @@ output/
 tmp/
 *.log
 android/.gradle/
+android/.kotlin/
 android/local.properties
 android/**/build/
 ios/App/Pods/

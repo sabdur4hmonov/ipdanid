@@ -18,6 +18,7 @@ import {
   Sparkles,
   Square,
   Upload,
+  UserRound,
   WifiOff,
   X,
 } from "lucide-react";
@@ -62,6 +63,10 @@ import { spokenPin, translate } from "./i18n";
 import { readProjects, writeProjects, StorageConflictError } from "./storage";
 import { download } from "./download";
 import { PRODUCT_NAME } from "./config";
+import { CustomerHub } from "./CustomerHub";
+import { customerText } from "./customer-i18n";
+import { guideText } from "./guide-i18n";
+import { AssemblyNavigator } from "./AssemblyNavigator";
 import {
   readOptimizerRecovery,
   saveOptimizerRecovery,
@@ -87,7 +92,7 @@ type PhotoCandidate = {
   resolution: number;
 };
 
-type View = "create" | "assemble" | "library" | "materials";
+type View = "create" | "assemble" | "library" | "materials" | "customer";
 function Supply({
   instruction: i,
   locale,
@@ -217,6 +222,14 @@ export default function App() {
     [online, setOnline] = useState(navigator.onLine),
     [showPrivacy, setShowPrivacy] = useState(false);
   const [storageConflict, setStorageConflict] = useState(false);
+  const [savedProjects, setSavedProjects] = useState<Project[] | null>(null),
+    [saveFailed, setSaveFailed] = useState(false);
+  const saveSerial = useRef(0);
+  const localSaveState = saveFailed
+    ? "failed"
+    : savedProjects === projects
+      ? "saved"
+      : "saving";
   const [photoCandidates, setPhotoCandidates] = useState<PhotoCandidate[]>([]),
     [photoId, setPhotoId] = useState<string | null>(null),
     [makerPresets, setMakerPresets] = useState<MakerPreset[]>([]),
@@ -246,6 +259,9 @@ export default function App() {
     [textSize, setTextSize] = useState(10),
     [pdfBusy, setPdfBusy] = useState(false),
     [confirmedUndo, setConfirmedUndo] = useState<number | null>(null);
+  const [libraryQuery, setLibraryQuery] = useState(""),
+    [libraryFolder, setLibraryFolder] = useState("*"),
+    [includeArchive, setIncludeArchive] = useState(true);
   const photo = useRef<HTMLCanvasElement>(null),
     upload = useRef<HTMLInputElement>(null),
     importInput = useRef<HTMLInputElement>(null),
@@ -306,16 +322,24 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
-    if (loaded)
-      writeProjects(projects).catch((e) => {
-        setError(String(e));
-        setNotice("");
-        if (e instanceof StorageConflictError) {
-          setStorageConflict(true);
-          setLoaded(false);
-          pause();
-        }
-      });
+    if (loaded) {
+      const serial = ++saveSerial.current;
+      setSaveFailed(false);
+      writeProjects(projects)
+        .then(() => {
+          if (serial === saveSerial.current) setSavedProjects(projects);
+        })
+        .catch((e) => {
+          setSaveFailed(true);
+          setError(String(e));
+          setNotice("");
+          if (e instanceof StorageConflictError) {
+            setStorageConflict(true);
+            setLoaded(false);
+            pause();
+          }
+        });
+    }
   }, [projects, loaded]);
   useEffect(() => {
     const update = () => setOnline(navigator.onLine);
@@ -842,7 +866,6 @@ export default function App() {
     };
     setProjects((ps) => [p, ...ps]);
     open(p);
-    setNotice(t("saved"));
   }
   function confirmCurrent() {
     if (!project || !loaded) return;
@@ -953,16 +976,21 @@ export default function App() {
               { id: "assemble", icon: Layers },
               { id: "library", icon: FolderOpen },
               { id: "materials", icon: Leaf },
+              { id: "customer", icon: UserRound },
             ] as const
           ).map(({ id, icon: Icon }) => (
             <button
               key={id}
-              aria-label={t(id)}
+              aria-label={
+                id === "customer" ? customerText(locale, "customer") : t(id)
+              }
               className={view === id ? "nav active" : "nav"}
               onClick={() => nav(id)}
             >
               <Icon size={20} />
-              <span>{t(id)}</span>
+              <span>
+                {id === "customer" ? customerText(locale, "customer") : t(id)}
+              </span>
               {id === "library" && (
                 <small aria-hidden="true">
                   {projects.filter((p) => !p.deletedAt).length}
@@ -985,7 +1013,8 @@ export default function App() {
       <div className="body">
         <header>
           <div className="breadcrumbs">
-            {t(view)} <span>/</span> <span>{PRODUCT_NAME}</span>
+            {view === "customer" ? customerText(locale, "customer") : t(view)}{" "}
+            <span>/</span> <span>{PRODUCT_NAME}</span>
           </div>
           <div className="header-right">
             {!online && (
@@ -1006,6 +1035,19 @@ export default function App() {
           </div>
         </header>
         <main>
+          {projects.length > 0 && (
+            <p
+              className="fineprint library-save-status"
+              role="status"
+              data-testid="library-save-state"
+              data-state={localSaveState}
+            >
+              {guideText(
+                locale,
+                localSaveState === "failed" ? "saveFailed" : localSaveState,
+              )}
+            </p>
+          )}
           {storageConflict && (
             <div className="alert error" role="alert">
               <span>{t("conflict")}</span>
@@ -1041,6 +1083,54 @@ export default function App() {
               <Check size={17} />
               {notice}
             </div>
+          )}
+          {view === "customer" && (
+            <CustomerHub
+              locale={locale}
+              projects={projects}
+              onImport={(i, p) => {
+                const next: Project = {
+                  id: crypto.randomUUID(),
+                  name: "Server · " + i.sequenceHash.slice(0, 8),
+                  instruction: deepFreeze(i),
+                  progress: p,
+                  edits: { ...DEFAULT_EDITS },
+                };
+                setProjects((ps) => [next, ...ps]);
+                open(next);
+              }}
+              onProgress={(id, p) => {
+                const local = projects.find((item) => item.id === id);
+                if (!local || local.instruction.sequenceHash !== p.sequenceHash)
+                  throw new Error("Different sequences");
+                const progress = confirm(
+                  local.progress,
+                  p.confirmed,
+                  local.instruction,
+                );
+                setProjects((ps) =>
+                  ps.map((item) =>
+                    item.id === id ? { ...item, progress } : item,
+                  ),
+                );
+              }}
+              onApplyProfile={(id) => {
+                const match = id.match(
+                  /^dev-(circle|rectangle|heart)-(\d+)-(dark|light|color)$/,
+                );
+                if (!match || Number(match[2]) < 24 || Number(match[2]) > 240) {
+                  setError(customerText(locale, "failure"));
+                  return;
+                }
+                setShape(match[1] as Shape);
+                setPinCount(Number(match[2]));
+                setMode(match[3] as "dark" | "light" | "color");
+                setWidthMm(400);
+                setHeightMm(400);
+                setThreadMm(0.3);
+                nav("create");
+              }}
+            />
           )}
           {view === "create" && (
             <>
@@ -2253,6 +2343,20 @@ export default function App() {
                     )}
                   </section>
                 </div>
+                <AssemblyNavigator
+                  project={project}
+                  current={current}
+                  locale={locale}
+                  disabled={!loaded}
+                  onJump={jump}
+                  onChange={(bookmarks) =>
+                    setProjects((ps) =>
+                      ps.map((p) =>
+                        p.id === project.id ? { ...p, bookmarks } : p,
+                      ),
+                    )
+                  }
+                />
                 <div className="card recovery">
                   <h2>{t("pinSearch")}</h2>
                   <input
@@ -2383,6 +2487,39 @@ export default function App() {
                   {t("import")}
                 </button>
               </section>
+              <section className="card library-filters">
+                <label>
+                  {guideText(locale, "search")}
+                  <input
+                    value={libraryQuery}
+                    onChange={(e) => setLibraryQuery(e.target.value)}
+                  />
+                </label>
+                <label>
+                  {guideText(locale, "folder")}
+                  <select
+                    value={libraryFolder}
+                    onChange={(e) => setLibraryFolder(e.target.value)}
+                  >
+                    <option value="*">{guideText(locale, "all")}</option>
+                    {Array.from(new Set(projects.map((p) => p.folder ?? "")))
+                      .sort()
+                      .map((folder) => (
+                        <option key={folder} value={folder}>
+                          {folder || "—"}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+                <label className="check-label">
+                  <input
+                    type="checkbox"
+                    checked={includeArchive}
+                    onChange={(e) => setIncludeArchive(e.target.checked)}
+                  />
+                  {guideText(locale, "archive")}
+                </label>
+              </section>
               {!projects.length ? (
                 <div className="empty-page">
                   <FolderOpen size={40} />
@@ -2393,91 +2530,142 @@ export default function App() {
                 </div>
               ) : (
                 <div className="project-grid">
-                  {projects.map((p) => (
-                    <article
-                      className={`card project-card ${p.deletedAt ? "archived" : ""}`}
-                      key={p.id}
-                    >
-                      <Preview instruction={p.instruction} />
-                      <h2>{p.name}</h2>
-                      <p>
-                        {p.progress.confirmed}/{p.instruction.metrics.lines} ·{" "}
-                        {p.deletedAt ? t("archived") : t("confirmed")}
-                      </p>
-                      <div>
-                        {!p.deletedAt && (
-                          <button className="primary" onClick={() => open(p)}>
-                            {t("open")}
-                            <ArrowRight size={16} />
-                          </button>
-                        )}
-                        {!p.deletedAt && (
-                          <button
-                            className="outline"
-                            onClick={() => {
-                              const profile = p.instruction.profile;
-                              applySettings({
-                                resolution: p.instruction.params.resolution,
-                                shape: profile.shape,
-                                mode: p.instruction.params.mode,
-                                lines: p.instruction.params.requestedLines,
-                                widthMm: profile.widthMm,
-                                heightMm: profile.heightMm,
-                                pinCount: profile.pins.length,
-                                threadMm: profile.threadMm,
-                                stockMeters: profile.stockMeters,
-                                pinLayout: profile.pinLayout,
-                                pinCoordinates: profile.pinLayout
-                                  ? profile.pins
-                                  : undefined,
-                                edits: p.edits,
-                                portrait: p.instruction.params.portrait,
-                                portraitSolver:
-                                  p.instruction.algorithm ===
-                                    "density-physical/8" ||
-                                  p.instruction.params.simplification
-                                    ?.sourceAlgorithm === "density-physical/8"
-                                    ? "physical"
-                                    : p.instruction.algorithm ===
-                                        "density-multiscale/7"
-                                      ? "multiscale"
-                                      : p.instruction.algorithm ===
-                                          "continuous-guarded/6"
-                                        ? "guarded"
-                                        : p.instruction.algorithm ===
-                                            "density-optical/5"
-                                          ? "global"
-                                          : "continuous",
-                              });
-                              nav("create");
-                              setNotice(t("reuseNotice"));
+                  {projects
+                    .filter(
+                      (p) =>
+                        (includeArchive || !p.deletedAt) &&
+                        (libraryFolder === "*" ||
+                          (p.folder ?? "") === libraryFolder) &&
+                        (p.name
+                          .toLowerCase()
+                          .includes(libraryQuery.toLowerCase()) ||
+                          p.instruction.sequenceHash.includes(
+                            libraryQuery.toLowerCase(),
+                          )),
+                    )
+                    .map((p) => (
+                      <article
+                        className={`card project-card ${p.deletedAt ? "archived" : ""}`}
+                        key={p.id}
+                      >
+                        <Preview instruction={p.instruction} />
+                        <h2>{p.name}</h2>
+                        <label>
+                          {guideText(locale, "rename")}
+                          <input
+                            key={`${p.id}-name`}
+                            defaultValue={p.name}
+                            maxLength={100}
+                            disabled={!loaded}
+                            onBlur={(e) => {
+                              const name = e.target.value.trim();
+                              if (name && name !== p.name)
+                                setProjects((ps) =>
+                                  ps.map((item) =>
+                                    item.id === p.id ? { ...item, name } : item,
+                                  ),
+                                );
+                              else e.target.value = p.name;
                             }}
+                          />
+                        </label>
+                        <label>
+                          {guideText(locale, "folder")}
+                          <input
+                            defaultValue={p.folder ?? ""}
+                            maxLength={50}
+                            disabled={!loaded}
+                            onBlur={(e) => {
+                              const folder = e.target.value.trim();
+                              if (folder !== (p.folder ?? ""))
+                                setProjects((ps) =>
+                                  ps.map((item) =>
+                                    item.id === p.id
+                                      ? { ...item, folder }
+                                      : item,
+                                  ),
+                                );
+                            }}
+                          />
+                        </label>
+                        <p>
+                          {p.progress.confirmed}/{p.instruction.metrics.lines} ·{" "}
+                          {p.deletedAt ? t("archived") : t("confirmed")}
+                        </p>
+                        <div>
+                          {!p.deletedAt && (
+                            <button className="primary" onClick={() => open(p)}>
+                              {t("open")}
+                              <ArrowRight size={16} />
+                            </button>
+                          )}
+                          {!p.deletedAt && (
+                            <button
+                              className="outline"
+                              onClick={() => {
+                                const profile = p.instruction.profile;
+                                applySettings({
+                                  resolution: p.instruction.params.resolution,
+                                  shape: profile.shape,
+                                  mode: p.instruction.params.mode,
+                                  lines: p.instruction.params.requestedLines,
+                                  widthMm: profile.widthMm,
+                                  heightMm: profile.heightMm,
+                                  pinCount: profile.pins.length,
+                                  threadMm: profile.threadMm,
+                                  stockMeters: profile.stockMeters,
+                                  pinLayout: profile.pinLayout,
+                                  pinCoordinates: profile.pinLayout
+                                    ? profile.pins
+                                    : undefined,
+                                  edits: p.edits,
+                                  portrait: p.instruction.params.portrait,
+                                  portraitSolver:
+                                    p.instruction.algorithm ===
+                                      "density-physical/8" ||
+                                    p.instruction.params.simplification
+                                      ?.sourceAlgorithm === "density-physical/8"
+                                      ? "physical"
+                                      : p.instruction.algorithm ===
+                                          "density-multiscale/7"
+                                        ? "multiscale"
+                                        : p.instruction.algorithm ===
+                                            "continuous-guarded/6"
+                                          ? "guarded"
+                                          : p.instruction.algorithm ===
+                                              "density-optical/5"
+                                            ? "global"
+                                            : "continuous",
+                                });
+                                nav("create");
+                                setNotice(t("reuseNotice"));
+                              }}
+                            >
+                              {t("reuseSettings")}
+                            </button>
+                          )}
+                          <button
+                            className="text-button"
+                            onClick={() =>
+                              setProjects((ps) =>
+                                ps.map((v) =>
+                                  v.id === p.id
+                                    ? {
+                                        ...v,
+                                        deletedAt: v.deletedAt
+                                          ? undefined
+                                          : new Date().toISOString(),
+                                      }
+                                    : v,
+                                ),
+                              )
+                            }
                           >
-                            {t("reuseSettings")}
+                            {t(p.deletedAt ? "restore" : "remove")}
                           </button>
-                        )}
-                        <button
-                          className="text-button"
-                          onClick={() =>
-                            setProjects((ps) =>
-                              ps.map((v) =>
-                                v.id === p.id
-                                  ? {
-                                      ...v,
-                                      deletedAt: v.deletedAt
-                                        ? undefined
-                                        : new Date().toISOString(),
-                                    }
-                                  : v,
-                              ),
-                            )
-                          }
-                        >
-                          {t(p.deletedAt ? "restore" : "remove")}
-                        </button>
-                      </div>
-                    </article>
-                  ))}
+                        </div>
+                      </article>
+                    ))}
                 </div>
               )}
             </>
@@ -2494,7 +2682,9 @@ export default function App() {
               </div>
               <p className="provisional">{t("provisional")}</p>
               <label className="field-label">{t("code")}</label>
-              <input placeholder="•••• – ••••" disabled />
+              <button className="outline" onClick={() => nav("customer")}>
+                {customerText(locale, "redeem")}
+              </button>
               <p className="fineprint">{t("codeInfo")}</p>
               <button className="primary" onClick={() => nav("create")}>
                 {t("try")}

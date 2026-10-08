@@ -17,7 +17,9 @@ npm ci
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. Upload a JPEG/PNG or try the original illustration, edit/crop, select shape and thread mode, and calculate a real path in a Worker. Save, assemble and explicitly confirm progress. Local files do not upload to a server. Export JSON project backups (including progress/edits), TXT sequences, PNG previews and actual-size tiled PDFs. Unlimited local exploration; no payments/credits currently connected.
+Open http://127.0.0.1:5173. Upload a JPEG/PNG or try the original illustration, edit/crop, select shape and thread mode, and calculate a real path in a Worker. Save, assemble and explicitly confirm progress. Original photos never upload. Export JSON project backups (including progress/edits), TXT sequences, PNG previews and actual-size tiled PDFs. Local generation is free. Account & shop connects the optional local sandbox; uploading an instruction there is explicit and uses sandbox credits, with free repeat downloads.
+
+For the complete local customer interface, run `npm run build` then `npm run local`. It starts the API on 4311 and production website on **http://127.0.0.1:4183**. Use these ports for this increment; existing 4173/5173 pages can show an older build. Node 24 is required. The sandbox catalog and payment/order/support actions do not charge money, ship goods or send messages. See [docs/PRODUCT_COMPLETION_CHECKPOINT.md](docs/PRODUCT_COMPLETION_CHECKPOINT.md).
 
 Compare up to four working photos and six real generated variants. Each photo keeps its own edits during this open page. Save reusable edit/material settings or reuse a library project's parameters. Originals are never persisted; reload requires another upload. Board width/height, pin count, thread thickness and available stock drive the actual computation. PDFs carry a snapshot of confirmed progress.
 
@@ -43,17 +45,17 @@ cd android
 
 APK: `android/app/build/outputs/apk/debug/app-debug.apk`. This is a development artifact, not store-signed. Native project uses Preferences for progress, Filesystem + native Share for exports, and App lifecycle/back events. Runtime camera/microphone/background audio features remain roadmap work. iOS needs macOS/Xcode; open `ios/App/App.xcodeproj` after sync and configure owner signing. No iOS test or store publication is claimed.
 
-This Windows host successfully compiled the debug APK with JDK 21/SDK 36. A copy is at `output/mobile/ip-rasm-debug.apk`; SHA-256 and exact bundled-web-asset checks are at `output/mobile/build-evidence.json`. No Android device/emulator interaction has yet been tested. Rebuild after source changes; build success does not establish runtime behavior.
+This Windows host successfully compiled the debug APK with JDK 21/SDK 36. The current copy is `output/mobile/ip-rasm-product-debug.apk`; its hash and exact bundled assets are in the matching build-evidence JSON. Installation on the owner's Android phone succeeded. Device execution results are tracked in the current checkpoint; installation alone does not establish runtime behavior.
 
-`./gradlew.bat :app:assembleDebugAndroidTest` also compiles the packaged-asset smoke test. Its real device execution (`:app:connectedDebugAndroidTest`) and full native customer flow remain pending; no arithmetic placeholder tests are counted as evidence.
+Use the scoped tasks `./gradlew.bat :app:assembleDebug :app:assembleDebugAndroidTest`. Tests cover packaged assets and actual WebView/Worker/Preferences/native exports, plus native sandbox session/support. To reach the computer's local sandbox while USB-connected, run `adb reverse tcp:4311 tcp:4311`. Only the debug manifest permits cleartext loopback; production mobile networking/provider configuration remains open. No personal photo or external message is used by the device tests.
 
 ## Data and integrity
 
 - Files: 15 MB, decoded dimensions 24 MP and 12,000 px maximum. Only JPEG/PNG headers are admitted before decode. Browsers normalize EXIF via `createImageBitmap`.
-- RGB image is reduced to 96×96 for bounded local computation. Profiles limit pin counts and maximum 3,000 lines. Optical greedy gain is measured against target pixels, including color-specific paths and masks.
+- Computation resolution is selectable (160 default, 192 experimental). Limits depend on the selected materials/engine; current controls allow up to 20,000 lines. Optical gain is measured against target pixels, including color-specific paths and masks. A higher limit does not prove higher likeness.
 - Preview/player/PDF/TXT/JSON use the same SHA-256 versioned instruction. Imports are bounded and validated; illegal pins, tampering and unsupported schemas fail explicitly. Updated engines do not mutate saved instructions.
 - Progress moves only when confirmed. Playback and jumps announce/display a step independently. Repeated-pin recovery lists all matching steps and their neighboring pins.
-- Browser data uses local storage; native data uses Preferences. Clearing app/browser storage removes it. Archive is reversible. JSON backup is the recovery route; authenticated sync is not connected yet.
+- Browser data uses local storage; native data uses Preferences. Clearing app/browser storage removes it. Archive is reversible. Projects support folders, name/hash search and exact-step bookmarks. JSON backup remains available. Optional account upload/download and explicit progress push/pull use server ownership and revision checks; conflicts do not silently overwrite a guide.
 - Concurrent browser tabs use Web Locks and a stored-snapshot check. A stale tab stops saving and offers backup/reload rather than overwriting newer progress.
 - Estimated thread includes wraps/knots/waste. Numeric image error measures simulation only. Kit fit, thread behavior, image likeness and printing still need [human physical trials](docs/PHYSICAL_TRIAL.md).
 
@@ -67,4 +69,4 @@ Fonts: Noto Sans Regular, SIL Open Font License; license and source note in `pub
 
 ## Local transactional service
 
-Node 24 is required for `node:sqlite`. Run `npm run server` separately for the loopback development API on port 4310; see [docs/SANDBOX_API.md](docs/SANDBOX_API.md) for secret configuration, routes and scope. `npm run test:sandbox` starts an isolated in-memory API and verifies HTTP outcomes with synthetic events. Codes, stock/order ownership, credit reservations/refunds, gift transfers, progress conflicts and local support tickets are real local transactions. The customer UI is not yet wired to this API. No payment provider or email is active.
+Node 24 is required for `node:sqlite`. `npm run local` starts both services, or use `npm run server` separately on loopback port 4311. See [docs/SANDBOX_API.md](docs/SANDBOX_API.md) for private stable configuration, routes and scope. `npm run test:sandbox` and `npm run test:customer:http` use isolated test databases. The connected UI includes guest/account login and recovery, codes/gifts, cart/orders/returns, support replies, explicit instruction/progress sync and protected local administration. No payment provider or email is active; full production RBAC and deployment remain pending.

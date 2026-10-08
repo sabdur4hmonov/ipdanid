@@ -13,7 +13,9 @@
     "mobile:android": "cap open android",
     "check": "npm run build && npm test",
     "server": "tsx server/index.ts",
-    "test:sandbox": "node scripts/verify-sandbox.mjs"
+    "test:sandbox": "node scripts/verify-sandbox.mjs",
+    "test:customer:http": "node --import tsx scripts/verify-customer-http.mjs",
+    "local": "node scripts/run-local.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

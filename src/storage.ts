@@ -2,6 +2,7 @@ import { Preferences } from "@capacitor/preferences";
 import { Capacitor } from "@capacitor/core";
 import type { Project } from "./core/types";
 import { validateInstruction } from "./core/validation";
+import { validateOrganization } from "./core/organization";
 const KEY = "iprasm.projects.v1";
 let lastSnapshot: string | null | undefined;
 export class StorageConflictError extends Error {}
@@ -27,6 +28,7 @@ export async function readProjects(): Promise<Project[]> {
     )
       throw new Error("Invalid saved project metadata");
     await validateInstruction(p.instruction);
+    validateOrganization(p);
     if (
       p.progress.sequenceHash !== p.instruction.sequenceHash ||
       !Number.isInteger(p.progress.confirmed) ||

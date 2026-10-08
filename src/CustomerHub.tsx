@@ -1,0 +1,1214 @@
+import { useEffect, useRef, useState } from "react";
+import type { Instruction, Locale, Progress, Project } from "./core/types";
+import { validateInstruction } from "./core/validation";
+import { customerApi as api, ApiError } from "./customer-api";
+import { customerText, type CustomerWord } from "./customer-i18n";
+import "./customer.css";
+
+type Product = {
+  id: string;
+  name: string;
+  family: string;
+  price_minor: number;
+  stock: number;
+  credits: number;
+  revision: number;
+  description: string;
+  profile_id: string;
+  active: number;
+};
+type Order = {
+  id: string;
+  status: string;
+  total_minor: number;
+  items: { name: string; quantity: number }[];
+  fulfillments: { tracking: string; state: string }[];
+};
+type Ticket = {
+  id: string;
+  subject: string;
+  body: string;
+  state: string;
+  replies: { id: string; body: string; created_at: string }[];
+};
+type Remote = { id: string; sequence_hash: string; name: string };
+type Pane = "account" | "shop" | "sync" | "support" | "admin";
+const freshProduct = (): Product => ({
+  id: "",
+  name: "",
+  family: "string",
+  price_minor: 0,
+  stock: 0,
+  credits: 0,
+  revision: 0,
+  description: "",
+  profile_id: "",
+  active: 1,
+});
+
+export function CustomerHub({
+  locale,
+  projects,
+  onImport,
+  onProgress,
+  onApplyProfile,
+}: {
+  locale: Locale;
+  projects: Project[];
+  onImport: (instruction: Instruction, progress: Progress) => void;
+  onProgress: (id: string, progress: Progress) => void;
+  onApplyProfile: (profile: string) => void;
+}) {
+  const t = (key: CustomerWord) => customerText(locale, key);
+  const [pane, setPane] = useState<Pane>("account"),
+    [connected, setConnected] = useState(false),
+    [busy, setBusy] = useState(false);
+  const [error, setError] = useState(""),
+    [notice, setNotice] = useState(""),
+    [email, setEmail] = useState(""),
+    [password, setPassword] = useState(""),
+    [recovery, setRecovery] = useState(""),
+    [newRecovery, setNewRecovery] = useState("");
+  const [me, setMe] = useState<{
+      email: string | null;
+      credits: number;
+    } | null>(null),
+    [products, setProducts] = useState<Product[]>([]),
+    [orders, setOrders] = useState<Order[]>([]),
+    [tickets, setTickets] = useState<Ticket[]>([]),
+    [remote, setRemote] = useState<Remote[]>([]);
+  const [code, setCode] = useState(""),
+    [material, setMaterial] = useState(""),
+    [claim, setClaim] = useState(""),
+    [gift, setGift] = useState<{
+      id: string;
+      claimToken?: string;
+      status: string;
+    } | null>(null),
+    [giftCredits, setGiftCredits] = useState(1);
+  const giftRequest = useRef<{
+    key: string;
+    expiry: number;
+    credits: number;
+  } | null>(null);
+  const [cart, setCart] = useState<Record<string, number>>({}),
+    [address, setAddress] = useState({ name: "", city: "", street: "" });
+  const orderRequest = useRef<{ key: string; payload: string } | null>(null);
+  const [subject, setSubject] = useState(""),
+    [body, setBody] = useState("");
+  const [snapshots, setSnapshots] = useState<Record<string, Progress>>({});
+  const [adminToken, setAdminToken] = useState(""),
+    [unlocked, setUnlocked] = useState(false),
+    [adminProducts, setAdminProducts] = useState<Product[]>([]),
+    [adminOrders, setAdminOrders] = useState<Order[]>([]),
+    [adminTickets, setAdminTickets] = useState<Ticket[]>([]),
+    [audit, setAudit] = useState<
+      { id: string; action: string; entity_id: string; created_at: string }[]
+    >([]),
+    [codes, setCodes] = useState<
+      {
+        hash: string;
+        profile_id: string;
+        quota: number;
+        revoked: number;
+        redeemed_by: string | null;
+      }[]
+    >([]);
+  const [product, setProduct] = useState<Product>(freshProduct),
+    [quota, setQuota] = useState(1),
+    [days, setDays] = useState(30),
+    [codeProfile, setCodeProfile] = useState("dev-circle-120-dark"),
+    [issued, setIssued] = useState("");
+  const [ticketStates, setTicketStates] = useState<Record<string, string>>({});
+  const [replies, setReplies] = useState<Record<string, string>>({}),
+    [tracking, setTracking] = useState<Record<string, string>>({});
+  async function run(fn: () => Promise<void>) {
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      await fn();
+    } catch (e) {
+      const status = e instanceof ApiError ? e.status : -1;
+      setError(
+        t(
+          status === 0
+            ? "offline"
+            : status === 401
+              ? "expired"
+              : status === 409
+                ? "conflict"
+                : status === 429
+                  ? "limited"
+                  : status === 402
+                    ? "noCredits"
+                    : "failure",
+        ),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function refresh() {
+    const health = await api.request<{ sandbox: boolean }>("/health");
+    if (!health.sandbox) throw new Error("Unexpected service");
+    const [m, c, o, s, r] = await Promise.all([
+      api.request<{ email: string | null; credits: number }>("/account"),
+      api.request<{ products: Product[] }>("/catalog"),
+      api.request<Order[]>("/orders"),
+      api.request<Ticket[]>("/support"),
+      api.request<Remote[]>("/instructions"),
+    ]);
+    setMe(m);
+    setProducts(c.products);
+    setOrders(o);
+    setTickets(s);
+    setRemote(r);
+    setConnected(true);
+  }
+  useEffect(() => {
+    let alive = true;
+    void api
+      .restore()
+      .then(() => {
+        if (alive && api.session) void run(refresh);
+      })
+      .catch(() => {
+        if (alive) setError(t("failure"));
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  async function authenticate(mode: "register" | "login" | "recover") {
+    if (mode === "register" && !api.session) await api.connect();
+    const result = await api.authenticate(mode, {
+      email,
+      password,
+      recoveryKey: recovery,
+    });
+    resetCustomer();
+    setPassword("");
+    setRecovery("");
+    setNewRecovery(result.recoveryKey ?? "");
+    await refresh();
+  }
+  function resetCustomer() {
+    setConnected(false);
+    setMe(null);
+    setRemote([]);
+    setOrders([]);
+    setTickets([]);
+    setSnapshots({});
+    setNewRecovery("");
+    setCart({});
+    setAddress({ name: "", city: "", street: "" });
+    setClaim("");
+    setGift(null);
+    setMaterial("");
+    setSubject("");
+    setBody("");
+    setCode("");
+    giftRequest.current = null;
+    orderRequest.current = null;
+  }
+  async function adminRefresh() {
+    const [p, o, s, a, c] = await Promise.all([
+      api.request<Product[]>("/admin/products", undefined, adminToken),
+      api.request<Order[]>("/admin/orders", undefined, adminToken),
+      api.request<Ticket[]>("/admin/support", undefined, adminToken),
+      api.request<typeof audit>("/admin/audit", undefined, adminToken),
+      api.request<typeof codes>("/admin/codes", undefined, adminToken),
+    ]);
+    setAdminProducts(p);
+    setAdminOrders(o);
+    setAdminTickets(s);
+    setAudit(a);
+    setCodes(c);
+    setUnlocked(true);
+  }
+  const money = (v: number) => `${v.toLocaleString(locale)} UZS`;
+  const state = (v: string) =>
+    t(
+      (
+        [
+          "pending",
+          "paid",
+          "cancelled",
+          "fulfilled",
+          "return_requested",
+          "refunded",
+          "open",
+          "answered",
+          "closed",
+        ] as string[]
+      ).includes(v)
+        ? (v as CustomerWord)
+        : "saved",
+    );
+  async function upload(p: Project) {
+    const job = await api.request<{
+      id: string;
+      status: string;
+      instruction_id?: string;
+    }>("/jobs/reserve", {
+      requestKey: `save-${p.instruction.sequenceHash}`,
+      sequenceHash: p.instruction.sequenceHash,
+    });
+    if (job.status !== "succeeded")
+      await api.request("/jobs/finish", {
+        jobId: job.id,
+        instruction: p.instruction,
+      });
+    await refresh();
+    setNotice(t("saved"));
+  }
+  async function inspect(r: Remote) {
+    const p = await api.request<Progress>(`/instructions/${r.id}/progress`);
+    setSnapshots((v) => ({ ...v, [r.id]: p }));
+    return p;
+  }
+
+  return (
+    <div className="customer-hub">
+      <p className="sandbox-notice" role="note">
+        {t("sandbox")}
+      </p>
+      <div className="customer-tabs" role="group" aria-label={t("customer")}>
+        {(["account", "shop", "sync", "support", "admin"] as Pane[]).map(
+          (p) => (
+            <button
+              key={p}
+              className={pane === p ? "active" : "outline"}
+              aria-pressed={pane === p}
+              onClick={() => {
+                setPane(p);
+                setError("");
+              }}
+            >
+              {t(p)}
+            </button>
+          ),
+        )}
+      </div>
+      {error && (
+        <p role="alert" className="customer-error">
+          {error}
+        </p>
+      )}
+      {notice && <p role="status">{notice}</p>}
+      {busy && <p role="status">{t("loading")}</p>}
+      <fieldset disabled={busy} className="customer-fields">
+        {pane !== "admin" && (
+          <div className="customer-session">
+            {connected ? (
+              <>
+                <span>
+                  {me?.email ?? t("guest")} · {t("credits")}:{" "}
+                  <strong data-testid="customer-credits">{me?.credits}</strong>
+                </span>
+                <button className="outline" onClick={() => void run(refresh)}>
+                  {t("refresh")}
+                </button>
+                <button
+                  className="text-button"
+                  onClick={() =>
+                    void run(async () => {
+                      try {
+                        await api.logout();
+                      } finally {
+                        resetCustomer();
+                      }
+                    })
+                  }
+                >
+                  {t("logout")}
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() =>
+                  void run(async () => {
+                    await api.connect();
+                    await refresh();
+                  })
+                }
+              >
+                {t("connect")}
+              </button>
+            )}
+          </div>
+        )}
+        {pane === "account" && (
+          <div className="customer-grid">
+            <section className="card">
+              <h2>{t("account")}</h2>
+              <label>
+                {t("email")}
+                <input
+                  type="email"
+                  autoComplete="username"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </label>
+              <label>
+                {t("password")}
+                <input
+                  type="password"
+                  autoComplete="current-password"
+                  minLength={12}
+                  maxLength={256}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </label>
+              <div className="customer-actions">
+                <button
+                  disabled={!!me?.email || password.length < 12 || !email}
+                  onClick={() => void run(() => authenticate("register"))}
+                >
+                  {t("register")}
+                </button>
+                <button
+                  className="outline"
+                  disabled={password.length < 12 || !email}
+                  onClick={() => void run(() => authenticate("login"))}
+                >
+                  {t("login")}
+                </button>
+              </div>
+              <details>
+                <summary>{t("recover")}</summary>
+                <label>
+                  {t("recoveryKey")}
+                  <input
+                    type="password"
+                    value={recovery}
+                    onChange={(e) => setRecovery(e.target.value)}
+                  />
+                </label>
+                <button
+                  disabled={!recovery || password.length < 12 || !email}
+                  onClick={() => void run(() => authenticate("recover"))}
+                >
+                  {t("recover")}
+                </button>
+              </details>
+              {newRecovery && (
+                <div className="recovery-key">
+                  <p>{t("recoveryNotice")}</p>
+                  <code>{newRecovery}</code>
+                  <button
+                    className="text-button"
+                    onClick={() => setNewRecovery("")}
+                  >
+                    {t("closed")}
+                  </button>
+                </div>
+              )}
+            </section>
+            {connected && (
+              <section className="card">
+                <h2>{t("code")}</h2>
+                <label>
+                  {t("code")}
+                  <input
+                    value={code}
+                    maxLength={200}
+                    onChange={(e) => setCode(e.target.value)}
+                  />
+                </label>
+                <button
+                  disabled={!code.trim()}
+                  onClick={() =>
+                    void run(async () => {
+                      const r = await api.request<{ profile: string }>(
+                        "/codes/redeem",
+                        { code: code.trim() },
+                      );
+                      setMaterial(r.profile);
+                      setCode("");
+                      await refresh();
+                      setNotice(t("saved"));
+                    })
+                  }
+                >
+                  {t("redeem")}
+                </button>
+                {material && (
+                  <div>
+                    <p>
+                      {t("profile")}: {material}
+                    </p>
+                    <button
+                      className="outline"
+                      onClick={() => onApplyProfile(material)}
+                    >
+                      {t("apply")}
+                    </button>
+                  </div>
+                )}
+                <hr />
+                <h3>{t("createGift")}</h3>
+                <label>
+                  {t("quota")}
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={giftCredits}
+                    onChange={(e) => {
+                      setGiftCredits(Number(e.target.value));
+                      giftRequest.current = null;
+                    }}
+                  />
+                </label>
+                <button
+                  disabled={giftCredits < 1 || giftCredits > (me?.credits ?? 0)}
+                  onClick={() =>
+                    void run(async () => {
+                      giftRequest.current ??= {
+                        key: crypto.randomUUID(),
+                        expiry: Date.now() + 30 * 86400000,
+                        credits: giftCredits,
+                      };
+                      const q = giftRequest.current;
+                      setGift(
+                        await api.request("/gifts", {
+                          credits: q.credits,
+                          expiresAt: q.expiry,
+                          requestKey: q.key,
+                        }),
+                      );
+                      await refresh();
+                    })
+                  }
+                >
+                  {t("createGift")}
+                </button>
+                {gift?.claimToken && (
+                  <div>
+                    <p>{t("giftNotice")}</p>
+                    <code className="claim-token">{gift.claimToken}</code>
+                    <button
+                      className="text-button"
+                      onClick={() =>
+                        void run(async () => {
+                          await api.request(`/gifts/${gift.id}/cancel`, {});
+                          setGift(null);
+                          giftRequest.current = null;
+                          await refresh();
+                        })
+                      }
+                    >
+                      {t("cancelGift")}
+                    </button>
+                  </div>
+                )}
+                <label>
+                  {t("claim")}
+                  <input
+                    value={claim}
+                    maxLength={200}
+                    onChange={(e) => setClaim(e.target.value)}
+                  />
+                </label>
+                <button
+                  className="outline"
+                  disabled={!claim.trim()}
+                  onClick={() =>
+                    void run(async () => {
+                      await api.request("/gifts/redeem", {
+                        claimToken: claim.trim(),
+                      });
+                      setClaim("");
+                      await refresh();
+                      setNotice(t("saved"));
+                    })
+                  }
+                >
+                  {t("redeemGift")}
+                </button>
+              </section>
+            )}
+          </div>
+        )}
+        {pane === "shop" && connected && (
+          <>
+            <div className="customer-grid">
+              {products.map((p) => (
+                <section className="card" key={p.id}>
+                  <span className="eyebrow">{p.family}</span>
+                  <h2>{p.name}</h2>
+                  <p>{p.description}</p>
+                  <p>
+                    {t("price")}: {money(p.price_minor)}
+                  </p>
+                  <p>
+                    {t("stock")}: {p.stock} · {t("credits")}: {p.credits}
+                  </p>
+                  <button
+                    disabled={
+                      p.stock < 1 || (cart[p.id] ?? 0) >= Math.min(10, p.stock)
+                    }
+                    onClick={() => {
+                      setCart((v) => ({ ...v, [p.id]: (v[p.id] ?? 0) + 1 }));
+                      orderRequest.current = null;
+                    }}
+                  >
+                    {t("add")}
+                  </button>
+                </section>
+              ))}
+            </div>
+            <section className="card">
+              <h2>{t("cart")}</h2>
+              {Object.entries(cart).map(([id, q]) => (
+                <div className="customer-row" key={id}>
+                  <span>
+                    {products.find((p) => p.id === id)?.name ?? id} × {q}
+                  </span>
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      setCart((v) => {
+                        const next = { ...v };
+                        delete next[id];
+                        return next;
+                      });
+                      orderRequest.current = null;
+                    }}
+                  >
+                    {t("remove")}
+                  </button>
+                </div>
+              ))}
+              <p>
+                {t("price")}:{" "}
+                {money(
+                  Object.entries(cart).reduce(
+                    (sum, [id, q]) =>
+                      sum +
+                      q * (products.find((p) => p.id === id)?.price_minor ?? 0),
+                    0,
+                  ),
+                )}
+              </p>
+              {(["name", "city", "street"] as const).map((k) => (
+                <label key={k}>
+                  {t(k)}
+                  <input
+                    value={address[k]}
+                    maxLength={200}
+                    onChange={(e) => {
+                      setAddress((v) => ({ ...v, [k]: e.target.value }));
+                      orderRequest.current = null;
+                    }}
+                  />
+                </label>
+              ))}
+              <button
+                disabled={
+                  !Object.keys(cart).length ||
+                  Object.values(address).some((v) => v.trim().length < 2)
+                }
+                onClick={() =>
+                  void run(async () => {
+                    const items = Object.entries(cart).map(
+                      ([productId, quantity]) => ({ productId, quantity }),
+                    );
+                    const payload = JSON.stringify({ items, address });
+                    if (orderRequest.current?.payload !== payload)
+                      orderRequest.current = {
+                        key: crypto.randomUUID(),
+                        payload,
+                      };
+                    await api.request("/orders", {
+                      items,
+                      address,
+                      requestKey: orderRequest.current.key,
+                    });
+                    setCart({});
+                    orderRequest.current = null;
+                    await refresh();
+                    setNotice(t("saved"));
+                  })
+                }
+              >
+                {t("checkout")}
+              </button>
+            </section>
+            <section className="card">
+              <h2>{t("orders")}</h2>
+              {!orders.length && <p>{t("noOrders")}</p>}
+              {orders.map((o) => (
+                <article className="customer-item" key={o.id}>
+                  <code>{o.id}</code>
+                  <p>
+                    {state(o.status)} · {money(o.total_minor)}
+                  </p>
+                  {o.items.map((l, k) => (
+                    <p key={k}>
+                      {l.name} × {l.quantity}
+                    </p>
+                  ))}
+                  {o.fulfillments.map((f, k) => (
+                    <p key={k}>
+                      {t("tracking")}: {f.tracking}
+                    </p>
+                  ))}
+                  {o.status === "pending" && (
+                    <button
+                      className="outline"
+                      onClick={() =>
+                        void run(async () => {
+                          await api.request(`/orders/${o.id}/cancel`, {});
+                          await refresh();
+                        })
+                      }
+                    >
+                      {t("cancel")}
+                    </button>
+                  )}
+                  {["paid", "fulfilled"].includes(o.status) && (
+                    <button
+                      className="outline"
+                      onClick={() =>
+                        void run(async () => {
+                          await api.request(`/orders/${o.id}/return`, {});
+                          await refresh();
+                        })
+                      }
+                    >
+                      {t("return")}
+                    </button>
+                  )}
+                </article>
+              ))}
+            </section>
+          </>
+        )}
+        {pane === "sync" && connected && (
+          <>
+            <p>{t("uploadNotice")}</p>
+            <section className="card">
+              <h2>{t("localProjects")}</h2>
+              {!projects.filter((p) => !p.deletedAt).length && (
+                <p>{t("noProjects")}</p>
+              )}
+              {projects
+                .filter((p) => !p.deletedAt)
+                .map((p) => (
+                  <article className="customer-item" key={p.id}>
+                    <h3>{p.name}</h3>
+                    <p>
+                      {t("confirmed")}: {p.progress.confirmed}/
+                      {p.instruction.metrics.lines}
+                    </p>
+                    <code>{p.instruction.sequenceHash.slice(0, 16)}</code>
+                    <button
+                      className="outline"
+                      onClick={() => void run(() => upload(p))}
+                    >
+                      {t("upload")}
+                    </button>
+                  </article>
+                ))}
+            </section>
+            <section className="card">
+              <h2>{t("serverProjects")}</h2>
+              {!remote.length && <p>{t("empty")}</p>}
+              {remote.map((r) => {
+                const local = projects.find(
+                  (p) =>
+                    !p.deletedAt &&
+                    p.instruction.sequenceHash === r.sequence_hash,
+                );
+                const snapshot = snapshots[r.id];
+                return (
+                  <article className="customer-item" key={r.id}>
+                    <code>{r.sequence_hash.slice(0, 16)}</code>
+                    <button
+                      className="outline"
+                      onClick={() =>
+                        void run(async () => {
+                          await inspect(r);
+                        })
+                      }
+                    >
+                      {t("refresh")}
+                    </button>
+                    {snapshot && (
+                      <>
+                        <p>
+                          {t("confirmed")}: {snapshot.confirmed} · revision{" "}
+                          {snapshot.revision}
+                        </p>
+                        {local ? (
+                          <div className="customer-actions">
+                            <button
+                              onClick={() =>
+                                void run(async () => {
+                                  const saved = await api.request<Progress>(
+                                    `/instructions/${r.id}/progress`,
+                                    {
+                                      progress: local.progress,
+                                      expectedRevision: snapshot.revision,
+                                    },
+                                  );
+                                  setSnapshots((v) => ({
+                                    ...v,
+                                    [r.id]: saved,
+                                  }));
+                                  setNotice(t("saved"));
+                                })
+                              }
+                            >
+                              {t("push")}
+                            </button>
+                            <button
+                              className="outline"
+                              onClick={() =>
+                                void run(async () => {
+                                  const latest = await inspect(r);
+                                  onProgress(local.id, latest);
+                                  setNotice(t("saved"));
+                                })
+                              }
+                            >
+                              {t("pull")}
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() =>
+                              void run(async () => {
+                                const i = await api.request<Instruction>(
+                                  `/instructions/${r.id}`,
+                                );
+                                await validateInstruction(i);
+                                const p = await inspect(r);
+                                onImport(i, p);
+                              })
+                            }
+                          >
+                            {t("download")}
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </article>
+                );
+              })}
+            </section>
+          </>
+        )}
+        {pane === "support" && connected && (
+          <section className="card">
+            <h2>{t("support")}</h2>
+            <label>
+              {t("subject")}
+              <input
+                maxLength={150}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+              />
+            </label>
+            <label>
+              {t("message")}
+              <textarea
+                maxLength={4000}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+              />
+            </label>
+            <button
+              disabled={!subject.trim() || !body.trim()}
+              onClick={() =>
+                void run(async () => {
+                  await api.request("/support", { subject, body });
+                  setSubject("");
+                  setBody("");
+                  await refresh();
+                  setNotice(t("saved"));
+                })
+              }
+            >
+              {t("sendTicket")}
+            </button>
+            {tickets.map((ticket) => (
+              <article className="customer-item" key={ticket.id}>
+                <h3>{ticket.subject}</h3>
+                <p>{state(ticket.state)}</p>
+                <p>{ticket.body}</p>
+                {ticket.replies.map((r) => (
+                  <blockquote key={r.id}>{r.body}</blockquote>
+                ))}
+              </article>
+            ))}
+          </section>
+        )}
+        {pane === "admin" && (
+          <>
+            <section className="card">
+              <h2>{t("admin")}</h2>
+              <p>{t("adminNotice")}</p>
+              <label>
+                {t("adminToken")}
+                <input
+                  type="password"
+                  autoComplete="off"
+                  value={adminToken}
+                  onChange={(e) => {
+                    setAdminToken(e.target.value);
+                    setUnlocked(false);
+                  }}
+                />
+              </label>
+              <button
+                disabled={!adminToken}
+                onClick={() => void run(adminRefresh)}
+              >
+                {t("unlock")}
+              </button>
+            </section>
+            {unlocked && (
+              <>
+                <section className="card">
+                  <h2>{t("products")}</h2>
+                  <div className="customer-actions">
+                    {adminProducts.map((p) => (
+                      <button
+                        className="outline"
+                        key={p.id}
+                        onClick={() => setProduct(p)}
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                    <button
+                      className="outline"
+                      onClick={() => setProduct(freshProduct())}
+                    >
+                      +
+                    </button>
+                  </div>
+                  {(["id", "name", "description", "profile_id"] as const).map(
+                    (k) => (
+                      <label key={k}>
+                        {t(
+                          k === "id"
+                            ? "productId"
+                            : k === "profile_id"
+                              ? "profile"
+                              : k,
+                        )}
+                        <input
+                          value={product[k]}
+                          maxLength={k === "description" ? 2000 : 120}
+                          onChange={(e) =>
+                            setProduct((v) => ({ ...v, [k]: e.target.value }))
+                          }
+                        />
+                      </label>
+                    ),
+                  )}
+                  <label>
+                    {t("family")}
+                    <select
+                      value={product.family}
+                      onChange={(e) =>
+                        setProduct((v) => ({ ...v, family: e.target.value }))
+                      }
+                    >
+                      {[
+                        "string",
+                        "brick",
+                        "diamond",
+                        "paint",
+                        "book",
+                        "guided",
+                        "digital",
+                      ].map((v) => (
+                        <option key={v}>{v}</option>
+                      ))}
+                    </select>
+                  </label>
+                  {(["price_minor", "stock", "credits"] as const).map((k) => (
+                    <label key={k}>
+                      {t(k === "price_minor" ? "price" : k)}
+                      <input
+                        type="number"
+                        min={0}
+                        value={product[k]}
+                        onChange={(e) =>
+                          setProduct((v) => ({
+                            ...v,
+                            [k]: Number(e.target.value),
+                          }))
+                        }
+                      />
+                    </label>
+                  ))}
+                  <label className="check-label">
+                    <input
+                      type="checkbox"
+                      checked={!!product.active}
+                      onChange={(e) =>
+                        setProduct((v) => ({
+                          ...v,
+                          active: e.target.checked ? 1 : 0,
+                        }))
+                      }
+                    />
+                    {t("active")}
+                  </label>
+                  <button
+                    disabled={!product.id || !product.name}
+                    onClick={() =>
+                      void run(async () => {
+                        const p = await api.request<Product>(
+                          "/admin/products",
+                          { ...product, expectedRevision: product.revision },
+                          adminToken,
+                        );
+                        setProduct(p);
+                        await adminRefresh();
+                        setNotice(t("saved"));
+                      })
+                    }
+                  >
+                    {t("saveProduct")}
+                  </button>
+                </section>
+                <section className="card">
+                  <h2>{t("codes")}</h2>
+                  <label>
+                    {t("profile")}
+                    <input
+                      value={codeProfile}
+                      onChange={(e) => setCodeProfile(e.target.value)}
+                    />
+                  </label>
+                  <label>
+                    {t("quota")}
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={quota}
+                      onChange={(e) => setQuota(Number(e.target.value))}
+                    />
+                  </label>
+                  <label>
+                    {t("days")}
+                    <input
+                      type="number"
+                      min={1}
+                      max={365}
+                      value={days}
+                      onChange={(e) => setDays(Number(e.target.value))}
+                    />
+                  </label>
+                  <button
+                    onClick={() =>
+                      void run(async () => {
+                        const c = await api.request<{ code: string }>(
+                          "/admin/codes",
+                          {
+                            profile: codeProfile,
+                            quota,
+                            expiresAt: Date.now() + days * 86400000,
+                          },
+                          adminToken,
+                        );
+                        setIssued(c.code);
+                        await adminRefresh();
+                      })
+                    }
+                  >
+                    {t("issueCode")}
+                  </button>
+                  {issued && (
+                    <code className="claim-token" data-testid="issued-code">
+                      {issued}
+                    </code>
+                  )}
+                  {codes.map((c) => (
+                    <div className="customer-row" key={c.hash}>
+                      <span>
+                        {c.profile_id} · {c.quota} · {c.hash.slice(0, 8)}
+                      </span>
+                      <button
+                        className="text-button"
+                        disabled={!!c.revoked}
+                        onClick={() =>
+                          void run(async () => {
+                            await api.request(
+                              "/admin/codes/revoke",
+                              { hash: c.hash },
+                              adminToken,
+                            );
+                            await adminRefresh();
+                          })
+                        }
+                      >
+                        {t("revoke")}
+                      </button>
+                    </div>
+                  ))}
+                </section>
+                <section className="card">
+                  <h2>{t("orders")}</h2>
+                  {adminOrders.map((o) => (
+                    <article className="customer-item" key={o.id}>
+                      <code>{o.id}</code>
+                      <p>
+                        {state(o.status)} · {money(o.total_minor)}
+                      </p>
+                      {o.status === "pending" && (
+                        <button
+                          onClick={() =>
+                            void run(async () => {
+                              await api.request(
+                                `/admin/orders/${o.id}/test-payment`,
+                                {},
+                                adminToken,
+                              );
+                              await adminRefresh();
+                            })
+                          }
+                        >
+                          {t("testPayment")}
+                        </button>
+                      )}
+                      {o.status === "return_requested" && (
+                        <button
+                          onClick={() =>
+                            void run(async () => {
+                              await api.request(
+                                `/admin/orders/${o.id}/refund`,
+                                {},
+                                adminToken,
+                              );
+                              await adminRefresh();
+                            })
+                          }
+                        >
+                          {t("refund")}
+                        </button>
+                      )}
+                      {o.status === "paid" && (
+                        <>
+                          <label>
+                            {t("tracking")}
+                            <input
+                              value={tracking[o.id] ?? ""}
+                              onChange={(e) =>
+                                setTracking((v) => ({
+                                  ...v,
+                                  [o.id]: e.target.value,
+                                }))
+                              }
+                            />
+                          </label>
+                          <button
+                            disabled={(tracking[o.id] ?? "").trim().length < 2}
+                            onClick={() =>
+                              void run(async () => {
+                                await api.request(
+                                  `/admin/orders/${o.id}/fulfill`,
+                                  { tracking: tracking[o.id] },
+                                  adminToken,
+                                );
+                                await adminRefresh();
+                              })
+                            }
+                          >
+                            {t("fulfill")}
+                          </button>
+                        </>
+                      )}
+                    </article>
+                  ))}
+                </section>
+                <section className="card">
+                  <h2>{t("support")}</h2>
+                  {adminTickets.map((ticket) => (
+                    <article className="customer-item" key={ticket.id}>
+                      <h3>{ticket.subject}</h3>
+                      <p>{ticket.body}</p>
+                      {ticket.replies.map((r) => (
+                        <blockquote key={r.id}>{r.body}</blockquote>
+                      ))}
+                      <label>
+                        {t("message")}
+                        <textarea
+                          value={replies[ticket.id] ?? ""}
+                          maxLength={4000}
+                          onChange={(e) =>
+                            setReplies((v) => ({
+                              ...v,
+                              [ticket.id]: e.target.value,
+                            }))
+                          }
+                        />
+                      </label>
+                      <label>
+                        {t("ticketState")}
+                        <select
+                          value={ticketStates[ticket.id] ?? "answered"}
+                          onChange={(e) =>
+                            setTicketStates((v) => ({
+                              ...v,
+                              [ticket.id]: e.target.value,
+                            }))
+                          }
+                        >
+                          {["open", "answered", "closed"].map((v) => (
+                            <option key={v} value={v}>
+                              {state(v)}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button
+                        disabled={!(replies[ticket.id] ?? "").trim()}
+                        onClick={() =>
+                          void run(async () => {
+                            await api.request(
+                              `/admin/support/${ticket.id}/reply`,
+                              {
+                                body: replies[ticket.id],
+                                state: ticketStates[ticket.id] ?? "answered",
+                              },
+                              adminToken,
+                            );
+                            setReplies((v) => ({ ...v, [ticket.id]: "" }));
+                            await adminRefresh();
+                          })
+                        }
+                      >
+                        {t("reply")}
+                      </button>
+                    </article>
+                  ))}
+                </section>
+                <section className="card">
+                  <h2>{t("audit")}</h2>
+                  {audit.map((a) => (
+                    <p key={a.id}>
+                      {a.action} · {a.entity_id.slice(0, 12)} · {a.created_at}
+                    </p>
+                  ))}
+                </section>
+              </>
+            )}
+          </>
+        )}
+      </fieldset>
+    </div>
+  );
+}

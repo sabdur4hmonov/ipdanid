@@ -1,7 +1,9 @@
 import { createServer } from "node:http";
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { mkdirSync } from "node:fs";
-import { Store, DomainError } from "./store.ts";
+import "./local-config.ts";
+import { DomainError } from "./store.ts";
+import { CustomerStore } from "./customer-store.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 const adminToken =
   process.env.LOCAL_ADMIN_TOKEN ?? randomBytes(32).toString("base64url");
@@ -13,13 +15,14 @@ if (process.env.NODE_ENV === "production")
     "This sandbox server is not a production deployment. Configure production adapters/auth/retention first.",
   );
 mkdirSync("tmp/data", { recursive: true });
-const store = new Store(
+const store = new CustomerStore(
   process.env.DATABASE_PATH ?? "tmp/data/iprasm.sqlite",
   pepper,
   paymentKey,
 );
 store.seed();
 const budgets = new Map<string, { start: number; count: number }>();
+const authBudgets = new Map<string, { start: number; count: number }>();
 const server = createServer(async (req, res) => {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
@@ -37,6 +40,13 @@ const server = createServer(async (req, res) => {
         "http://127.0.0.1:5173",
         "http://127.0.0.1:4173",
         "http://127.0.0.1:4310",
+        "http://127.0.0.1:5183",
+        "http://127.0.0.1:4183",
+        "http://localhost:5183",
+        "http://localhost:4183",
+        "http://localhost",
+        "https://localhost",
+        "capacitor://localhost",
       ].includes(origin)
     )
       throw new DomainError("Origin forbidden", 403);
@@ -52,14 +62,16 @@ const server = createServer(async (req, res) => {
       return;
     }
     const ip = req.socket.remoteAddress ?? "local",
-      budget = budgets.get(ip) ?? { start: Date.now(), count: 0 };
+      budgetKey = `${ip}:${req.method === "GET" ? "read" : "write"}`,
+      budget = budgets.get(budgetKey) ?? { start: Date.now(), count: 0 };
     if (Date.now() - budget.start > 60000) {
       budget.start = Date.now();
       budget.count = 0;
     }
     budget.count++;
-    budgets.set(ip, budget);
-    if (budget.count > 90) throw new DomainError("Rate limit exceeded", 429);
+    budgets.set(budgetKey, budget);
+    if (budget.count > (req.method === "GET" ? 600 : 120))
+      throw new DomainError("Rate limit exceeded; retry after one minute", 429);
     const path = new URL(req.url ?? "/", "http://127.0.0.1").pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
     const admin = () => {
@@ -90,6 +102,28 @@ const server = createServer(async (req, res) => {
     }
     const raw = Buffer.concat(chunks).toString("utf8");
     const body = raw ? JSON.parse(raw) : {};
+    if (
+      req.method === "POST" &&
+      /^\/api\/account\/(login|recover|register)$/.test(path)
+    ) {
+      const attempts = authBudgets.get(ip) ?? { start: Date.now(), count: 0 };
+      if (Date.now() - attempts.start > 60000) {
+        attempts.start = Date.now();
+        attempts.count = 0;
+      }
+      attempts.count++;
+      authBudgets.set(ip, attempts);
+      if (attempts.count > 12)
+        throw new DomainError("Too many account attempts; retry later", 429);
+    }
+    if (path === "/api/account/login" && req.method === "POST") {
+      send(200, store.login(body.email, body.password));
+      return;
+    }
+    if (path === "/api/account/recover" && req.method === "POST") {
+      send(200, store.recover(body.email, body.recoveryKey, body.password));
+      return;
+    }
     if (req.method === "POST" && path === "/api/session") {
       send(201, { ...store.createGuest(), sandbox: true });
       return;
@@ -103,6 +137,49 @@ const server = createServer(async (req, res) => {
     }
     if (path.startsWith("/api/admin/")) {
       admin();
+      if (req.method === "GET") {
+        const getters: Record<string, () => unknown> = {
+          "/api/admin/products": () => store.products(),
+          "/api/admin/orders": () => store.orders(),
+          "/api/admin/support": () => store.tickets(),
+          "/api/admin/audit": () => store.auditHistory(),
+          "/api/admin/codes": () => store.codes(),
+        };
+        if (getters[path]) {
+          send(200, getters[path]());
+          return;
+        }
+      }
+      if (path === "/api/admin/products" && req.method === "POST") {
+        send(200, store.updateProduct("local-admin", body));
+        return;
+      }
+      const reply = path.match(/^\/api\/admin\/support\/([^/]+)\/reply$/);
+      if (reply && req.method === "POST") {
+        send(200, store.reply("local-admin", reply[1], body.body, body.state));
+        return;
+      }
+      const fulfill = path.match(/^\/api\/admin\/orders\/([^/]+)\/fulfill$/);
+      if (fulfill && req.method === "POST") {
+        send(200, store.fulfill("local-admin", fulfill[1], body.tracking));
+        return;
+      }
+      const testPayment = path.match(
+        /^\/api\/admin\/orders\/([^/]+)\/test-payment$/,
+      );
+      if (testPayment && req.method === "POST") {
+        send(200, store.recordTestPayment(testPayment[1]));
+        return;
+      }
+      const refund = path.match(/^\/api\/admin\/orders\/([^/]+)\/refund$/);
+      if (refund && req.method === "POST") {
+        send(200, store.refund("local-admin", refund[1]));
+        return;
+      }
+      if (path === "/api/admin/codes/revoke" && req.method === "POST") {
+        send(200, store.revokeHash("local-admin", body.hash));
+        return;
+      }
       if (path === "/api/admin/codes" && req.method === "POST") {
         send(
           201,
@@ -130,6 +207,40 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/account" && req.method === "GET") {
+      send(200, store.customer(user));
+      return;
+    }
+    if (path === "/api/account/register" && req.method === "POST") {
+      send(201, store.register(user, body.email, body.password));
+      return;
+    }
+    if (path === "/api/account/logout" && req.method === "POST") {
+      send(200, store.logout(token));
+      return;
+    }
+    if (path === "/api/orders" && req.method === "GET") {
+      send(200, store.orders(user));
+      return;
+    }
+    if (path === "/api/support" && req.method === "GET") {
+      send(200, store.tickets(user));
+      return;
+    }
+    if (path === "/api/instructions" && req.method === "GET") {
+      send(200, store.instructions(user));
+      return;
+    }
+    const returnOrder = path.match(/^\/api\/orders\/([^/]+)\/return$/);
+    if (returnOrder && req.method === "POST") {
+      send(200, store.requestReturn(user, returnOrder[1]));
+      return;
+    }
+    const getProgress = path.match(/^\/api\/instructions\/([^/]+)\/progress$/);
+    if (getProgress && req.method === "GET") {
+      send(200, store.progress(user, getProgress[1]));
+      return;
+    }
     if (path === "/api/gifts" && req.method === "POST") {
       send(
         201,
@@ -222,9 +333,12 @@ const server = createServer(async (req, res) => {
     else send(400, { error: "Invalid request or data" });
   }
 });
-server.listen(4310, "127.0.0.1", () =>
+const port = Number(process.env.PORT ?? 4311);
+if (!Number.isInteger(port) || port < 1024 || port > 65535)
+  throw new Error("Invalid local server port");
+server.listen(port, "127.0.0.1", () =>
   console.log(
-    "Ip Rasm local sandbox: http://127.0.0.1:4310 (no live payments or messages). Administrator token is available only through your configured LOCAL_ADMIN_TOKEN; no default credentials are published.",
+    `Ip Rasm local sandbox: http://127.0.0.1:${port} (no live payments or messages). Private setup: tmp/data/local-secrets.json.`,
   ),
 );
 const cleanup = setInterval(() => {

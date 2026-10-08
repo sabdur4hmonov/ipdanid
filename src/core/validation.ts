@@ -580,6 +580,8 @@ export async function parseProjectFile(
   )
     throw new Error("Invalid project metadata");
   await validateInstruction(p.instruction);
+  const { validateOrganization } = await import("./organization");
+  validateOrganization(p);
   if (
     p.progress.sequenceHash !== p.instruction.sequenceHash ||
     !Number.isInteger(p.progress.revision) ||

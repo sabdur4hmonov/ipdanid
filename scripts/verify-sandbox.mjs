@@ -10,10 +10,11 @@ const child = spawn(process.execPath, ["--import", "tsx", "server/index.ts"], {
     CODE_PEPPER: randomBytes(32).toString("base64url"),
     SANDBOX_PAYMENT_KEY: randomBytes(32).toString("base64url"),
     DATABASE_PATH: ":memory:",
+    PORT: "4322",
   },
   stdio: ["ignore", "pipe", "pipe"],
 });
-const base = "http://127.0.0.1:4310";
+const base = "http://127.0.0.1:4322";
 try {
   await new Promise((resolve, reject) => {
     const timeout = setTimeout(

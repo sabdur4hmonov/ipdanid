@@ -198,6 +198,8 @@ export interface Project {
   progress: Progress;
   edits: EditParams;
   deletedAt?: string;
+  folder?: string;
+  bookmarks?: { step: number; label: string }[];
 }
 export interface ProjectFile {
   schema: "iprasm.project/1";

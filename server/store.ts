@@ -370,12 +370,16 @@ export class Store {
     key: string,
   ) {
     if (
-      !key ||
+      typeof key !== "string" ||
+      !key.trim() ||
       key.length > 100 ||
       !Array.isArray(items) ||
       !items.length ||
       items.length > 20 ||
       !address ||
+      ![address.name, address.city, address.street].every(
+        (v) => typeof v === "string" && v.trim().length >= 2 && v.length <= 200,
+      ) ||
       Object.values(address).some(
         (v) => typeof v !== "string" || v.trim().length < 2 || v.length > 200,
       )
@@ -385,7 +389,32 @@ export class Store {
       const previous = this.db
         .prepare("SELECT * FROM orders WHERE user_id=? AND idempotency_key=?")
         .get(user, key);
-      if (previous) return previous;
+      if (previous) {
+        const oldItems = this.db
+          .prepare(
+            "SELECT product_id AS productId,quantity FROM order_lines WHERE order_id=? ORDER BY product_id",
+          )
+          .all(previous.id);
+        const normalized = items
+          .map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          }))
+          .sort((a, b) => a.productId.localeCompare(b.productId));
+        const normalizedAddress = (a: Record<string, unknown>) =>
+          JSON.stringify(
+            Object.fromEntries(
+              Object.entries(a).sort(([x], [y]) => x.localeCompare(y)),
+            ),
+          );
+        if (
+          JSON.stringify(oldItems) !== JSON.stringify(normalized) ||
+          normalizedAddress(JSON.parse(String(previous.address))) !==
+            normalizedAddress(address)
+        )
+          throw new DomainError("Order retry parameters differ", 409);
+        return previous as Order;
+      }
       const seen = new Set<string>(),
         lines: { product: Product; quantity: number }[] = [];
       let total = 0;
@@ -666,13 +695,18 @@ export class Store {
       if (instruction.sequenceHash !== job.sequence_hash)
         throw new DomainError("Sequence mismatch");
       const id = randomUUID();
+      const instructionId = this.db
+        .prepare("SELECT 1 FROM instructions WHERE id=?")
+        .get(instruction.id)
+        ? randomUUID()
+        : instruction.id;
       this.db
         .prepare("INSERT INTO projects VALUES(?,?,?,?)")
         .run(id, user, "Saved instruction", null);
       this.db
         .prepare("INSERT INTO instructions VALUES(?,?,?,?,?)")
         .run(
-          instruction.id,
+          instructionId,
           id,
           instruction.sequenceHash,
           JSON.stringify(instruction),
@@ -680,8 +714,8 @@ export class Store {
         );
       this.db
         .prepare("UPDATE jobs SET status=?,instruction_id=? WHERE id=?")
-        .run("succeeded", instruction.id, jobId);
-      return { instructionId: instruction.id, duplicate: false };
+        .run("succeeded", instructionId, jobId);
+      return { instructionId, duplicate: false };
     });
   }
   instruction(user: string, id: string) {
@@ -701,6 +735,9 @@ export class Store {
   ) {
     const i = this.instruction(user, id);
     if (
+      !incoming ||
+      !Number.isSafeInteger(expectedRevision) ||
+      expectedRevision < 0 ||
       incoming.sequenceHash !== i.sequenceHash ||
       !Number.isInteger(incoming.confirmed) ||
       incoming.confirmed < 0 ||
