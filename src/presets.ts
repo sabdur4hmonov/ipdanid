@@ -1,3 +1,4 @@
+import { validAnatomicalImportance } from "./core/anatomical-importance";
 import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import type {
@@ -25,7 +26,8 @@ export interface MakerSettings {
   edits: EditParams;
   portrait?: PortraitSettings;
   portraitSolver?:
-    "continuous" | "global" | "guarded" | "multiscale" | "physical";
+    "continuous" | "global" | "guarded" | "multiscale" | "physical" | "anatomy";
+  anatomy?: import("./core/anatomical-importance").AnatomicalImportance;
   pinLayout?: CircleLayout;
   // Preserve exact imported coordinates, avoiding cross-runtime trig rounding.
   pinCoordinates?: Pin[];
@@ -80,6 +82,11 @@ function validate(p: MakerPreset) {
   )
     throw new Error("Invalid saved computation resolution");
   if (s.portrait) validPortrait(s.portrait);
+  if (s.anatomy !== undefined) {
+    validAnatomicalImportance(s.anatomy);
+    if (s.portraitSolver !== "anatomy")
+      throw Error("Unbound anatomical preset");
+  }
   if (s.pinLayout) {
     validateLayout(s.pinLayout);
     if (s.shape !== "circle" || s.widthMm !== s.heightMm)
@@ -101,9 +108,14 @@ function validate(p: MakerPreset) {
   }
   if (
     s.portraitSolver &&
-    !["continuous", "global", "guarded", "multiscale", "physical"].includes(
-      s.portraitSolver,
-    )
+    ![
+      "continuous",
+      "global",
+      "guarded",
+      "multiscale",
+      "physical",
+      "anatomy",
+    ].includes(s.portraitSolver)
   )
     throw new Error("Invalid portrait solver");
 }

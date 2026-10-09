@@ -1,3 +1,7 @@
+import {
+  DEFAULT_ANATOMICAL_IMPORTANCE,
+  type AnatomicalImportance,
+} from "./core/anatomical-importance";
 import { useEffect, useRef, useState } from "react";
 import { App as NativeApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
@@ -31,7 +35,10 @@ import {
   snapshotPortrait,
 } from "./core/portrait";
 import { RegionEditor } from "./RegionEditor";
-import { portraitSampling, type PortraitSampling } from "./core/portrait-sampling";
+import {
+  portraitSampling,
+  type PortraitSampling,
+} from "./core/portrait-sampling";
 import { PortraitSamplingPanel } from "./PortraitSamplingPanel";
 import { appendVariants, GenerationJobs, type Variants } from "./core/variants";
 import { BackgroundEditor } from "./BackgroundEditor";
@@ -210,8 +217,11 @@ export default function App() {
   const [pinLayout, setPinLayout] = useState<CircleLayout>();
   const [pinCoordinates, setPinCoordinates] = useState<Pin[]>();
   const [portraitSolver, setPortraitSolver] = useState<
-    "continuous" | "global" | "guarded" | "multiscale" | "physical"
+    "continuous" | "global" | "guarded" | "multiscale" | "physical" | "anatomy"
   >("guarded");
+  const [anatomy, setAnatomy] = useState<AnatomicalImportance>(
+    structuredClone(DEFAULT_ANATOMICAL_IMPORTANCE),
+  );
   const [recovery, setRecovery] = useState<OptimizerRecovery>();
   useEffect(() => {
     readOptimizerRecovery()
@@ -404,7 +414,11 @@ export default function App() {
           portrait,
         );
         putRgb(ctxTarget, pixels, resolution);
-        setSampling(portrait.enabled ? portraitSampling(pixels, resolution, shape, portrait) : null);
+        setSampling(
+          portrait.enabled
+            ? portraitSampling(pixels, resolution, shape, portrait)
+            : null,
+        );
       }
     }
   }, [image, edits, view, aspect, portrait, resolution, shape]);
@@ -597,6 +611,7 @@ export default function App() {
     setEdits({ ...s.edits });
     setPortrait(structuredClone(s.portrait ?? DEFAULT_PORTRAIT));
     setPortraitSolver(s.portraitSolver ?? "continuous");
+    setAnatomy(structuredClone(s.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE));
     setPreset("balanced");
   }
   async function savePreset() {
@@ -617,6 +632,9 @@ export default function App() {
           edits: { ...edits },
           portrait: structuredClone(portrait),
           portraitSolver,
+          ...(portraitSolver === "anatomy"
+            ? { anatomy: structuredClone(anatomy) }
+            : {}),
           pinLayout,
           pinCoordinates:
             pinLayout && pinCoordinates?.length === pinCount
@@ -633,7 +651,8 @@ export default function App() {
   }
   function generate(
     seed?: Instruction,
-    strategyOverride?: "global" | "multiscale" | "physical" | "simplify",
+    strategyOverride?:
+      "global" | "multiscale" | "physical" | "anatomy" | "simplify",
     resume?: OptimizerRecovery,
   ) {
     if (!image && !resume) return;
@@ -727,7 +746,8 @@ export default function App() {
           seed: data.seed,
           pixels,
           lines: data.lines,
-          strategy: "physical",
+          strategy: data.strategy ?? "physical",
+          anatomy: data.anatomy,
           edits: generationEdits,
           name: label,
           extension: data.extension,
@@ -791,7 +811,13 @@ export default function App() {
           ? await validateInstruction(data.baseline)
           : undefined;
         if (!currentJob()) return;
-        if (i.algorithm === "density-physical/8") {
+        if (
+          [
+            "density-physical/8",
+            "density-anatomy/10",
+            "density-anatomy/10",
+          ].includes(i.algorithm)
+        ) {
           await clearOptimizerRecovery();
           if (!currentJob()) return;
           setRecovery(undefined);
@@ -816,15 +842,17 @@ export default function App() {
               name:
                 i.algorithm === "assembly-prune/9"
                   ? `${label} · ${t("simplificationSolver")}`
-                  : i.algorithm === "density-physical/8"
-                    ? `${label} · ${t("physicalSolver")}`
-                    : i.algorithm === "density-multiscale/7"
-                      ? `${label} · ${t("multiscaleSolver")}`
-                      : i.algorithm === "continuous-guarded/6"
-                        ? `${label} · ${t("guardedSolver")}`
-                        : i.algorithm === "density-optical/5"
-                          ? `${label} · ${globalLabel}`
-                          : label,
+                  : i.algorithm === "density-anatomy/10"
+                    ? `${label} · ${t("anatomySolver")}`
+                    : i.algorithm === "density-physical/8"
+                      ? `${label} · ${t("physicalSolver")}`
+                      : i.algorithm === "density-multiscale/7"
+                        ? `${label} · ${t("multiscaleSolver")}`
+                        : i.algorithm === "continuous-guarded/6"
+                          ? `${label} · ${t("guardedSolver")}`
+                          : i.algorithm === "density-optical/5"
+                            ? `${label} · ${globalLabel}`
+                            : label,
               edits: { ...generationEdits },
               photoId: generationPhoto?.id,
             },
@@ -855,19 +883,22 @@ export default function App() {
       extension: resume?.extension,
       totalSweeps: resume?.totalSweeps,
       exchange: resume?.exchange,
+      anatomy: resume?.anatomy ?? seed?.params.optimization?.anatomy ?? anatomy,
       strategy:
         strategyOverride ??
-        (seed?.algorithm === "density-physical/8"
-          ? "physical"
-          : seed?.algorithm === "density-multiscale/7"
-            ? "multiscale"
-            : seed?.algorithm === "continuous-guarded/6"
-              ? "guarded"
-              : seed?.algorithm === "density-optical/5"
-                ? "global"
-                : !seed && generationPortrait.enabled && mode !== "color"
-                  ? portraitSolver
-                  : "continuous"),
+        (seed?.algorithm === "density-anatomy/10"
+          ? "anatomy"
+          : seed?.algorithm === "density-physical/8"
+            ? "physical"
+            : seed?.algorithm === "density-multiscale/7"
+              ? "multiscale"
+              : seed?.algorithm === "continuous-guarded/6"
+                ? "guarded"
+                : seed?.algorithm === "density-optical/5"
+                  ? "global"
+                  : !seed && generationPortrait.enabled && mode !== "color"
+                    ? portraitSolver
+                    : "continuous"),
     });
   }
   function open(p: Project) {
@@ -1325,6 +1356,14 @@ export default function App() {
                               <option value="guarded">
                                 {t("guardedSolver")}
                               </option>
+                              <option
+                                value="anatomy"
+                                disabled={
+                                  portrait.regions?.placement !== "manual"
+                                }
+                              >
+                                {t("anatomySolver")}
+                              </option>
                               <option value="physical">
                                 {t("physicalSolver")}
                               </option>
@@ -1395,7 +1434,9 @@ export default function App() {
                             aria-label={t("processedTarget")}
                           />
                         </RegionEditor>
-                        {portrait.enabled && sampling && <PortraitSamplingPanel sampling={sampling} t={t} />}
+                        {portrait.enabled && sampling && (
+                          <PortraitSamplingPanel sampling={sampling} t={t} />
+                        )}
                         <p className="fineprint">
                           {t("processedTarget")} · {resolution} × {resolution} ·{" "}
                           {t("originalCrop")}
@@ -1792,7 +1833,7 @@ export default function App() {
                           disabled={busy}
                           className="outline full"
                           onClick={() =>
-                            generate(recovery.seed, "physical", recovery)
+                            generate(recovery.seed, recovery.strategy, recovery)
                           }
                         >
                           {t("resumeOptimization")}
@@ -1940,6 +1981,7 @@ export default function App() {
                           "continuous-guarded/6",
                           "density-multiscale/7",
                           "density-physical/8",
+                          "density-anatomy/10",
                         ].includes(result.algorithm) && (
                           <button
                             className="outline full"
@@ -1948,6 +1990,23 @@ export default function App() {
                           >
                             {t("simplificationSolver")}
                           </button>
+                        )}
+                      {image &&
+                        ["density-physical/8", "density-anatomy/10"].includes(
+                          result.algorithm,
+                        ) &&
+                        result.params.portrait?.regions?.placement ===
+                          "manual" && (
+                          <>
+                            <button
+                              className="outline full"
+                              disabled={busy}
+                              onClick={() => generate(result, "anatomy")}
+                            >
+                              {t("anatomySolver")}
+                            </button>
+                            <p className="fineprint">{t("anatomyHint")}</p>
+                          </>
                         )}
                       {result.params.simplification && (
                         <p className="fineprint">
@@ -1964,6 +2023,7 @@ export default function App() {
                           "density-optical/5",
                           "density-multiscale/7",
                           "density-physical/8",
+                          "density-anatomy/10",
                         ].includes(result.algorithm) ||
                           result.metrics.stoppedReason === "compute-limit") && (
                           <button
@@ -1972,14 +2032,16 @@ export default function App() {
                             onClick={() =>
                               generate(
                                 result,
-                                result.algorithm === "density-physical/8"
-                                  ? "physical"
-                                  : [
-                                        "continuous-guarded/6",
-                                        "density-multiscale/7",
-                                      ].includes(result.algorithm)
-                                    ? "multiscale"
-                                    : "global",
+                                result.algorithm === "density-anatomy/10"
+                                  ? "anatomy"
+                                  : result.algorithm === "density-physical/8"
+                                    ? "physical"
+                                    : [
+                                          "continuous-guarded/6",
+                                          "density-multiscale/7",
+                                        ].includes(result.algorithm)
+                                      ? "multiscale"
+                                      : "global",
                               )
                             }
                           >
@@ -1988,6 +2050,7 @@ export default function App() {
                                 "density-optical/5",
                                 "density-multiscale/7",
                                 "density-physical/8",
+                                "density-anatomy/10",
                               ].includes(result.algorithm)
                                 ? "continueGlobal"
                                 : "rerouteGlobal",
@@ -2670,22 +2733,30 @@ export default function App() {
                                     : undefined,
                                   edits: p.edits,
                                   portrait: p.instruction.params.portrait,
+                                  anatomy:
+                                    p.instruction.params.optimization?.anatomy,
                                   portraitSolver:
                                     p.instruction.algorithm ===
-                                      "density-physical/8" ||
+                                      "density-anatomy/10" ||
                                     p.instruction.params.simplification
-                                      ?.sourceAlgorithm === "density-physical/8"
-                                      ? "physical"
+                                      ?.sourceAlgorithm === "density-anatomy/10"
+                                      ? "anatomy"
                                       : p.instruction.algorithm ===
-                                          "density-multiscale/7"
-                                        ? "multiscale"
+                                            "density-physical/8" ||
+                                          p.instruction.params.simplification
+                                            ?.sourceAlgorithm ===
+                                            "density-physical/8"
+                                        ? "physical"
                                         : p.instruction.algorithm ===
-                                            "continuous-guarded/6"
-                                          ? "guarded"
+                                            "density-multiscale/7"
+                                          ? "multiscale"
                                           : p.instruction.algorithm ===
-                                              "density-optical/5"
-                                            ? "global"
-                                            : "continuous",
+                                              "continuous-guarded/6"
+                                            ? "guarded"
+                                            : p.instruction.algorithm ===
+                                                "density-optical/5"
+                                              ? "global"
+                                              : "continuous",
                                 });
                                 nav("create");
                                 setNotice(t("reuseNotice"));

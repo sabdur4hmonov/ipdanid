@@ -1,3 +1,7 @@
+import {
+  anatomicalImportance,
+  type AnatomicalImportance,
+} from "./anatomical-importance";
 import type { GenerateOptions } from "./engine";
 import { deepFreeze, hash, rgb, sequencePayload } from "./engine";
 import { inside, connectionAllowed, assertPinSpacing } from "./geometry";
@@ -53,6 +57,7 @@ export interface DensityTuning {
   sweeps: number;
   multiscale?: boolean;
   physical?: PhysicalContrastSettings;
+  anatomy?: AnatomicalImportance;
   resume?: DensityCheckpoint;
   onCheckpoint?: (checkpoint: DensityCheckpoint) => Promise<void> | void;
   extension?: {
@@ -81,6 +86,12 @@ export async function generateDensity(
   if (o.seed) await validateInstruction(o.seed);
   if (tuning.materializeOnly && !tuning.resume)
     throw Error("A materialized snapshot requires a bound saved state");
+  if (
+    tuning.anatomy &&
+    (!tuning.physical || tuning.extension || tuning.exchange)
+  )
+    throw Error("Anatomical importance requires a separate physical fit");
+  const importanceAt = anatomicalImportance(portrait, tuning.anatomy);
   const extension = tuning.extension;
   const exchange = tuning.exchange;
   if (
@@ -219,10 +230,7 @@ export async function generateDensity(
     const lum =
       (o.pixels[i * 3] + o.pixels[i * 3 + 1] + o.pixels[i * 3 + 2]) / 765;
     target[i] = lum;
-    let importance = 1;
-    if (contains(regions.face, x, y)) importance = 8;
-    if (["eyes", "nose", "mouth"].some((key) => contains(regions[key], x, y)))
-      importance = 16;
+    const importance = importanceAt(x, y);
     // Manual anatomical bands prioritize genuine target contrast; no synthetic contours.
     weight[i] = importance;
     weightSum += weight[i];
@@ -506,6 +514,7 @@ export async function generateDensity(
             sweeps: tuning.sweeps,
             multiscale: tuning.multiscale ?? false,
             physical: tuning.physical,
+            ...(tuning.anatomy ? { anatomy: tuning.anatomy } : {}),
             ...(exchange ? { exchange } : {}),
             ...(extension
               ? {
@@ -1070,11 +1079,13 @@ export async function generateDensity(
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: tuning.physical
-      ? "density-physical/8"
-      : tuning.multiscale
-        ? "density-multiscale/7"
-        : "density-optical/5",
+    algorithm: tuning.anatomy
+      ? "density-anatomy/10"
+      : tuning.physical
+        ? "density-physical/8"
+        : tuning.multiscale
+          ? "density-multiscale/7"
+          : "density-optical/5",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -1098,6 +1109,7 @@ export async function generateDensity(
         coarseScale: 1,
         minimumRelativeGain: 0.0001,
         kind: "optical-coordinate",
+        ...(tuning.anatomy ? { anatomy: structuredClone(tuning.anatomy) } : {}),
         edgeWeight: tuning.edgeWeight,
         sweeps: tuning.sweeps,
         order: "dispersed-v1",

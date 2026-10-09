@@ -10,7 +10,8 @@ export interface OptimizerRecovery {
   seed: Instruction;
   pixels: Uint8Array;
   lines: number;
-  strategy: "physical";
+  strategy: "physical" | "anatomy";
+  anatomy?: import("./core/anatomical-importance").AnatomicalImportance;
   edits: EditParams;
   name: string;
   extension?: DensityTuning["extension"];

@@ -81,7 +81,8 @@ export interface Instruction {
     | "continuous-guarded/6"
     | "density-multiscale/7"
     | "density-physical/8"
-    | "assembly-prune/9";
+    | "assembly-prune/9"
+    | "density-anatomy/10";
   id: string;
   createdAt: string;
   imageHash: string;
@@ -105,6 +106,7 @@ export interface Instruction {
       pinDegreeLimit?: 160;
       contrastScales?: [1, 2, 4];
       contrastPhysical?: import("./physical-contrast").PhysicalContrastSettings;
+      anatomy?: import("./anatomical-importance").AnatomicalImportance;
       edgeWeight?: number;
       sweeps?: number;
       convergence?: {

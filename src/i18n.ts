@@ -1,15 +1,20 @@
 import type { Locale } from "./core/types";
 const uz = {
   samplingTitle: "Hisoblashdan oldin yuz detallarini tekshiring",
-  samplingHint: "Qo‘lda belgilangan ko‘z, burun va lab zonalari. Sonlar aynan hozirgi ishlov berilgan nishondan olindi.",
+  samplingHint:
+    "Qo‘lda belgilangan ko‘z, burun va lab zonalari. Sonlar aynan hozirgi ishlov berilgan nishondan olindi.",
   samplingFeature: "Zona",
   samplingSize: "O‘lcham (px)",
   samplingInside: "Shakl ichida",
   samplingTone: "Ton oralig‘i",
-  samplingClipped: "Zona qisman yoki butunlay shakl tashqarisida. Surat joylashuvini va zona belgilarini tekshiring.",
-  samplingSmall: "Kamida bir zona qisqa tomonida 8 pikseldan kichik. Boshni kesmasdan yuzni kattaroq joylashtiring yoki mosroq shakl tanlang. Bu ogohlantirish taxminiy; 192 aniqlikning o‘zi sifatni kafolatlamaydi.",
-  samplingFlat: "Kamida bir zonada ton farqi kam. Asl suratni tekshiring: tekis yorug‘lik, fokusdagi yuz va sodda och fon detallarni saqlashga yordam beradi. Belgini shunchaki kattalashtirish yuzni tiniqlashtirmaydi.",
-  samplingLimits: "O‘lcham — piksel markazlari orasidagi masofa; ton — 5–95% yorqinlik oralig‘i. Ton ogohlantirishi 4% dan pastda chiqadi. Chegaralar taxminiy, o‘xshashlik yoki fizik sifat bahosi emas. Ogohlantirishlar yaratishni to‘xtatmaydi.",
+  samplingClipped:
+    "Zona qisman yoki butunlay shakl tashqarisida. Surat joylashuvini va zona belgilarini tekshiring.",
+  samplingSmall:
+    "Kamida bir zona qisqa tomonida 8 pikseldan kichik. Boshni kesmasdan yuzni kattaroq joylashtiring yoki mosroq shakl tanlang. Bu ogohlantirish taxminiy; 192 aniqlikning o‘zi sifatni kafolatlamaydi.",
+  samplingFlat:
+    "Kamida bir zonada ton farqi kam. Asl suratni tekshiring: tekis yorug‘lik, fokusdagi yuz va sodda och fon detallarni saqlashga yordam beradi. Belgini shunchaki kattalashtirish yuzni tiniqlashtirmaydi.",
+  samplingLimits:
+    "O‘lcham — piksel markazlari orasidagi masofa; ton — 5–95% yorqinlik oralig‘i. Ton ogohlantirishi 4% dan pastda chiqadi. Chegaralar taxminiy, o‘xshashlik yoki fizik sifat bahosi emas. Ogohlantirishlar yaratishni to‘xtatmaydi.",
   headOutline: "Bosh konturi · tajriba",
   outlineBackground: "Kontur tashqarisidagi fonni oqartirish",
   outlineBackgroundNotice:
@@ -110,6 +115,9 @@ const uz = {
   simplificationCaution:
     "Raqamli chegaralar tekshirildi; ko‘z bilan solishtirish kerak. Eski variant saqlanadi.",
   connectionsSaved: "tejalgan ulanish",
+  anatomySolver: "Burun va lab ustuvorligi (v10, tajriba)",
+  anatomyHint:
+    "Qo‘lda belgilangan burun va lab markazlariga ustuvorlik beradi. Surat o‘zgarmaydi; alohida variant yaratiladi. Sifat va haqiqiy yig‘ish hali tekshirilishi kerak.",
   physicalSolver: "Fizik masofali kontrast (v8, tajriba)",
   physicalStage: "Kontrast bosqichi / jami / baholashlar:",
   extensionStage: "Saqlangan holat va asl yo‘riqnoma tekshirilmoqda…",
@@ -326,15 +334,20 @@ const uz = {
 export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
   samplingTitle: "Check facial detail before computing",
-  samplingHint: "Manually marked eye, nose and lip windows. Measurements use the exact current processed target.",
+  samplingHint:
+    "Manually marked eye, nose and lip windows. Measurements use the exact current processed target.",
   samplingFeature: "Window",
   samplingSize: "Size (px)",
   samplingInside: "Inside shape",
   samplingTone: "Tone range",
-  samplingClipped: "A window is partly or entirely outside the board. Check photo framing and window placement.",
-  samplingSmall: "At least one window has a shorter side below 8 pixels. Frame the face larger without clipping the head, or choose a more suitable shape. This threshold is a heuristic; 192 sampling alone does not guarantee quality.",
-  samplingFlat: "At least one window has little tonal variation. Check the original photo: even lighting, a focused face and a simple light background help retain detail. Enlarging a window alone does not sharpen the face.",
-  samplingLimits: "Size is the span between pixel centers; tone is the 5th–95th percentile luminance range. The tone warning appears below 4%. Thresholds are heuristics, not likeness or physical quality scores. Warnings do not block generation.",
+  samplingClipped:
+    "A window is partly or entirely outside the board. Check photo framing and window placement.",
+  samplingSmall:
+    "At least one window has a shorter side below 8 pixels. Frame the face larger without clipping the head, or choose a more suitable shape. This threshold is a heuristic; 192 sampling alone does not guarantee quality.",
+  samplingFlat:
+    "At least one window has little tonal variation. Check the original photo: even lighting, a focused face and a simple light background help retain detail. Enlarging a window alone does not sharpen the face.",
+  samplingLimits:
+    "Size is the span between pixel centers; tone is the 5th–95th percentile luminance range. The tone warning appears below 4%. Thresholds are heuristics, not likeness or physical quality scores. Warnings do not block generation.",
   headOutline: "Whole-head outline · experimental",
   outlineBackground: "Lighten background outside outline",
   outlineBackgroundNotice:
@@ -436,6 +449,9 @@ const en: Record<Key, string> = {
   simplificationCaution:
     "Simulation tolerances checked; visual review still required. Original variant preserved.",
   connectionsSaved: "connections saved",
+  anatomySolver: "Nose and lip priority (v10, experimental)",
+  anatomyHint:
+    "Prioritizes the centers of manually marked nose and lip regions. Keeps the target unchanged and creates a separate variant. Portrait quality and physical assembly still require validation.",
   physicalSolver: "Physical-distance contrast (v8, experimental)",
   physicalStage: "Contrast sweep / planned / evaluations:",
   extensionStage: "Checking saved state against its original instructions…",
@@ -650,15 +666,20 @@ const en: Record<Key, string> = {
 };
 const ru: Record<Key, string> = {
   samplingTitle: "Проверьте детали лица до расчёта",
-  samplingHint: "Области глаз, носа и губ отмечены вручную. Измерения получены из текущей обработанной цели.",
+  samplingHint:
+    "Области глаз, носа и губ отмечены вручную. Измерения получены из текущей обработанной цели.",
   samplingFeature: "Область",
   samplingSize: "Размер (px)",
   samplingInside: "Внутри формы",
   samplingTone: "Диапазон тона",
-  samplingClipped: "Область частично или полностью вне основы. Проверьте кадрирование и расположение областей.",
-  samplingSmall: "Короткая сторона хотя бы одной области меньше 8 пикселей. Увеличьте лицо без обрезки головы или выберите подходящую форму. Порог приблизительный; разрешение 192 само по себе не гарантирует качество.",
-  samplingFlat: "В одной из областей мало тональных различий. Проверьте исходное фото: равномерный свет, лицо в фокусе и простой светлый фон помогают сохранить детали. Увеличение области само по себе не повышает резкость лица.",
-  samplingLimits: "Размер — расстояние между центрами пикселей; тон — диапазон яркости между 5-м и 95-м процентилями. Предупреждение о тоне появляется ниже 4%. Пороги приблизительные, не оценка сходства или физического качества. Предупреждения не блокируют создание.",
+  samplingClipped:
+    "Область частично или полностью вне основы. Проверьте кадрирование и расположение областей.",
+  samplingSmall:
+    "Короткая сторона хотя бы одной области меньше 8 пикселей. Увеличьте лицо без обрезки головы или выберите подходящую форму. Порог приблизительный; разрешение 192 само по себе не гарантирует качество.",
+  samplingFlat:
+    "В одной из областей мало тональных различий. Проверьте исходное фото: равномерный свет, лицо в фокусе и простой светлый фон помогают сохранить детали. Увеличение области само по себе не повышает резкость лица.",
+  samplingLimits:
+    "Размер — расстояние между центрами пикселей; тон — диапазон яркости между 5-м и 95-м процентилями. Предупреждение о тоне появляется ниже 4%. Пороги приблизительные, не оценка сходства или физического качества. Предупреждения не блокируют создание.",
   headOutline: "Контур всей головы · эксперимент",
   outlineBackground: "Осветлить фон снаружи контура",
   outlineBackgroundNotice:
@@ -759,6 +780,9 @@ const ru: Record<Key, string> = {
   simplificationCaution:
     "Допуски симуляции проверены; требуется визуальное сравнение. Исходный вариант сохранён.",
   connectionsSaved: "сэкономленных соединений",
+  anatomySolver: "Приоритет носа и губ (v10, эксперимент)",
+  anatomyHint:
+    "Усиливает приоритет центров вручную отмеченных носа и губ. Исходное изображение сохраняется; создаётся отдельный вариант. Качество портрета и реальную сборку ещё нужно проверить.",
   physicalSolver: "Контраст по физическим расстояниям (v8, эксперимент)",
   physicalStage: "Проход / запланировано / оценок:",
   extensionStage: "Проверка сохранённого состояния и исходной инструкции…",

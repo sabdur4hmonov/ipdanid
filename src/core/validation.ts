@@ -1,3 +1,4 @@
+import { validAnatomicalImportance } from "./anatomical-importance";
 import { Distribution } from "./distribution";
 import { connectionAllowed } from "./geometry";
 import { deepFreeze, flatten, hash, sequencePayload } from "./engine";
@@ -25,6 +26,7 @@ export async function validateInstruction(
       "continuous-guarded/6",
       "density-multiscale/7",
       "density-physical/8",
+      "density-anatomy/10",
       "assembly-prune/9",
     ].includes(i.algorithm)
   )
@@ -35,6 +37,7 @@ export async function validateInstruction(
       "continuous-guarded/6",
       "density-multiscale/7",
       "density-physical/8",
+      "density-anatomy/10",
       "assembly-prune/9",
     ].includes(i.algorithm),
     limit = qualityFirst ? MAX_LINES : 3000;
@@ -155,6 +158,7 @@ export async function validateInstruction(
       "continuous-guarded/6",
       "density-multiscale/7",
       "density-physical/8",
+      "density-anatomy/10",
       "assembly-prune/9",
     ].includes(i.algorithm)
   ) {
@@ -172,7 +176,7 @@ export async function validateInstruction(
         i.params.optimization.overshoot !== "target-luminance-v1")
     )
       throw new Error("Invalid multiscale contrast settings");
-    if (i.algorithm === "density-physical/8") {
+    if (["density-physical/8", "density-anatomy/10"].includes(i.algorithm)) {
       validPhysicalContrast(i.params.optimization.contrastPhysical!);
       if (
         i.params.optimization.contrastScales !== undefined ||
@@ -215,6 +219,23 @@ export async function validateInstruction(
       }
     }
   }
+  const anatomy = i.params.optimization?.anatomy;
+  if (
+    i.algorithm === "density-anatomy/10" ||
+    (i.algorithm === "assembly-prune/9" &&
+      i.params.simplification?.sourceAlgorithm === "density-anatomy/10")
+  ) {
+    validAnatomicalImportance(anatomy!);
+    validPhysicalContrast(i.params.optimization?.contrastPhysical!);
+    if (
+      i.params.portrait?.regions?.placement !== "manual" ||
+      i.params.portrait.regions.reference !== anatomy!.reference ||
+      i.params.optimization?.exchange ||
+      i.params.optimization?.convergence
+    )
+      throw Error("Invalid anatomical importance provenance");
+  } else if (anatomy !== undefined)
+    throw Error("Unbound anatomical importance");
   if (qualityFirst) {
     if (i.algorithm === "assembly-prune/9") {
       const s = i.params.simplification,
@@ -226,6 +247,7 @@ export async function validateInstruction(
         ![
           "density-multiscale/7",
           "density-physical/8",
+          "density-anatomy/10",
           "continuous-guarded/6",
         ].includes(s.sourceAlgorithm) ||
         JSON.stringify(s.tolerances) !==
@@ -280,6 +302,7 @@ export async function validateInstruction(
         "density-optical/5",
         "density-multiscale/7",
         "density-physical/8",
+        "density-anatomy/10",
       ].includes(i.algorithm)
     ) {
       if (i.params.optimization?.pairLimit !== undefined) {
@@ -540,6 +563,7 @@ export function toTxt(i: Instruction): string {
     "continuous-guarded/6",
     "density-multiscale/7",
     "density-physical/8",
+    "density-anatomy/10",
     "assembly-prune/9",
   ].includes(i.algorithm)
     ? i.segments

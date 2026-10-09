@@ -129,6 +129,7 @@ export async function exportPdf(
         "continuous-guarded/6",
         "density-multiscale/7",
         "density-physical/8",
+        "density-anatomy/10",
         "assembly-prune/9",
       ].includes(i.algorithm)
     ) {
@@ -221,7 +222,9 @@ export async function exportPdf(
   // New physical/pruned guides on the exact canonical unrotated perimeter can
   // use separated leaders without inventing layout metadata for old boards.
   const canonicalNewCircle =
-    ["density-physical/8", "assembly-prune/9"].includes(i.algorithm) &&
+    ["density-physical/8", "density-anatomy/10", "assembly-prune/9"].includes(
+      i.algorithm,
+    ) &&
     i.profile.shape === "circle" &&
     i.profile.pins.every((pin, id) => {
       const a = (id / i.profile.pins.length) * Math.PI * 2;

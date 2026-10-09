@@ -1,3 +1,7 @@
+import {
+  DEFAULT_ANATOMICAL_IMPORTANCE,
+  anatomicalImportance,
+} from "./anatomical-importance";
 import { generate } from "./engine";
 import { generateDensity } from "./density";
 import { ContinuationError } from "./continuation";
@@ -13,13 +17,18 @@ self.onmessage = async ({ data }) => {
       onDiagnostic: (diagnostic: Record<string, unknown>) =>
         self.postMessage({ type: "stage", jobId: data.jobId, diagnostic }),
     };
+    if (data.strategy === "anatomy")
+      anatomicalImportance(
+        options.portrait,
+        data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE,
+      );
     options.guarded =
       data.strategy === "guarded" ||
       data.strategy === "multiscale" ||
-      data.strategy === "physical";
+      ["physical", "anatomy"].includes(data.strategy);
     let baseline;
     if (
-      ["global", "multiscale", "physical"].includes(data.strategy) &&
+      ["global", "multiscale", "physical", "anatomy"].includes(data.strategy) &&
       !data.seed
     ) {
       baseline = await generate({
@@ -59,26 +68,33 @@ self.onmessage = async ({ data }) => {
                 instruction: i,
               }),
           })
-        : ["global", "multiscale", "physical"].includes(data.strategy)
+        : ["global", "multiscale", "physical", "anatomy"].includes(
+              data.strategy,
+            )
           ? await generateDensity(options, {
               edgeWeight:
                 data.seed?.params.optimization?.edgeWeight ??
-                (["multiscale", "physical"].includes(data.strategy) ? 2 : 1),
+                (["multiscale", "physical", "anatomy"].includes(data.strategy)
+                  ? 2
+                  : 1),
               sweeps: data.seed?.params.optimization?.sweeps ?? 8,
               multiscale: data.strategy === "multiscale",
+              ...(data.strategy === "anatomy"
+                ? { anatomy: data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE }
+                : {}),
               ...(data.extension
                 ? { extension: data.extension, sweeps: data.totalSweeps }
                 : {}),
               ...(data.exchange ? { exchange: data.exchange, sweeps: 1 } : {}),
               ...(data.materializeOnly ? { materializeOnly: true } : {}),
-              ...(data.strategy === "physical"
+              ...(["physical", "anatomy"].includes(data.strategy)
                 ? {
                     physical:
                       data.seed?.params.optimization?.contrastPhysical ??
                       defaultPhysicalContrast(),
                   }
                 : {}),
-              ...(data.strategy === "physical"
+              ...(["physical", "anatomy"].includes(data.strategy)
                 ? {
                     resume: data.resume,
                     onCheckpoint: (checkpoint: unknown) =>
@@ -91,6 +107,11 @@ self.onmessage = async ({ data }) => {
                         extension: data.extension,
                         totalSweeps: data.totalSweeps,
                         exchange: data.exchange,
+                        strategy: data.strategy,
+                        anatomy:
+                          data.strategy === "anatomy"
+                            ? (data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE)
+                            : undefined,
                       }),
                   }
                 : {}),

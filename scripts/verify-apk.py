@@ -35,6 +35,10 @@ with zipfile.ZipFile(apk) as archive:
     if args.archive_name=='ip-rasm-sampling':
         assert all(marker in main for marker in ['Check facial detail before computing','Hisoblashdan oldin yuz detallarini tekshiring','Проверьте детали лица до расчёта','portrait-sampling','data-clipped','data-small']), 'Localized portrait sampling missing'
         assert not any(name.startswith('assets/public/') and ('/output/' in name or name.endswith(('source.jpg','.f32','.bin'))) for name in archive.namelist()), 'Private experiment/photo assets packaged'
+    if args.archive_name=='ip-rasm-anatomy':
+        assert all(marker in worker for marker in ['density-anatomy/10','manual-nose-lip-importance/1','raised-cosine/1','noseMultiplier','mouthMultiplier']), 'Anatomical objective or recovery binding missing'
+        assert all(marker in main for marker in ['Nose and lip priority (v10, experimental)','Burun va lab ustuvorligi (v10, tajriba)','Приоритет носа и губ (v10, эксперимент)']), 'Localized anatomical action missing'
+        assert not any(name.startswith('assets/public/') and ('/output/' in name or name.endswith(('source.jpg','.f32','.bin'))) for name in archive.namelist()), 'Private experiment/photo assets packaged'
 out.mkdir(parents=True, exist_ok=True)
 if args.archive_name!='ip-rasm':
     # Never discard a previously verified fixed-name local build.
@@ -47,7 +51,8 @@ shutil.copy2(apk, out / (args.archive_name+'-debug.apk'))
 shutil.copy2(test_apk, out / (args.archive_name+'-debug-androidTest.apk'))
 evidence = dict(builtAt=datetime.now(timezone.utc).isoformat(), debug=True,
     webAssetsVerified=len(files), bytes=apk.stat().st_size,
-    apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5','continuous-guarded/6','density-multiscale/7','density-physical/8','assembly-prune/9'],
+    apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5','continuous-guarded/6','density-multiscale/7','density-physical/8','assembly-prune/9']+(['density-anatomy/10'] if args.archive_name=='ip-rasm-anatomy' else []),
+    anatomicalImportance='manual-nose-lip-importance/1; raised-cosine/1; immutable params and recovery binding; opt-in, quality acceptance open' if args.archive_name=='ip-rasm-anatomy' else None,
     optimizerRecovery='local IndexedDB; exact processed target/material/seed/tuning and explicit extension/search binding', convergence='density-convergence/1; explicit 24-total-sweep allowance; experimental, no likeness acceptance', exchange='chord-exchange/1; equal gain-evaluation budgets; experimental, no likeness acceptance', simplification='complete-route regional-equivalence/1; human acceptance separate',
     backgroundSelection="manual 64x64 background and foreground masks",
     regionReference="processed-target/sample-centers-v1", workerJobAssociation=True,
