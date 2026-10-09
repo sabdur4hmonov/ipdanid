@@ -1,9 +1,10 @@
 import { createServer } from "node:http";
-import { randomBytes, timingSafeEqual } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import "./local-config.ts";
 import { DomainError } from "./store.ts";
 import { CustomerStore } from "./customer-store.ts";
+import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 const adminToken =
   process.env.LOCAL_ADMIN_TOKEN ?? randomBytes(32).toString("base64url");
@@ -21,6 +22,7 @@ const store = new CustomerStore(
   paymentKey,
 );
 store.seed();
+const staffAccess = new AdminAccess(store, adminToken);
 const budgets = new Map<string, { start: number; count: number }>();
 const authBudgets = new Map<string, { start: number; count: number }>();
 const server = createServer(async (req, res) => {
@@ -74,12 +76,6 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Rate limit exceeded; retry after one minute", 429);
     const path = new URL(req.url ?? "/", "http://127.0.0.1").pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
-    const admin = () => {
-      const a = Buffer.from(token),
-        b = Buffer.from(adminToken);
-      if (a.length !== b.length || !timingSafeEqual(a, b))
-        throw new DomainError("Administrator authorization required", 403);
-    };
     if (req.method === "GET" && path === "/api/catalog") {
       send(200, {
         sandbox: true,
@@ -136,7 +132,33 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (path.startsWith("/api/admin/")) {
-      admin();
+      const session = staffAccess.authenticate(token);
+      if (path === "/api/admin/session" && req.method === "GET") {
+        send(200, session);
+        return;
+      }
+      const permission = adminRoutePermission(req.method ?? "", path);
+      if (!permission || !session.permissions.includes(permission))
+        throw new DomainError(
+          "This staff role cannot perform that action",
+          403,
+        );
+      const actor = session.id;
+      if (path === "/api/admin/access" && req.method === "GET") {
+        send(200, staffAccess.list(token));
+        return;
+      }
+      if (path === "/api/admin/access" && req.method === "POST") {
+        send(201, staffAccess.issue(token, body));
+        return;
+      }
+      const revokeAccess = path.match(
+        /^\/api\/admin\/access\/([^/]+)\/revoke$/,
+      );
+      if (revokeAccess && req.method === "POST") {
+        send(200, staffAccess.revoke(token, revokeAccess[1]));
+        return;
+      }
       if (req.method === "GET") {
         const getters: Record<string, () => unknown> = {
           "/api/admin/products": () => store.products(),
@@ -151,44 +173,39 @@ const server = createServer(async (req, res) => {
         }
       }
       if (path === "/api/admin/products" && req.method === "POST") {
-        send(200, store.updateProduct("local-admin", body));
+        send(200, store.updateProduct(actor, body));
         return;
       }
       const reply = path.match(/^\/api\/admin\/support\/([^/]+)\/reply$/);
       if (reply && req.method === "POST") {
-        send(200, store.reply("local-admin", reply[1], body.body, body.state));
+        send(200, store.reply(actor, reply[1], body.body, body.state));
         return;
       }
       const fulfill = path.match(/^\/api\/admin\/orders\/([^/]+)\/fulfill$/);
       if (fulfill && req.method === "POST") {
-        send(200, store.fulfill("local-admin", fulfill[1], body.tracking));
+        send(200, store.fulfill(actor, fulfill[1], body.tracking));
         return;
       }
       const testPayment = path.match(
         /^\/api\/admin\/orders\/([^/]+)\/test-payment$/,
       );
       if (testPayment && req.method === "POST") {
-        send(200, store.recordTestPayment(testPayment[1]));
+        send(200, store.recordTestPayment(testPayment[1], actor));
         return;
       }
       const refund = path.match(/^\/api\/admin\/orders\/([^/]+)\/refund$/);
       if (refund && req.method === "POST") {
-        send(200, store.refund("local-admin", refund[1]));
+        send(200, store.refund(actor, refund[1]));
         return;
       }
       if (path === "/api/admin/codes/revoke" && req.method === "POST") {
-        send(200, store.revokeHash("local-admin", body.hash));
+        send(200, store.revokeHash(actor, body.hash));
         return;
       }
       if (path === "/api/admin/codes" && req.method === "POST") {
         send(
           201,
-          store.issueCode(
-            body.profile,
-            body.quota,
-            body.expiresAt,
-            "local-admin",
-          ),
+          store.issueCode(body.profile, body.quota, body.expiresAt, actor),
         );
         return;
       }

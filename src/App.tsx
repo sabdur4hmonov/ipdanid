@@ -1342,7 +1342,24 @@ export default function App() {
                             aria-label={t("computationResolution")}
                             value={resolution}
                             disabled={busy}
-                            onChange={(e) => setResolution(+e.target.value)}
+                            onChange={(e) => {
+                              const next = Number(e.target.value);
+                              if (image && next !== resolution)
+                                setPortrait((p) =>
+                                  remapPortrait(
+                                    p,
+                                    edits,
+                                    edits,
+                                    image.width,
+                                    image.height,
+                                    aspect,
+                                    next,
+                                    aspect,
+                                    resolution,
+                                  ),
+                                );
+                              setResolution(next);
+                            }}
                           >
                             {![160, 192].includes(resolution) && (
                               <option value={resolution}>

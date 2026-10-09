@@ -4,6 +4,8 @@ import { validateInstruction } from "./core/validation";
 import { customerApi as api, ApiError } from "./customer-api";
 import { customerText, type CustomerWord } from "./customer-i18n";
 import "./customer.css";
+import { StaffAccessPanel } from "./StaffAccessPanel";
+import type { AdminSession, AdminPermission } from "./admin-types";
 
 type Product = {
   id: string;
@@ -120,6 +122,9 @@ export function CustomerHub({
     [codeProfile, setCodeProfile] = useState("dev-circle-120-dark"),
     [issued, setIssued] = useState("");
   const [ticketStates, setTicketStates] = useState<Record<string, string>>({});
+  const [adminSession, setAdminSession] = useState<AdminSession | null>(null);
+  const can = (permission: AdminPermission) =>
+    adminSession?.permissions.includes(permission) ?? false;
   const [replies, setReplies] = useState<Record<string, string>>({}),
     [tracking, setTracking] = useState<Record<string, string>>({});
   async function run(fn: () => Promise<void>) {
@@ -214,18 +219,37 @@ export function CustomerHub({
     orderRequest.current = null;
   }
   async function adminRefresh() {
+    setUnlocked(false);
+    const session = await api.request<AdminSession>(
+      "/admin/session",
+      undefined,
+      adminToken,
+    );
+    const allowed = (permission: AdminPermission) =>
+      session.permissions.includes(permission);
     const [p, o, s, a, c] = await Promise.all([
-      api.request<Product[]>("/admin/products", undefined, adminToken),
-      api.request<Order[]>("/admin/orders", undefined, adminToken),
-      api.request<Ticket[]>("/admin/support", undefined, adminToken),
-      api.request<typeof audit>("/admin/audit", undefined, adminToken),
-      api.request<typeof codes>("/admin/codes", undefined, adminToken),
+      allowed("catalog")
+        ? api.request<Product[]>("/admin/products", undefined, adminToken)
+        : [],
+      allowed("orders")
+        ? api.request<Order[]>("/admin/orders", undefined, adminToken)
+        : [],
+      allowed("support")
+        ? api.request<Ticket[]>("/admin/support", undefined, adminToken)
+        : [],
+      allowed("audit")
+        ? api.request<typeof audit>("/admin/audit", undefined, adminToken)
+        : [],
+      allowed("codes")
+        ? api.request<typeof codes>("/admin/codes", undefined, adminToken)
+        : [],
     ]);
     setAdminProducts(p);
     setAdminOrders(o);
     setAdminTickets(s);
     setAudit(a);
     setCodes(c);
+    setAdminSession(session);
     setUnlocked(true);
   }
   const money = (v: number) => `${v.toLocaleString(locale)} UZS`;
@@ -864,6 +888,7 @@ export function CustomerHub({
                   onChange={(e) => {
                     setAdminToken(e.target.value);
                     setUnlocked(false);
+                    setAdminSession(null);
                   }}
                 />
               </label>
@@ -876,7 +901,18 @@ export function CustomerHub({
             </section>
             {unlocked && (
               <>
-                <section className="card">
+                {can("access") && (
+                  <StaffAccessPanel
+                    locale={locale}
+                    token={adminToken}
+                    run={run}
+                  />
+                )}
+                <section
+                  className="card"
+                  data-admin-permission="catalog"
+                  hidden={!can("catalog")}
+                >
                   <h2>{t("products")}</h2>
                   <div className="customer-actions">
                     {adminProducts.map((p) => (
@@ -983,7 +1019,11 @@ export function CustomerHub({
                     {t("saveProduct")}
                   </button>
                 </section>
-                <section className="card">
+                <section
+                  className="card"
+                  data-admin-permission="codes"
+                  hidden={!can("codes")}
+                >
                   <h2>{t("codes")}</h2>
                   <label>
                     {t("profile")}
@@ -1060,7 +1100,11 @@ export function CustomerHub({
                     </div>
                   ))}
                 </section>
-                <section className="card">
+                <section
+                  className="card"
+                  data-admin-permission="orders"
+                  hidden={!can("orders")}
+                >
                   <h2>{t("orders")}</h2>
                   {adminOrders.map((o) => (
                     <article className="customer-item" key={o.id}>
@@ -1068,7 +1112,7 @@ export function CustomerHub({
                       <p>
                         {state(o.status)} · {money(o.total_minor)}
                       </p>
-                      {o.status === "pending" && (
+                      {o.status === "pending" && can("finance") && (
                         <button
                           onClick={() =>
                             void run(async () => {
@@ -1084,7 +1128,7 @@ export function CustomerHub({
                           {t("testPayment")}
                         </button>
                       )}
-                      {o.status === "return_requested" && (
+                      {o.status === "return_requested" && can("finance") && (
                         <button
                           onClick={() =>
                             void run(async () => {
@@ -1100,7 +1144,7 @@ export function CustomerHub({
                           {t("refund")}
                         </button>
                       )}
-                      {o.status === "paid" && (
+                      {o.status === "paid" && can("fulfill") && (
                         <>
                           <label>
                             {t("tracking")}
@@ -1134,7 +1178,11 @@ export function CustomerHub({
                     </article>
                   ))}
                 </section>
-                <section className="card">
+                <section
+                  className="card"
+                  data-admin-permission="support"
+                  hidden={!can("support")}
+                >
                   <h2>{t("support")}</h2>
                   {adminTickets.map((ticket) => (
                     <article className="customer-item" key={ticket.id}>
@@ -1196,7 +1244,11 @@ export function CustomerHub({
                     </article>
                   ))}
                 </section>
-                <section className="card">
+                <section
+                  className="card"
+                  data-admin-permission="audit"
+                  hidden={!can("audit")}
+                >
                   <h2>{t("audit")}</h2>
                   {audit.map((a) => (
                     <p key={a.id}>

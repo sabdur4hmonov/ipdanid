@@ -16,6 +16,7 @@ import {
   sampleToDisplay,
 } from "./core/coordinates";
 import { fitMarkedOutline, type OutlinePoint } from "./core/head-outline";
+import { outlineBackgroundMask } from "./core/outline-background";
 import {
   fitMarkedFace,
   missingPhotoCoverage,
@@ -80,6 +81,11 @@ export function ShapeCropEditor({
   const outlineDrag = useRef<number | null>(null);
   const latestOutline = useRef(headOutline);
   latestOutline.current = headOutline;
+  // Undo stores target-coordinate regions. A new sample grid invalidates that
+  // snapshot; the parent remaps current anatomy and clears crop-bound masks.
+  useEffect(() => {
+    setUndo(undefined);
+  }, [resolution]);
   const updateOutline = (next: OutlinePoint[]) => {
     latestOutline.current = next;
     onOutline(next);
@@ -502,6 +508,40 @@ export function ShapeCropEditor({
             }}
           >
             {t("fitOutline")}
+          </button>
+          <button
+            className="outline"
+            type="button"
+            disabled={!portrait.enabled || headOutline.length < 6}
+            onClick={() => {
+              try {
+                const manual = portrait.backgroundMode === "manual-light";
+                const mask = outlineBackgroundMask(
+                  headOutline,
+                  edits,
+                  aspect,
+                  imageWidth,
+                  imageHeight,
+                  resolution,
+                  manual ? portrait.backgroundMask : undefined,
+                );
+                setUndo({
+                  edits: { ...edits },
+                  portrait: structuredClone(portrait),
+                });
+                onFace({
+                  ...portrait,
+                  backgroundMode: "manual-light",
+                  backgroundMask: mask,
+                  foregroundMask: manual ? portrait.foregroundMask : undefined,
+                });
+                setMessage(t("outlineBackgroundNotice"));
+              } catch {
+                setMessage(t("outlineInvalid"));
+              }
+            }}
+          >
+            {t("outlineBackground")}
           </button>
         </div>
         <p className="fineprint" role="status">

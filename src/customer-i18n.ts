@@ -229,6 +229,48 @@ const words = {
   ],
   active: ["Do‘konda ko‘rsatish", "Показывать в магазине", "Show in shop"],
   ticketState: ["Yordam so‘rovi holati", "Статус обращения", "Ticket status"],
+  staffAccess: ["Xodim ruxsatlari", "Доступ сотрудников", "Staff access"],
+  staffNotice: [
+    "Har bir xodimga vazifasiga mos kalit bering. Uni istalgan payt bekor qilish mumkin.",
+    "Выдавайте каждому сотруднику ключ для его задач. Доступ можно отозвать.",
+    "Give each staff member access for their duties. You can revoke it at any time.",
+  ],
+  staffName: ["Xodim nomi", "Имя сотрудника", "Staff name"],
+  staffRole: ["Vazifa", "Роль", "Staff role"],
+  staffDays: [
+    "Ruxsat muddati (kun)",
+    "Срок доступа (дни)",
+    "Access duration (days)",
+  ],
+  staffIssue: ["Ruxsat berish", "Выдать доступ", "Issue staff access"],
+  staffCopyOnce: [
+    "Kalitni hozir xavfsiz saqlang. Keyin qayta ko‘rsatilmaydi.",
+    "Сохраните ключ безопасно сейчас. Позже он не отображается.",
+    "Save this key securely now. It will not be shown again.",
+  ],
+  staffHide: ["Kalitni yashirish", "Скрыть ключ", "Hide key"],
+  staffRevoke: [
+    "Ruxsatni bekor qilish",
+    "Отозвать доступ",
+    "Revoke staff access",
+  ],
+  staffRevoked: ["Bekor qilingan", "Отозван", "Revoked"],
+  staffExpired: ["Muddati tugagan", "Истёк", "Expired"],
+  staffFulfillment: [
+    "Buyurtmalarni jo‘natish",
+    "Отправка заказов",
+    "Order fulfillment",
+  ],
+  staffFinance: [
+    "To‘lov va qaytarish",
+    "Платежи и возвраты",
+    "Payments and refunds",
+  ],
+  staffManager: [
+    "Operatsiya menejeri",
+    "Операционный менеджер",
+    "Operations manager",
+  ],
 } as const;
 export type CustomerWord = keyof typeof words;
 export function customerText(locale: Locale, key: CustomerWord) {

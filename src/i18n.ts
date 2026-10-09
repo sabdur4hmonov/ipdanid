@@ -1,6 +1,9 @@
 import type { Locale } from "./core/types";
 const uz = {
   headOutline: "Bosh konturi · tajriba",
+  outlineBackground: "Kontur tashqarisidagi fonni oqartirish",
+  outlineBackgroundNotice:
+    "Qo‘lda belgilangan bosh ichidagi piksel qiymatlari saqlandi. Kontur tashqarisi fon kuchiga qarab oqartirildi; chetida himoya oralig‘i bor. Natijani tekshiring, kerak bo‘lsa bekor qiling.",
   outlineHint:
     "Soch, ikkala quloq va jag‘ atrofida tartib bilan 6–48 nuqta bosing. Nuqtalarni surib tuzating; yuz kesilgan bo‘lsa avval suratni kichraytiring. Bu avtomatik aniqlash emas.",
   markOutline: "Kontur nuqtalarini belgilash",
@@ -313,6 +316,9 @@ const uz = {
 export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
   headOutline: "Whole-head outline · experimental",
+  outlineBackground: "Lighten background outside outline",
+  outlineBackgroundNotice:
+    "Pixel values inside your manually marked head are preserved. Outside is lightened by the background setting, with a protective edge margin. Inspect the result and undo if needed.",
   outlineHint:
     "Tap 6–48 points in order around hair, both ears and jaw. Drag points to correct them; zoom out first if the head is clipped. This is manual marking, not automatic detection.",
   markOutline: "Mark outline points",
@@ -624,6 +630,9 @@ const en: Record<Key, string> = {
 };
 const ru: Record<Key, string> = {
   headOutline: "Контур всей головы · эксперимент",
+  outlineBackground: "Осветлить фон снаружи контура",
+  outlineBackgroundNotice:
+    "Значения пикселей внутри отмеченной вручную головы сохранены. Фон снаружи осветлён по настройке фона с защитным отступом. Проверьте результат; действие можно отменить.",
   outlineHint:
     "Отметьте 6–48 точек по порядку вокруг волос, обоих ушей и челюсти. Перемещайте точки; сначала уменьшите фото, если голова обрезана. Это ручная разметка, не автоматическое определение.",
   markOutline: "Отметить точки контура",

@@ -74,7 +74,7 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
     await page.mouse.move(hx - 4, hy + 2);
     await page.mouse.up();
   }
-  const before = await state();
+  let before = await state();
   expect(before.outline[0]).not.toEqual(tapped.outline[0]);
   expect(before.outline.slice(1)).toEqual(tapped.outline.slice(1));
   expect(before.outline).toHaveLength(8);
@@ -114,7 +114,69 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
     .getByRole("button", { name: "Undo shape fit", exact: true })
     .click();
   expect(await state()).toEqual(before);
+  await page
+    .getByLabel("Computation resolution", { exact: true })
+    .selectOption("192");
+  const highResolution = await state();
+  for (const key of ["eyes", "nose", "mouth"]) {
+    const a = before.portrait.regions[key],
+      b = highResolution.portrait.regions[key];
+    for (const corner of [0, 1]) {
+      const old = targetToSource(
+        a.left + corner * a.width,
+        a.top + corner * a.height,
+        512,
+        512,
+        before.edits,
+        1,
+        160,
+      );
+      const next = targetToSource(
+        b.left + corner * b.width,
+        b.top + corner * b.height,
+        512,
+        512,
+        highResolution.edits,
+        1,
+        192,
+      );
+      expect(next.x).toBeCloseTo(old.x, 7);
+      expect(next.y).toBeCloseTo(old.y, 7);
+    }
+  }
+  await page
+    .getByLabel("Computation resolution", { exact: true })
+    .selectOption("160");
+  const restoredResolution = await state();
+  expect(restoredResolution.edits).toEqual(before.edits);
+  for (const key of ["eyes", "nose", "mouth"])
+    for (const field of ["left", "top", "width", "height"])
+      expect(restoredResolution.portrait.regions[key][field]).toBeCloseTo(
+        before.portrait.regions[key][field],
+        12,
+      );
+  before = restoredResolution;
+  const lighten = page.getByRole("button", {
+    name: "Lighten background outside outline",
+    exact: true,
+  });
+  await lighten.click();
+  const lightened = await state();
+  expect(lightened.edits).toEqual(before.edits);
+  expect(lightened.outline).toEqual(before.outline);
+  expect(lightened.portrait.regions).toEqual(before.portrait.regions);
+  expect(lightened.portrait.backgroundMode).toBe("manual-light");
+  expect(lightened.portrait.backgroundMask).toMatch(/^[0-9a-f]{1024}$/);
+  expect(lightened.portrait.backgroundMask).not.toBe("0".repeat(1024));
+  await page
+    .getByRole("button", { name: "Undo shape fit", exact: true })
+    .click();
+  expect(await state()).toEqual(before);
+  await lighten.click();
   await page.getByLabel("Zoom", { exact: true }).fill("0.8");
+  await expect
+    .poll(async () => (await state()).portrait.backgroundMask)
+    .toBeUndefined();
   expect((await state()).outline).toEqual(before.outline);
   await page.getByText("Point coordinates", { exact: true }).click();
   await page.getByLabel("Outline point 1 X", { exact: true }).fill("65");

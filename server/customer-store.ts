@@ -302,7 +302,7 @@ export class CustomerStore extends Store {
       return this.order(user, id);
     });
   }
-  recordTestPayment(id: string) {
+  recordTestPayment(id: string, actor = "local-admin") {
     const o = this.db.prepare("SELECT * FROM orders WHERE id=?").get(id) as
       { status: string; total_minor: number } | undefined;
     if (!o) throw new DomainError("Order not found", 404);
@@ -318,7 +318,9 @@ export class CustomerStore extends Store {
       status: "paid",
       timestamp: Date.now(),
     });
-    return this.payment(raw, this.signSandbox(raw));
+    const result = this.payment(raw, this.signSandbox(raw));
+    this.log(actor, "order.test-payment", id);
+    return result;
   }
   refund(actor: string, id: string) {
     return this.transaction(() => {
