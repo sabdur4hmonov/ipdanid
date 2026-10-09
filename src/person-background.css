@@ -1,0 +1,26 @@
+.person-background {
+  border: 1px solid #dde2d7;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 16px 0;
+}
+.person-background canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: crosshair;
+  border-radius: 12px;
+}
+.person-background .preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.person-background button {
+  max-width: 100%;
+}
+.person-background button[aria-pressed="true"] {
+  background: #e4ead9;
+  border-color: #849879;
+}

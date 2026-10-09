@@ -42,6 +42,7 @@ export function ShapeCropEditor({
   onRestore,
   t,
   children,
+  group = false,
 }: {
   shape: Shape;
   edits: EditParams;
@@ -59,6 +60,7 @@ export function ShapeCropEditor({
   onRestore: (e: EditParams, s: PortraitSettings) => void;
   t: (k: Key) => string;
   children: ReactNode;
+  group?: boolean;
 }) {
   const id = useId().replaceAll(":", ""),
     frame = useRef<HTMLDivElement>(null),
@@ -78,6 +80,11 @@ export function ShapeCropEditor({
       portrait: PortraitSettings;
     }>(),
     [message, setMessage] = useState("");
+  useEffect(() => {
+    if (group) {
+      setMark(false); setOutlineMode(false); mode.current = null; points.current.clear();
+    }
+  }, [group]);
   const outlineDrag = useRef<number | null>(null);
   const latestOutline = useRef(headOutline);
   latestOutline.current = headOutline;
@@ -392,6 +399,7 @@ export function ShapeCropEditor({
           type="button"
           className="outline"
           aria-pressed={mark}
+          disabled={group}
           onClick={() => {
             setMark(!mark);
             setOutlineMode(false);
@@ -403,6 +411,7 @@ export function ShapeCropEditor({
         <button
           type="button"
           className="outline"
+          disabled={group}
           onClick={() => {
             if (!corrected) {
               setMark(true);
@@ -446,7 +455,7 @@ export function ShapeCropEditor({
           </button>
         )}
       </div>
-      <details className="head-outline-controls">
+      <details className="head-outline-controls" hidden={group}>
         <summary>{t("headOutline")}</summary>
         <p className="fineprint">{t("outlineHint")}</p>
         <div className="preset-row">

@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -19,6 +20,20 @@ public class PackagedAssetsTest {
         int n;
         while ((n = stream.read(buffer)) != -1) result.write(buffer, 0, n);
         return result.toByteArray();
+    }
+    @Test
+    public void localPersonSegmentationAssetsArePackaged() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        String root = "public/vendor/portrait-segmentation/";
+        for (String name : new String[]{"vision_bundle.js", "wasm/vision_wasm_internal.js", "wasm/vision_wasm_internal.wasm", "wasm/vision_wasm_nosimd_internal.js", "wasm/vision_wasm_nosimd_internal.wasm", "LICENSE.txt", "PROVENANCE.json"}) {
+            try (InputStream input = context.getAssets().open(root + name)) { assertTrue(name, read(input).length > 100); }
+        }
+        try (InputStream input = context.getAssets().open(root + "selfie_multiclass_256x256.tflite")) {
+            byte[] bytes=read(input);assertEquals(16371837,bytes.length);
+            byte[] hash=MessageDigest.getInstance("SHA-256").digest(bytes);StringBuilder hex=new StringBuilder();
+            for(byte b:hash)hex.append(String.format("%02x",b & 255));
+            assertEquals("c6748b1253a99067ef71f7e26ca71096cd449baefa8f101900ea23016507e0e0",hex.toString());
+        }
     }
     @Test
     public void offlineEngineAndFontArePackaged() throws Exception {

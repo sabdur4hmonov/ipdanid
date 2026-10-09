@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PhotoActions } from "./PhotoActions";
+import { PersonBackground, type BackgroundState } from "./PersonBackground";
 import { loadPhoto, sampleCanvas } from "./core/image";
 import {
   generateGrid,
@@ -46,6 +47,10 @@ export function GridStudio({ locale }: { locale: Locale }) {
     [spares, setSpares] = useState(0),
     [palette, setPalette] = useState(paletteText(COLORS)),
     [image, setImage] = useState<HTMLCanvasElement>(),
+    [original, setOriginal] = useState<HTMLCanvasElement>(),
+    [background, setBackground] = useState<BackgroundState>(),
+    [backgroundBusy, setBackgroundBusy] = useState(false),
+    [photoKey, setPhotoKey] = useState(0),
     [name, setName] = useState(""),
     [project, setProject] = useState<GridProject>(),
     [library, setLibrary] = useState<GridProject[]>([]),
@@ -126,6 +131,10 @@ export function GridStudio({ locale }: { locale: Locale }) {
       c.getContext("2d")!.drawImage(bitmap, 0, 0, c.width, c.height);
       if (token === job.current) {
         setImage(c);
+        setOriginal(c);
+        setBackground(undefined);
+        setPhotoKey((v) => v + 1);
+        setBackgroundBusy(true);
         setName(file.name.replace(/\.[^.]+$/, ""));
       }
     } finally {
@@ -133,7 +142,7 @@ export function GridStudio({ locale }: { locale: Locale }) {
     }
   }
   async function calculate() {
-    if (!image) return;
+    if (!image || backgroundBusy) return;
     dimensions(columns, rows);
     const colors: GridColor[] = palette
       .split(/\r?\n/)
@@ -199,11 +208,28 @@ export function GridStudio({ locale }: { locale: Locale }) {
               onClick={() => {
                 job.current++;
                 setImage(sampleCanvas());
+                setOriginal(undefined);
+                setBackground(undefined);
+                setBackgroundBusy(false);
                 setName(t("sample"));
               }}
             >
               {t("sample")}
             </button>
+            {original && (
+              <PersonBackground
+                key={photoKey}
+                source={original}
+                initial={background}
+                locale={locale}
+                onBusy={setBackgroundBusy}
+                onChange={(state, prepared) => {
+                  job.current++;
+                  setBackground(state);
+                  setImage(prepared);
+                }}
+              />
+            )}
             <p>{t("target")}</p>
             <label>
               {t("name")}
@@ -311,7 +337,7 @@ export function GridStudio({ locale }: { locale: Locale }) {
             <p>{t("paletteHelp")}</p>
             <button
               className="primary"
-              disabled={!image || busy}
+              disabled={!image || busy || backgroundBusy}
               onClick={() => void run(calculate)}
             >
               {t("calculate")}

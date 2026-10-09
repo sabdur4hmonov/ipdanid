@@ -7,3 +7,5 @@ docs/IP_RASM_RESEARCH_FINDINGS.md -text
 docs/IP_RASM_START_PROMPT.txt -text
 docs/mahsulot-strategiyasi.md -text
 docs/qbrix-tadqiqot.md -text
+# Preserve pinned runtime/model byte hashes on Windows checkouts.
+public/vendor/portrait-segmentation/** -text

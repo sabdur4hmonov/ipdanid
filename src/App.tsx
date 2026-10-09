@@ -1,5 +1,7 @@
 import { GridStudio } from "./GridStudio";
 import { PhotoActions } from "./PhotoActions";
+import { PersonBackground, type BackgroundState } from "./PersonBackground";
+import { backgroundText } from "./person-background-i18n";
 import { withPinBasis, type PinBasis } from "./core/pin-basis";
 import {
   DEFAULT_ANATOMICAL_IMPORTANCE,
@@ -106,6 +108,9 @@ type PhotoCandidate = {
   id: string;
   name: string;
   image: HTMLCanvasElement;
+  original: HTMLCanvasElement;
+  background?: BackgroundState;
+  group: boolean;
   sample: boolean;
   edits: EditParams;
   portrait: PortraitSettings;
@@ -276,11 +281,17 @@ export default function App() {
       ? "saved"
       : "saving";
   const [photoCandidates, setPhotoCandidates] = useState<PhotoCandidate[]>([]),
+    [backgroundBusy, setBackgroundBusy] = useState(false),
+    [group, setGroup] = useState(false),
     [photoId, setPhotoId] = useState<string | null>(null),
     [headOutline, setHeadOutline] = useState<OutlinePoint[]>([]),
     [makerPresets, setMakerPresets] = useState<MakerPreset[]>([]),
     [presetName, setPresetName] = useState(""),
     [selectedPreset, setSelectedPreset] = useState("");
+  useEffect(() => {
+    if (group && portrait.enabled)
+      setPortrait((v) => ({ ...v, enabled: false }));
+  }, [group, portrait.enabled]);
   const [widthMm, setWidthMm] = useState(400),
     [heightMm, setHeightMm] = useState(400),
     [pinCount, setPinCount] = useState(120),
@@ -553,6 +564,7 @@ export default function App() {
             headOutline: structuredClone(headOutline),
             aspect,
             resolution,
+            group,
           }
         : p,
     );
@@ -577,6 +589,8 @@ export default function App() {
       id: crypto.randomUUID(),
       name: label.slice(0, 100),
       image: c,
+      original: c,
+      group: false,
       sample: isSample,
       edits: { ...DEFAULT_EDITS },
       headOutline: [],
@@ -592,6 +606,8 @@ export default function App() {
     setPhotoCandidates([...rememberEdits(), p].slice(-4));
     setPhotoId(p.id);
     setImage(c);
+    setGroup(false);
+    setBackgroundBusy(!isSample);
     setHeadOutline([]);
     setPortrait(structuredClone(p.portrait));
     setSample(isSample);
@@ -608,6 +624,10 @@ export default function App() {
     setPhotoCandidates(rememberEdits());
     setPhotoId(p.id);
     setImage(p.image);
+    setGroup(p.group);
+    setBackgroundBusy(
+      !p.sample && (!p.background || p.background.status === "processing"),
+    );
     setHeadOutline(structuredClone(p.headOutline));
     setPortrait(
       p.aspect === aspect && p.resolution === resolution
@@ -699,7 +719,7 @@ export default function App() {
       "global" | "multiscale" | "physical" | "anatomy" | "basis" | "simplify",
     resume?: OptimizerRecovery,
   ) {
-    if (!image && !resume) return;
+    if ((!image && !resume) || (backgroundBusy && !resume)) return;
     let profile;
     try {
       profile = resume?.profile
@@ -1325,9 +1345,61 @@ export default function App() {
                       </div>
                     ) : (
                       <>
+                        {!sample &&
+                          photoCandidates.find((p) => p.id === photoId) && (
+                            <PersonBackground
+                              key={photoId!}
+                              source={
+                                photoCandidates.find((p) => p.id === photoId)!
+                                  .original
+                              }
+                              initial={
+                                photoCandidates.find((p) => p.id === photoId)!
+                                  .background
+                              }
+                              locale={locale}
+                              onBusy={setBackgroundBusy}
+                              onChange={(background, prepared) => {
+                                jobs.current.cancel();
+                                worker.current?.terminate();
+                                worker.current = null;
+                                setBusy(false);
+                                setImage(prepared);
+                                setPhotoCandidates((v) =>
+                                  v.map((p) =>
+                                    p.id === photoId
+                                      ? { ...p, image: prepared, background }
+                                      : p,
+                                  ),
+                                );
+                                // Source segmentation replaces the old single-face oval softening.
+                                if (background.enabled && background.mask)
+                                  setPortrait((v) => ({ ...v, background: 0 }));
+                              }}
+                            />
+                          )}
+                        <label className="toggle">
+                          <input
+                            type="checkbox"
+                            checked={group}
+                            onChange={(e) => {
+                              setGroup(e.target.checked);
+                              setHeadOutline([]);
+                              if (e.target.checked)
+                                setPortrait((v) => ({ ...v, enabled: false }));
+                            }}
+                          />
+                          {backgroundText(locale, "group")}
+                        </label>
+                        {group && (
+                          <p className="workflow-notice">
+                            {backgroundText(locale, "groupHint")}
+                          </p>
+                        )}
                         <ShapeCropEditor
                           key={`${photoId ?? "sample"}-${shape}`}
                           shape={shape}
+                          group={group}
                           edits={edits}
                           portrait={portrait}
                           aspect={aspect}
@@ -1367,6 +1439,7 @@ export default function App() {
                           <input
                             type="checkbox"
                             checked={portrait.enabled}
+                            disabled={group}
                             onChange={(e) => {
                               setPortrait((v) => ({
                                 ...v,
@@ -1919,7 +1992,7 @@ export default function App() {
                     </p>
                     <button
                       className="primary full"
-                      disabled={!image || busy}
+                      disabled={!image || busy || backgroundBusy}
                       onClick={() => generate()}
                     >
                       {busy

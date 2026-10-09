@@ -86,7 +86,7 @@ const uz = {
     "Kattaroq hisoblash chegarasi bir xil ip yo‘lini berishi mumkin. Bu qidiruvda foydali ip topilmasa, yangi ulanishlar qo‘shilmaydi.",
 
   photoGuidance:
-    "Bitta yuzi aniq ko‘rinadigan tiniq surat tanlang. Oq yoki och, sodda fon afzal, lekin shart emas. Yorug‘lik tekis bo‘lsin; kuchli soya va haddan ortiq yorug‘likdan saqlaning. Ko‘zlar ko‘rinsin, yuz kameraga qarasin. Mavjud suratlar ham mos: davom etishdan oldin natijani tekshiring.",
+    "Bitta yoki bir nechta odam aniq ko‘rinadigan tiniq surat tanlang. Fon qurilmada avtomatik oqartiriladi; oq fonda suratga tushish shart emas. Guruh suratida barcha odamlarni crop ichida qoldiring. Yorug‘lik tekis, ko‘zlar ko‘rinadigan bo‘lsin. Hisoblashdan oldin tayyorlangan suratni tekshiring.",
   backgroundTools: "Fon bilan ishlash",
   softBackground: "Yumshatish (mavjud usul)",
   manualBackground: "Och fon: qo‘lda belgilash",
@@ -424,7 +424,7 @@ const en: Record<Key, string> = {
     "A larger computation ceiling can produce the same path. Connections stop when the current search finds no useful addition.",
 
   photoGuidance:
-    "Use a sharp photo with one clearly visible face. Prefer a plain white or light neutral background; it is optional. Use even lighting without strong shadows or overexposure. Keep the eyes visible and face directed toward the camera. Existing photographs are welcome; inspect your result before proceeding.",
+    "Use a sharp photo with one or several clearly visible people. The background is whitened locally; taking a photo against white is optional. Keep everyone inside the crop for a group photo. Use even lighting and visible eyes. Inspect the prepared photo before generating.",
   backgroundTools: "Background controls",
   softBackground: "Soften (existing method)",
   manualBackground: "Light background: manual selection",
@@ -760,7 +760,7 @@ const ru: Record<Key, string> = {
     "Больший предел вычисления может дать тот же путь. Новые соединения не добавляются, если текущий поиск не находит полезного улучшения.",
 
   photoGuidance:
-    "Выберите резкое фото с одним хорошо видимым лицом. Предпочтителен однотонный белый или светлый нейтральный фон, но это не обязательно. Используйте ровное освещение без сильных теней и пересвета. Глаза должны быть видны, лицо направлено к камере. Подойдут и имеющиеся фотографии: оцените результат, прежде чем продолжить.",
+    "Выберите резкое фото одного или нескольких людей. Фон автоматически отбеливается на устройстве; фотографировать на белом фоне не обязательно. В групповом фото оставьте всех внутри кадра. Используйте ровный свет и открытые глаза. Проверьте подготовленное фото до расчёта.",
   backgroundTools: "Настройки фона",
   softBackground: "Смягчить (прежний метод)",
   manualBackground: "Светлый фон: ручное выделение",

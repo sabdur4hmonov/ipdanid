@@ -10,7 +10,7 @@ test("localized optional photo advice, reversible local brush and exact exported
   for (const [locale, fragment] of [
     ["uz", "shart emas"],
     ["ru", "не обязательно"],
-    ["en", "it is optional"],
+    ["en", "white is optional"],
   ]) {
     await page.getByLabel("Language").selectOption(locale);
     await expect(page.getByTestId("photo-guidance")).toContainText(fragment);
@@ -43,7 +43,21 @@ test("localized optional photo advice, reversible local brush and exact exported
       mimeType: "image/png",
       buffer: Buffer.from(png, "base64"),
     });
+  // This legacy target-space editor is exercised against the original source.
+  // Source-space automatic separation is tested separately and must settle first.
+  await expect(page.getByTestId("background-status")).not.toHaveAttribute(
+    "data-status",
+    "processing",
+    { timeout: 45000 },
+  );
+  await page
+    .getByRole("checkbox", {
+      name: "Automatically whiten background",
+      exact: true,
+    })
+    .uncheck();
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
+  await page.getByLabel("Simplify background", { exact: true }).fill("0.75");
   const target = page.getByLabel("Exact generation target", { exact: true });
   const initial = await target.evaluate((c: HTMLCanvasElement) =>
     c.toDataURL(),

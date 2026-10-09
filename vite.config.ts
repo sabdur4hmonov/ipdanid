@@ -1,6 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { offlineShellSource } from "./src/core/offline-shell";
+import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+const segmentationFiles = [
+  "vision_bundle.js",
+  "wasm/vision_wasm_internal.js",
+  "wasm/vision_wasm_internal.wasm",
+  "wasm/vision_wasm_nosimd_internal.js",
+  "wasm/vision_wasm_nosimd_internal.wasm",
+  "selfie_multiclass_256x256.tflite",
+  "LICENSE.txt",
+  "PROVENANCE.json",
+].map((f) => "/vendor/portrait-segmentation/" + f);
 export default defineConfig({
   // Native build caches and private evidence are served on demand, never source watched.
   server: {
@@ -21,11 +33,21 @@ export default defineConfig({
           "/icon.svg",
           "/manifest.webmanifest",
           "/fonts/NotoSans-Regular.ttf",
+          ...segmentationFiles,
           ...Object.keys(bundle)
             .filter((f) => !f.endsWith(".map"))
             .map((f) => "/" + f),
         ];
-        const version = Object.keys(bundle).sort().join("|");
+        const version =
+          Object.keys(bundle).sort().join("|") +
+          "|" +
+          segmentationFiles
+            .map((f) =>
+              createHash("sha256")
+                .update(readFileSync("public" + f))
+                .digest("hex"),
+            )
+            .join("|");
         this.emitFile({
           type: "asset",
           fileName: "sw.js",
