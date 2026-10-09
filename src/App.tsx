@@ -39,6 +39,7 @@ import { renderInstruction } from "./core/render";
 import { assemblyEffort } from "./core/simplify";
 import { loadPhoto, prepare, sampleCanvas, suitability } from "./core/image";
 import { ShapeCropEditor } from "./ShapeCropEditor";
+import type { OutlinePoint } from "./core/head-outline";
 import { remapPortrait, CROP_ZOOM_MIN, CROP_ZOOM_MAX } from "./core/shape-crop";
 import {
   confirm,
@@ -88,6 +89,7 @@ type PhotoCandidate = {
   sample: boolean;
   edits: EditParams;
   portrait: PortraitSettings;
+  headOutline: OutlinePoint[];
   aspect: number;
   resolution: number;
 };
@@ -232,6 +234,7 @@ export default function App() {
       : "saving";
   const [photoCandidates, setPhotoCandidates] = useState<PhotoCandidate[]>([]),
     [photoId, setPhotoId] = useState<string | null>(null),
+    [headOutline, setHeadOutline] = useState<OutlinePoint[]>([]),
     [makerPresets, setMakerPresets] = useState<MakerPreset[]>([]),
     [presetName, setPresetName] = useState(""),
     [selectedPreset, setSelectedPreset] = useState("");
@@ -479,6 +482,7 @@ export default function App() {
             ...p,
             edits: { ...edits },
             portrait: structuredClone(portrait),
+            headOutline: structuredClone(headOutline),
             aspect,
             resolution,
           }
@@ -506,6 +510,7 @@ export default function App() {
       image: c,
       sample: isSample,
       edits: { ...DEFAULT_EDITS },
+      headOutline: [],
       portrait: {
         ...structuredClone(DEFAULT_PORTRAIT),
         enabled: portrait.enabled,
@@ -518,6 +523,7 @@ export default function App() {
     setPhotoCandidates([...rememberEdits(), p].slice(-4));
     setPhotoId(p.id);
     setImage(c);
+    setHeadOutline([]);
     setPortrait(structuredClone(p.portrait));
     setSample(isSample);
     setEdits(p.edits);
@@ -532,6 +538,7 @@ export default function App() {
     setPhotoCandidates(rememberEdits());
     setPhotoId(p.id);
     setImage(p.image);
+    setHeadOutline(structuredClone(p.headOutline));
     setPortrait(
       p.aspect === aspect && p.resolution === resolution
         ? structuredClone(p.portrait)
@@ -1212,6 +1219,8 @@ export default function App() {
                           resolution={resolution}
                           imageWidth={image.width}
                           imageHeight={image.height}
+                          headOutline={headOutline}
+                          onOutline={setHeadOutline}
                           t={t}
                           onCrop={applyCrop}
                           onFace={setPortrait}

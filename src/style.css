@@ -1278,3 +1278,24 @@ footer > span:last-child {
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
+
+.head-outline-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.head-outline-controls {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid #dce2d4;
+  border-radius: 12px;
+}
+.head-outline-controls summary {
+  cursor: pointer;
+  padding: 8px 0;
+}
+.head-outline-controls input {
+  max-width: 140px;
+}

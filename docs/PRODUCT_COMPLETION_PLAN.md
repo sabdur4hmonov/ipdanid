@@ -1,5 +1,7 @@
 # Product completion work — 2026-10-08
 
+Active continuation (2026-10-09): HEAD_OUTLINE_CHECKPOINT.md. Manual source-relative whole-head outline, reversible fitting and exact new offline guides are software verified; comparison is inconclusive for likeness, so defaults remain. Updated Android is compiled/asset/signature verified; USB device is absent and new-build device tests remain pending. Full 77-unit suite passes. Continue native acceptance when connected, then address lost facial area on a separately disclosed board; do not repeat completed containment/convergence/pruning experiments as new wins. All seven workstreams below remain.
+
 Owner requested direct implementation in this chat. Baseline 3315a9e is preserved in an isolated checkout on codex/product-completion. After a clean-state check, original main was fast-forwarded to the tested commit4172e04. Existing private files, old outputs and other services were preserved.
 
 Priority: likeness/buildability → unnecessary customer actions → computation speed. Provisional name Ip Rasm. Existing immutable sequences and progress stay intact.

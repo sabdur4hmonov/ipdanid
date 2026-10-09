@@ -27,6 +27,8 @@ with zipfile.ZipFile(apk) as archive:
     assert 'Computation resolution' in main and 'resolution' in main and '192' in main, 'Resolution control missing'
     if args.archive_name=='ip-rasm-shape-fit':
         assert 'marked-face-shape-fit/1' in main and 'Fit marked face to shape' in main and 'not automatic detection' in main, 'Shape framing controls missing'
+    if args.archive_name=='ip-rasm-outline':
+        assert 'Fit marked outline' in main and 'Whole-head outline' in main and 'data-outline-index' in main, 'Manual source outline controls missing'
 out.mkdir(parents=True, exist_ok=True)
 if args.archive_name!='ip-rasm':
     # Never discard a previously verified fixed-name local build.

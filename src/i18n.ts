@@ -1,5 +1,19 @@
 import type { Locale } from "./core/types";
 const uz = {
+  headOutline: "Bosh konturi · tajriba",
+  outlineHint:
+    "Soch, ikkala quloq va jag‘ atrofida tartib bilan 6–48 nuqta bosing. Nuqtalarni surib tuzating; yuz kesilgan bo‘lsa avval suratni kichraytiring. Bu avtomatik aniqlash emas.",
+  markOutline: "Kontur nuqtalarini belgilash",
+  removeOutlinePoint: "Oxirgi nuqtani olib tashlash",
+  clearOutline: "Konturni tozalash",
+  fitOutline: "Kontur bo‘yicha joylashtirish",
+  outlineInvalid:
+    "Kontur to‘liq emas, chiziqlari kesishgan yoki shaklga sig‘madi. Soch, quloq va jag‘ni tekshiring.",
+  outlineSession:
+    "Kontur faqat shu ochiq sessiyadagi shu suratga tegishli; presetlarga o‘tmaydi.",
+  outlineCoordinates: "Nuqta koordinatalari",
+  outlinePoint: "Kontur nuqtasi",
+
   assemblyEstimateHint:
     "Vaqt — sinovsiz taxmin: har bir ulanishga o‘ram va surish bilan, har tugunga 20 s, rang almashtirishga 30 s. Ulanish:",
   assemblyActions: "amal",
@@ -298,6 +312,20 @@ const uz = {
 };
 export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
+  headOutline: "Whole-head outline · experimental",
+  outlineHint:
+    "Tap 6–48 points in order around hair, both ears and jaw. Drag points to correct them; zoom out first if the head is clipped. This is manual marking, not automatic detection.",
+  markOutline: "Mark outline points",
+  removeOutlinePoint: "Remove last point",
+  clearOutline: "Clear outline",
+  fitOutline: "Fit marked outline",
+  outlineInvalid:
+    "Outline is incomplete, crossed or cannot fit. Check hair, ears and jaw.",
+  outlineSession:
+    "This outline belongs only to this photo in the open session; it is not copied into presets.",
+  outlineCoordinates: "Point coordinates",
+  outlinePoint: "Outline point",
+
   assemblyEstimateHint:
     "Time is an unmeasured estimate: connection includes wrap/reposition, each knot20s, color change30s. Connection:",
   assemblyActions: "actions",
@@ -595,6 +623,20 @@ const en: Record<Key, string> = {
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
 };
 const ru: Record<Key, string> = {
+  headOutline: "Контур всей головы · эксперимент",
+  outlineHint:
+    "Отметьте 6–48 точек по порядку вокруг волос, обоих ушей и челюсти. Перемещайте точки; сначала уменьшите фото, если голова обрезана. Это ручная разметка, не автоматическое определение.",
+  markOutline: "Отметить точки контура",
+  removeOutlinePoint: "Удалить последнюю точку",
+  clearOutline: "Очистить контур",
+  fitOutline: "Вписать отмеченный контур",
+  outlineInvalid:
+    "Контур неполный, пересекается или не помещается. Проверьте волосы, уши и челюсть.",
+  outlineSession:
+    "Контур относится только к этому фото в текущей сессии; в пресеты не переносится.",
+  outlineCoordinates: "Координаты точек",
+  outlinePoint: "Точка контура",
+
   assemblyEstimateHint:
     "Время — непроверенная оценка: переход включает обмотку/перемещение, узел20с, смена цвета30с. Переход:",
   assemblyActions: "действий",
@@ -838,7 +880,8 @@ const ru: Record<Key, string> = {
   materialText:
     "400 × 400 мм, 120 гвоздей, нить 0.3 мм — предварительные тестовые параметры. Это не продающийся набор. Заказы и активация кодов будут позже.",
   code: "Код набора",
-  codeInfo: "Активируйте код через локальный тестовый сервер в аккаунте. Превью бесплатно без кода.",
+  codeInfo:
+    "Активируйте код через локальный тестовый сервер в аккаунте. Превью бесплатно без кода.",
   privacy: "Конфиденциальность",
   privacyText:
     "Исходные фото не загружаются. Инструкции и прогресс сначала хранятся на устройстве. На сервер они передаются только по вашему выбору в аккаунте. Экспортируйте JSON для резервной копии. Внешняя аналитика не используется.",
