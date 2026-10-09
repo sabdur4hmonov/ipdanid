@@ -2,12 +2,14 @@ import { GridStudio } from "./GridStudio";
 import { PhotoActions } from "./PhotoActions";
 import { PersonBackground, type BackgroundState } from "./PersonBackground";
 import { backgroundText } from "./person-background-i18n";
+import { fitAllPeople, croppedPeopleFraction } from "./core/people-fit";
+import { reviewedFacePortrait } from "./core/face-features";
 import { withPinBasis, type PinBasis } from "./core/pin-basis";
 import {
   DEFAULT_ANATOMICAL_IMPORTANCE,
   type AnatomicalImportance,
 } from "./core/anatomical-importance";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { App as NativeApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import {
@@ -283,6 +285,10 @@ export default function App() {
   const [photoCandidates, setPhotoCandidates] = useState<PhotoCandidate[]>([]),
     [backgroundBusy, setBackgroundBusy] = useState(false),
     [group, setGroup] = useState(false),
+    [peopleFitUndo, setPeopleFitUndo] = useState<{
+      edits: EditParams;
+      portrait: PortraitSettings;
+    }>(),
     [photoId, setPhotoId] = useState<string | null>(null),
     [headOutline, setHeadOutline] = useState<OutlinePoint[]>([]),
     [makerPresets, setMakerPresets] = useState<MakerPreset[]>([]),
@@ -299,6 +305,39 @@ export default function App() {
     [stockMeters, setStockMeters] = useState(1200);
   const boardHeight = shape === "circle" ? widthMm : heightMm,
     aspect = widthMm / boardHeight;
+  const activeBackground = photoCandidates.find(
+    (p) => p.id === photoId,
+  )?.background;
+  const activePeopleMask = activeBackground?.enabled
+    ? activeBackground.mask
+    : undefined;
+  const croppedPeople = useMemo(
+    () =>
+      group && image
+        ? croppedPeopleFraction(
+            activePeopleMask,
+            shape,
+            edits,
+            aspect,
+            image.width,
+            image.height,
+            resolution,
+          )
+        : undefined,
+    [group, image, activePeopleMask, shape, edits, aspect, resolution],
+  );
+  useEffect(() => {
+    setPeopleFitUndo(undefined);
+  }, [
+    photoId,
+    shape,
+    aspect,
+    widthMm,
+    boardHeight,
+    resolution,
+    activePeopleMask,
+    group,
+  ]);
   const [current, setCurrent] = useState(1),
     [playing, setPlaying] = useState(false),
     [pace, setPace] = useState(8),
@@ -607,6 +646,7 @@ export default function App() {
     setPhotoId(p.id);
     setImage(c);
     setGroup(false);
+    setPeopleFitUndo(undefined);
     setBackgroundBusy(!isSample);
     setHeadOutline([]);
     setPortrait(structuredClone(p.portrait));
@@ -625,6 +665,7 @@ export default function App() {
     setPhotoId(p.id);
     setImage(p.image);
     setGroup(p.group);
+    setPeopleFitUndo(undefined);
     setBackgroundBusy(
       !p.sample && (!p.background || p.background.status === "processing"),
     );
@@ -1358,8 +1399,36 @@ export default function App() {
                                   .background
                               }
                               locale={locale}
+                              group={group}
+                              onUseFace={(face) => {
+                                setPortrait(
+                                  reviewedFacePortrait(
+                                    face,
+                                    portrait,
+                                    edits,
+                                    image.width,
+                                    image.height,
+                                    aspect,
+                                    resolution,
+                                    shape,
+                                  ),
+                                );
+                                setLines(MAX_LINES);
+                              }}
                               onBusy={setBackgroundBusy}
                               onChange={(background, prepared) => {
+                                if (
+                                  background.status === "ready" &&
+                                  (background.faces?.length ?? 0) > 1 &&
+                                  background.faces !== activeBackground?.faces
+                                ) {
+                                  setGroup(true);
+                                  setHeadOutline([]);
+                                  setPortrait((v) => ({
+                                    ...v,
+                                    enabled: false,
+                                  }));
+                                }
                                 jobs.current.cancel();
                                 worker.current?.terminate();
                                 worker.current = null;
@@ -1392,9 +1461,70 @@ export default function App() {
                           {backgroundText(locale, "group")}
                         </label>
                         {group && (
-                          <p className="workflow-notice">
-                            {backgroundText(locale, "groupHint")}
-                          </p>
+                          <>
+                            <p className="workflow-notice">
+                              {backgroundText(locale, "groupHint")}
+                            </p>
+                            <div className="preset-row">
+                              <button
+                                className="outline"
+                                data-testid="fit-all-people"
+                                disabled={backgroundBusy}
+                                onClick={() => {
+                                  try {
+                                    const fit = fitAllPeople(
+                                      shape,
+                                      activePeopleMask,
+                                      edits,
+                                      aspect,
+                                      widthMm,
+                                      boardHeight,
+                                      image.width,
+                                      image.height,
+                                      resolution,
+                                    );
+                                    setPeopleFitUndo({
+                                      edits: { ...edits },
+                                      portrait: structuredClone(portrait),
+                                    });
+                                    applyCrop(fit.edits);
+                                  } catch (e) {
+                                    setError(String(e));
+                                  }
+                                }}
+                              >
+                                {backgroundText(locale, "fitPeople")}
+                              </button>
+                              <button
+                                className="outline"
+                                data-testid="undo-people-fit"
+                                disabled={!peopleFitUndo}
+                                onClick={() => {
+                                  if (peopleFitUndo) {
+                                    setEdits(peopleFitUndo.edits);
+                                    setPortrait(peopleFitUndo.portrait);
+                                    setPeopleFitUndo(undefined);
+                                  }
+                                }}
+                              >
+                                {backgroundText(locale, "undoPeople")}
+                              </button>
+                            </div>
+                            <p className="fineprint">
+                              {backgroundText(locale, "peopleFitHint")}
+                            </p>
+                            {croppedPeople !== undefined &&
+                              croppedPeople > 0.005 && (
+                                <p
+                                  className="workflow-notice"
+                                  role="status"
+                                  data-testid="people-cropped"
+                                >
+                                  {backgroundText(locale, "peopleCropped")}{" "}
+                                  {Math.round(croppedPeople * 100)}%
+                                </p>
+                              )}
+                          </>
                         )}
                         <ShapeCropEditor
                           key={`${photoId ?? "sample"}-${shape}`}
@@ -1580,7 +1710,10 @@ export default function App() {
                           resolution={resolution}
                           portrait={portrait}
                           setPortrait={setPortrait}
-                          image={image}
+                          image={
+                            photoCandidates.find((p) => p.id === photoId)
+                              ?.original ?? image
+                          }
                           edits={edits}
                           aspect={aspect}
                           t={t}

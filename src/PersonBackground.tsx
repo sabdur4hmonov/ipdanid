@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { Locale } from "./core/types";
 import { paintPersonMask, type PersonMask } from "./core/person-mask";
-import { segmentPeople, whiteBackground } from "./person-background";
+import { whiteBackground } from "./person-background";
+import { preparePersonPhoto } from "./photo-prepare";
+import type { SourceFace } from "./core/face-features";
+import { FaceFeaturePanel } from "./FaceFeaturePanel";
 import { backgroundText } from "./person-background-i18n";
 import { download } from "./download";
 import "./person-background.css";
@@ -11,6 +14,9 @@ export type BackgroundState = {
   mask?: PersonMask;
   automaticMask?: PersonMask;
   canvas?: HTMLCanvasElement;
+  faces?: SourceFace[];
+  faceUnavailable?: boolean;
+  cleanupUnavailable?: boolean;
 };
 export function PersonBackground({
   source,
@@ -18,18 +24,23 @@ export function PersonBackground({
   locale,
   onChange,
   onBusy,
+  onUseFace,
+  group = false,
 }: {
   source: HTMLCanvasElement;
   initial?: BackgroundState;
   locale: Locale;
   onChange: (state: BackgroundState, image: HTMLCanvasElement) => void;
   onBusy: (busy: boolean) => void;
+  onUseFace?: (face: SourceFace) => void;
+  group?: boolean;
 }) {
   const [state, setState] = useState<BackgroundState>(
     initial ?? { enabled: true, status: "processing" },
   );
   const current = useRef(state),
     generation = useRef(0),
+    controller = useRef<AbortController | undefined>(undefined),
     callbacks = useRef({ onChange, onBusy });
   callbacks.current = { onChange, onBusy };
   current.current = state;
@@ -52,14 +63,15 @@ export function PersonBackground({
     );
   }
   async function analyze() {
+    controller.current?.abort();
+    const request = new AbortController();
+    controller.current = request;
     const token = ++generation.current;
     callbacks.current.onBusy(true);
     setState((v) => ({ ...v, status: "processing" }));
     try {
-      const mask = await segmentPeople(
-        source,
-        () => token === generation.current,
-      );
+      const { mask, faces, faceUnavailable, cleanupUnavailable } =
+        await preparePersonPhoto(source, request.signal);
       if (token !== generation.current) return;
       setHistory([]);
       publish({
@@ -67,6 +79,9 @@ export function PersonBackground({
         status: "ready",
         mask,
         automaticMask: mask,
+        faces,
+        faceUnavailable,
+        cleanupUnavailable,
       });
     } catch (error) {
       if (token !== generation.current) return;
@@ -81,6 +96,7 @@ export function PersonBackground({
     else callbacks.current.onBusy(false);
     return () => {
       generation.current++;
+      controller.current?.abort();
       callbacks.current.onBusy(false);
     };
   }, [source]);
@@ -150,6 +166,19 @@ export function PersonBackground({
         )}
       </p>
       <p className="fineprint">{t("local")}</p>
+      {state.cleanupUnavailable && (
+        <p className="fineprint" data-testid="cleanup-unavailable">
+          {t("cleanupUnavailable")}
+        </p>
+      )}
+      <FaceFeaturePanel
+        source={source}
+        faces={state.faces ?? []}
+        unavailable={state.faceUnavailable}
+        locale={locale}
+        group={group}
+        onUseFace={onUseFace}
+      />
       <details>
         <summary>{t("tools")}</summary>
         <p className="fineprint">

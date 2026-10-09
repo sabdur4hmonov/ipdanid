@@ -1,7 +1,11 @@
 """Owner-authorized in-place update. Never clear/uninstall or print private preferences."""
-import subprocess, pathlib, zipfile, hashlib, json, shutil
+import subprocess, pathlib, zipfile, hashlib, json, shutil, argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--artifact',choices=['white-background','people-features'],default='white-background')
+parser.add_argument('--verify-only',action='store_true')
+args = parser.parse_args()
 root = pathlib.Path(__file__).resolve().parents[1]
-out = root / 'output/white-background'
+out = root / 'output' / args.artifact
 out.mkdir(parents=True, exist_ok=True)
 adb = r'C:\Users\user\AppData\Local\Android\Sdk\platform-tools\adb.exe'
 target = [adb, '-s', 'bmjvzppr6955t4nr']
@@ -13,7 +17,7 @@ def prefs():
     return subprocess.check_output(target + ['exec-out','run-as','uz.iprasm.app','cat','shared_prefs/CapacitorStorage.xml'])
 apk = root / 'android/app/build/outputs/apk/debug/app-debug.apk'
 test = root / 'android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk'
-dest = root / 'output/mobile/ip-rasm-white-background-debug.apk'
+dest = root / 'output/mobile' / f'ip-rasm-{args.artifact}-debug.apk'
 shutil.copy2(apk, dest)
 assets = []
 with zipfile.ZipFile(apk) as package:
@@ -22,6 +26,9 @@ with zipfile.ZipFile(apk) as package:
             key = 'assets/public/' + file.relative_to(root / 'dist').as_posix()
             assert package.read(key) == file.read_bytes(), key
             assets.append(key)
+    expected=set(assets)
+    actual={name for name in package.namelist() if name.startswith('assets/public/') and not name.endswith('/')}
+    assert actual-expected == {'assets/public/cordova.js','assets/public/cordova_plugins.js'}, 'Unexpected extra packaged public files'
 java = r'D:\Coding projects\ipdan face yasaydigan app\tmp\toolchains\jdk-21.0.12.1+1\bin\java.exe'
 jar = r'C:\Users\user\AppData\Local\Android\Sdk\build-tools\36.0.0\lib\apksigner.jar'
 signer = '8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90'
@@ -33,6 +40,10 @@ report = dict(apk=str(dest), apkBytes=apk.stat().st_size,
               verifiedDistAssets=len(assets), signerSha256=signer)
 (out/'build-evidence.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
 print(json.dumps(report))
+if args.verify_only:
+    print('Build assets and signatures verified. No phone connection, install or native test attempted.')
+    raise SystemExit(0)
+assert run(target + ['get-state']).strip() == 'device', 'Authorized phone is not available'
 before = prefs()
 (out/'private-device-prefs-before.xml').write_bytes(before)
 for file,flags in ((dest,['-r']),(test,['-r','-t'])):

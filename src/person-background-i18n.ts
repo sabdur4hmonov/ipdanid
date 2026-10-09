@@ -1,5 +1,24 @@
 import type { Locale } from "./core/types";
 const en = {
+  cleanupUnavailable:
+    "Extra background cleanup unavailable; inspect and correct the prepared photo.",
+  features: "Detected facial features",
+  featuresHint:
+    "Local model estimates, not identity recognition. Inspect every box; missing faces are possible. Applying the selected face is an explicit review and remains manually editable.",
+  faceSelection: "Face to inspect",
+  featuresPreview: "Source facial features",
+  featureColors: "Blue: eyes · yellow: nose · pink: lips",
+  useFeatures: "Use reviewed facial regions",
+  featuresApplied:
+    "Reviewed regions applied to the current crop. Check the exact target below.",
+  fitFirst: "Fit the complete face inside the crop before applying regions.",
+  faceUnavailable:
+    "Facial suggestions unavailable. Manual region editing remains available.",
+  fitPeople: "Fit all people inside shape",
+  undoPeople: "Undo people fitting",
+  peopleCropped: "Foreground cut off by shape",
+  peopleFitHint:
+    "Fits all foreground, including clothing. Adjust afterwards if faces are too small; a rectangular board may suit groups better.",
   manual: "Mask corrected manually. Check every person before generating.",
   title: "White background",
   automatic: "Automatically whiten background",
@@ -7,7 +26,7 @@ const en = {
   ready:
     "Background whitened. Check every person, hair and clothing before generating.",
   failed:
-    "Automatic separation was uncertain or unavailable. Original retained; correct the mask manually or retry.",
+    "Automatic separation was uncertain or unavailable. Previous photo retained; correct the mask manually or retry.",
   local:
     "Photos stay on this device. One or several people are supported; small or hidden people may need correction.",
   original: "Original",
@@ -27,6 +46,25 @@ const en = {
     "Keep all people inside the crop. Single-face priority and face fitting are disabled for group photos.",
 };
 const uz: typeof en = {
+  cleanupUnavailable:
+    "Qo‘shimcha fon tozalash ishlamadi; tayyorlangan suratni tekshirib, kerak bo‘lsa tuzating.",
+  features: "Aniqlangan yuz qismlari",
+  featuresHint:
+    "Qurilmadagi model taxmini, shaxsni tanish emas. Har bir chegarani tekshiring; ayrim yuzlar topilmasligi mumkin. Tanlangan yuzni tasdiqlab qo‘llang, keyin qo‘lda ham tuzatish mumkin.",
+  faceSelection: "Tekshiriladigan yuz",
+  featuresPreview: "Asl suratdagi yuz qismlari",
+  featureColors: "Ko‘k: ko‘zlar · sariq: burun · pushti: lablar",
+  useFeatures: "Tekshirilgan yuz chegaralarini qo‘llash",
+  featuresApplied:
+    "Chegaralar hozirgi crop’ga qo‘llandi. Pastdagi aniq nishonni tekshiring.",
+  fitFirst: "Avval yuzni to‘liq crop ichiga joylashtiring.",
+  faceUnavailable:
+    "Yuz qismlari taxmini ishlamadi. Chegaralarni qo‘lda belgilash mumkin.",
+  fitPeople: "Barcha odamlarni shaklga joylashtirish",
+  undoPeople: "Odamlarni joylashtirishni qaytarish",
+  peopleCropped: "Shakl kesib tashlayotgan odam qismi",
+  peopleFitHint:
+    "Kiyim bilan birga barcha odamlarni joylashtiradi. Yuzlar kichik bo‘lsa, keyin crop’ni moslang; guruhga to‘rtburchak doska qulayroq bo‘lishi mumkin.",
   manual:
     "Niqob qo‘lda tuzatildi. Hisoblashdan oldin barcha odamlarni tekshiring.",
   title: "Oq fon",
@@ -55,6 +93,24 @@ const uz: typeof en = {
     "Barcha odamlarni crop ichida qoldiring. Guruh suratida bitta yuz ustuvorligi va yuzga moslash o‘chiriladi.",
 };
 const ru: typeof en = {
+  cleanupUnavailable:
+    "Дополнительная очистка фона недоступна; проверьте и исправьте подготовленное фото.",
+  features: "Обнаруженные части лица",
+  featuresHint:
+    "Оценка локальной модели, без распознавания личности. Проверьте каждую рамку; некоторые лица могут быть пропущены. Применение выбранного лица означает явную проверку; рамки остаются редактируемыми.",
+  faceSelection: "Лицо для проверки",
+  featuresPreview: "Части лица на исходном фото",
+  featureColors: "Синий: глаза · жёлтый: нос · розовый: губы",
+  useFeatures: "Применить проверенные рамки лица",
+  featuresApplied:
+    "Рамки применены к текущему кадру. Проверьте точную цель ниже.",
+  fitFirst: "Сначала поместите лицо целиком внутрь кадра.",
+  faceUnavailable: "Подсказки лица недоступны. Можно отметить рамки вручную.",
+  fitPeople: "Вместить всех людей в форму",
+  undoPeople: "Отменить размещение людей",
+  peopleCropped: "Часть людей за пределами формы",
+  peopleFitHint:
+    "Вмещает всех людей вместе с одеждой. Если лица малы, отрегулируйте кадр; прямоугольная доска может лучше подходить группе.",
   manual: "Маска исправлена вручную. До расчёта проверьте всех людей.",
   title: "Белый фон",
   automatic: "Автоматически сделать фон белым",

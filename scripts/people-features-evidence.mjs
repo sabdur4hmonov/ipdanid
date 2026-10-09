@@ -1,0 +1,37 @@
+import {chromium} from '@playwright/test';
+import {mkdirSync,readFileSync,writeFileSync,copyFileSync} from 'node:fs';
+const dir='output/people-features';mkdirSync(dir,{recursive:true});
+copyFileSync('output/white-background/prepared.png',`${dir}/previous-prepared.png`);
+const browser=await chromium.launch();const page=await browser.newPage();
+await page.goto('http://127.0.0.1:4183/');await page.getByLabel('Language').selectOption('en');
+await page.evaluate(()=>{window.photoGaps=[];let last=performance.now();window.photoTimer=setInterval(()=>{const now=performance.now();photoGaps.push(now-last);last=now;},50);});
+const start=Date.now();await page.locator('input[type=file]').first().setInputFiles('output/white-background/source.png');
+await page.waitForFunction(()=>document.querySelector('[data-testid="background-status"]')?.getAttribute('data-status')==='ready');
+const analysisMs=Date.now()-start;
+const gaps=await page.evaluate(()=>{clearInterval(photoTimer);return photoGaps;});
+const panel=page.getByTestId('face-features');await panel.locator('summary').click();
+await panel.locator('.face-feature-preview').screenshot({path:`${dir}/detected-single.png`});
+await page.getByText('Correct the background',{exact:true}).click();
+const prepared=await page.getByLabel('Prepared photo',{exact:true}).evaluate(c=>c.toDataURL());
+writeFileSync(`${dir}/prepared.png`,Buffer.from(prepared.split(',')[1],'base64'));
+const pixels=await page.evaluate(async images=>{
+ const data=[];for(const base64 of images){const im=new Image();im.src='data:image/png;base64,'+base64;await im.decode();const c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);data.push(c.getContext('2d').getImageData(0,0,c.width,c.height).data);}
+ let differences=0;for(let i=0;i<data[0].length;i++)if(data[0][i]!==data[1][i])differences++;
+ const sample=(bytes,x,y)=>Array.from(bytes.slice((y*462+x)*4,(y*462+x)*4+4));
+ return {rgbaDifferences:differences,bytes:data[0].length,backgroundBefore:sample(data[0],448,210),backgroundAfter:sample(data[1],448,210),faceBefore:sample(data[0],235,245),faceAfter:sample(data[1],235,245)};
+},[readFileSync('output/white-background/prepared.png').toString('base64'),prepared.split(',')[1]]);
+await page.getByLabel('Zoom',{exact:true}).fill('0.9');await panel.getByRole('button',{name:'Use reviewed facial regions',exact:true}).click();
+const regions={};for(const key of ['eyes','nose','mouth'])regions[key]=JSON.parse(await page.locator(`[data-region="${key}"]`).getAttribute('data-box'));
+await page.locator('.target-frame').screenshot({path:`${dir}/reviewed-target.png`});
+await page.locator('input[type=file]').first().setInputFiles('output/white-background/group.png');
+await page.waitForFunction(()=>document.querySelector('[data-testid="background-status"]')?.getAttribute('data-status')==='ready' && document.querySelector('[data-testid="face-features"]')?.getAttribute('data-count')==='2');
+const detectedGroup=await page.getByTestId('face-features').getAttribute('data-count');
+const lostBefore=await page.getByTestId('people-cropped').innerText();
+await page.getByLabel('Edited photo',{exact:true}).screenshot({path:`${dir}/group-before.png`});
+await page.getByTestId('fit-all-people').click();
+await page.getByLabel('Edited photo',{exact:true}).screenshot({path:`${dir}/group-fitted.png`});
+const lostAfter=await page.getByTestId('people-cropped').count();
+const measurements={analysisMs,mainThreadMaxIntervalGapMs:Math.max(...gaps),intervalCount:gaps.length,preparedPixelsAgainstPrevious: pixels,regions,detectedGroup:Number(detectedGroup),lostBefore,lostAfter};
+writeFileSync(`${dir}/measurements.json`,JSON.stringify(measurements,null,2)+'\n');
+writeFileSync(`${dir}/report.html`,`<!doctype html><meta charset="utf-8"><title>Reviewed features and group framing</title><style>body{font:17px system-ui;color:#244d3d;background:#faf8f0;margin:28px;max-width:1100px}section{display:flex;gap:24px;flex-wrap:wrap}figure{margin:0}img{width:360px;max-width:100%}pre{white-space:pre-wrap}</style><h1>Reviewed facial positions and group framing</h1><p>Owner screenshot crop; original camera file is unavailable. Local inference runs in a dedicated worker. These images demonstrate source preparation and coordinate/framing behavior, not accepted string-art likeness or physical assembly.</p><section><figure><img src="detected-single.png"><figcaption>Detected source positions, reviewed before applying</figcaption></figure><figure><img src="reviewed-target.png"><figcaption>Same feature positions mapped to the 160-sample target</figcaption></figure></section><h2>Conservative background cleanup</h2><p>An independent person model only reduces uncertain primary-mask pixels. Primary mask samples at confidence 0.75 or above remain exact; there is no largest-person filter. Hair/clothing boundaries still need inspection. Prepared source pixels change, so old guides must reuse their saved PNG and exact crop/settings.</p><section><figure><img src="previous-prepared.png"><figcaption>Previous automatic mask</figcaption></figure><figure><img src="prepared.png"><figcaption>Additional uncertain-background cleanup</figcaption></figure></section><h2>Constructed two-region diagnostic</h2><p>The same portrait is repeated twice. This is not a real diverse-group quality trial. All masked foreground is fitted, including clothing; larger white margins may reduce face size.</p><section><figure><img src="group-before.png"><figcaption>Before fitting: circle cuts foreground</figcaption></figure><figure><img src="group-fitted.png"><figcaption>After fitting: both foreground regions retained</figcaption></figure></section><h2>Measured behavior</h2><p>Desktop host measurements, not phone or assembly timing. No portrait algorithm or material limits were changed.</p><pre>${JSON.stringify(measurements,null,2)}</pre>`);
+console.log(JSON.stringify(measurements));await browser.close();

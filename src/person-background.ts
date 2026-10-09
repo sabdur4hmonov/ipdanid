@@ -5,7 +5,7 @@ import {
 } from "./core/person-mask";
 const ROOT = "/vendor/portrait-segmentation";
 type Segmenter = {
-  segment: (image: HTMLCanvasElement) => {
+  segment: (image: HTMLCanvasElement | OffscreenCanvas) => {
     confidenceMasks?: {
       width: number;
       height: number;
@@ -56,17 +56,23 @@ async function getModel() {
   return model;
 }
 export async function segmentPeople(
-  source: HTMLCanvasElement,
+  source: HTMLCanvasElement | OffscreenCanvas | ImageBitmap,
   stillWanted: () => boolean = () => true,
 ): Promise<PersonMask> {
   const segmenter = await getModel();
   if (!stillWanted()) throw new DOMException("Superseded photo", "AbortError");
   // No largest-component filtering: every foreground person is retained.
-  const input = document.createElement("canvas"),
+  const input =
+      typeof document === "undefined"
+        ? new OffscreenCanvas(1, 1)
+        : document.createElement("canvas"),
     scale = Math.min(1, 512 / Math.max(source.width, source.height));
   input.width = Math.max(1, Math.round(source.width * scale));
   input.height = Math.max(1, Math.round(source.height * scale));
-  input.getContext("2d")!.drawImage(source, 0, 0, input.width, input.height);
+  (
+    input.getContext("2d") as
+      CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+  ).drawImage(source, 0, 0, input.width, input.height);
   const result = segmenter.segment(input);
   try {
     const masks = result.confidenceMasks;

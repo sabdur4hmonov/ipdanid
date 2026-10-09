@@ -370,7 +370,7 @@ export function ShapeCropEditor({
         )}
       </div>
       <p className="fineprint">{t("shapeCropHint")}</p>
-      {missing > 0.02 && (
+      {!group && missing > 0.02 && (
         <p
           role="status"
           className="workflow-notice"

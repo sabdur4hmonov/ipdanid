@@ -34,6 +34,23 @@ public class PackagedAssetsTest {
             for(byte b:hash)hex.append(String.format("%02x",b & 255));
             assertEquals("c6748b1253a99067ef71f7e26ca71096cd449baefa8f101900ea23016507e0e0",hex.toString());
         }
+        try (InputStream input = context.getAssets().open(root + "face_landmarker.task")) {
+            byte[] bytes=read(input);assertEquals(3758596,bytes.length);
+            byte[] hash=MessageDigest.getInstance("SHA-256").digest(bytes);StringBuilder hex=new StringBuilder();
+            for(byte b:hash)hex.append(String.format("%02x",b & 255));
+            assertEquals("64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",hex.toString());
+        }
+        boolean photoWorker=false;
+        try (InputStream input = context.getAssets().open(root + "deeplab_v3.tflite")) {
+            byte[] bytes=read(input);assertEquals(2780176,bytes.length);
+            byte[] hash=MessageDigest.getInstance("SHA-256").digest(bytes);StringBuilder hex=new StringBuilder();
+            for(byte b:hash)hex.append(String.format("%02x",b & 255));
+            assertEquals("ff36e24d40547fe9e645e2f4e8745d1876d6e38b332d39a82f0bf0f5d1d561b3",hex.toString());
+        }
+        for(String asset:context.getAssets().list("public/assets")) {
+            if(asset.startsWith("photo-prepare.worker-") && asset.endsWith(".js")) photoWorker=true;
+        }
+        assertTrue("Photo preparation must be packaged for offline use",photoWorker);
     }
     @Test
     public void offlineEngineAndFontArePackaged() throws Exception {

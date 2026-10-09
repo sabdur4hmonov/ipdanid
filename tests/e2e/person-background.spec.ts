@@ -244,5 +244,17 @@ test("PWA precaches local model and performs fresh inference after offline reloa
   await expect(
     page.getByRole("button", { name: "Save prepared photo", exact: true }),
   ).toBeEnabled();
+  await expect(page.getByTestId("face-features")).toHaveAttribute(
+    "data-count",
+    "1",
+  );
+  await expect(page.getByTestId("cleanup-unavailable")).toHaveCount(0);
+  await page.getByText("Correct the background", { exact: true }).click();
+  const cleanedPixel = await page
+    .getByLabel("Prepared photo", { exact: true })
+    .evaluate((c: HTMLCanvasElement) =>
+      Array.from(c.getContext("2d")!.getImageData(448, 210, 1, 1).data),
+    );
+  expect(cleanedPixel).toEqual([255, 255, 255, 255]);
   await context.setOffline(false);
 });

@@ -24,3 +24,18 @@
   background: #e4ead9;
   border-color: #849879;
 }
+.face-feature-preview {
+  position: relative;
+  margin: 12px 0;
+}
+.face-feature-preview svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.face-feature-panel label {
+  display: block;
+  margin: 12px 0;
+}
