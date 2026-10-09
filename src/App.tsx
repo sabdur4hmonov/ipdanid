@@ -1,3 +1,5 @@
+import { GridStudio } from "./GridStudio";
+import { withPinBasis, type PinBasis } from "./core/pin-basis";
 import {
   DEFAULT_ANATOMICAL_IMPORTANCE,
   type AnatomicalImportance,
@@ -15,6 +17,7 @@ import {
   ImagePlus,
   Layers,
   Leaf,
+  Grid3X3,
   Pause,
   Play,
   RotateCcw,
@@ -110,7 +113,8 @@ type PhotoCandidate = {
   resolution: number;
 };
 
-type View = "create" | "assemble" | "library" | "materials" | "customer";
+type View =
+  "create" | "assemble" | "library" | "materials" | "customer" | "crafts";
 function Supply({
   instruction: i,
   locale,
@@ -215,14 +219,33 @@ export default function App() {
   const cropRef = useRef(edits);
   cropRef.current = edits;
   const [pinLayout, setPinLayout] = useState<CircleLayout>();
+  const [pinBasis, setPinBasis] = useState<PinBasis>();
   const [pinCoordinates, setPinCoordinates] = useState<Pin[]>();
   const [portraitSolver, setPortraitSolver] = useState<
-    "continuous" | "global" | "guarded" | "multiscale" | "physical" | "anatomy"
+    | "continuous"
+    | "global"
+    | "guarded"
+    | "multiscale"
+    | "physical"
+    | "anatomy"
+    | "basis"
   >("guarded");
   const [anatomy, setAnatomy] = useState<AnatomicalImportance>(
     structuredClone(DEFAULT_ANATOMICAL_IMPORTANCE),
   );
   const [recovery, setRecovery] = useState<OptimizerRecovery>();
+  useEffect(() => {
+    if (
+      portraitSolver === "basis" &&
+      (!portrait.enabled || shape !== "circle" || mode === "color")
+    ) {
+      setPortraitSolver("guarded");
+      setPinCount((v) => Math.min(v, 240));
+      setPinBasis(undefined);
+      setPinLayout(undefined);
+      setPinCoordinates(undefined);
+    }
+  }, [portraitSolver, portrait.enabled, shape, mode]);
   useEffect(() => {
     readOptimizerRecovery()
       .then(setRecovery)
@@ -611,6 +634,7 @@ export default function App() {
     setEdits({ ...s.edits });
     setPortrait(structuredClone(s.portrait ?? DEFAULT_PORTRAIT));
     setPortraitSolver(s.portraitSolver ?? "continuous");
+    setPinBasis(s.pinBasis);
     setAnatomy(structuredClone(s.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE));
     setPreset("balanced");
   }
@@ -632,6 +656,16 @@ export default function App() {
           edits: { ...edits },
           portrait: structuredClone(portrait),
           portraitSolver,
+          ...(portraitSolver === "basis"
+            ? {
+                pinBasis: pinBasis ?? {
+                  version: "circle-chords/1" as const,
+                  count: pinCount as 240 | 320,
+                  minimumAngularGapDegrees: 7.5,
+                  experimental: true as const,
+                },
+              }
+            : {}),
           ...(portraitSolver === "anatomy"
             ? { anatomy: structuredClone(anatomy) }
             : {}),
@@ -652,21 +686,34 @@ export default function App() {
   function generate(
     seed?: Instruction,
     strategyOverride?:
-      "global" | "multiscale" | "physical" | "anatomy" | "simplify",
+      "global" | "multiscale" | "physical" | "anatomy" | "basis" | "simplify",
     resume?: OptimizerRecovery,
   ) {
     if (!image && !resume) return;
     let profile;
     try {
-      profile = seed
-        ? structuredClone(seed.profile)
-        : createProfile(shape, pinCount, mode, {
-            widthMm,
-            heightMm: boardHeight,
-          });
-      if (!seed) {
+      profile = resume?.profile
+        ? structuredClone(resume.profile)
+        : seed
+          ? structuredClone(seed.profile)
+          : createProfile(
+              shape,
+              portraitSolver === "basis" ? 240 : pinCount,
+              mode,
+              {
+                widthMm,
+                heightMm: boardHeight,
+              },
+            );
+      if (!seed && !resume) {
         profile.threadMm = threadMm;
         profile.stockMeters = stockMeters;
+        if (portraitSolver === "basis")
+          profile = withPinBasis(
+            profile,
+            pinCount as 240 | 320,
+            pinBasis?.minimumAngularGapDegrees,
+          );
         if (pinLayout)
           profile = withCircleLayout(
             profile,
@@ -682,7 +729,8 @@ export default function App() {
     setBusy(true);
     setFraction(0);
     const c = document.createElement("canvas");
-    const generationResolution = seed?.params.resolution ?? resolution;
+    const generationResolution =
+      resume?.resolution ?? seed?.params.resolution ?? resolution;
     const seedVariant = seed
       ? variants.find((v) => v.instruction.id === seed.id)
       : undefined;
@@ -691,9 +739,11 @@ export default function App() {
     );
     const generationImage = generationPhoto?.image ?? image;
     c.width = c.height = generationResolution;
-    const generationPortrait = seed
-      ? structuredClone(seed.params.portrait ?? portrait)
-      : snapshotPortrait(portrait);
+    const generationPortrait = resume?.portrait
+      ? structuredClone(resume.portrait)
+      : seed
+        ? structuredClone(seed.params.portrait ?? portrait)
+        : snapshotPortrait(portrait);
     const generationEdits =
       resume?.edits ??
       (seed
@@ -744,6 +794,10 @@ export default function App() {
           version: "iprasm.optimizer-recovery/1",
           checkpoint: data.checkpoint,
           seed: data.seed,
+          profile: data.profile,
+          portrait: data.portrait,
+          resolution: data.resolution,
+          mode: data.mode,
           pixels,
           lines: data.lines,
           strategy: data.strategy ?? "physical",
@@ -815,7 +869,7 @@ export default function App() {
           [
             "density-physical/8",
             "density-anatomy/10",
-            "density-anatomy/10",
+            "density-pin-basis/11",
           ].includes(i.algorithm)
         ) {
           await clearOptimizerRecovery();
@@ -842,17 +896,19 @@ export default function App() {
               name:
                 i.algorithm === "assembly-prune/9"
                   ? `${label} · ${t("simplificationSolver")}`
-                  : i.algorithm === "density-anatomy/10"
-                    ? `${label} · ${t("anatomySolver")}`
-                    : i.algorithm === "density-physical/8"
-                      ? `${label} · ${t("physicalSolver")}`
-                      : i.algorithm === "density-multiscale/7"
-                        ? `${label} · ${t("multiscaleSolver")}`
-                        : i.algorithm === "continuous-guarded/6"
-                          ? `${label} · ${t("guardedSolver")}`
-                          : i.algorithm === "density-optical/5"
-                            ? `${label} · ${globalLabel}`
-                            : label,
+                  : i.algorithm === "density-pin-basis/11"
+                    ? `${label} · ${t("basisSolver")}`
+                    : i.algorithm === "density-anatomy/10"
+                      ? `${label} · ${t("anatomySolver")}`
+                      : i.algorithm === "density-physical/8"
+                        ? `${label} · ${t("physicalSolver")}`
+                        : i.algorithm === "density-multiscale/7"
+                          ? `${label} · ${t("multiscaleSolver")}`
+                          : i.algorithm === "continuous-guarded/6"
+                            ? `${label} · ${t("guardedSolver")}`
+                            : i.algorithm === "density-optical/5"
+                              ? `${label} · ${globalLabel}`
+                              : label,
               edits: { ...generationEdits },
               photoId: generationPhoto?.id,
             },
@@ -876,7 +932,7 @@ export default function App() {
       resolution: generationResolution,
       profile,
       lines: resume?.lines ?? seed?.params.requestedLines ?? lines,
-      mode: seed?.params.mode ?? mode,
+      mode: resume?.mode ?? seed?.params.mode ?? mode,
       portrait: generationPortrait,
       seed,
       resume: resume?.checkpoint,
@@ -886,19 +942,21 @@ export default function App() {
       anatomy: resume?.anatomy ?? seed?.params.optimization?.anatomy ?? anatomy,
       strategy:
         strategyOverride ??
-        (seed?.algorithm === "density-anatomy/10"
-          ? "anatomy"
-          : seed?.algorithm === "density-physical/8"
-            ? "physical"
-            : seed?.algorithm === "density-multiscale/7"
-              ? "multiscale"
-              : seed?.algorithm === "continuous-guarded/6"
-                ? "guarded"
-                : seed?.algorithm === "density-optical/5"
-                  ? "global"
-                  : !seed && generationPortrait.enabled && mode !== "color"
-                    ? portraitSolver
-                    : "continuous"),
+        (seed?.algorithm === "density-pin-basis/11"
+          ? "basis"
+          : seed?.algorithm === "density-anatomy/10"
+            ? "anatomy"
+            : seed?.algorithm === "density-physical/8"
+              ? "physical"
+              : seed?.algorithm === "density-multiscale/7"
+                ? "multiscale"
+                : seed?.algorithm === "continuous-guarded/6"
+                  ? "guarded"
+                  : seed?.algorithm === "density-optical/5"
+                    ? "global"
+                    : !seed && generationPortrait.enabled && mode !== "color"
+                      ? portraitSolver
+                      : "continuous"),
     });
   }
   function open(p: Project) {
@@ -1038,6 +1096,7 @@ export default function App() {
               { id: "library", icon: FolderOpen },
               { id: "materials", icon: Leaf },
               { id: "customer", icon: UserRound },
+              { id: "crafts", icon: Grid3X3 },
             ] as const
           ).map(({ id, icon: Icon }) => (
             <button
@@ -1339,16 +1398,29 @@ export default function App() {
                             <select
                               aria-label={t("portraitSolver")}
                               value={portraitSolver}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                if (e.target.value === "basis") {
+                                  setPinCount(320);
+                                  setPinBasis(undefined);
+                                  setPinLayout(undefined);
+                                  setPinCoordinates(undefined);
+                                } else if (pinCount > 240) {
+                                  setPinCount(240);
+                                  setPinBasis(undefined);
+                                  setPinLayout(undefined);
+                                  setPinCoordinates(undefined);
+                                }
                                 setPortraitSolver(
                                   e.target.value as
                                     | "continuous"
                                     | "global"
                                     | "guarded"
                                     | "multiscale"
-                                    | "physical",
-                                )
-                              }
+                                    | "physical"
+                                    | "anatomy"
+                                    | "basis",
+                                );
+                              }}
                             >
                               <option value="continuous">
                                 {t("continuousSolver")}
@@ -1364,6 +1436,12 @@ export default function App() {
                               >
                                 {t("anatomySolver")}
                               </option>
+                              <option
+                                value="basis"
+                                disabled={shape !== "circle"}
+                              >
+                                {t("basisSolver")}
+                              </option>
                               <option value="physical">
                                 {t("physicalSolver")}
                               </option>
@@ -1376,6 +1454,9 @@ export default function App() {
                             </select>
                             <span className="fineprint">
                               {t("globalHint")} {t("guardHint")}
+                              {portraitSolver === "basis" && (
+                                <> {t("basisHint")}</>
+                              )}
                             </span>
                           </label>
                         )}
@@ -1697,7 +1778,16 @@ export default function App() {
                         <button
                           key={id}
                           className={shape === id ? "shape selected" : "shape"}
-                          onClick={() => setShape(id)}
+                          onClick={() => {
+                            setShape(id);
+                            if (id !== "circle" && portraitSolver === "basis") {
+                              setPortraitSolver("guarded");
+                              setPinCount(240);
+                              setPinBasis(undefined);
+                              setPinLayout(undefined);
+                              setPinCoordinates(undefined);
+                            }
+                          }}
                         >
                           <Icon size={23} />
                           {t(id)}
@@ -1767,10 +1857,17 @@ export default function App() {
                         {
                           key: "pinCount" as const,
                           value: pinCount,
-                          set: setPinCount,
-                          min: 24,
-                          max: 240,
-                          step: 1,
+                          set: (value: number) => {
+                            setPinCount(value);
+                            if (portraitSolver === "basis") {
+                              setPinBasis(undefined);
+                              setPinLayout(undefined);
+                              setPinCoordinates(undefined);
+                            }
+                          },
+                          min: portraitSolver === "basis" ? 240 : 24,
+                          max: portraitSolver === "basis" ? 320 : 240,
+                          step: portraitSolver === "basis" ? 80 : 1,
                         },
                         {
                           key: "threadMm" as const,
@@ -1982,6 +2079,7 @@ export default function App() {
                           "density-multiscale/7",
                           "density-physical/8",
                           "density-anatomy/10",
+                          "density-pin-basis/11",
                         ].includes(result.algorithm) && (
                           <button
                             className="outline full"
@@ -2024,6 +2122,7 @@ export default function App() {
                           "density-multiscale/7",
                           "density-physical/8",
                           "density-anatomy/10",
+                          "density-pin-basis/11",
                         ].includes(result.algorithm) ||
                           result.metrics.stoppedReason === "compute-limit") && (
                           <button
@@ -2032,16 +2131,18 @@ export default function App() {
                             onClick={() =>
                               generate(
                                 result,
-                                result.algorithm === "density-anatomy/10"
-                                  ? "anatomy"
-                                  : result.algorithm === "density-physical/8"
-                                    ? "physical"
-                                    : [
-                                          "continuous-guarded/6",
-                                          "density-multiscale/7",
-                                        ].includes(result.algorithm)
-                                      ? "multiscale"
-                                      : "global",
+                                result.algorithm === "density-pin-basis/11"
+                                  ? "basis"
+                                  : result.algorithm === "density-anatomy/10"
+                                    ? "anatomy"
+                                    : result.algorithm === "density-physical/8"
+                                      ? "physical"
+                                      : [
+                                            "continuous-guarded/6",
+                                            "density-multiscale/7",
+                                          ].includes(result.algorithm)
+                                        ? "multiscale"
+                                        : "global",
                               )
                             }
                           >
@@ -2051,6 +2152,7 @@ export default function App() {
                                 "density-multiscale/7",
                                 "density-physical/8",
                                 "density-anatomy/10",
+                                "density-pin-basis/11",
                               ].includes(result.algorithm)
                                 ? "continueGlobal"
                                 : "rerouteGlobal",
@@ -2735,11 +2837,14 @@ export default function App() {
                                   portrait: p.instruction.params.portrait,
                                   anatomy:
                                     p.instruction.params.optimization?.anatomy,
-                                  portraitSolver:
-                                    p.instruction.algorithm ===
-                                      "density-anatomy/10" ||
-                                    p.instruction.params.simplification
-                                      ?.sourceAlgorithm === "density-anatomy/10"
+                                  pinBasis: p.instruction.profile.pinBasis,
+                                  portraitSolver: p.instruction.profile.pinBasis
+                                    ? "basis"
+                                    : p.instruction.algorithm ===
+                                          "density-anatomy/10" ||
+                                        p.instruction.params.simplification
+                                          ?.sourceAlgorithm ===
+                                          "density-anatomy/10"
                                       ? "anatomy"
                                       : p.instruction.algorithm ===
                                             "density-physical/8" ||
@@ -2813,6 +2918,7 @@ export default function App() {
               </button>
             </section>
           )}
+          {view === "crafts" && <GridStudio locale={locale} />}
         </main>
         <footer>
           <span>{PRODUCT_NAME}</span>

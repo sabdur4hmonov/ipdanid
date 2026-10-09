@@ -1,3 +1,4 @@
+import { validatePinBasis } from "./pin-basis";
 import {
   anatomicalImportance,
   type AnatomicalImportance,
@@ -83,6 +84,16 @@ export async function generateDensity(
     throw new Error("Density optimization requires a new monochrome portrait");
   if (o.seed) assertContinuation(o, await hash(o.pixels));
   validPortrait(portrait);
+  if (p.pinBasis) {
+    validatePinBasis(p);
+    if (
+      !tuning.physical ||
+      tuning.anatomy ||
+      tuning.extension ||
+      tuning.exchange
+    )
+      throw Error("Pin-basis experiment requires a separate physical fit");
+  }
   if (o.seed) await validateInstruction(o.seed);
   if (tuning.materializeOnly && !tuning.resume)
     throw Error("A materialized snapshot requires a bound saved state");
@@ -166,7 +177,7 @@ export async function generateDensity(
     o.lines < 1 ||
     o.lines > Math.min(MAX_LINES, p.maxLines) ||
     p.pins.length < 24 ||
-    p.pins.length > 240 ||
+    p.pins.length > (p.pinBasis ? 320 : 240) ||
     !Number.isFinite(tuning.edgeWeight) ||
     tuning.edgeWeight < 0 ||
     tuning.edgeWeight > 4 ||
@@ -284,10 +295,18 @@ export async function generateDensity(
         visit(i + n, (weight[i] + weight[i + n]) * 0.5 * tuning.edgeWeight);
     }
   };
+  const overshoot = (t: number) =>
+    1 + 1.5 * Math.max(0, Math.min(1, (t - 0.35) / 0.45)) ** 2;
+  const penalty = (r: number, t: number) => {
+    const e = r - t;
+    return e * e * (e < 0 ? overshoot(t) : 1);
+  };
   let objective = 0;
   for (let i = 0; i < size; i++)
     if (mask[i]) {
-      objective += weight[i] * (bl - target[i]) ** 2;
+      objective +=
+        weight[i] *
+        (p.pinBasis ? penalty(bl, target[i]) : (bl - target[i]) ** 2);
       neighbors(i, (j, w) => {
         if (j > i) objective += w * (target[i] - target[j]) ** 2;
       });
@@ -353,12 +372,6 @@ export async function generateDensity(
     cacheBytes += bytes;
     peakCacheBytes = Math.max(peakCacheBytes, cacheBytes);
     return f;
-  };
-  const overshoot = (t: number) =>
-    1 + 1.5 * Math.max(0, Math.min(1, (t - 0.35) / 0.45)) ** 2;
-  const penalty = (r: number, t: number) => {
-    const e = r - t;
-    return e * e * (e < 0 ? overshoot(t) : 1);
   };
   const gain = (
     f: Pick<Footprint, "pixels"> & { density: Float32Array | Float64Array },
@@ -1079,13 +1092,15 @@ export async function generateDensity(
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: tuning.anatomy
-      ? "density-anatomy/10"
-      : tuning.physical
-        ? "density-physical/8"
-        : tuning.multiscale
-          ? "density-multiscale/7"
-          : "density-optical/5",
+    algorithm: p.pinBasis
+      ? "density-pin-basis/11"
+      : tuning.anatomy
+        ? "density-anatomy/10"
+        : tuning.physical
+          ? "density-physical/8"
+          : tuning.multiscale
+            ? "density-multiscale/7"
+            : "density-optical/5",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),

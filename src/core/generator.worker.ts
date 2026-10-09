@@ -1,3 +1,4 @@
+import { validatePinBasis } from "./pin-basis";
 import {
   DEFAULT_ANATOMICAL_IMPORTANCE,
   anatomicalImportance,
@@ -22,10 +23,11 @@ self.onmessage = async ({ data }) => {
         options.portrait,
         data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE,
       );
+    if (data.strategy === "basis") validatePinBasis(options.profile);
     options.guarded =
       data.strategy === "guarded" ||
       data.strategy === "multiscale" ||
-      ["physical", "anatomy"].includes(data.strategy);
+      ["physical", "anatomy", "basis"].includes(data.strategy);
     let baseline;
     if (
       ["global", "multiscale", "physical", "anatomy"].includes(data.strategy) &&
@@ -68,16 +70,23 @@ self.onmessage = async ({ data }) => {
                 instruction: i,
               }),
           })
-        : ["global", "multiscale", "physical", "anatomy"].includes(
+        : ["global", "multiscale", "physical", "anatomy", "basis"].includes(
               data.strategy,
             )
           ? await generateDensity(options, {
               edgeWeight:
                 data.seed?.params.optimization?.edgeWeight ??
-                (["multiscale", "physical", "anatomy"].includes(data.strategy)
+                (["multiscale", "physical", "anatomy", "basis"].includes(
+                  data.strategy,
+                )
                   ? 2
                   : 1),
-              sweeps: data.seed?.params.optimization?.sweeps ?? 8,
+              sweeps:
+                data.strategy === "basis"
+                  ? (data.totalSweeps ??
+                    data.seed?.params.optimization?.sweeps ??
+                    8)
+                  : (data.seed?.params.optimization?.sweeps ?? 8),
               multiscale: data.strategy === "multiscale",
               ...(data.strategy === "anatomy"
                 ? { anatomy: data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE }
@@ -87,14 +96,14 @@ self.onmessage = async ({ data }) => {
                 : {}),
               ...(data.exchange ? { exchange: data.exchange, sweeps: 1 } : {}),
               ...(data.materializeOnly ? { materializeOnly: true } : {}),
-              ...(["physical", "anatomy"].includes(data.strategy)
+              ...(["physical", "anatomy", "basis"].includes(data.strategy)
                 ? {
                     physical:
                       data.seed?.params.optimization?.contrastPhysical ??
                       defaultPhysicalContrast(),
                   }
                 : {}),
-              ...(["physical", "anatomy"].includes(data.strategy)
+              ...(["physical", "anatomy", "basis"].includes(data.strategy)
                 ? {
                     resume: data.resume,
                     onCheckpoint: (checkpoint: unknown) =>
@@ -103,9 +112,18 @@ self.onmessage = async ({ data }) => {
                         jobId: data.jobId,
                         checkpoint,
                         seed: options.seed,
+                        profile: options.profile,
+                        portrait: options.portrait,
+                        resolution: options.resolution,
+                        mode: options.mode,
                         lines: data.lines,
                         extension: data.extension,
-                        totalSweeps: data.totalSweeps,
+                        totalSweeps:
+                          data.strategy === "basis"
+                            ? (data.totalSweeps ??
+                              data.seed?.params.optimization?.sweeps ??
+                              8)
+                            : data.totalSweeps,
                         exchange: data.exchange,
                         strategy: data.strategy,
                         anatomy:

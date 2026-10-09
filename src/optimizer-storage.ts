@@ -7,10 +7,14 @@ import type { EditParams, Instruction } from "./core/types";
 export interface OptimizerRecovery {
   version: "iprasm.optimizer-recovery/1";
   checkpoint: DensityCheckpoint;
-  seed: Instruction;
+  seed?: Instruction;
+  profile?: import("./core/types").MaterialProfile;
+  portrait?: import("./core/types").PortraitSettings;
+  resolution?: number;
+  mode?: "dark" | "light" | "color";
   pixels: Uint8Array;
   lines: number;
-  strategy: "physical" | "anatomy";
+  strategy: "physical" | "anatomy" | "basis";
   anatomy?: import("./core/anatomical-importance").AnatomicalImportance;
   edits: EditParams;
   name: string;

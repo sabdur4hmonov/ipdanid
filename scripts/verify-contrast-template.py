@@ -8,9 +8,16 @@ for name in (sys.argv[2:] or ['physical-2','simplified']):
  payload=json.loads((folder/f'{name}.json').read_text(encoding='utf8'));i=payload.get('instruction') or payload['project']['instruction'];pins=i['profile']['pins'];p=i['profile'];covered=set();geometry=0
  with pdfplumber.open(folder/f'{name}-guide.pdf') as pdf:
   assert pdf.metadata['Subject']=='Sequence SHA-256: '+i['sequenceHash']
+  first_tile=2 if p.get('pinLayout') else 1
+  if p.get('pinLayout'):
+   assert 'circle-phase/1 / radial-leaders/1' in pdf.pages[1].extract_text()
+   assert f"Starting knot: pin {i['segments'][0]['path'][0]}" in pdf.pages[1].extract_text()
   for row in range(2):
    for col in range(3):
-    page=pdf.pages[1+row*3+col];assert ('heart-normal-leaders/1' if p['shape']=='heart' else 'radial-leaders/1') in page.extract_text();ox=col*(tilew-10);oy=row*(tileh-10)
+    page=pdf.pages[first_tile+row*3+col]
+    alignment=''.join(c['text'] for c in page.chars if abs(c['size']-(6 if p.get('pinLayout') or p['shape']=='heart' or p['shape']=='circle' else 8))<.01 and abs(c['y0']-(ph-margin-20-6*.293))<.1)
+    assert ('heart-normal-leaders/1' if p['shape']=='heart' else 'TOP y=0' if p.get('pinLayout') else 'radial-leaders/1') in alignment
+    ox=col*(tilew-10);oy=row*(tileh-10)
     for pin in pins:
      x=margin+(pin['x']*p['widthMm']-ox)*mm;y=top-(pin['y']*p['heightMm']-oy)*mm
      curves=[c for c in page.curves if abs((c['x0']+c['x1'])/2-x)<.002 and abs((c['y0']+c['y1'])/2-y)<.002 and abs((c['x1']-c['x0'])/2-p['shaftMm']/2*mm)<.002]

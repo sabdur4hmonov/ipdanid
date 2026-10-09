@@ -40,6 +40,7 @@ export interface MaterialProfile {
   pins: Pin[];
   // Optional for legacy compatibility. Board top is y=0; IDs increase clockwise.
   pinLayout?: CircleLayout;
+  pinBasis?: import("./pin-basis").PinBasis;
   shaftMm: number;
   threadMm: number;
   opacity: number;
@@ -82,7 +83,8 @@ export interface Instruction {
     | "density-multiscale/7"
     | "density-physical/8"
     | "assembly-prune/9"
-    | "density-anatomy/10";
+    | "density-anatomy/10"
+    | "density-pin-basis/11";
   id: string;
   createdAt: string;
   imageHash: string;

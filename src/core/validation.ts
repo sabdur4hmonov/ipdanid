@@ -1,3 +1,4 @@
+import { validatePinBasis } from "./pin-basis";
 import { validAnatomicalImportance } from "./anatomical-importance";
 import { Distribution } from "./distribution";
 import { connectionAllowed } from "./geometry";
@@ -27,6 +28,7 @@ export async function validateInstruction(
       "density-multiscale/7",
       "density-physical/8",
       "density-anatomy/10",
+      "density-pin-basis/11",
       "assembly-prune/9",
     ].includes(i.algorithm)
   )
@@ -38,6 +40,7 @@ export async function validateInstruction(
       "density-multiscale/7",
       "density-physical/8",
       "density-anatomy/10",
+      "density-pin-basis/11",
       "assembly-prune/9",
     ].includes(i.algorithm),
     limit = qualityFirst ? MAX_LINES : 3000;
@@ -80,7 +83,7 @@ export async function validateInstruction(
   if (
     !Array.isArray(p.pins) ||
     p.pins.length < 24 ||
-    p.pins.length > 240 ||
+    p.pins.length > (p.pinBasis ? 320 : 240) ||
     p.pins.some(
       (pin, id) =>
         pin.id !== id ||
@@ -93,6 +96,18 @@ export async function validateInstruction(
     )
   )
     throw new Error("Invalid pin geometry");
+  if (p.pinBasis) {
+    validatePinBasis(p);
+    if (
+      i.algorithm !== "density-pin-basis/11" &&
+      !(
+        i.algorithm === "assembly-prune/9" &&
+        i.params?.simplification?.sourceAlgorithm === "density-pin-basis/11"
+      )
+    )
+      throw Error("Unbound experimental pin basis");
+  } else if (i.algorithm === "density-pin-basis/11")
+    throw Error("Missing experimental pin basis");
   validateProfileLayout(p);
   if (
     !/^#[0-9a-f]{6}$/i.test(p.baseColor) ||
@@ -159,6 +174,7 @@ export async function validateInstruction(
       "density-multiscale/7",
       "density-physical/8",
       "density-anatomy/10",
+      "density-pin-basis/11",
       "assembly-prune/9",
     ].includes(i.algorithm)
   ) {
@@ -176,7 +192,13 @@ export async function validateInstruction(
         i.params.optimization.overshoot !== "target-luminance-v1")
     )
       throw new Error("Invalid multiscale contrast settings");
-    if (["density-physical/8", "density-anatomy/10"].includes(i.algorithm)) {
+    if (
+      [
+        "density-physical/8",
+        "density-anatomy/10",
+        "density-pin-basis/11",
+      ].includes(i.algorithm)
+    ) {
       validPhysicalContrast(i.params.optimization.contrastPhysical!);
       if (
         i.params.optimization.contrastScales !== undefined ||
@@ -248,6 +270,7 @@ export async function validateInstruction(
           "density-multiscale/7",
           "density-physical/8",
           "density-anatomy/10",
+          "density-pin-basis/11",
           "continuous-guarded/6",
         ].includes(s.sourceAlgorithm) ||
         JSON.stringify(s.tolerances) !==
@@ -303,6 +326,7 @@ export async function validateInstruction(
         "density-multiscale/7",
         "density-physical/8",
         "density-anatomy/10",
+        "density-pin-basis/11",
       ].includes(i.algorithm)
     ) {
       if (i.params.optimization?.pairLimit !== undefined) {
@@ -564,6 +588,7 @@ export function toTxt(i: Instruction): string {
     "density-multiscale/7",
     "density-physical/8",
     "density-anatomy/10",
+    "density-pin-basis/11",
     "assembly-prune/9",
   ].includes(i.algorithm)
     ? i.segments

@@ -39,6 +39,13 @@ with zipfile.ZipFile(apk) as archive:
         assert all(marker in worker for marker in ['density-anatomy/10','manual-nose-lip-importance/1','raised-cosine/1','noseMultiplier','mouthMultiplier']), 'Anatomical objective or recovery binding missing'
         assert all(marker in main for marker in ['Nose and lip priority (v10, experimental)','Burun va lab ustuvorligi (v10, tajriba)','Приоритет носа и губ (v10, эксперимент)']), 'Localized anatomical action missing'
         assert not any(name.startswith('assets/public/') and ('/output/' in name or name.endswith(('source.jpg','.f32','.bin'))) for name in archive.namelist()), 'Private experiment/photo assets packaged'
+    if args.archive_name in ['ip-rasm-pin-basis','ip-rasm-grid-product']:
+        assert all(marker in worker for marker in ['density-pin-basis/11','circle-chords/1','minimumAngularGapDegrees']), 'Pin basis binding missing'
+        assert all(marker in main for marker in ['240/320-pin circle (v11, experimental)','240/320 mixli doira (v11, tajriba)','Круг с 240/320 гвоздями (v11, эксперимент)']), 'Localized basis controls missing'
+        assert not any(name.startswith('assets/public/') and ('/output/' in name or name.endswith(('source.jpg','.f32','.bin'))) for name in archive.namelist()), 'Private assets packaged'
+    if args.archive_name=='ip-rasm-grid-product':
+        assert all(marker in main for marker in ['inventory-regret-linear-rgb/1','serpentine-top-left/1','iprasm.grid-project/1','Grid crafts','Olmosli rasm','Алмазная живопись']), 'Grid engine/localization missing'
+        assert any('/grid-pdf-' in name for name in expected), 'Grid PDF export missing'
 out.mkdir(parents=True, exist_ok=True)
 if args.archive_name!='ip-rasm':
     # Never discard a previously verified fixed-name local build.
@@ -51,7 +58,7 @@ shutil.copy2(apk, out / (args.archive_name+'-debug.apk'))
 shutil.copy2(test_apk, out / (args.archive_name+'-debug-androidTest.apk'))
 evidence = dict(builtAt=datetime.now(timezone.utc).isoformat(), debug=True,
     webAssetsVerified=len(files), bytes=apk.stat().st_size,
-    apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5','continuous-guarded/6','density-multiscale/7','density-physical/8','assembly-prune/9']+(['density-anatomy/10'] if args.archive_name=='ip-rasm-anatomy' else []),
+    apkSha256=hashlib.sha256(apk.read_bytes()).hexdigest(), algorithms=['greedy-optical/4','density-optical/5','continuous-guarded/6','density-multiscale/7','density-physical/8','assembly-prune/9']+(['density-anatomy/10','density-pin-basis/11'] if args.archive_name in ['ip-rasm-pin-basis','ip-rasm-grid-product'] else ['density-anatomy/10'] if args.archive_name=='ip-rasm-anatomy' else []),
     anatomicalImportance='manual-nose-lip-importance/1; raised-cosine/1; immutable params and recovery binding; opt-in, quality acceptance open' if args.archive_name=='ip-rasm-anatomy' else None,
     optimizerRecovery='local IndexedDB; exact processed target/material/seed/tuning and explicit extension/search binding', convergence='density-convergence/1; explicit 24-total-sweep allowance; experimental, no likeness acceptance', exchange='chord-exchange/1; equal gain-evaluation budgets; experimental, no likeness acceptance', simplification='complete-route regional-equivalence/1; human acceptance separate',
     backgroundSelection="manual 64x64 background and foreground masks",

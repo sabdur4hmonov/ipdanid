@@ -115,6 +115,10 @@ const uz = {
   simplificationCaution:
     "Raqamli chegaralar tekshirildi; ko‘z bilan solishtirish kerak. Eski variant saqlanadi.",
   connectionsSaved: "tejalgan ulanish",
+  crafts: "Mozaika",
+  basisSolver: "240/320 mixli doira (v11, tajriba)",
+  basisHint:
+    "240 yoki 320 mixni tanlang. Yangi shablon va boshqa doska kerak; eski yo‘riqnoma mos kelmaydi. Sifat va haqiqiy yig‘ish sinovi hali ochiq.",
   anatomySolver: "Burun va lab ustuvorligi (v10, tajriba)",
   anatomyHint:
     "Qo‘lda belgilangan burun va lab markazlariga ustuvorlik beradi. Surat o‘zgarmaydi; alohida variant yaratiladi. Sifat va haqiqiy yig‘ish hali tekshirilishi kerak.",
@@ -449,6 +453,10 @@ const en: Record<Key, string> = {
   simplificationCaution:
     "Simulation tolerances checked; visual review still required. Original variant preserved.",
   connectionsSaved: "connections saved",
+  crafts: "Grid crafts",
+  basisSolver: "240/320-pin circle (v11, experimental)",
+  basisHint:
+    "Choose 240 or 320 pins. Requires its own template and board; an older guide does not match. Portrait quality and physical assembly remain unverified.",
   anatomySolver: "Nose and lip priority (v10, experimental)",
   anatomyHint:
     "Prioritizes the centers of manually marked nose and lip regions. Keeps the target unchanged and creates a separate variant. Portrait quality and physical assembly still require validation.",
@@ -780,6 +788,10 @@ const ru: Record<Key, string> = {
   simplificationCaution:
     "Допуски симуляции проверены; требуется визуальное сравнение. Исходный вариант сохранён.",
   connectionsSaved: "сэкономленных соединений",
+  crafts: "Мозаика",
+  basisSolver: "Круг с 240/320 гвоздями (v11, эксперимент)",
+  basisHint:
+    "Выберите 240 или 320 гвоздей. Нужны отдельный шаблон и доска; старое руководство не подходит. Качество портрета и физическая сборка ещё не подтверждены.",
   anatomySolver: "Приоритет носа и губ (v10, эксперимент)",
   anatomyHint:
     "Усиливает приоритет центров вручную отмеченных носа и губ. Исходное изображение сохраняется; создаётся отдельный вариант. Качество портрета и реальную сборку ещё нужно проверить.",

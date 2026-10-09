@@ -73,6 +73,9 @@ it("common-grid reconstruction uses actual strands, preserves hashes and isolate
   );
   expect(rasterSequenceAtResolution(i, 192)).toEqual(common);
   expect(rasterSequence(i)).toEqual(own);
+  expect(rasterSequenceAtResolution(i, 512)).toHaveLength(512 * 512 * 3);
+  expect(() => rasterSequenceAtResolution(i, 513)).toThrow();
+  expect(rasterSequence(i)).toEqual(own);
   expect(sequencePayload(i)).toEqual(payload);
   expect(await hash(sequencePayload(i))).toBe(i.sequenceHash);
   const options = {

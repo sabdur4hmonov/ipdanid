@@ -1,0 +1,125 @@
+.grid-layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.8fr) minmax(300px, 1.2fr);
+  gap: 24px;
+}
+.grid-studio fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.grid-fields label {
+  display: block;
+  margin-bottom: 14px;
+}
+.grid-studio input,
+.grid-studio select,
+.grid-studio textarea {
+  width: 100%;
+  max-width: 100%;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+}
+.grid-studio textarea {
+  resize: vertical;
+  font: 12px monospace;
+}
+.grid-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+.grid-actions button,
+.grid-library-row button {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.grid-preview {
+  max-width: 100%;
+  height: auto;
+  width: 384px;
+  image-rendering: pixelated;
+}
+.grid-table {
+  overflow: auto;
+}
+.grid-table th,
+.grid-table td {
+  padding: 7px;
+  text-align: left;
+  font-size: 12px;
+}
+.grid-library-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.grid-library-row span {
+  overflow-wrap: anywhere;
+}
+.grid-studio details {
+  margin: 18px 0;
+}
+.grid-studio .card {
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.grid-studio label {
+  font-size: 12px;
+  display: block;
+}
+.grid-studio code {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1000px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 800px) {
+  .sidebar nav {
+    gap: 0;
+  }
+  .sidebar .nav {
+    font-size: 9px;
+    padding: 10px 2px;
+    min-width: 0;
+    flex: 1;
+  }
+  .sidebar .nav span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .grid-studio .card {
+    padding: 18px;
+  }
+}
+
+.grid-visual {
+  position: relative;
+  width: 384px;
+  max-width: 100%;
+}
+.grid-visual canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.grid-cursor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

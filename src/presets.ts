@@ -1,3 +1,4 @@
+import { withPinBasis, validatePinBasis } from "./core/pin-basis";
 import { validAnatomicalImportance } from "./core/anatomical-importance";
 import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
@@ -26,7 +27,14 @@ export interface MakerSettings {
   edits: EditParams;
   portrait?: PortraitSettings;
   portraitSolver?:
-    "continuous" | "global" | "guarded" | "multiscale" | "physical" | "anatomy";
+    | "continuous"
+    | "global"
+    | "guarded"
+    | "multiscale"
+    | "physical"
+    | "anatomy"
+    | "basis";
+  pinBasis?: import("./core/pin-basis").PinBasis;
   anatomy?: import("./core/anatomical-importance").AnatomicalImportance;
   pinLayout?: CircleLayout;
   // Preserve exact imported coordinates, avoiding cross-runtime trig rounding.
@@ -58,7 +66,7 @@ function validate(p: MakerPreset) {
     [s.lines, 200, MAX_LINES, true],
     [s.widthMm, 50, 2000, false],
     [s.heightMm, 50, 2000, false],
-    [s.pinCount, 24, 240, true],
+    [s.pinCount, 24, s.pinBasis ? 320 : 240, true],
     [s.threadMm, 0.1, 2, false],
     [s.stockMeters, 0, 100000, false],
     [s.edits?.zoom, CROP_ZOOM_MIN, CROP_ZOOM_MAX, false],
@@ -87,8 +95,31 @@ function validate(p: MakerPreset) {
     if (s.portraitSolver !== "anatomy")
       throw Error("Unbound anatomical preset");
   }
+  if (s.portraitSolver === "basis" && !s.pinBasis)
+    throw Error("Missing experimental basis preset");
+  if (s.pinBasis) {
+    if (
+      s.portraitSolver !== "basis" ||
+      s.pinCount !== s.pinBasis.count ||
+      s.pinBasis.version !== "circle-chords/1" ||
+      s.pinBasis.experimental !== true
+    )
+      throw Error("Invalid experimental basis preset");
+    const p = createProfile(s.shape, 240, s.mode, {
+      widthMm: s.widthMm,
+      heightMm: s.heightMm,
+    });
+    p.threadMm = s.threadMm;
+    withPinBasis(
+      p,
+      s.pinCount as 240 | 320,
+      s.pinBasis.minimumAngularGapDegrees,
+    );
+  }
   if (s.pinLayout) {
     validateLayout(s.pinLayout);
+    if (s.pinBasis && s.pinLayout.phaseDegreesClockwise !== 0)
+      throw Error("Experimental basis must be unrotated");
     if (s.shape !== "circle" || s.widthMm !== s.heightMm)
       throw new Error("Invalid layout board");
   }
@@ -99,12 +130,24 @@ function validate(p: MakerPreset) {
       s.pinCoordinates.length !== s.pinCount
     )
       throw new Error("Invalid saved layout coordinates");
-    const profile = createProfile(s.shape, s.pinCount, s.mode, {
-      widthMm: s.widthMm,
-      heightMm: s.heightMm,
-    });
+    let profile = createProfile(
+      s.shape,
+      s.pinBasis ? 240 : s.pinCount,
+      s.mode,
+      {
+        widthMm: s.widthMm,
+        heightMm: s.heightMm,
+      },
+    );
     profile.threadMm = s.threadMm;
-    withCircleLayout(profile, s.pinLayout, s.pinCoordinates);
+    if (s.pinBasis)
+      profile = withPinBasis(
+        profile,
+        s.pinCount as 240 | 320,
+        s.pinBasis.minimumAngularGapDegrees,
+      );
+    profile = withCircleLayout(profile, s.pinLayout, s.pinCoordinates);
+    if (s.pinBasis) validatePinBasis(profile);
   }
   if (
     s.portraitSolver &&
@@ -115,6 +158,7 @@ function validate(p: MakerPreset) {
       "multiscale",
       "physical",
       "anatomy",
+      "basis",
     ].includes(s.portraitSolver)
   )
     throw new Error("Invalid portrait solver");
