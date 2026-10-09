@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { PhotoActions } from "./PhotoActions";
 import { loadPhoto, sampleCanvas } from "./core/image";
 import {
   generateGrid,
@@ -186,18 +187,13 @@ export function GridStudio({ locale }: { locale: Locale }) {
       <div className="grid-layout">
         <div className="card">
           <fieldset disabled={busy} className="grid-fields">
-            <label>
-              {t("photo")}
-              <input
-                type="file"
-                accept="image/jpeg,image/png"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  e.target.value = "";
-                  if (f) void run(() => importPhoto(f));
-                }}
-              />
-            </label>
+            <PhotoActions
+              locale={locale}
+              disabled={busy}
+              uploadLabel={t("photo")}
+              onPhoto={(file) => run(() => importPhoto(file))}
+              hint={false}
+            />
             <button
               className="chip"
               onClick={() => {

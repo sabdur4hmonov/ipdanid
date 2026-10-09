@@ -1,0 +1,49 @@
+.photo-actions {
+  width: 100%;
+  min-width: 0;
+}
+.photo-source-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+.photo-source-buttons button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+}
+.camera-dialog {
+  border: 1px solid #c9d0bf;
+  border-radius: 16px;
+  padding: 20px;
+  width: min(600px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  background: #faf8ef;
+  color: #18201d;
+}
+.camera-dialog::backdrop {
+  background: #18201dcc;
+}
+.camera-dialog video {
+  display: block;
+  width: 100%;
+  max-height: 55dvh;
+  object-fit: contain;
+  background: #18201d;
+  border-radius: 10px;
+}
+.camera-dialog label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 12px 0;
+}
+.camera-dialog button {
+  flex: 1;
+}

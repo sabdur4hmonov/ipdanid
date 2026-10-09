@@ -1,4 +1,5 @@
 import { GridStudio } from "./GridStudio";
+import { PhotoActions } from "./PhotoActions";
 import { withPinBasis, type PinBasis } from "./core/pin-basis";
 import {
   DEFAULT_ANATOMICAL_IMPORTANCE,
@@ -309,11 +310,18 @@ export default function App() {
     [includeArchive, setIncludeArchive] = useState(true);
   const photo = useRef<HTMLCanvasElement>(null),
     upload = useRef<HTMLInputElement>(null),
+    photoLoads = useRef(0),
     importInput = useRef<HTMLInputElement>(null),
     worker = useRef<Worker | null>(null),
     audio = useRef<AudioContext | null>(null),
     gain = useRef<GainNode | null>(null),
     drag = useRef<{ x: number; y: number } | null>(null);
+  useEffect(
+    () => () => {
+      photoLoads.current++;
+    },
+    [],
+  );
   const result = variants.find(
       (v) => v.instruction.id === variantState.selectedId,
     )?.instruction,
@@ -522,17 +530,17 @@ export default function App() {
     setView(v);
   };
   async function selectPhoto(file: File) {
-    jobs.current.cancel();
-    worker.current?.terminate();
-    worker.current = null;
-    setBusy(false);
+    const token = ++photoLoads.current;
     setError("");
+    let next: ImageBitmap | undefined;
     try {
-      const next = await loadPhoto(file);
+      next = await loadPhoto(file);
+      if (token !== photoLoads.current) return;
       addPhoto(next, file.name, false);
-      next.close();
     } catch (e) {
-      setError(String(e));
+      if (token === photoLoads.current) setError(String(e));
+    } finally {
+      next?.close();
     }
   }
   function rememberEdits() {
@@ -554,6 +562,7 @@ export default function App() {
     label: string,
     isSample: boolean,
   ) {
+    photoLoads.current++;
     jobs.current.cancel();
     worker.current?.terminate();
     worker.current = null;
@@ -590,6 +599,7 @@ export default function App() {
   }
   function switchPhoto(p: PhotoCandidate) {
     if (p.id === photoId) return;
+    photoLoads.current++;
     jobs.current.cancel();
     worker.current?.terminate();
     worker.current = null;
@@ -1274,16 +1284,10 @@ export default function App() {
                       {t("step1")}
                       <ImagePlus size={17} />
                     </div>
-                    <input
-                      ref={upload}
-                      type="file"
-                      accept="image/jpeg,image/png"
-                      hidden
-                      onChange={(e) => {
-                        if (e.target.files?.[0])
-                          void selectPhoto(e.target.files[0]);
-                        e.target.value = "";
-                      }}
+                    <PhotoActions
+                      locale={locale}
+                      onPhoto={selectPhoto}
+                      uploadRef={upload}
                     />
                     <p className="photo-guidance" data-testid="photo-guidance">
                       {t("photoGuidance")}

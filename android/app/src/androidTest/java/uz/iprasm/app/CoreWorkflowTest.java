@@ -153,6 +153,28 @@ public class CoreWorkflowTest {
             screenshot("outline-device-crop.png");
         }finally{if(scenario!=null)scenario.close();}
     }
+    @Test public void actualNativeCameraCancellationPreservesPhotoAndCrop() throws Exception {
+        try {
+            start();click("Create");click("Try an original sample");
+            await("document.querySelector('canvas[aria-label=\"Edited photo\"]')",30000);
+            input("input[aria-label=\"Zoom\"]","1.2");
+            String source=js("document.querySelector('canvas[aria-label=\"Edited photo\"]').toDataURL()"),
+                crop=js("document.querySelector('[data-testid=\"shape-crop\"]').dataset.edits");
+            assertEquals("true",js("(()=>{const i=document.querySelector('[data-testid=\"native-photo-capture\"]');return i.accept==='image/*'&&i.capture==='environment';})()"));
+            AtomicReference<Boolean> available=new AtomicReference<>(false);
+            scenario.onActivity(activity->available.set(new android.content.Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE).resolveActivity(activity.getPackageManager())!=null));
+            assertTrue("Native camera intent unavailable",available.get());
+            awaitNativeFocus(true);nativeTap(".photo-actions button.outline");awaitNativeFocus(false);
+            assertTrue(InstrumentationRegistry.getInstrumentation().getUiAutomation().performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK));
+            awaitNativeFocus(true);
+            await("document.querySelector('canvas[aria-label=\"Edited photo\"]')",30000);
+            assertEquals(source,js("document.querySelector('canvas[aria-label=\"Edited photo\"]').toDataURL()"));
+            assertEquals(crop,js("document.querySelector('[data-testid=\"shape-crop\"]').dataset.edits"));
+            JSONObject evidence=new JSONObject();evidence.put("nativeCameraIntentAvailable",true);evidence.put("actualNativeCameraOpenedAndCancelled",true);evidence.put("sourceAndCropPreserved",true);evidence.put("successfulPersonalCaptureTested",false);evidence.put("privateMediaRead",false);
+            File cache=InstrumentationRegistry.getInstrumentation().getTargetContext().getCacheDir();Files.write(new File(cache,"camera-device.json").toPath(),evidence.toString(2).getBytes(StandardCharsets.UTF_8));
+            screenshot("camera-device-app.png");
+        }finally{if(scenario!=null)scenario.close();}
+    }
     private JSONObject speechStatus() throws Exception {
         js("window.__speechStatus=null;window.Capacitor.nativePromise('IpRasmSpeech','status',{}).then(v=>window.__speechStatus=v)");
         await("window.__speechStatus",30000);return new JSONObject(js("window.__speechStatus"));
