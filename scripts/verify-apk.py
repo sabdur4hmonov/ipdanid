@@ -32,6 +32,9 @@ with zipfile.ZipFile(apk) as archive:
     if args.archive_name=='ip-rasm-native-speech':
         assert 'IpRasmSpeech' in main and 'Fit marked outline' in main, 'Native voice or outline controls missing'
         assert any(b'IpRasmSpeechPlugin' in archive.read(n) for n in archive.namelist() if n.endswith('.dex')), 'Native voice implementation missing'
+    if args.archive_name=='ip-rasm-sampling':
+        assert all(marker in main for marker in ['Check facial detail before computing','Hisoblashdan oldin yuz detallarini tekshiring','Проверьте детали лица до расчёта','portrait-sampling','data-clipped','data-small']), 'Localized portrait sampling missing'
+        assert not any(name.startswith('assets/public/') and ('/output/' in name or name.endswith(('source.jpg','.f32','.bin'))) for name in archive.namelist()), 'Private experiment/photo assets packaged'
 out.mkdir(parents=True, exist_ok=True)
 if args.archive_name!='ip-rasm':
     # Never discard a previously verified fixed-name local build.

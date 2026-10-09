@@ -5,7 +5,7 @@ import pdfplumber
 folder=Path('output')/(sys.argv[1] if len(sys.argv)>1 else 'contrast');mm=72/25.4;pw=210*mm;ph=297*mm;margin=18*mm;top=ph-margin-35
 tilew=(pw-2*margin)/mm;tileh=(ph-2*margin-40)/mm
 for name in (sys.argv[2:] or ['physical-2','simplified']):
- i=json.loads((folder/f'{name}.json').read_text())['instruction'];pins=i['profile']['pins'];p=i['profile'];covered=set();geometry=0
+ payload=json.loads((folder/f'{name}.json').read_text(encoding='utf8'));i=payload.get('instruction') or payload['project']['instruction'];pins=i['profile']['pins'];p=i['profile'];covered=set();geometry=0
  with pdfplumber.open(folder/f'{name}-guide.pdf') as pdf:
   assert pdf.metadata['Subject']=='Sequence SHA-256: '+i['sequenceHash']
   for row in range(2):

@@ -1299,3 +1299,13 @@ footer > span:last-child {
 .head-outline-controls input {
   max-width: 140px;
 }
+.sampling-panel {
+  margin: 16px 0;
+  padding: 12px;
+  border: 1px solid #dce2d4;
+  border-radius: 12px;
+}
+.sampling-panel h3 { margin: 0 0 8px; font-size: 1rem; }
+.sampling-panel table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+.sampling-panel th, .sampling-panel td { padding: 7px 3px; text-align: left; border-bottom: 1px solid #dce2d4; }
+.sampling-warning { padding: 8px; background: #fff8e8; border-left: 3px solid #b88632; font-size: 0.8rem; line-height: 1.6; }

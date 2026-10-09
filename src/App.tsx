@@ -31,6 +31,8 @@ import {
   snapshotPortrait,
 } from "./core/portrait";
 import { RegionEditor } from "./RegionEditor";
+import { portraitSampling, type PortraitSampling } from "./core/portrait-sampling";
+import { PortraitSamplingPanel } from "./PortraitSamplingPanel";
 import { appendVariants, GenerationJobs, type Variants } from "./core/variants";
 import { BackgroundEditor } from "./BackgroundEditor";
 import { MAX_LINES } from "./core/limits";
@@ -293,6 +295,7 @@ export default function App() {
   const [analysis, setAnalysis] = useState<ReturnType<
     typeof suitability
   > | null>(null);
+  const [sampling, setSampling] = useState<PortraitSampling | null>(null);
   const stopSpeech = cancelGuideSpeech;
   const pause = () => {
     setPlaying(false);
@@ -401,9 +404,10 @@ export default function App() {
           portrait,
         );
         putRgb(ctxTarget, pixels, resolution);
+        setSampling(portrait.enabled ? portraitSampling(pixels, resolution, shape, portrait) : null);
       }
     }
-  }, [image, edits, view, aspect, portrait, resolution]);
+  }, [image, edits, view, aspect, portrait, resolution, shape]);
   useEffect(() => {
     speak();
     return stopSpeech;
@@ -1391,6 +1395,7 @@ export default function App() {
                             aria-label={t("processedTarget")}
                           />
                         </RegionEditor>
+                        {portrait.enabled && sampling && <PortraitSamplingPanel sampling={sampling} t={t} />}
                         <p className="fineprint">
                           {t("processedTarget")} · {resolution} × {resolution} ·{" "}
                           {t("originalCrop")}

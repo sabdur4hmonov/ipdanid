@@ -1,4 +1,4 @@
-// Separate board experiment: keep source/materials/budget, change disclosed geometry only.
+// Disclosed board/crop experiments; same original source/materials, preserved old guides.
 import { chromium } from "@playwright/test";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -12,8 +12,16 @@ import type { Project } from "../src/core/types";
 const pinCount = Number(process.argv[2] ?? 160);
 if (![160, 240].includes(pinCount))
   throw Error("Supported explicit experiments:160 or240pins");
-const cleanBackground = process.argv[3] === "--clean-background";
+const cleanBackground = process.argv.includes("--clean-background");
 const resolution = process.argv.includes("--resolution=192") ? 192 : 160;
+const faceFraming = process.argv.includes("--face-framing");
+if (faceFraming && (pinCount !== 240 || resolution !== 160 || cleanBackground))
+  throw Error("Face framing uses the separate240-pin/160 target only");
+const circleFit = faceFraming
+  ? JSON.parse(
+      readFileSync("output/circle-head-240/circle-settings.json", "utf8"),
+    )
+  : null;
 const fixedFit =
   resolution === 192
     ? JSON.parse(
@@ -23,7 +31,8 @@ const fixedFit =
 const out =
   (pinCount === 160 ? "output/circle-head" : "output/circle-head-240") +
   (cleanBackground ? "-clean" : "") +
-  (resolution === 192 ? "-192" : "");
+  (resolution === 192 ? "-192" : "") +
+  (faceFraming ? "-face" : "");
 mkdirSync(out, { recursive: true });
 const baseline = JSON.parse(
   readFileSync("output/outline/baseline.json", "utf8"),
@@ -73,11 +82,13 @@ try {
       cleanBackground,
       resolution,
       fixedFit,
+      circleFit,
     }) => {
       const { loadPhoto, prepare } = await import("/src/core/image.ts");
       const { processPortrait, putRgb } = await import("/src/core/portrait.ts");
       const { fitMarkedOutline } = await import("/src/core/head-outline.ts");
-      const { remapPortrait } = await import("/src/core/shape-crop.ts");
+      const { remapPortrait, fitMarkedFace } =
+        await import("/src/core/shape-crop.ts");
       const { hash } = await import("/src/core/engine.ts");
       const { outlineBackgroundMask, inOutline } =
         await import("/src/core/outline-background.ts");
@@ -90,23 +101,36 @@ try {
         ),
       );
       const n = resolution;
-      const old = baseline.edits;
+      const old = circleFit ? circleFit.edits : baseline.edits;
+      const oldPortrait = circleFit
+        ? circleFit.portrait
+        : baseline.instruction.params.portrait;
       const began = performance.now();
-      const fit = fixedFit
-        ? { edits: fixedFit.edits, ratio: fixedFit.ratio }
-        : fitMarkedOutline(
+      const fit = circleFit
+        ? fitMarkedFace(
             "circle",
-            selection.sourcePoints,
+            circleFit.portrait.face,
             old,
             1,
             profile.widthMm,
             profile.heightMm,
-            image.width,
-            image.height,
             n,
-          );
+          )
+        : fixedFit
+          ? { edits: fixedFit.edits, ratio: fixedFit.ratio }
+          : fitMarkedOutline(
+              "circle",
+              selection.sourcePoints,
+              old,
+              1,
+              profile.widthMm,
+              profile.heightMm,
+              image.width,
+              image.height,
+              n,
+            );
       const portrait = remapPortrait(
-        baseline.instruction.params.portrait,
+        oldPortrait,
         old,
         fit.edits,
         image.width,
@@ -175,7 +199,15 @@ try {
         lightenedBackgroundPixels,
       };
     },
-    { baseline, selection, profile, cleanBackground, resolution, fixedFit },
+    {
+      baseline,
+      selection,
+      profile,
+      cleanBackground,
+      resolution,
+      fixedFit,
+      circleFit,
+    },
   );
 } finally {
   await browser.close();
@@ -207,7 +239,9 @@ writeFileSync(
       sourcePoints: selection.sourcePoints,
       priorHeartHash: heart.instruction.sequenceHash,
       baselineHash: baseline.instruction.sequenceHash,
-      changed: `explicit circle/${pinCount}pins;400mm,.1mm,${resolution}computation,32/160 limits and8sweeps; separate guide; 192 retains exact240-circle crop`,
+      changed: faceFraming
+        ? "Separate face-centered crop; existing manual face box fitted with4mm clearance; hair can be cropped. Same240pins/400mm/.1mm/160sampling/eight physical sweeps/weight2/32-160 guards. Not whole-head containment or equivalent simplification."
+        : `explicit circle/${pinCount}pins;400mm,.1mm,${resolution}computation,32/160 limits and8sweeps; separate guide; 192 retains exact240-circle crop`,
       geometryMs: prepared.geometryMs,
       cleanBackground,
       preservedHeadPixels: prepared.preservedHeadPixels,
@@ -269,6 +303,9 @@ const project: Project = {
   edits: prepared.edits,
   progress: progressFor(instruction),
 };
+if (faceFraming)
+  project.name =
+    "Separate face-centered circle /240pins/.1mm /hair may be cropped";
 writeFileSync(
   file,
   JSON.stringify({ schema: "iprasm.project/1", project }, null, 2),
