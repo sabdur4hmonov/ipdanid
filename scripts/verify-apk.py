@@ -29,6 +29,9 @@ with zipfile.ZipFile(apk) as archive:
         assert 'marked-face-shape-fit/1' in main and 'Fit marked face to shape' in main and 'not automatic detection' in main, 'Shape framing controls missing'
     if args.archive_name=='ip-rasm-outline':
         assert 'Fit marked outline' in main and 'Whole-head outline' in main and 'data-outline-index' in main, 'Manual source outline controls missing'
+    if args.archive_name=='ip-rasm-native-speech':
+        assert 'IpRasmSpeech' in main and 'Fit marked outline' in main, 'Native voice or outline controls missing'
+        assert any(b'IpRasmSpeechPlugin' in archive.read(n) for n in archive.namelist() if n.endswith('.dex')), 'Native voice implementation missing'
 out.mkdir(parents=True, exist_ok=True)
 if args.archive_name!='ip-rasm':
     # Never discard a previously verified fixed-name local build.

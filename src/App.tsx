@@ -40,6 +40,13 @@ import { assemblyEffort } from "./core/simplify";
 import { loadPhoto, prepare, sampleCanvas, suitability } from "./core/image";
 import { ShapeCropEditor } from "./ShapeCropEditor";
 import type { OutlinePoint } from "./core/head-outline";
+import {
+  androidSpeech,
+  guideVoices,
+  cancelGuideSpeech,
+  nativeGuideSpeech,
+  type GuideVoice,
+} from "./guide-speech";
 import { remapPortrait, CROP_ZOOM_MIN, CROP_ZOOM_MAX } from "./core/shape-crop";
 import {
   confirm,
@@ -250,7 +257,7 @@ export default function App() {
     [pace, setPace] = useState(8),
     [speechRate, setSpeechRate] = useState(0.9),
     [voiceEnabled, setVoiceEnabled] = useState(false),
-    [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]),
+    [voices, setVoices] = useState<GuideVoice[]>([]),
     [voiceIndex, setVoiceIndex] = useState(0),
     [pinQuery, setPinQuery] = useState(""),
     [pins, setPins] = useState(true),
@@ -286,7 +293,7 @@ export default function App() {
   const [analysis, setAnalysis] = useState<ReturnType<
     typeof suitability
   > | null>(null);
-  const stopSpeech = () => window.speechSynthesis?.cancel();
+  const stopSpeech = cancelGuideSpeech;
   const pause = () => {
     setPlaying(false);
     stopSpeech();
@@ -295,10 +302,18 @@ export default function App() {
   const speak = () => {
     stopSpeech();
     if (view !== "assemble" || !active || !chosenVoice || !voiceEnabled) return;
-    const u = new SpeechSynthesisUtterance(
-      `${t("pdfStep")} ${spokenPin(locale, current)}. ${spokenPin(locale, active.from)} ${t("from")}, ${spokenPin(locale, active.to)} ${t("to")}.${active.segmentStart ? " " + t(active.segment === 0 ? "startKnot" : "colorChange") : ""}`,
-    );
-    u.voice = chosenVoice;
+    const text = `${t("pdfStep")} ${spokenPin(locale, current)}. ${spokenPin(locale, active.from)} ${t("from")}, ${spokenPin(locale, active.to)} ${t("to")}.${active.segmentStart ? " " + t(active.segment === 0 ? "startKnot" : "colorChange") : ""}`;
+    if (chosenVoice.native) {
+      void nativeGuideSpeech(text, chosenVoice, locale, speechRate).catch(
+        () => {
+          setVoiceEnabled(false);
+          setError(t("noVoice"));
+        },
+      );
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = chosenVoice.browser!;
     u.lang = chosenVoice.lang;
     u.rate = speechRate;
     u.volume = 1;
@@ -321,7 +336,7 @@ export default function App() {
     return () => {
       jobs.current.cancel();
       worker.current?.terminate();
-      window.speechSynthesis?.cancel();
+      stopSpeech();
     };
   }, []);
   useEffect(() => {
@@ -361,9 +376,13 @@ export default function App() {
     stopSpeech();
   }, [locale]);
   useEffect(() => {
-    if (!window.speechSynthesis) return;
-    const update = () => setVoices(window.speechSynthesis.getVoices());
+    const update = () => {
+      void guideVoices()
+        .then(setVoices)
+        .catch(() => setVoices([]));
+    };
     update();
+    if (androidSpeech() || !window.speechSynthesis) return;
     window.speechSynthesis.addEventListener("voiceschanged", update);
     return () =>
       window.speechSynthesis.removeEventListener("voiceschanged", update);

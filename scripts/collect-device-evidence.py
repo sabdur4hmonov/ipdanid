@@ -7,13 +7,18 @@ import subprocess
 parser = argparse.ArgumentParser()
 parser.add_argument('--adb', required=True)
 parser.add_argument('--serial', required=True)
+parser.add_argument('--output', default='output/product-evidence/device')
+parser.add_argument('--include-outline-speech', action='store_true')
 args = parser.parse_args()
 root = Path(__file__).resolve().parent.parent
-out = root / 'output/product-evidence/device'
+out = (root / args.output).resolve()
+assert out.is_relative_to(root / 'output'), 'Evidence must stay inside project output'
 out.mkdir(parents=True, exist_ok=True)
 files = ['product-device-core.json', 'product-device-customer.json',
          'product-device-assembly.png', 'product-device-customer.png',
          'ip-rasm.json', 'ip-rasm-guide.pdf']
+if args.include_outline_speech:
+    files += ['outline-device.json', 'outline-device-crop.png', 'speech-device.json']
 for name in files:
     result = subprocess.run([args.adb, '-s', args.serial, 'exec-out', 'run-as',
                              'uz.iprasm.app', 'cat', 'cache/' + name],
