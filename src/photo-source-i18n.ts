@@ -1,6 +1,6 @@
 import type { Locale } from "./core/types";
 const en = {
-  upload: "Upload photo",
+  upload: "Upload from gallery",
   camera: "Take photo",
   title: "Camera",
   capture: "Use this photo",
@@ -21,7 +21,7 @@ const en = {
 };
 type Key = keyof typeof en;
 const uz: Record<Key, string> = {
-  upload: "Rasm yuklash",
+  upload: "Galereyadan yuklash",
   camera: "Rasmga olish",
   title: "Kamera",
   capture: "Shu rasmni ishlatish",
@@ -41,7 +41,7 @@ const uz: Record<Key, string> = {
     "Rasm yuklanmadi. 15 MB va 24 MP gacha bo‘lgan JPEG yoki PNG ishlating.",
 };
 const ru: Record<Key, string> = {
-  upload: "Загрузить фотографию",
+  upload: "Выбрать из галереи",
   camera: "Сделать фотографию",
   title: "Камера",
   capture: "Использовать фотографию",

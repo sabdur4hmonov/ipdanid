@@ -82,7 +82,10 @@ export function ShapeCropEditor({
     [message, setMessage] = useState("");
   useEffect(() => {
     if (group) {
-      setMark(false); setOutlineMode(false); mode.current = null; points.current.clear();
+      setMark(false);
+      setOutlineMode(false);
+      mode.current = null;
+      points.current.clear();
     }
   }, [group]);
   const outlineDrag = useRef<number | null>(null);
@@ -380,221 +383,226 @@ export function ShapeCropEditor({
           {t("missingPhotoHint")}
         </p>
       )}
-      <div className="preset-row">
-        <button
-          type="button"
-          className="outline"
-          onClick={() => {
-            setUndo({
-              edits: { ...edits },
-              portrait: structuredClone(portrait),
-            });
-            onCrop({ ...edits, zoom: 1, panX: 0, panY: 0, rotation: 0 });
-            setMessage(t("centerPhotoNotice"));
-          }}
-        >
-          {t("centerPhoto")}
-        </button>
-        <button
-          type="button"
-          className="outline"
-          aria-pressed={mark}
-          disabled={group}
-          onClick={() => {
-            setMark(!mark);
-            setOutlineMode(false);
-            points.current.clear();
-          }}
-        >
-          {t("markFace")}
-        </button>
-        <button
-          type="button"
-          className="outline"
-          disabled={group}
-          onClick={() => {
-            if (!corrected) {
-              setMark(true);
-              setMessage(t("markBeforeFit"));
-              return;
-            }
-            try {
-              const fitted = fitMarkedFace(
-                shape,
-                portrait.face,
-                edits,
-                aspect,
-                widthMm,
-                heightMm,
-                resolution,
-              );
+      <details className="edits crop-options">
+        <summary>{t("zoom")}</summary>
+        <div className="preset-row">
+          <button
+            type="button"
+            className="outline"
+            onClick={() => {
               setUndo({
                 edits: { ...edits },
                 portrait: structuredClone(portrait),
               });
-              onCrop(fitted.edits);
-              setMessage(t("shapeFitNotice"));
-            } catch {
-              setMessage(t("shapeFitUnavailable"));
-            }
-          }}
-        >
-          {t("fitFaceShape")}
-        </button>
-        {undo && (
-          <button
-            type="button"
-            className="text-button"
-            onClick={() => {
-              onRestore(undo.edits, undo.portrait);
-              setUndo(undefined);
-              setMessage("");
+              onCrop({ ...edits, zoom: 1, panX: 0, panY: 0, rotation: 0 });
+              setMessage(t("centerPhotoNotice"));
             }}
           >
-            {t("undoShapeFit")}
+            {t("centerPhoto")}
           </button>
-        )}
-      </div>
-      <details className="head-outline-controls" hidden={group}>
-        <summary>{t("headOutline")}</summary>
-        <p className="fineprint">{t("outlineHint")}</p>
-        <div className="preset-row">
           <button
-            className="outline"
             type="button"
-            aria-pressed={outlineMode}
+            className="outline"
+            aria-pressed={mark}
+            disabled={group}
             onClick={() => {
-              setOutlineMode(!outlineMode);
-              setMark(false);
+              setMark(!mark);
+              setOutlineMode(false);
               points.current.clear();
             }}
           >
-            {t("markOutline")}
+            {t("markFace")}
           </button>
           <button
+            type="button"
             className="outline"
-            type="button"
-            disabled={headOutline.length === 0}
-            onClick={() => onOutline(headOutline.slice(0, -1))}
-          >
-            {t("removeOutlinePoint")}
-          </button>
-          <button
-            className="text-button"
-            type="button"
-            disabled={headOutline.length === 0}
-            onClick={() => onOutline([])}
-          >
-            {t("clearOutline")}
-          </button>
-          <button
-            className="outline"
-            type="button"
-            disabled={headOutline.length < 6}
+            disabled={group}
             onClick={() => {
+              if (!corrected) {
+                setMark(true);
+                setMessage(t("markBeforeFit"));
+                return;
+              }
               try {
-                const fit = fitMarkedOutline(
+                const fitted = fitMarkedFace(
                   shape,
-                  headOutline,
+                  portrait.face,
                   edits,
                   aspect,
                   widthMm,
                   heightMm,
-                  imageWidth,
-                  imageHeight,
                   resolution,
                 );
                 setUndo({
                   edits: { ...edits },
                   portrait: structuredClone(portrait),
                 });
-                onCrop(fit.edits);
-                setOutlineMode(false);
+                onCrop(fitted.edits);
                 setMessage(t("shapeFitNotice"));
               } catch {
-                setMessage(t("outlineInvalid"));
+                setMessage(t("shapeFitUnavailable"));
               }
             }}
           >
-            {t("fitOutline")}
+            {t("fitFaceShape")}
           </button>
-          <button
-            className="outline"
-            type="button"
-            disabled={!portrait.enabled || headOutline.length < 6}
-            onClick={() => {
-              try {
-                const manual = portrait.backgroundMode === "manual-light";
-                const mask = outlineBackgroundMask(
-                  headOutline,
-                  edits,
-                  aspect,
-                  imageWidth,
-                  imageHeight,
-                  resolution,
-                  manual ? portrait.backgroundMask : undefined,
-                );
-                setUndo({
-                  edits: { ...edits },
-                  portrait: structuredClone(portrait),
-                });
-                onFace({
-                  ...portrait,
-                  backgroundMode: "manual-light",
-                  backgroundMask: mask,
-                  foregroundMask: manual ? portrait.foregroundMask : undefined,
-                });
-                setMessage(t("outlineBackgroundNotice"));
-              } catch {
-                setMessage(t("outlineInvalid"));
-              }
-            }}
-          >
-            {t("outlineBackground")}
-          </button>
+          {undo && (
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => {
+                onRestore(undo.edits, undo.portrait);
+                setUndo(undefined);
+                setMessage("");
+              }}
+            >
+              {t("undoShapeFit")}
+            </button>
+          )}
         </div>
-        <p className="fineprint" role="status">
-          {headOutline.length}/48 · {t("outlineSession")}
-        </p>
-        {headOutline.length > 0 && (
-          <details>
-            <summary>{t("outlineCoordinates")}</summary>
-            {headOutline.map((p, j) => (
-              <div className="customer-actions" key={j}>
-                <strong>{j + 1}</strong>
-                {(["x", "y"] as const).map((axis) => (
-                  <label key={axis}>
-                    {axis.toUpperCase()} %
-                    <input
-                      aria-label={`${t("outlinePoint")} ${j + 1} ${axis.toUpperCase()}`}
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.1"
-                      value={Number((p[axis] * 100).toFixed(2))}
-                      onChange={(e) => {
-                        const v = Number(e.target.value);
-                        if (
-                          e.target.value !== "" &&
-                          Number.isFinite(v) &&
-                          v >= 0 &&
-                          v <= 100
-                        )
-                          onOutline(
-                            headOutline.map((q, k) =>
-                              k === j ? { ...q, [axis]: v / 100 } : q,
-                            ),
-                          );
-                      }}
-                    />
-                  </label>
-                ))}
-              </div>
-            ))}
-          </details>
-        )}
+        <details className="head-outline-controls" hidden={group}>
+          <summary>{t("headOutline")}</summary>
+          <p className="fineprint">{t("outlineHint")}</p>
+          <div className="preset-row">
+            <button
+              className="outline"
+              type="button"
+              aria-pressed={outlineMode}
+              onClick={() => {
+                setOutlineMode(!outlineMode);
+                setMark(false);
+                points.current.clear();
+              }}
+            >
+              {t("markOutline")}
+            </button>
+            <button
+              className="outline"
+              type="button"
+              disabled={headOutline.length === 0}
+              onClick={() => onOutline(headOutline.slice(0, -1))}
+            >
+              {t("removeOutlinePoint")}
+            </button>
+            <button
+              className="text-button"
+              type="button"
+              disabled={headOutline.length === 0}
+              onClick={() => onOutline([])}
+            >
+              {t("clearOutline")}
+            </button>
+            <button
+              className="outline"
+              type="button"
+              disabled={headOutline.length < 6}
+              onClick={() => {
+                try {
+                  const fit = fitMarkedOutline(
+                    shape,
+                    headOutline,
+                    edits,
+                    aspect,
+                    widthMm,
+                    heightMm,
+                    imageWidth,
+                    imageHeight,
+                    resolution,
+                  );
+                  setUndo({
+                    edits: { ...edits },
+                    portrait: structuredClone(portrait),
+                  });
+                  onCrop(fit.edits);
+                  setOutlineMode(false);
+                  setMessage(t("shapeFitNotice"));
+                } catch {
+                  setMessage(t("outlineInvalid"));
+                }
+              }}
+            >
+              {t("fitOutline")}
+            </button>
+            <button
+              className="outline"
+              type="button"
+              disabled={!portrait.enabled || headOutline.length < 6}
+              onClick={() => {
+                try {
+                  const manual = portrait.backgroundMode === "manual-light";
+                  const mask = outlineBackgroundMask(
+                    headOutline,
+                    edits,
+                    aspect,
+                    imageWidth,
+                    imageHeight,
+                    resolution,
+                    manual ? portrait.backgroundMask : undefined,
+                  );
+                  setUndo({
+                    edits: { ...edits },
+                    portrait: structuredClone(portrait),
+                  });
+                  onFace({
+                    ...portrait,
+                    backgroundMode: "manual-light",
+                    backgroundMask: mask,
+                    foregroundMask: manual
+                      ? portrait.foregroundMask
+                      : undefined,
+                  });
+                  setMessage(t("outlineBackgroundNotice"));
+                } catch {
+                  setMessage(t("outlineInvalid"));
+                }
+              }}
+            >
+              {t("outlineBackground")}
+            </button>
+          </div>
+          <p className="fineprint" role="status">
+            {headOutline.length}/48 · {t("outlineSession")}
+          </p>
+          {headOutline.length > 0 && (
+            <details>
+              <summary>{t("outlineCoordinates")}</summary>
+              {headOutline.map((p, j) => (
+                <div className="customer-actions" key={j}>
+                  <strong>{j + 1}</strong>
+                  {(["x", "y"] as const).map((axis) => (
+                    <label key={axis}>
+                      {axis.toUpperCase()} %
+                      <input
+                        aria-label={`${t("outlinePoint")} ${j + 1} ${axis.toUpperCase()}`}
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={Number((p[axis] * 100).toFixed(2))}
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          if (
+                            e.target.value !== "" &&
+                            Number.isFinite(v) &&
+                            v >= 0 &&
+                            v <= 100
+                          )
+                            onOutline(
+                              headOutline.map((q, k) =>
+                                k === j ? { ...q, [axis]: v / 100 } : q,
+                              ),
+                            );
+                        }}
+                      />
+                    </label>
+                  ))}
+                </div>
+              ))}
+            </details>
+          )}
+        </details>
+        <p className="fineprint">{t("shapeFaceEstimate")}</p>
       </details>
-      <p className="fineprint">{t("shapeFaceEstimate")}</p>
       {mark && <p className="workflow-notice">{t("drawHeadHint")}</p>}
       {message && (
         <p role="status" className="fineprint">

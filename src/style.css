@@ -1305,7 +1305,112 @@ footer > span:last-child {
   border: 1px solid #dce2d4;
   border-radius: 12px;
 }
-.sampling-panel h3 { margin: 0 0 8px; font-size: 1rem; }
-.sampling-panel table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-.sampling-panel th, .sampling-panel td { padding: 7px 3px; text-align: left; border-bottom: 1px solid #dce2d4; }
-.sampling-warning { padding: 8px; background: #fff8e8; border-left: 3px solid #b88632; font-size: 0.8rem; line-height: 1.6; }
+.sampling-panel h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+.sampling-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+.sampling-panel th,
+.sampling-panel td {
+  padding: 7px 3px;
+  text-align: left;
+  border-bottom: 1px solid #dce2d4;
+}
+.sampling-warning {
+  padding: 8px;
+  background: #fff8e8;
+  border-left: 3px solid #b88632;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+/* Keep acquisition simple while retaining existing projects and specialist tools. */
+.more-menu {
+  position: relative;
+  font-size: 13px;
+}
+.more-menu summary {
+  cursor: pointer;
+  padding: 10px;
+}
+.more-menu-items {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 12;
+  min-width: 215px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fffef9;
+  box-shadow: 0 8px 24px #173f3518;
+}
+.more-menu-items button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border-radius: 7px;
+}
+.more-menu-items button:hover {
+  background: #eef2e8;
+}
+.simple-start.workspace {
+  display: block;
+  max-width: 650px;
+  margin-inline: auto;
+}
+.simple-start .photo-card {
+  padding-block: 36px;
+}
+.simple-start .photo-source-buttons {
+  flex-direction: column;
+  gap: 14px;
+}
+.simple-start .photo-source-buttons button {
+  min-height: 64px;
+  justify-content: center;
+  font-size: 16px;
+}
+.simple-intro {
+  max-width: 900px;
+}
+.simple-start .section-label {
+  display: none;
+}
+.simple-workspace .photo-card > .photo-actions {
+  margin-bottom: 12px;
+}
+.simple-workspace details.edits {
+  margin-top: 12px;
+}
+.simple-workspace .result-card {
+  align-self: start;
+}
+.crop-options > summary {
+  margin-bottom: 12px;
+}
+@media (max-width: 800px) {
+  .header-right {
+    gap: 6px;
+  }
+  header {
+    padding-inline: 16px;
+  }
+  .breadcrumbs span {
+    display: none;
+  }
+  .simple-intro h1 {
+    font-size: 30px;
+  }
+  .simple-start .photo-card {
+    padding: 24px 20px;
+  }
+  .simple-workspace .result-card {
+    width: 100%;
+  }
+}

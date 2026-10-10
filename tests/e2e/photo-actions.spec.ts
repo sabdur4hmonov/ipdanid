@@ -1,6 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync, mkdirSync } from "node:fs";
-test.use({ launchOptions: { args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"] } });
+test.use({
+  launchOptions: {
+    args: [
+      "--use-fake-device-for-media-stream",
+      "--use-fake-ui-for-media-stream",
+    ],
+  },
+});
 
 test("browser camera captures an actual frame into crop; cancel and navigation release all video tracks", async ({
   page,
@@ -10,7 +17,7 @@ test("browser camera captures an actual frame into crop; cancel and navigation r
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
   await expect(
-    page.getByRole("button", { name: "Upload photo", exact: true }),
+    page.getByRole("button", { name: "Upload from gallery", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Take photo", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Camera", exact: true });
@@ -37,6 +44,8 @@ test("browser camera captures an actual frame into crop; cancel and navigation r
     "data-edits",
     /"zoom":1/,
   );
+  await page.getByTestId("advanced-photo").locator("summary").first().click();
+  await page.getByText("Zoom · Contrast", { exact: true }).click();
   await page.getByLabel("Zoom", { exact: true }).fill("1.3");
   const crop = await page.getByTestId("shape-crop").getAttribute("data-edits"),
     source = await page
@@ -69,7 +78,7 @@ test("browser camera captures an actual frame into crop; cancel and navigation r
   ).toBe(source);
   await page.getByLabel("Language").selectOption("uz");
   await expect(
-    page.getByRole("button", { name: "Rasm yuklash", exact: true }),
+    page.getByRole("button", { name: "Galereyadan yuklash", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Rasmga olish", exact: true }),
@@ -120,7 +129,7 @@ test("browser camera captures an actual frame into crop; cancel and navigation r
       document.querySelector("video")!.srcObject as MediaStream
     ).getTracks();
     Array.from(document.querySelectorAll<HTMLButtonElement>("nav button"))
-      .find((b) => b.textContent?.trim() === "Mozaika")!
+      .find((b) => b.getAttribute("aria-label") === "Loyihalarim")!
       .click();
   });
   await expect
@@ -162,7 +171,7 @@ test("camera denial is localized and retains the valid photo; stale photo decodi
   });
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
-  await page.getByLabel("Upload photo", { exact: true }).setInputFiles({
+  await page.getByLabel("Upload from gallery", { exact: true }).setInputFiles({
     name: "slow.png",
     mimeType: "image/png",
     buffer: readFileSync("tests/fixtures/transparency.png"),
@@ -170,7 +179,7 @@ test("camera denial is localized and retains the valid photo; stale photo decodi
   await expect
     .poll(() => page.evaluate(() => !!(window as any).__releasePhoto))
     .toBe(true);
-  await page.locator(".upload-area").evaluate(
+  await page.locator(".photo-card").evaluate(
     (el, bytes) => {
       const data = new DataTransfer();
       data.items.add(
@@ -220,10 +229,8 @@ test("grid crafts accept a real captured browser frame and native input contract
   await context.grantPermissions(["camera"]);
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Grid crafts", exact: true })
-    .click();
+  await page.getByText("More", { exact: true }).click();
+  await page.getByRole("button", { name: "Grid crafts", exact: true }).click();
   await expect(page.getByTestId("native-photo-capture")).toHaveAttribute(
     "accept",
     "image/*",
@@ -243,8 +250,17 @@ test("grid crafts accept a real captured browser frame and native input contract
     ).getTracks();
   });
   await dialog.getByRole("button", { name: "Use this photo" }).click();
+  await expect(page.getByTestId("background-status")).toHaveAttribute(
+    "data-status",
+    /ready|failed|manual/,
+    { timeout: 45000 },
+  );
   await page.getByLabel("Grid columns", { exact: true }).fill("8");
   await page.getByLabel("Grid rows", { exact: true }).fill("8");
+  await expect(page.getByLabel("Grid columns", { exact: true })).toHaveValue(
+    "8",
+  );
+  await expect(page.getByLabel("Grid rows", { exact: true })).toHaveValue("8");
   await page
     .getByRole("button", { name: "Create piece guide", exact: true })
     .click();

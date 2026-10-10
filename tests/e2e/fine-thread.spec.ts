@@ -26,6 +26,7 @@ test("real fine-thread guide retains exact material, progress and reusable prese
   await page
     .getByRole("button", { name: "Reuse settings", exact: true })
     .click();
+  await page.getByText("More", { exact: true }).click();
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -36,6 +37,11 @@ test("real fine-thread guide retains exact material, progress and reusable prese
   await expect(
     page.getByLabel("Thread thickness (mm)", { exact: true }),
   ).toHaveAttribute("min", "0.05");
+  await page
+    .getByTestId("advanced-generation")
+    .locator("summary")
+    .first()
+    .click();
   await page.getByText("Saved settings", { exact: true }).first().click();
   await page
     .getByLabel("Settings name", { exact: true })
@@ -44,8 +50,14 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
   await page.reload();
+  await page.getByText("More", { exact: true }).click();
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
+    .click();
+  await page
+    .getByTestId("advanced-generation")
+    .locator("summary")
+    .first()
     .click();
   await page.getByText("Saved settings", { exact: true }).first().click();
   await page

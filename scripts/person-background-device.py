@@ -1,7 +1,7 @@
 """Owner-authorized in-place update. Never clear/uninstall or print private preferences."""
 import subprocess, pathlib, zipfile, hashlib, json, shutil, argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('--artifact',choices=['white-background','people-features','paint','portrait-detail','thread-fineness'],default='white-background')
+parser.add_argument('--artifact',choices=['white-background','people-features','paint','portrait-detail','thread-fineness','simple-flow'],default='white-background')
 parser.add_argument('--verify-only',action='store_true')
 args = parser.parse_args()
 root = pathlib.Path(__file__).resolve().parents[1]
@@ -49,13 +49,13 @@ before = prefs()
 for file,flags in ((dest,['-r']),(test,['-r','-t'])):
     assert 'Success' in run(target + ['install'] + flags + [str(file)])
     print(file.name,'installed in place')
-classes = 'uz.iprasm.app.PackagedAssetsTest,uz.iprasm.app.CoreWorkflowTest#actualNativeCameraCancellationPreservesPhotoAndCrop,uz.iprasm.app.CoreWorkflowTest#packagedOutlineAndCancelledNativePhotoPickerPreserveSource'
+classes = 'uz.iprasm.app.PackagedAssetsTest,uz.iprasm.app.CoreWorkflowTest#photoFirstStartShowsOnlyTwoSourceActions,uz.iprasm.app.CoreWorkflowTest#actualNativeCameraCancellationPreservesPhotoAndCrop,uz.iprasm.app.CoreWorkflowTest#packagedOutlineAndCancelledNativePhotoPickerPreserveSource'
 log = run(target + ['shell','am','instrument','-w','-e','class',classes,'uz.iprasm.app.test/androidx.test.runner.AndroidJUnitRunner'])
 (out/'device-tests.log').write_text(log,encoding='utf-8')
-assert 'OK (4 tests)' in log, log
+assert 'OK (5 tests)' in log, log
 after = prefs()
 (out/'private-device-prefs-after.xml').write_bytes(after)
 assert before == after, 'Saved preferences changed'
-report.update(nativeChecks=4, savedPreferencesExact=True)
+report.update(nativeChecks=5, savedPreferencesExact=True)
 (out/'device-update-evidence.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
-print('Four device checks passed; saved preferences are byte-identical.')
+print('Five device checks passed; saved preferences are byte-identical.')

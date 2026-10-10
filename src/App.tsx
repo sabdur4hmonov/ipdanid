@@ -1,3 +1,4 @@
+import { simpleText } from "./simple-flow-i18n";
 import { CraftStudio } from "./CraftStudio";
 import { PhotoActions } from "./PhotoActions";
 import { PersonBackground, type BackgroundState } from "./PersonBackground";
@@ -22,7 +23,6 @@ import {
   ImagePlus,
   Layers,
   Leaf,
-  Grid3X3,
   Pause,
   Play,
   RotateCcw,
@@ -30,7 +30,6 @@ import {
   Sparkles,
   Square,
   Upload,
-  UserRound,
   WifiOff,
   X,
 } from "lucide-react";
@@ -212,6 +211,9 @@ export default function App() {
       : "uz";
   });
   const t = translate(["uz", "ru", "en"].includes(locale) ? locale : "uz");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const simple = (key: Parameters<typeof simpleText>[1]) =>
+    simpleText(locale, key);
   const [view, setView] = useState<View>("create"),
     [image, setImage] = useState<
       (CanvasImageSource & { width: number; height: number }) | null
@@ -578,6 +580,7 @@ export default function App() {
   const nav = (v: View) => {
     pause();
     setView(v);
+    setMoreOpen(false);
   };
   async function selectPhoto(file: File) {
     const token = ++photoLoads.current;
@@ -1166,23 +1169,16 @@ export default function App() {
               { id: "create", icon: Sparkles },
               { id: "assemble", icon: Layers },
               { id: "library", icon: FolderOpen },
-              { id: "materials", icon: Leaf },
-              { id: "customer", icon: UserRound },
-              { id: "crafts", icon: Grid3X3 },
             ] as const
           ).map(({ id, icon: Icon }) => (
             <button
               key={id}
-              aria-label={
-                id === "customer" ? customerText(locale, "customer") : t(id)
-              }
+              aria-label={t(id)}
               className={view === id ? "nav active" : "nav"}
               onClick={() => nav(id)}
             >
               <Icon size={20} />
-              <span>
-                {id === "customer" ? customerText(locale, "customer") : t(id)}
-              </span>
+              <span>{t(id)}</span>
               {id === "library" && (
                 <small aria-hidden="true">
                   {projects.filter((p) => !p.deletedAt).length}
@@ -1209,6 +1205,38 @@ export default function App() {
             <span>/</span> <span>{PRODUCT_NAME}</span>
           </div>
           <div className="header-right">
+            <details
+              className="more-menu"
+              open={moreOpen}
+              onToggle={(e) => setMoreOpen(e.currentTarget.open)}
+            >
+              <summary>{simple("more")}</summary>
+              <div className="more-menu-items">
+                <button onClick={() => nav("materials")}>
+                  {t("materials")}
+                </button>
+                <button onClick={() => nav("customer")}>
+                  {customerText(locale, "customer")}
+                </button>
+                <button onClick={() => nav("crafts")}>{t("crafts")}</button>
+                <button
+                  onClick={() => {
+                    setShowPrivacy(true);
+                    setMoreOpen(false);
+                  }}
+                >
+                  {t("privacy")}
+                </button>
+                <button
+                  onClick={() => {
+                    addPhoto(sampleCanvas(), t("sample"), true);
+                    nav("create");
+                  }}
+                >
+                  {t("sample")}
+                </button>
+              </div>
+            </details>
             {!online && (
               <span className="offline">
                 <WifiOff size={15} />
@@ -1326,22 +1354,29 @@ export default function App() {
           )}
           {view === "create" && (
             <>
-              <section className="intro">
+              <section className="intro simple-intro">
                 <div>
-                  <div className="eyebrow">
-                    <span /> {t("tagline")}
-                  </div>
-                  <h1>{t("hero")}</h1>
-                  <p>{t("subtitle")}</p>
+                  <h1>{simple(image ? "adjustTitle" : "startTitle")}</h1>
+                  <p>{simple(image ? "adjustHint" : "startHint")}</p>
                 </div>
-                <button className="outline" onClick={() => nav("materials")}>
-                  {t("kit")}
-                  <ArrowRight size={16} />
-                </button>
               </section>
-              <div className="workspace">
+              <div
+                className={
+                  image
+                    ? "workspace simple-workspace"
+                    : "workspace simple-start"
+                }
+              >
                 <div className="editor-column">
-                  <section className="card photo-card">
+                  <section
+                    className="card photo-card"
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (!busy && e.dataTransfer.files[0])
+                        void selectPhoto(e.dataTransfer.files[0]);
+                    }}
+                  >
                     <div className="section-label">
                       {t("step1")}
                       <ImagePlus size={17} />
@@ -1350,183 +1385,179 @@ export default function App() {
                       locale={locale}
                       onPhoto={selectPhoto}
                       uploadRef={upload}
+                      hint={false}
+                      disabled={busy}
                     />
-                    <p className="photo-guidance" data-testid="photo-guidance">
-                      {t("photoGuidance")}
-                    </p>
-                    {!image ? (
-                      <div
-                        className="upload-area"
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          if (e.dataTransfer.files[0])
-                            void selectPhoto(e.dataTransfer.files[0]);
-                        }}
-                      >
-                        <div className="upload-icon">
-                          <Upload size={28} />
-                        </div>
-                        <h2>{t("upload")}</h2>
-                        <p>{t("uploadHint")}</p>
-                        <button
-                          className="primary"
-                          onClick={() => upload.current?.click()}
-                        >
-                          {t("try")}
-                          <ArrowRight size={16} />
-                        </button>
-                        <button
-                          className="text-button"
-                          onClick={() => {
-                            addPhoto(sampleCanvas(), t("sample"), true);
-                          }}
-                        >
-                          {t("sample")}
-                        </button>
-                      </div>
-                    ) : (
+                    {image && (
                       <>
-                        {!sample &&
-                          photoCandidates.find((p) => p.id === photoId) && (
-                            <PersonBackground
-                              key={photoId!}
-                              source={
-                                photoCandidates.find((p) => p.id === photoId)!
-                                  .original
-                              }
-                              initial={
-                                photoCandidates.find((p) => p.id === photoId)!
-                                  .background
-                              }
-                              locale={locale}
-                              group={group}
-                              onUseFace={(face) => {
-                                setPortrait(
-                                  reviewedFacePortrait(
-                                    face,
-                                    portrait,
-                                    edits,
-                                    image.width,
-                                    image.height,
-                                    aspect,
-                                    resolution,
-                                    shape,
-                                  ),
-                                );
-                                setLines(MAX_LINES);
-                              }}
-                              onBusy={setBackgroundBusy}
-                              onChange={(background, prepared) => {
-                                if (
-                                  background.status === "ready" &&
-                                  (background.faces?.length ?? 0) > 1 &&
-                                  background.faces !== activeBackground?.faces
-                                ) {
-                                  setGroup(true);
-                                  setHeadOutline([]);
+                        <details
+                          className="edits"
+                          data-testid="background-options"
+                          open={
+                            photoCandidates.find((p) => p.id === photoId)
+                              ?.background?.status === "failed"
+                          }
+                        >
+                          <summary>
+                            {simple("background")}
+                            {backgroundBusy ? ` · ${simple("preparing")}` : ""}
+                          </summary>
+                          <p
+                            className="photo-guidance"
+                            data-testid="photo-guidance"
+                          >
+                            {t("photoGuidance")}
+                          </p>
+                          {!sample &&
+                            photoCandidates.find((p) => p.id === photoId) && (
+                              <PersonBackground
+                                key={photoId!}
+                                source={
+                                  photoCandidates.find((p) => p.id === photoId)!
+                                    .original
+                                }
+                                initial={
+                                  photoCandidates.find((p) => p.id === photoId)!
+                                    .background
+                                }
+                                locale={locale}
+                                group={group}
+                                onUseFace={(face) => {
+                                  setPortrait(
+                                    reviewedFacePortrait(
+                                      face,
+                                      portrait,
+                                      edits,
+                                      image.width,
+                                      image.height,
+                                      aspect,
+                                      resolution,
+                                      shape,
+                                    ),
+                                  );
+                                  setLines(MAX_LINES);
+                                }}
+                                onBusy={setBackgroundBusy}
+                                onChange={(background, prepared) => {
+                                  if (
+                                    background.status === "ready" &&
+                                    (background.faces?.length ?? 0) > 1 &&
+                                    background.faces !== activeBackground?.faces
+                                  ) {
+                                    setGroup(true);
+                                    setHeadOutline([]);
+                                    setPortrait((v) => ({
+                                      ...v,
+                                      enabled: false,
+                                    }));
+                                  }
+                                  jobs.current.cancel();
+                                  worker.current?.terminate();
+                                  worker.current = null;
+                                  setBusy(false);
+                                  setImage(prepared);
+                                  setPhotoCandidates((v) =>
+                                    v.map((p) =>
+                                      p.id === photoId
+                                        ? { ...p, image: prepared, background }
+                                        : p,
+                                    ),
+                                  );
+                                  // Source segmentation replaces the old single-face oval softening.
+                                  if (background.enabled && background.mask)
+                                    setPortrait((v) => ({
+                                      ...v,
+                                      background: 0,
+                                    }));
+                                }}
+                              />
+                            )}
+                        </details>
+                        <details className="edits" open={group}>
+                          <summary>{simple("people")}</summary>
+                          <label className="toggle">
+                            <input
+                              type="checkbox"
+                              checked={group}
+                              onChange={(e) => {
+                                setGroup(e.target.checked);
+                                setHeadOutline([]);
+                                if (e.target.checked)
                                   setPortrait((v) => ({
                                     ...v,
                                     enabled: false,
                                   }));
-                                }
-                                jobs.current.cancel();
-                                worker.current?.terminate();
-                                worker.current = null;
-                                setBusy(false);
-                                setImage(prepared);
-                                setPhotoCandidates((v) =>
-                                  v.map((p) =>
-                                    p.id === photoId
-                                      ? { ...p, image: prepared, background }
-                                      : p,
-                                  ),
-                                );
-                                // Source segmentation replaces the old single-face oval softening.
-                                if (background.enabled && background.mask)
-                                  setPortrait((v) => ({ ...v, background: 0 }));
                               }}
                             />
-                          )}
-                        <label className="toggle">
-                          <input
-                            type="checkbox"
-                            checked={group}
-                            onChange={(e) => {
-                              setGroup(e.target.checked);
-                              setHeadOutline([]);
-                              if (e.target.checked)
-                                setPortrait((v) => ({ ...v, enabled: false }));
-                            }}
-                          />
-                          {backgroundText(locale, "group")}
-                        </label>
-                        {group && (
-                          <>
-                            <p className="workflow-notice">
-                              {backgroundText(locale, "groupHint")}
-                            </p>
-                            <div className="preset-row">
-                              <button
-                                className="outline"
-                                data-testid="fit-all-people"
-                                disabled={backgroundBusy}
-                                onClick={() => {
-                                  try {
-                                    const fit = fitAllPeople(
-                                      shape,
-                                      activePeopleMask,
-                                      edits,
-                                      aspect,
-                                      widthMm,
-                                      boardHeight,
-                                      image.width,
-                                      image.height,
-                                      resolution,
-                                    );
-                                    setPeopleFitUndo({
-                                      edits: { ...edits },
-                                      portrait: structuredClone(portrait),
-                                    });
-                                    applyCrop(fit.edits);
-                                  } catch (e) {
-                                    setError(String(e));
-                                  }
-                                }}
-                              >
-                                {backgroundText(locale, "fitPeople")}
-                              </button>
-                              <button
-                                className="outline"
-                                data-testid="undo-people-fit"
-                                disabled={!peopleFitUndo}
-                                onClick={() => {
-                                  if (peopleFitUndo) {
-                                    setEdits(peopleFitUndo.edits);
-                                    setPortrait(peopleFitUndo.portrait);
-                                    setPeopleFitUndo(undefined);
-                                  }
-                                }}
-                              >
-                                {backgroundText(locale, "undoPeople")}
-                              </button>
-                            </div>
-                            <p className="fineprint">
-                              {backgroundText(locale, "peopleFitHint")}
-                            </p>
-                            {croppedPeople !== undefined &&
-                              croppedPeople > 0.005 && (
-                                <p
-                                  className="workflow-notice"
-                                  role="status"
-                                  data-testid="people-cropped"
+                            {backgroundText(locale, "group")}
+                          </label>
+                          {group && (
+                            <>
+                              <p className="workflow-notice">
+                                {backgroundText(locale, "groupHint")}
+                              </p>
+                              <div className="preset-row">
+                                <button
+                                  className="outline"
+                                  data-testid="fit-all-people"
+                                  disabled={backgroundBusy}
+                                  onClick={() => {
+                                    try {
+                                      const fit = fitAllPeople(
+                                        shape,
+                                        activePeopleMask,
+                                        edits,
+                                        aspect,
+                                        widthMm,
+                                        boardHeight,
+                                        image.width,
+                                        image.height,
+                                        resolution,
+                                      );
+                                      setPeopleFitUndo({
+                                        edits: { ...edits },
+                                        portrait: structuredClone(portrait),
+                                      });
+                                      applyCrop(fit.edits);
+                                    } catch (e) {
+                                      setError(String(e));
+                                    }
+                                  }}
                                 >
-                                  {backgroundText(locale, "peopleCropped")}{" "}
-                                  {Math.round(croppedPeople * 100)}%
-                                </p>
-                              )}
-                          </>
-                        )}
+                                  {backgroundText(locale, "fitPeople")}
+                                </button>
+                                <button
+                                  className="outline"
+                                  data-testid="undo-people-fit"
+                                  disabled={!peopleFitUndo}
+                                  onClick={() => {
+                                    if (peopleFitUndo) {
+                                      setEdits(peopleFitUndo.edits);
+                                      setPortrait(peopleFitUndo.portrait);
+                                      setPeopleFitUndo(undefined);
+                                    }
+                                  }}
+                                >
+                                  {backgroundText(locale, "undoPeople")}
+                                </button>
+                              </div>
+                              <p className="fineprint">
+                                {backgroundText(locale, "peopleFitHint")}
+                              </p>
+                              {croppedPeople !== undefined &&
+                                croppedPeople > 0.005 && (
+                                  <p
+                                    className="workflow-notice"
+                                    role="status"
+                                    data-testid="people-cropped"
+                                  >
+                                    {backgroundText(locale, "peopleCropped")}{" "}
+                                    {Math.round(croppedPeople * 100)}%
+                                  </p>
+                                )}
+                            </>
+                          )}
+                        </details>
                         <ShapeCropEditor
                           key={`${photoId ?? "sample"}-${shape}`}
                           shape={shape}
@@ -1566,369 +1597,372 @@ export default function App() {
                         {sample && (
                           <p className="fineprint">{t("sampleNotice")}</p>
                         )}
-                        <label className="toggle">
-                          <input
-                            type="checkbox"
-                            checked={portrait.enabled}
-                            disabled={group}
-                            onChange={(e) => {
-                              setPortrait((v) => ({
-                                ...v,
-                                enabled: e.target.checked,
-                              }));
-                              if (e.target.checked) setLines(MAX_LINES);
-                            }}
-                          />
-                          {t("portraitMode")}
-                        </label>
-                        <p className="fineprint">{t("portraitHint")}</p>
-                        {!portrait.enabled && (
-                          <p role="status" className="workflow-notice">
-                            {t("portraitOffNotice")}
-                          </p>
-                        )}
-                        <p
-                          className="workflow-notice"
-                          data-testid="actual-settings"
-                        >
-                          {t("actualSettings")}: {shape} · {widthMm} ×{" "}
-                          {boardHeight} mm · {pinCount} {t("pinCount")} ·{" "}
-                          {threadMm} mm ·{" "}
-                          {portrait.enabled && mode !== "color"
-                            ? t(
-                                `${portraitSolver === "global" ? "global" : portraitSolver}Solver` as import("./i18n").Key,
-                              )
-                            : t("continuousSolver")}
-                        </p>
-                        {portrait.enabled && mode !== "color" && (
-                          <label className="check">
+                        <details className="edits" data-testid="advanced-photo">
+                          <summary>{simple("advancedPhoto")}</summary>
+                          <label className="toggle">
                             <input
                               type="checkbox"
-                              aria-label={t("portraitDetail")}
-                              checked={Boolean(portrait.detailStyle)}
-                              disabled={busy}
-                              onChange={(e) =>
-                                setPortrait((p) => {
-                                  const { detailStyle: _old, ...rest } = p;
-                                  return e.target.checked
-                                    ? {
-                                        ...rest,
-                                        detailStyle: "contour-preparation/2",
-                                      }
-                                    : rest;
-                                })
-                              }
+                              checked={portrait.enabled}
+                              disabled={group}
+                              onChange={(e) => {
+                                setPortrait((v) => ({
+                                  ...v,
+                                  enabled: e.target.checked,
+                                }));
+                                if (e.target.checked) setLines(MAX_LINES);
+                              }}
                             />
-                            <span>
-                              {t("portraitDetail")}
-                              <small className="fineprint">
-                                {t("portraitDetailHint")}
-                              </small>
-                            </span>
+                            {t("portraitMode")}
                           </label>
-                        )}
-                        {portrait.enabled &&
-                          mode !== "color" &&
-                          portrait.detailStyle && (
+                          <p className="fineprint">{t("portraitHint")}</p>
+                          {!portrait.enabled && (
+                            <p role="status" className="workflow-notice">
+                              {t("portraitOffNotice")}
+                            </p>
+                          )}
+                          <p
+                            className="workflow-notice"
+                            data-testid="actual-settings"
+                          >
+                            {t("actualSettings")}: {shape} · {widthMm} ×{" "}
+                            {boardHeight} mm · {pinCount} {t("pinCount")} ·{" "}
+                            {threadMm} mm ·{" "}
+                            {portrait.enabled && mode !== "color"
+                              ? t(
+                                  `${portraitSolver === "global" ? "global" : portraitSolver}Solver` as import("./i18n").Key,
+                                )
+                              : t("continuousSolver")}
+                          </p>
+                          {portrait.enabled && mode !== "color" && (
                             <label className="check">
                               <input
                                 type="checkbox"
-                                aria-label={t("preservePortraitTone")}
-                                checked={
-                                  portrait.detailStyle ===
-                                  "contour-preparation/2"
-                                }
+                                aria-label={t("portraitDetail")}
+                                checked={Boolean(portrait.detailStyle)}
                                 disabled={busy}
                                 onChange={(e) =>
-                                  setPortrait((p) => ({
-                                    ...p,
-                                    detailStyle: e.target.checked
-                                      ? "contour-preparation/2"
-                                      : "contour-preparation/1",
-                                  }))
+                                  setPortrait((p) => {
+                                    const { detailStyle: _old, ...rest } = p;
+                                    return e.target.checked
+                                      ? {
+                                          ...rest,
+                                          detailStyle: "contour-preparation/2",
+                                        }
+                                      : rest;
+                                  })
                                 }
                               />
-                              <span>{t("preservePortraitTone")}</span>
+                              <span>
+                                {t("portraitDetail")}
+                                <small className="fineprint">
+                                  {t("portraitDetailHint")}
+                                </small>
+                              </span>
                             </label>
                           )}
-                        {portrait.enabled && mode !== "color" && (
+                          {portrait.enabled &&
+                            mode !== "color" &&
+                            portrait.detailStyle && (
+                              <label className="check">
+                                <input
+                                  type="checkbox"
+                                  aria-label={t("preservePortraitTone")}
+                                  checked={
+                                    portrait.detailStyle ===
+                                    "contour-preparation/2"
+                                  }
+                                  disabled={busy}
+                                  onChange={(e) =>
+                                    setPortrait((p) => ({
+                                      ...p,
+                                      detailStyle: e.target.checked
+                                        ? "contour-preparation/2"
+                                        : "contour-preparation/1",
+                                    }))
+                                  }
+                                />
+                                <span>{t("preservePortraitTone")}</span>
+                              </label>
+                            )}
+                          {portrait.enabled && mode !== "color" && (
+                            <label>
+                              {t("portraitSolver")}
+                              <select
+                                aria-label={t("portraitSolver")}
+                                value={portraitSolver}
+                                onChange={(e) => {
+                                  if (e.target.value === "basis") {
+                                    setPinCount(320);
+                                    setPinBasis(undefined);
+                                    setPinLayout(undefined);
+                                    setPinCoordinates(undefined);
+                                  } else if (pinCount > 240) {
+                                    setPinCount(240);
+                                    setPinBasis(undefined);
+                                    setPinLayout(undefined);
+                                    setPinCoordinates(undefined);
+                                  }
+                                  setPortraitSolver(
+                                    e.target.value as
+                                      | "continuous"
+                                      | "global"
+                                      | "guarded"
+                                      | "multiscale"
+                                      | "physical"
+                                      | "anatomy"
+                                      | "basis",
+                                  );
+                                }}
+                              >
+                                <option value="continuous">
+                                  {t("continuousSolver")}
+                                </option>
+                                <option value="guarded">
+                                  {t("guardedSolver")}
+                                </option>
+                                <option
+                                  value="anatomy"
+                                  disabled={
+                                    portrait.regions?.placement !== "manual"
+                                  }
+                                >
+                                  {t("anatomySolver")}
+                                </option>
+                                <option
+                                  value="basis"
+                                  disabled={shape !== "circle"}
+                                >
+                                  {t("basisSolver")}
+                                </option>
+                                <option value="physical">
+                                  {t("physicalSolver")}
+                                </option>
+                                <option value="multiscale">
+                                  {t("multiscaleSolver")}
+                                </option>
+                                <option value="global">
+                                  {t("globalSolver")}
+                                </option>
+                              </select>
+                              <span className="fineprint">
+                                {t("globalHint")} {t("guardHint")}
+                                {portraitSolver === "basis" && (
+                                  <> {t("basisHint")}</>
+                                )}
+                              </span>
+                            </label>
+                          )}
                           <label>
-                            {t("portraitSolver")}
+                            <span>{t("computationResolution")}</span>
                             <select
-                              aria-label={t("portraitSolver")}
-                              value={portraitSolver}
+                              aria-label={t("computationResolution")}
+                              value={resolution}
+                              disabled={busy}
                               onChange={(e) => {
-                                if (e.target.value === "basis") {
-                                  setPinCount(320);
-                                  setPinBasis(undefined);
-                                  setPinLayout(undefined);
-                                  setPinCoordinates(undefined);
-                                } else if (pinCount > 240) {
-                                  setPinCount(240);
-                                  setPinBasis(undefined);
-                                  setPinLayout(undefined);
-                                  setPinCoordinates(undefined);
-                                }
-                                setPortraitSolver(
-                                  e.target.value as
-                                    | "continuous"
-                                    | "global"
-                                    | "guarded"
-                                    | "multiscale"
-                                    | "physical"
-                                    | "anatomy"
-                                    | "basis",
-                                );
+                                const next = Number(e.target.value);
+                                if (image && next !== resolution)
+                                  setPortrait((p) =>
+                                    remapPortrait(
+                                      p,
+                                      edits,
+                                      edits,
+                                      image.width,
+                                      image.height,
+                                      aspect,
+                                      next,
+                                      aspect,
+                                      resolution,
+                                    ),
+                                  );
+                                setResolution(next);
                               }}
                             >
-                              <option value="continuous">
-                                {t("continuousSolver")}
-                              </option>
-                              <option value="guarded">
-                                {t("guardedSolver")}
-                              </option>
-                              <option
-                                value="anatomy"
-                                disabled={
-                                  portrait.regions?.placement !== "manual"
-                                }
-                              >
-                                {t("anatomySolver")}
-                              </option>
-                              <option
-                                value="basis"
-                                disabled={shape !== "circle"}
-                              >
-                                {t("basisSolver")}
-                              </option>
-                              <option value="physical">
-                                {t("physicalSolver")}
-                              </option>
-                              <option value="multiscale">
-                                {t("multiscaleSolver")}
-                              </option>
-                              <option value="global">
-                                {t("globalSolver")}
+                              {![160, 192].includes(resolution) && (
+                                <option value={resolution}>
+                                  {resolution} × {resolution}
+                                </option>
+                              )}
+                              <option value={160}>160 × 160</option>
+                              <option value={192}>
+                                192 × 192 · {t("experimental")}
                               </option>
                             </select>
                             <span className="fineprint">
-                              {t("globalHint")} {t("guardHint")}
-                              {portraitSolver === "basis" && (
-                                <> {t("basisHint")}</>
-                              )}
+                              {t("resolutionHint")}
                             </span>
                           </label>
-                        )}
-                        <label>
-                          <span>{t("computationResolution")}</span>
-                          <select
-                            aria-label={t("computationResolution")}
-                            value={resolution}
-                            disabled={busy}
-                            onChange={(e) => {
-                              const next = Number(e.target.value);
-                              if (image && next !== resolution)
-                                setPortrait((p) =>
-                                  remapPortrait(
-                                    p,
-                                    edits,
-                                    edits,
-                                    image.width,
-                                    image.height,
-                                    aspect,
-                                    next,
-                                    aspect,
-                                    resolution,
-                                  ),
-                                );
-                              setResolution(next);
-                            }}
-                          >
-                            {![160, 192].includes(resolution) && (
-                              <option value={resolution}>
-                                {resolution} × {resolution}
-                              </option>
-                            )}
-                            <option value={160}>160 × 160</option>
-                            <option value={192}>
-                              192 × 192 · {t("experimental")}
-                            </option>
-                          </select>
-                          <span className="fineprint">
-                            {t("resolutionHint")}
-                          </span>
-                        </label>
-                        <RegionEditor
-                          resolution={resolution}
-                          portrait={portrait}
-                          setPortrait={setPortrait}
-                          image={
-                            photoCandidates.find((p) => p.id === photoId)
-                              ?.original ?? image
-                          }
-                          edits={edits}
-                          aspect={aspect}
-                          t={t}
-                        >
-                          <canvas
-                            ref={targetCanvas}
-                            width={resolution}
-                            height={resolution}
-                            aria-label={t("processedTarget")}
-                          />
-                        </RegionEditor>
-                        {portrait.enabled && sampling && (
-                          <PortraitSamplingPanel sampling={sampling} t={t} />
-                        )}
-                        <p className="fineprint">
-                          {t("processedTarget")} · {resolution} × {resolution} ·{" "}
-                          {t("originalCrop")}
-                        </p>
-                        <div hidden={!portrait.enabled}>
-                          <BackgroundEditor
-                            image={image}
-                            edits={edits}
-                            aspect={aspect}
+                          <RegionEditor
+                            resolution={resolution}
                             portrait={portrait}
                             setPortrait={setPortrait}
+                            image={
+                              photoCandidates.find((p) => p.id === photoId)
+                                ?.original ?? image
+                            }
+                            edits={edits}
+                            aspect={aspect}
                             t={t}
-                          />
-                        </div>
-                        {portrait.enabled && (
-                          <>
-                            <details className="edits" open>
-                              <summary>{t("faceRegion")}</summary>
-                              <p className="fineprint">{t("regionHint")}</p>
-                              {(
-                                ["left", "top", "width", "height"] as const
-                              ).map((key) => (
-                                <label className="range-label" key={key}>
-                                  <span>{t(key)}</span>
-                                  <input
-                                    aria-label={`${t("faceRegion")} ${t(key)}`}
-                                    type="range"
-                                    min={
-                                      key === "width" || key === "height"
-                                        ? 0.1
-                                        : 0
-                                    }
-                                    max={
-                                      key === "left"
-                                        ? 1 - portrait.face.width
-                                        : key === "top"
-                                          ? 1 - portrait.face.height
-                                          : key === "width"
-                                            ? 1 - portrait.face.left
-                                            : 1 - portrait.face.top
-                                    }
-                                    step=".01"
-                                    value={portrait.face[key]}
-                                    onChange={(e) =>
-                                      setPortrait((v) => ({
-                                        ...v,
-                                        face: {
-                                          ...v.face,
-                                          [key]: +e.target.value,
-                                        },
-                                      }))
-                                    }
-                                  />
-                                  <output>
-                                    {Math.round(portrait.face[key] * 100)}%
-                                  </output>
-                                </label>
-                              ))}
-                              {(["background", "localContrast"] as const).map(
-                                (key) => (
+                          >
+                            <canvas
+                              ref={targetCanvas}
+                              width={resolution}
+                              height={resolution}
+                              aria-label={t("processedTarget")}
+                            />
+                          </RegionEditor>
+                          {portrait.enabled && sampling && (
+                            <PortraitSamplingPanel sampling={sampling} t={t} />
+                          )}
+                          <p className="fineprint">
+                            {t("processedTarget")} · {resolution} × {resolution}{" "}
+                            · {t("originalCrop")}
+                          </p>
+                          <div hidden={!portrait.enabled}>
+                            <BackgroundEditor
+                              image={image}
+                              edits={edits}
+                              aspect={aspect}
+                              portrait={portrait}
+                              setPortrait={setPortrait}
+                              t={t}
+                            />
+                          </div>
+                          {portrait.enabled && (
+                            <>
+                              <details className="edits">
+                                <summary>{t("faceRegion")}</summary>
+                                <p className="fineprint">{t("regionHint")}</p>
+                                {(
+                                  ["left", "top", "width", "height"] as const
+                                ).map((key) => (
                                   <label className="range-label" key={key}>
                                     <span>{t(key)}</span>
                                     <input
-                                      aria-label={t(key)}
+                                      aria-label={`${t("faceRegion")} ${t(key)}`}
                                       type="range"
-                                      min="0"
-                                      max="1"
-                                      step=".05"
-                                      value={portrait[key]}
+                                      min={
+                                        key === "width" || key === "height"
+                                          ? 0.1
+                                          : 0
+                                      }
+                                      max={
+                                        key === "left"
+                                          ? 1 - portrait.face.width
+                                          : key === "top"
+                                            ? 1 - portrait.face.height
+                                            : key === "width"
+                                              ? 1 - portrait.face.left
+                                              : 1 - portrait.face.top
+                                      }
+                                      step=".01"
+                                      value={portrait.face[key]}
                                       onChange={(e) =>
                                         setPortrait((v) => ({
                                           ...v,
-                                          [key]: +e.target.value,
+                                          face: {
+                                            ...v.face,
+                                            [key]: +e.target.value,
+                                          },
                                         }))
                                       }
                                     />
-                                    <output>{portrait[key]}</output>
+                                    <output>
+                                      {Math.round(portrait.face[key] * 100)}%
+                                    </output>
                                   </label>
-                                ),
-                              )}
+                                ))}
+                                {(["background", "localContrast"] as const).map(
+                                  (key) => (
+                                    <label className="range-label" key={key}>
+                                      <span>{t(key)}</span>
+                                      <input
+                                        aria-label={t(key)}
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        step=".05"
+                                        value={portrait[key]}
+                                        onChange={(e) =>
+                                          setPortrait((v) => ({
+                                            ...v,
+                                            [key]: +e.target.value,
+                                          }))
+                                        }
+                                      />
+                                      <output>{portrait[key]}</output>
+                                    </label>
+                                  ),
+                                )}
+                                <button
+                                  className="text-button"
+                                  onClick={() =>
+                                    setPortrait({
+                                      ...structuredClone(DEFAULT_PORTRAIT),
+                                      enabled: true,
+                                    })
+                                  }
+                                >
+                                  {t("resetPortrait")}
+                                </button>
+                              </details>
+                            </>
+                          )}
+                          <div
+                            className="photo-candidates"
+                            aria-label={t("photoCandidates")}
+                          >
+                            {photoCandidates.map((p) => (
                               <button
-                                className="text-button"
-                                onClick={() =>
-                                  setPortrait({
-                                    ...structuredClone(DEFAULT_PORTRAIT),
-                                    enabled: true,
-                                  })
+                                key={p.id}
+                                className={
+                                  p.id === photoId ? "chip selected" : "chip"
                                 }
+                                onClick={() => switchPhoto(p)}
+                                title={p.name}
                               >
-                                {t("resetPortrait")}
+                                {p.name}
                               </button>
-                            </details>
-                          </>
-                        )}
-                        <div
-                          className="photo-candidates"
-                          aria-label={t("photoCandidates")}
-                        >
-                          {photoCandidates.map((p) => (
+                            ))}
                             <button
-                              key={p.id}
-                              className={
-                                p.id === photoId ? "chip selected" : "chip"
-                              }
-                              onClick={() => switchPhoto(p)}
-                              title={p.name}
+                              className="text-button"
+                              onClick={() => upload.current?.click()}
                             >
-                              {p.name}
+                              {t("addPhoto")}
                             </button>
-                          ))}
-                          <button
-                            className="text-button"
-                            onClick={() => upload.current?.click()}
-                          >
-                            {t("addPhoto")}
-                          </button>
-                        </div>
-                        <p className="fineprint">{t("candidatePrivacy")}</p>
-                        <details className="edits" open>
-                          <summary>
-                            {t("zoom")} · {t("contrast")}
-                          </summary>
-                          {ranges.map((r) => (
-                            <label key={r.key} className="range-label">
-                              <span>{t(r.key)}</span>
-                              <input
-                                aria-label={t(r.key)}
-                                type="range"
-                                {...{ min: r.min, max: r.max, step: r.step }}
-                                value={edits[r.key]}
-                                onChange={(e) => {
-                                  applyCrop({
-                                    ...edits,
-                                    [r.key]: +e.target.value,
-                                  });
-                                }}
-                              />
-                              <output>{edits[r.key]}</output>
-                            </label>
-                          ))}
-                          <button
-                            className="text-button"
-                            onClick={() => {
-                              applyCrop(DEFAULT_EDITS);
-                            }}
-                          >
-                            <RotateCcw size={14} />
-                            {t("reset")}
-                          </button>
+                          </div>
+                          <p className="fineprint">{t("candidatePrivacy")}</p>
+                          <details className="edits">
+                            <summary>
+                              {t("zoom")} · {t("contrast")}
+                            </summary>
+                            {ranges.map((r) => (
+                              <label key={r.key} className="range-label">
+                                <span>{t(r.key)}</span>
+                                <input
+                                  aria-label={t(r.key)}
+                                  type="range"
+                                  {...{ min: r.min, max: r.max, step: r.step }}
+                                  value={edits[r.key]}
+                                  onChange={(e) => {
+                                    applyCrop({
+                                      ...edits,
+                                      [r.key]: +e.target.value,
+                                    });
+                                  }}
+                                />
+                                <output>{edits[r.key]}</output>
+                              </label>
+                            ))}
+                            <button
+                              className="text-button"
+                              onClick={() => {
+                                applyCrop(DEFAULT_EDITS);
+                              }}
+                            >
+                              <RotateCcw size={14} />
+                              {t("reset")}
+                            </button>
+                          </details>
                         </details>
                       </>
                     )}
@@ -1945,524 +1979,566 @@ export default function App() {
                                     ? "shadow"
                                     : "goodPhoto",
                             )
-                          : t("photoTips")}
+                          : t("private")}
                       </span>
                     </div>
                   </section>
-                  <section className="card settings-card">
-                    <div className="section-label">
-                      {t("step2")}
-                      <Layers size={17} />
-                    </div>
-                    <details className="edits">
-                      <summary>{t("settingsPresets")}</summary>
-                      <label className="field-label" htmlFor="maker-preset">
-                        {t("settingsPresets")}
-                      </label>
-                      <select
-                        id="maker-preset"
-                        value={selectedPreset}
-                        onChange={(e) => {
-                          setSelectedPreset(e.target.value);
-                          const p = makerPresets.find(
-                            (p) => p.id === e.target.value,
-                          );
-                          if (p) applySettings(p.settings);
-                        }}
-                      >
-                        <option value="">{t("choosePreset")}</option>
-                        {makerPresets.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                      <label className="field-label" htmlFor="preset-name">
-                        {t("presetName")}
-                      </label>
-                      <input
-                        id="preset-name"
-                        maxLength={60}
-                        value={presetName}
-                        onChange={(e) => setPresetName(e.target.value)}
-                      />
-                      <div className="preset-row">
-                        <button
-                          className="outline"
-                          disabled={!presetName.trim()}
-                          onClick={() => void savePreset()}
-                        >
-                          {t("savePreset")}
-                        </button>
-                        <button
-                          className="text-button"
-                          disabled={!selectedPreset}
-                          onClick={() =>
-                            void changePreset(null, selectedPreset)
-                              .then((p) => {
-                                setMakerPresets(p);
-                                setSelectedPreset("");
-                              })
-                              .catch((e) => setError(String(e)))
-                          }
-                        >
-                          {t("deletePreset")}
-                        </button>
-                      </div>
-                      <p className="fineprint">{t("presetPrivacy")}</p>
-                    </details>
-                    {pinLayout && (
-                      <div className="notice" data-testid="layout-settings">
-                        <p>
-                          {t("layoutNotice")} {pinLayout.phaseDegreesClockwise}°
-                          · {pinLayout.version}
-                        </p>
-                        <button
-                          className="outline"
-                          onClick={() => {
-                            setPinLayout(undefined);
-                            setPinCoordinates(undefined);
-                          }}
-                        >
-                          {t("defaultLayout")}
-                        </button>
-                      </div>
-                    )}
-                    <label className="field-label">{t("shape")}</label>
-                    <div className="shape-buttons">
-                      {(
-                        [
-                          { id: "circle", icon: Circle },
-                          { id: "rectangle", icon: Square },
-                          { id: "heart", icon: Heart },
-                        ] as const
-                      ).map(({ id, icon: Icon }) => (
-                        <button
-                          key={id}
-                          className={shape === id ? "shape selected" : "shape"}
-                          onClick={() => {
-                            setShape(id);
-                            if (id !== "circle" && portraitSolver === "basis") {
-                              setPortraitSolver("guarded");
-                              setPinCount(240);
-                              setPinBasis(undefined);
-                              setPinLayout(undefined);
-                              setPinCoordinates(undefined);
-                            }
-                          }}
-                        >
-                          <Icon size={23} />
-                          {t(id)}
-                        </button>
-                      ))}
-                    </div>
-                    <label className="field-label" htmlFor="mode">
-                      {t("mode")}
-                    </label>
-                    <select
-                      id="mode"
-                      value={mode}
-                      onChange={(e) => setMode(e.target.value as typeof mode)}
-                    >
-                      <option value="dark">{t("dark")}</option>
-                      <option value="light">{t("light")}</option>
-                      <option value="color">{t("color")}</option>
-                    </select>
-                    <label className="field-label">
-                      {t("density")} <strong>{lines}</strong>
-                    </label>
-                    <input
-                      aria-label={t("density")}
-                      type="range"
-                      min="200"
-                      max={MAX_LINES}
-                      step="100"
-                      value={lines}
-                      onChange={(e) => setLines(+e.target.value)}
-                    />
-                    <p className="fineprint">{t("computationHint")}</p>
-                    <div className="preset-row">
-                      {(["lighter", "balanced", "detailed"] as const).map(
-                        (v, j) => (
-                          <button
-                            key={v}
-                            className={preset === v ? "chip selected" : "chip"}
-                            onClick={() => {
-                              setPreset(v);
-                              setLines([700, 1400, 2500][j]);
-                            }}
-                          >
-                            {t(v)}
-                          </button>
-                        ),
-                      )}
-                    </div>
-                    <details className="edits">
-                      <summary>{t("materialSettings")}</summary>
-                      {[
-                        {
-                          key: "widthMm" as const,
-                          value: widthMm,
-                          set: setWidthMm,
-                          min: 50,
-                          max: 2000,
-                          step: 10,
-                        },
-                        {
-                          key: "heightMm" as const,
-                          value: boardHeight,
-                          set: setHeightMm,
-                          min: 50,
-                          max: 2000,
-                          step: 10,
-                        },
-                        {
-                          key: "pinCount" as const,
-                          value: pinCount,
-                          set: (value: number) => {
-                            setPinCount(value);
-                            if (portraitSolver === "basis") {
-                              setPinBasis(undefined);
-                              setPinLayout(undefined);
-                              setPinCoordinates(undefined);
-                            }
-                          },
-                          min: portraitSolver === "basis" ? 240 : 24,
-                          max: portraitSolver === "basis" ? 320 : 240,
-                          step: portraitSolver === "basis" ? 80 : 1,
-                        },
-                        {
-                          key: "threadMm" as const,
-                          value: threadMm,
-                          set: setThreadMm,
-                          min: 0.05,
-                          max: 2,
-                          step: 0.05,
-                        },
-                        {
-                          key: "stockMeters" as const,
-                          value: stockMeters,
-                          set: setStockMeters,
-                          min: 0,
-                          max: 100000,
-                          step: 1,
-                        },
-                      ].map((r) => (
-                        <label className="range-label" key={r.key}>
-                          <span>{t(r.key)}</span>
-                          <input
-                            aria-label={t(r.key)}
-                            type="number"
-                            value={r.value}
-                            min={r.min}
-                            max={r.max}
-                            step={r.step}
-                            disabled={
-                              r.key === "heightMm" && shape === "circle"
-                            }
-                            onChange={(e) =>
-                              r.set(
-                                Math.max(
-                                  r.min,
-                                  Math.min(r.max, +e.target.value),
-                                ),
-                              )
-                            }
-                          />
-                          {r.key === "threadMm" && (
-                            <small className="fineprint">
-                              {t("threadDetailHint")}
-                            </small>
-                          )}
-                        </label>
-                      ))}
-                    </details>
-                    <p className="provisional">
-                      <span /> {t("provisional")}
-                    </p>
-                    <button
-                      className="primary full"
-                      disabled={!image || busy || backgroundBusy}
-                      onClick={() => generate()}
-                    >
-                      {busy
-                        ? `${t("generating")} ${Math.round(fraction * 100)}%`
-                        : t("generate")}
-                      <ArrowRight size={18} />
-                    </button>
-                    {recovery && (
-                      <div className="fineprint">
-                        <p>{t("recoveryNotice")}</p>
-                        <button
-                          disabled={busy}
-                          className="outline full"
-                          onClick={() =>
-                            generate(recovery.seed, recovery.strategy, recovery)
-                          }
-                        >
-                          {t("resumeOptimization")}
-                        </button>
-                        <button
-                          disabled={busy}
-                          className="text-button"
-                          onClick={() =>
-                            clearOptimizerRecovery().then(() =>
-                              setRecovery(undefined),
-                            )
-                          }
-                        >
-                          {t("discardOptimization")}
-                        </button>
-                      </div>
-                    )}
-                    {busy && (
-                      <>
-                        <progress max="1" value={fraction} />
-                        <button
-                          className="text-button"
-                          onClick={() => {
-                            jobs.current.cancel();
-                            worker.current?.terminate();
-                            worker.current = null;
-                            setBusy(false);
-                            setNotice(t("cancel"));
-                          }}
-                        >
-                          {t("cancel")}
-                        </button>
-                      </>
-                    )}
-                  </section>
-                </div>
-                <section className="card result-card">
-                  <div className="section-label">
-                    {t("step3")}
-                    <span className="live-dot" />
-                  </div>
-                  <div className="result-stage">
-                    {result ? (
-                      <Preview instruction={result} />
-                    ) : (
-                      <div className="empty-art">
-                        <div className="thread-ring">
-                          <span />
-                          <span />
-                          <span />
-                          <span />
-                        </div>
-                        <p>{t("emptyResult")}</p>
-                      </div>
-                    )}
-                  </div>
-                  {result ? (
-                    <>
-                      <div className="stats">
-                        <div>
-                          <strong>
-                            {result.metrics.lines.toLocaleString(locale)}
-                          </strong>
-                          <span>{t("lines")}</span>
-                        </div>
-                        <div>
-                          <strong>
-                            {Math.ceil(result.metrics.estimatedMeters)}
-                          </strong>
-                          <span>{t("meters")}</span>
-                        </div>
-                        <div>
-                          <strong>
-                            {Math.ceil(
-                              assemblyEffort(result, pace).estimatedMinutes,
-                            )}
-                          </strong>
-                          <span>{t("minutes")}</span>
-                        </div>
-                      </div>
-                      <p className="fineprint" data-testid="assembly-effort">
-                        {t("assemblyEstimateHint")} {pace} s ·{" "}
-                        {assemblyEffort(result).actions} {t("assemblyActions")}{" "}
-                        · {assemblyEffort(result).starts} {t("assemblyStarts")}{" "}
-                        · {assemblyEffort(result).knots} {t("assemblyKnots")} ·{" "}
-                        {assemblyEffort(result).colorChanges}{" "}
-                        {t("assemblyColors")}
-                      </p>
-                      <div className="variant-tabs">
-                        {variants.map((v, j) => (
-                          <button
-                            key={v.instruction.id}
-                            className={
-                              variantState.selectedId === v.instruction.id
-                                ? "chip selected"
-                                : "chip"
-                            }
-                            onClick={() =>
-                              setVariantState((s) => ({
-                                ...s,
-                                selectedId: v.instruction.id,
-                              }))
-                            }
-                          >
-                            {v.name} {j + 1}
-                          </button>
-                        ))}
-                      </div>
-                      <p className="fineprint">
-                        {t("quality")}: {result.metrics.baselineMse.toFixed(3)}{" "}
-                        → {result.metrics.reconstructionMse.toFixed(3)}.{" "}
-                        {t("qualityHint")}
+                  {image && (
+                    <section className="card settings-card">
+                      <p className="fineprint" data-testid="material-summary">
+                        {t("materialSettings")}: {widthMm} × {boardHeight} mm ·{" "}
+                        {pinCount} {t("pinCount")} · {threadMm} mm
                       </p>
                       <details
                         className="edits"
-                        data-testid="variant-audit"
-                        data-sequence-hash={result.sequenceHash}
+                        data-testid="advanced-generation"
                       >
-                        <summary>{t("variantDetails")}</summary>
-                        <p>
-                          {t("requestedConnections")}:{" "}
-                          {result.params.requestedLines.toLocaleString(locale)}{" "}
-                          · {result.metrics.lines.toLocaleString(locale)}{" "}
-                          {t("lines")}
-                        </p>
-                        <p>
-                          {result.algorithm} · {result.profile.pins.length} pins
-                          · {result.profile.threadMm} mm ·{" "}
-                          {result.profile.widthMm} × {result.profile.heightMm}{" "}
-                          mm
-                        </p>
-                        <p className="fineprint">{t("plateauHint")}</p>
-                        <p
-                          className="fineprint"
-                          style={{ overflowWrap: "anywhere" }}
-                        >
-                          Target: {result.imageHash}
-                          <br />
-                          Sequence: {result.sequenceHash}
-                        </p>
-                      </details>
-                      <Supply instruction={result} locale={locale} />
-                      {image &&
-                        [
-                          "continuous-guarded/6",
-                          "density-multiscale/7",
-                          "density-physical/8",
-                          "density-anatomy/10",
-                          "density-pin-basis/11",
-                        ].includes(result.algorithm) && (
-                          <button
-                            className="outline full"
-                            disabled={busy}
-                            onClick={() => generate(result, "simplify")}
+                        <summary>{simple("advancedGeneration")}</summary>
+                        <div className="section-label">
+                          {t("step2")}
+                          <Layers size={17} />
+                        </div>
+                        <details className="edits">
+                          <summary>{t("settingsPresets")}</summary>
+                          <label className="field-label" htmlFor="maker-preset">
+                            {t("settingsPresets")}
+                          </label>
+                          <select
+                            id="maker-preset"
+                            value={selectedPreset}
+                            onChange={(e) => {
+                              setSelectedPreset(e.target.value);
+                              const p = makerPresets.find(
+                                (p) => p.id === e.target.value,
+                              );
+                              if (p) applySettings(p.settings);
+                            }}
                           >
-                            {t("simplificationSolver")}
-                          </button>
-                        )}
-                      {image &&
-                        ["density-physical/8", "density-anatomy/10"].includes(
-                          result.algorithm,
-                        ) &&
-                        result.params.portrait?.regions?.placement ===
-                          "manual" && (
-                          <>
+                            <option value="">{t("choosePreset")}</option>
+                            {makerPresets.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.name}
+                              </option>
+                            ))}
+                          </select>
+                          <label className="field-label" htmlFor="preset-name">
+                            {t("presetName")}
+                          </label>
+                          <input
+                            id="preset-name"
+                            maxLength={60}
+                            value={presetName}
+                            onChange={(e) => setPresetName(e.target.value)}
+                          />
+                          <div className="preset-row">
                             <button
-                              className="outline full"
-                              disabled={busy}
-                              onClick={() => generate(result, "anatomy")}
+                              className="outline"
+                              disabled={!presetName.trim()}
+                              onClick={() => void savePreset()}
                             >
-                              {t("anatomySolver")}
+                              {t("savePreset")}
                             </button>
-                            <p className="fineprint">{t("anatomyHint")}</p>
-                          </>
+                            <button
+                              className="text-button"
+                              disabled={!selectedPreset}
+                              onClick={() =>
+                                void changePreset(null, selectedPreset)
+                                  .then((p) => {
+                                    setMakerPresets(p);
+                                    setSelectedPreset("");
+                                  })
+                                  .catch((e) => setError(String(e)))
+                              }
+                            >
+                              {t("deletePreset")}
+                            </button>
+                          </div>
+                          <p className="fineprint">{t("presetPrivacy")}</p>
+                        </details>
+                        {pinLayout && (
+                          <div className="notice" data-testid="layout-settings">
+                            <p>
+                              {t("layoutNotice")}{" "}
+                              {pinLayout.phaseDegreesClockwise}° ·{" "}
+                              {pinLayout.version}
+                            </p>
+                            <button
+                              className="outline"
+                              onClick={() => {
+                                setPinLayout(undefined);
+                                setPinCoordinates(undefined);
+                              }}
+                            >
+                              {t("defaultLayout")}
+                            </button>
+                          </div>
                         )}
-                      {result.params.simplification && (
-                        <p className="fineprint">
-                          {t("simplificationCaution")} ·{" "}
-                          {result.params.simplification.connectionsSaved}{" "}
-                          {t("connectionsSaved")}
-                        </p>
-                      )}
-                      {image &&
-                        result.algorithm !== "assembly-prune/9" &&
-                        result.params.portrait?.enabled &&
-                        result.params.mode !== "color" &&
-                        (![
-                          "density-optical/5",
-                          "density-multiscale/7",
-                          "density-physical/8",
-                          "density-anatomy/10",
-                          "density-pin-basis/11",
-                        ].includes(result.algorithm) ||
-                          result.metrics.stoppedReason === "compute-limit") && (
+                        <label className="field-label">{t("shape")}</label>
+                        <div className="shape-buttons">
+                          {(
+                            [
+                              { id: "circle", icon: Circle },
+                              { id: "rectangle", icon: Square },
+                              { id: "heart", icon: Heart },
+                            ] as const
+                          ).map(({ id, icon: Icon }) => (
+                            <button
+                              key={id}
+                              className={
+                                shape === id ? "shape selected" : "shape"
+                              }
+                              onClick={() => {
+                                setShape(id);
+                                if (
+                                  id !== "circle" &&
+                                  portraitSolver === "basis"
+                                ) {
+                                  setPortraitSolver("guarded");
+                                  setPinCount(240);
+                                  setPinBasis(undefined);
+                                  setPinLayout(undefined);
+                                  setPinCoordinates(undefined);
+                                }
+                              }}
+                            >
+                              <Icon size={23} />
+                              {t(id)}
+                            </button>
+                          ))}
+                        </div>
+                        <label className="field-label" htmlFor="mode">
+                          {t("mode")}
+                        </label>
+                        <select
+                          id="mode"
+                          value={mode}
+                          onChange={(e) =>
+                            setMode(e.target.value as typeof mode)
+                          }
+                        >
+                          <option value="dark">{t("dark")}</option>
+                          <option value="light">{t("light")}</option>
+                          <option value="color">{t("color")}</option>
+                        </select>
+                        <label className="field-label">
+                          {t("density")} <strong>{lines}</strong>
+                        </label>
+                        <input
+                          aria-label={t("density")}
+                          type="range"
+                          min="200"
+                          max={MAX_LINES}
+                          step="100"
+                          value={lines}
+                          onChange={(e) => setLines(+e.target.value)}
+                        />
+                        <p className="fineprint">{t("computationHint")}</p>
+                        <div className="preset-row">
+                          {(["lighter", "balanced", "detailed"] as const).map(
+                            (v, j) => (
+                              <button
+                                key={v}
+                                className={
+                                  preset === v ? "chip selected" : "chip"
+                                }
+                                onClick={() => {
+                                  setPreset(v);
+                                  setLines([700, 1400, 2500][j]);
+                                }}
+                              >
+                                {t(v)}
+                              </button>
+                            ),
+                          )}
+                        </div>
+                      </details>
+                      <details className="edits">
+                        <summary>{t("materialSettings")}</summary>
+                        {[
+                          {
+                            key: "widthMm" as const,
+                            value: widthMm,
+                            set: setWidthMm,
+                            min: 50,
+                            max: 2000,
+                            step: 10,
+                          },
+                          {
+                            key: "heightMm" as const,
+                            value: boardHeight,
+                            set: setHeightMm,
+                            min: 50,
+                            max: 2000,
+                            step: 10,
+                          },
+                          {
+                            key: "pinCount" as const,
+                            value: pinCount,
+                            set: (value: number) => {
+                              setPinCount(value);
+                              if (portraitSolver === "basis") {
+                                setPinBasis(undefined);
+                                setPinLayout(undefined);
+                                setPinCoordinates(undefined);
+                              }
+                            },
+                            min: portraitSolver === "basis" ? 240 : 24,
+                            max: portraitSolver === "basis" ? 320 : 240,
+                            step: portraitSolver === "basis" ? 80 : 1,
+                          },
+                          {
+                            key: "threadMm" as const,
+                            value: threadMm,
+                            set: setThreadMm,
+                            min: 0.05,
+                            max: 2,
+                            step: 0.05,
+                          },
+                          {
+                            key: "stockMeters" as const,
+                            value: stockMeters,
+                            set: setStockMeters,
+                            min: 0,
+                            max: 100000,
+                            step: 1,
+                          },
+                        ].map((r) => (
+                          <label className="range-label" key={r.key}>
+                            <span>{t(r.key)}</span>
+                            <input
+                              aria-label={t(r.key)}
+                              type="number"
+                              value={r.value}
+                              min={r.min}
+                              max={r.max}
+                              step={r.step}
+                              disabled={
+                                r.key === "heightMm" && shape === "circle"
+                              }
+                              onChange={(e) =>
+                                r.set(
+                                  Math.max(
+                                    r.min,
+                                    Math.min(r.max, +e.target.value),
+                                  ),
+                                )
+                              }
+                            />
+                            {r.key === "threadMm" && (
+                              <small className="fineprint">
+                                {t("threadDetailHint")}
+                              </small>
+                            )}
+                          </label>
+                        ))}
+                      </details>
+                      <p className="provisional">
+                        <span /> {t("provisional")}
+                      </p>
+                      <button
+                        className="primary full"
+                        disabled={!image || busy || backgroundBusy}
+                        onClick={() => generate()}
+                      >
+                        {busy
+                          ? `${t("generating")} ${Math.round(fraction * 100)}%`
+                          : t("generate")}
+                        <ArrowRight size={18} />
+                      </button>
+                      {recovery && (
+                        <div className="fineprint">
+                          <p>{t("recoveryNotice")}</p>
                           <button
-                            className="outline full"
                             disabled={busy}
+                            className="outline full"
                             onClick={() =>
                               generate(
-                                result,
-                                result.algorithm === "density-pin-basis/11"
-                                  ? "basis"
-                                  : result.algorithm === "density-anatomy/10"
-                                    ? "anatomy"
-                                    : result.algorithm === "density-physical/8"
-                                      ? "physical"
-                                      : [
-                                            "continuous-guarded/6",
-                                            "density-multiscale/7",
-                                          ].includes(result.algorithm)
-                                        ? "multiscale"
-                                        : "global",
+                                recovery.seed,
+                                recovery.strategy,
+                                recovery,
                               )
                             }
                           >
-                            {t(
-                              [
-                                "density-optical/5",
-                                "density-multiscale/7",
-                                "density-physical/8",
-                                "density-anatomy/10",
-                                "density-pin-basis/11",
-                              ].includes(result.algorithm)
-                                ? "continueGlobal"
-                                : "rerouteGlobal",
-                            )}
+                            {t("resumeOptimization")}
                           </button>
-                        )}
-                      {result.metrics.densityFit && (
-                        <p className="fineprint">
-                          {t("globalResult")} ·{" "}
-                          {result.metrics.densityFit.routingConnections}{" "}
-                          {t("routingConnections")} ·{" "}
-                          {result.metrics.densityFit.removedConnections ?? 0}{" "}
-                          {t("removedConnections")}. {t("refinementNotice")}
-                        </p>
-                      )}
-                      {result.metrics.refinement?.reason === "compute-limit" &&
-                        image && (
                           <button
-                            className="outline full"
                             disabled={busy}
-                            onClick={() => generate(result)}
+                            className="text-button"
+                            onClick={() =>
+                              clearOptimizerRecovery().then(() =>
+                                setRecovery(undefined),
+                              )
+                            }
                           >
-                            {t("continueRefinement")}
+                            {t("discardOptimization")}
                           </button>
-                        )}
-                      {result.metrics.refinement && (
-                        <p className="fineprint">{t("refinementNotice")}</p>
+                        </div>
                       )}
-                      {result.metrics.regions && (
-                        <details className="edits">
-                          <summary>{t("regionMetrics")}</summary>
-                          <p className="fineprint">{t("regionHint")}</p>
-                          <table>
-                            <thead>
-                              <tr>
-                                <th>{t("faceRegion")}</th>
-                                <th>MSE</th>
-                                <th>{t("edgeError")}</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {Object.entries(result.metrics.regions.final).map(
-                                ([key, m]) => (
+                      {busy && (
+                        <>
+                          <progress max="1" value={fraction} />
+                          <button
+                            className="text-button"
+                            onClick={() => {
+                              jobs.current.cancel();
+                              worker.current?.terminate();
+                              worker.current = null;
+                              setBusy(false);
+                              setNotice(t("cancel"));
+                            }}
+                          >
+                            {t("cancel")}
+                          </button>
+                        </>
+                      )}
+                    </section>
+                  )}
+                </div>
+                {(result || busy) && (
+                  <section className="card result-card">
+                    <div className="section-label">
+                      {t("step3")}
+                      <span className="live-dot" />
+                    </div>
+                    <div className="result-stage">
+                      {result ? (
+                        <Preview instruction={result} />
+                      ) : (
+                        <div className="empty-art">
+                          <div className="thread-ring">
+                            <span />
+                            <span />
+                            <span />
+                            <span />
+                          </div>
+                          <p>{t("emptyResult")}</p>
+                        </div>
+                      )}
+                    </div>
+                    {result ? (
+                      <>
+                        <div className="stats">
+                          <div>
+                            <strong>
+                              {result.metrics.lines.toLocaleString(locale)}
+                            </strong>
+                            <span>{t("lines")}</span>
+                          </div>
+                          <div>
+                            <strong>
+                              {Math.ceil(result.metrics.estimatedMeters)}
+                            </strong>
+                            <span>{t("meters")}</span>
+                          </div>
+                          <div>
+                            <strong>
+                              {Math.ceil(
+                                assemblyEffort(result, pace).estimatedMinutes,
+                              )}
+                            </strong>
+                            <span>{t("minutes")}</span>
+                          </div>
+                        </div>
+                        <div className="variant-tabs">
+                          {variants.map((v, j) => (
+                            <button
+                              key={v.instruction.id}
+                              className={
+                                variantState.selectedId === v.instruction.id
+                                  ? "chip selected"
+                                  : "chip"
+                              }
+                              onClick={() =>
+                                setVariantState((s) => ({
+                                  ...s,
+                                  selectedId: v.instruction.id,
+                                }))
+                              }
+                            >
+                              {simple("variant")} {j + 1}
+                            </button>
+                          ))}
+                        </div>
+                        <details
+                          className="edits"
+                          data-testid="variant-audit"
+                          data-sequence-hash={result.sequenceHash}
+                        >
+                          <summary>{t("variantDetails")}</summary>
+                          <code className="hash">
+                            SHA-256 {result.sequenceHash.slice(0, 20)}…
+                          </code>
+                          <p
+                            className="fineprint"
+                            data-testid="assembly-effort"
+                          >
+                            {t("assemblyEstimateHint")} {pace} s ·{" "}
+                            {assemblyEffort(result).actions}{" "}
+                            {t("assemblyActions")} ·{" "}
+                            {assemblyEffort(result).starts}{" "}
+                            {t("assemblyStarts")} ·{" "}
+                            {assemblyEffort(result).knots} {t("assemblyKnots")}{" "}
+                            · {assemblyEffort(result).colorChanges}{" "}
+                            {t("assemblyColors")}
+                          </p>
+                          <p className="fineprint">
+                            {t("quality")}:{" "}
+                            {result.metrics.baselineMse.toFixed(3)} →{" "}
+                            {result.metrics.reconstructionMse.toFixed(3)}.{" "}
+                            {t("qualityHint")}
+                          </p>
+                          <p>
+                            {t("requestedConnections")}:{" "}
+                            {result.params.requestedLines.toLocaleString(
+                              locale,
+                            )}{" "}
+                            · {result.metrics.lines.toLocaleString(locale)}{" "}
+                            {t("lines")}
+                          </p>
+                          <p>
+                            {result.algorithm} · {result.profile.pins.length}{" "}
+                            pins · {result.profile.threadMm} mm ·{" "}
+                            {result.profile.widthMm} × {result.profile.heightMm}{" "}
+                            mm
+                          </p>
+                          <p className="fineprint">{t("plateauHint")}</p>
+                          <p
+                            className="fineprint"
+                            style={{ overflowWrap: "anywhere" }}
+                          >
+                            Target: {result.imageHash}
+                            <br />
+                            Sequence: {result.sequenceHash}
+                          </p>
+                        </details>
+                        <Supply instruction={result} locale={locale} />
+                        {image &&
+                          [
+                            "continuous-guarded/6",
+                            "density-multiscale/7",
+                            "density-physical/8",
+                            "density-anatomy/10",
+                            "density-pin-basis/11",
+                          ].includes(result.algorithm) && (
+                            <button
+                              className="outline full"
+                              disabled={busy}
+                              onClick={() => generate(result, "simplify")}
+                            >
+                              {t("simplificationSolver")}
+                            </button>
+                          )}
+                        {image &&
+                          ["density-physical/8", "density-anatomy/10"].includes(
+                            result.algorithm,
+                          ) &&
+                          result.params.portrait?.regions?.placement ===
+                            "manual" && (
+                            <>
+                              <button
+                                className="outline full"
+                                disabled={busy}
+                                onClick={() => generate(result, "anatomy")}
+                              >
+                                {t("anatomySolver")}
+                              </button>
+                              <p className="fineprint">{t("anatomyHint")}</p>
+                            </>
+                          )}
+                        {result.params.simplification && (
+                          <p className="fineprint">
+                            {t("simplificationCaution")} ·{" "}
+                            {result.params.simplification.connectionsSaved}{" "}
+                            {t("connectionsSaved")}
+                          </p>
+                        )}
+                        {image &&
+                          result.algorithm !== "assembly-prune/9" &&
+                          result.params.portrait?.enabled &&
+                          result.params.mode !== "color" &&
+                          (![
+                            "density-optical/5",
+                            "density-multiscale/7",
+                            "density-physical/8",
+                            "density-anatomy/10",
+                            "density-pin-basis/11",
+                          ].includes(result.algorithm) ||
+                            result.metrics.stoppedReason ===
+                              "compute-limit") && (
+                            <button
+                              className="outline full"
+                              disabled={busy}
+                              onClick={() =>
+                                generate(
+                                  result,
+                                  result.algorithm === "density-pin-basis/11"
+                                    ? "basis"
+                                    : result.algorithm === "density-anatomy/10"
+                                      ? "anatomy"
+                                      : result.algorithm ===
+                                          "density-physical/8"
+                                        ? "physical"
+                                        : [
+                                              "continuous-guarded/6",
+                                              "density-multiscale/7",
+                                            ].includes(result.algorithm)
+                                          ? "multiscale"
+                                          : "global",
+                                )
+                              }
+                            >
+                              {t(
+                                [
+                                  "density-optical/5",
+                                  "density-multiscale/7",
+                                  "density-physical/8",
+                                  "density-anatomy/10",
+                                  "density-pin-basis/11",
+                                ].includes(result.algorithm)
+                                  ? "continueGlobal"
+                                  : "rerouteGlobal",
+                              )}
+                            </button>
+                          )}
+                        {result.metrics.densityFit && (
+                          <p className="fineprint">
+                            {t("globalResult")} ·{" "}
+                            {result.metrics.densityFit.routingConnections}{" "}
+                            {t("routingConnections")} ·{" "}
+                            {result.metrics.densityFit.removedConnections ?? 0}{" "}
+                            {t("removedConnections")}. {t("refinementNotice")}
+                          </p>
+                        )}
+                        {result.metrics.refinement?.reason ===
+                          "compute-limit" &&
+                          image && (
+                            <button
+                              className="outline full"
+                              disabled={busy}
+                              onClick={() => generate(result)}
+                            >
+                              {t("continueRefinement")}
+                            </button>
+                          )}
+                        {result.metrics.refinement && (
+                          <p className="fineprint">{t("refinementNotice")}</p>
+                        )}
+                        {result.metrics.regions && (
+                          <details className="edits">
+                            <summary>{t("regionMetrics")}</summary>
+                            <p className="fineprint">{t("regionHint")}</p>
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th>{t("faceRegion")}</th>
+                                  <th>MSE</th>
+                                  <th>{t("edgeError")}</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {Object.entries(
+                                  result.metrics.regions.final,
+                                ).map(([key, m]) => (
                                   <tr key={key}>
                                     <th>
                                       {t(
@@ -2477,40 +2553,40 @@ export default function App() {
                                     <td>{m.mse.toFixed(4)}</td>
                                     <td>{m.edgeMse.toFixed(4)}</td>
                                   </tr>
-                                ),
-                              )}
-                            </tbody>
-                          </table>
+                                ))}
+                              </tbody>
+                            </table>
+                          </details>
+                        )}
+                        <details className="edits">
+                          <summary>{t("projectName")}</summary>
+                          <label className="field-label" htmlFor="project-name">
+                            {t("projectName")}
+                          </label>
+                          <input
+                            id="project-name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder={t("defaultName")}
+                            maxLength={100}
+                          />
                         </details>
-                      )}
-                      <label className="field-label" htmlFor="project-name">
-                        {t("projectName")}
-                      </label>
-                      <input
-                        id="project-name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder={t("defaultName")}
-                        maxLength={100}
-                      />
-                      <button
-                        className="primary full"
-                        onClick={() => void save()}
-                      >
-                        {t("save")}
-                        <ArrowRight size={18} />
-                      </button>
-                      <code className="hash">
-                        SHA-256 {result.sequenceHash.slice(0, 20)}…
-                      </code>
-                    </>
-                  ) : (
-                    <div className="result-footer">
-                      <Leaf size={18} />
-                      <p>{t("photoTips")}</p>
-                    </div>
-                  )}
-                </section>
+                        <button
+                          className="primary full"
+                          onClick={() => void save()}
+                        >
+                          {t("save")}
+                          <ArrowRight size={18} />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="result-footer">
+                        <Leaf size={18} />
+                        <p>{t("photoTips")}</p>
+                      </div>
+                    )}
+                  </section>
+                )}
               </div>
             </>
           )}

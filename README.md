@@ -1,3 +1,5 @@
+Active resume: **SIMPLE_FLOW_CHECKPOINT.md**, 2026-10-10, continuing preserved `0c94b5b`. Camera/gallery-first UZ/RU/EN UI; advanced editing/material presets and secondary product screens are disclosed on demand, while saved projects/progress and exact export paths remain. Final focused desktop/touch and full domain checks are recorded in the checkpoint. New APK is packaged, not installed; portrait likeness, physical kit, current native/iOS/production and full roadmap acceptance remain open. Website4183/API4311; private UI review5183/output/simple-flow/report.html. Historical records below remain.
+
 # Ip Rasm
 
 Real on-device photo-to-continuous-thread instructions. Development build; physical material profiles are provisional. Full scope is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md). Read [docs/STATUS.md](docs/STATUS.md) to resume.

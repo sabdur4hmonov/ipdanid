@@ -37,7 +37,7 @@ public class CoreWorkflowTest {
         while(SystemClock.elapsedRealtime()<end){if("true".equals(js("Boolean("+expression+")")))return;SystemClock.sleep(250);}
         fail("Visible application condition timed out: "+expression);
     }
-    private String button(String text){return "[...document.querySelectorAll('button')].find(b=>b.innerText.trim()==="+JSONObject.quote(text)+"&&b.offsetParent!==null&&!b.disabled)";}
+    private String button(String text){return "[...document.querySelectorAll('button')].find(b=>(b.getAttribute('aria-label')||b.innerText.trim())==="+JSONObject.quote(text)+"&&b.offsetParent!==null&&!b.disabled)";}
     private void click(String text) throws Exception {String expression=button(text);await(expression,30000);assertEquals("true",js("(()=>{const b="+expression+";b.scrollIntoView({block:'center'});b.click();return true;})()"));}
     private void input(String selector,String value) throws Exception {
         await("document.querySelector("+JSONObject.quote(selector)+")",30000);
@@ -48,6 +48,22 @@ public class CoreWorkflowTest {
         // Keep this synthetic test window awake; never change the user's global timeout or bypass a lock.
         scenario.onActivity(activity->activity.getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
         await("document.querySelector('select[aria-label=\"Language\"]')",60000);input("select[aria-label=\"Language\"]","en");await(button("Create"),30000);
+    }
+    private void sampleForDetailedChecks() throws Exception {
+        assertEquals("true",js("(()=>{document.querySelector('.more-menu').open=true;return true;})()"));
+        click("Try an original sample");
+        await("document.querySelector('canvas[aria-label=\"Edited photo\"]')",30000);
+        // These historical checks exercise optional crop/material controls deliberately.
+        assertEquals("true",js("(()=>{for(const s of ['[data-testid=advanced-photo]','[data-testid=advanced-generation]','.crop-options']) document.querySelector(s).open=true;return true;})()"));
+    }
+    @Test public void photoFirstStartShowsOnlyTwoSourceActions() throws Exception {
+        try {
+            start();
+            assertEquals("2",js("[...document.querySelectorAll('main button')].filter(b=>b.offsetParent!==null).length"));
+            await(button("Take photo"),30000);await(button("Upload from gallery"),30000);
+            assertEquals("true",js("!document.querySelector('.settings-card')&&!document.querySelector('.result-card')"));
+            assertEquals("true",js("(()=>{const i=document.querySelector('[data-testid=\"native-photo-capture\"]');return i.accept==='image/*'&&i.capture==='environment';})()"));
+        } finally {if(scenario!=null)scenario.close();}
     }
     private void screenshot(String name) throws Exception {
         // Capture our app window only; system notification overlays can contain private unrelated messages.
@@ -60,7 +76,7 @@ public class CoreWorkflowTest {
     }
     @Test public void realWorkerProgressBookmarksAndNativeExports() throws Exception {
         try {
-            start();click("Try an original sample");click("Circle");click("Lighter");
+            start();sampleForDetailedChecks();click("Circle");click("Lighter");
             long began=SystemClock.elapsedRealtime();click("Calculate thread path");await(button("Save & assemble"),180000);long generationMs=SystemClock.elapsedRealtime()-began;
             input("#project-name","Device smoke test "+System.currentTimeMillis());click("Save & assemble");await("document.querySelector('[data-testid=\"confirmed-step\"]')",30000);
             String hash=js("document.querySelector('[data-testid=\"player-hash\"]').innerText");
@@ -91,14 +107,14 @@ public class CoreWorkflowTest {
     }
     @Test public void nativeSandboxSessionAndSupportSurviveActivityRecreation() throws Exception {
         try {
-            start();click("Account & shop");
+            start();assertEquals("true",js("(()=>{document.querySelector('.more-menu').open=true;return true;})()"));click("Account & shop");
             await("document.querySelector('.customer-hub')",30000);
             // Existing owner sessions are kept; test only creates a guest on a fresh app.
             if("true".equals(js("Boolean("+button("Start sandbox session")+")")))click("Start sandbox session");
             await("document.querySelector('[data-testid=\"customer-credits\"]')",30000);click("Support");
             input(".customer-fields input","Device sandbox smoke test");input(".customer-fields textarea","Synthetic local support record, no external delivery.");click("Save local support request");
             await("document.querySelector('.customer-hub').innerText.includes('Synthetic local support record')",30000);
-            scenario.recreate();await(button("Account & shop"),60000);click("Account & shop");await("document.querySelector('[data-testid=\"customer-credits\"]')",30000);click("Support");
+            scenario.recreate();await(button("Create"),60000);assertEquals("true",js("(()=>{document.querySelector('.more-menu').open=true;return true;})()"));click("Account & shop");await("document.querySelector('[data-testid=\"customer-credits\"]')",30000);click("Support");
             await("document.querySelector('.customer-hub').innerText.includes('Synthetic local support record')",30000);assertEquals("true",js("document.documentElement.scrollWidth<=innerWidth"));screenshot("product-device-customer.png");
             Files.write(new File(InstrumentationRegistry.getInstrumentation().getTargetContext().getCacheDir(),"product-device-customer.json").toPath(),"{\"nativeHttpAndPreferences\":true,\"realMessagesSent\":false}".getBytes(StandardCharsets.UTF_8));
         }finally{if(scenario!=null)scenario.close();}
@@ -125,7 +141,7 @@ public class CoreWorkflowTest {
     }
     @Test public void packagedOutlineAndCancelledNativePhotoPickerPreserveSource() throws Exception {
         try {
-            start();click("Create");click("Try an original sample");click("Heart");
+            start();click("Create");sampleForDetailedChecks();click("Heart");
             await("document.querySelector('[data-testid=\"shape-crop\"]')",30000);
             assertEquals("true",js("(()=>{const d=document.querySelector('.head-outline-controls');d.open=true;return true;})()"));
             click("Mark outline points");
@@ -155,7 +171,7 @@ public class CoreWorkflowTest {
     }
     @Test public void actualNativeCameraCancellationPreservesPhotoAndCrop() throws Exception {
         try {
-            start();click("Create");click("Try an original sample");
+            start();click("Create");sampleForDetailedChecks();
             await("document.querySelector('canvas[aria-label=\"Edited photo\"]')",30000);
             input("input[aria-label=\"Zoom\"]","1.2");
             String source=js("document.querySelector('canvas[aria-label=\"Edited photo\"]').toDataURL()"),
@@ -181,7 +197,7 @@ public class CoreWorkflowTest {
     }
     @Test public void nativeSpeechUsesInstalledVoiceAndNeverConfirmsWork() throws Exception {
         try {
-            start();click("Create");click("Try an original sample");click("Circle");click("Lighter");click("Calculate thread path");await(button("Save & assemble"),180000);
+            start();click("Create");sampleForDetailedChecks();click("Circle");click("Lighter");click("Calculate thread path");await(button("Save & assemble"),180000);
             input("#project-name","Device speech test "+System.currentTimeMillis());click("Save & assemble");await("document.querySelector('[data-testid=\"confirmed-step\"]')",30000);
             js("window.__nativeVoices=null;window.Capacitor.nativePromise('IpRasmSpeech','voices',{}).then(v=>window.__nativeVoices=v)");await("window.__nativeVoices",30000);
             JSONObject voices=new JSONObject(js("window.__nativeVoices"));org.json.JSONArray list=voices.getJSONArray("voices");
