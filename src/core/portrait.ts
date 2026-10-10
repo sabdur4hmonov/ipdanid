@@ -1,4 +1,5 @@
 import type { PortraitSettings, RegionBox, MaterialProfile } from "./types";
+import { contourPortrait } from "./portrait-detail";
 import { inside } from "./geometry";
 export const DEFAULT_PORTRAIT: PortraitSettings = {
   enabled: false,
@@ -34,6 +35,11 @@ export function contains(box: RegionBox, x: number, y: number) {
   );
 }
 export function validPortrait(s: PortraitSettings) {
+  if (
+    s?.detailStyle !== undefined &&
+    !["contour-preparation/1", "contour-preparation/2"].includes(s.detailStyle)
+  )
+    throw new Error("Invalid portrait detail style");
   const f = s?.face;
   if (
     typeof s?.enabled !== "boolean" ||
@@ -283,7 +289,9 @@ export function processPortrait(
           );
       }
   }
-  return out;
+  return s.detailStyle
+    ? contourPortrait(out, n, s.detailStyle === "contour-preparation/2")
+    : out;
 }
 export function putRgb(
   ctx: CanvasRenderingContext2D,

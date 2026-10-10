@@ -11,6 +11,7 @@ export interface PortraitSettings {
   face: RegionBox;
   background: number;
   localContrast: number;
+  detailStyle?: "contour-preparation/1" | "contour-preparation/2";
   backgroundMode?: "soften" | "manual-light";
   // 64×64 one-bit erase mask, hexadecimal. Contains selections, never photo pixels.
   backgroundMask?: string;

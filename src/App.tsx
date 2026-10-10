@@ -638,6 +638,7 @@ export default function App() {
         enabled: portrait.enabled,
         background: portrait.background,
         localContrast: portrait.localContrast,
+        ...(portrait.detailStyle ? { detailStyle: portrait.detailStyle } : {}),
       },
       aspect,
       resolution,
@@ -1599,6 +1600,57 @@ export default function App() {
                               )
                             : t("continuousSolver")}
                         </p>
+                        {portrait.enabled && mode !== "color" && (
+                          <label className="check">
+                            <input
+                              type="checkbox"
+                              aria-label={t("portraitDetail")}
+                              checked={Boolean(portrait.detailStyle)}
+                              disabled={busy}
+                              onChange={(e) =>
+                                setPortrait((p) => {
+                                  const { detailStyle: _old, ...rest } = p;
+                                  return e.target.checked
+                                    ? {
+                                        ...rest,
+                                        detailStyle: "contour-preparation/2",
+                                      }
+                                    : rest;
+                                })
+                              }
+                            />
+                            <span>
+                              {t("portraitDetail")}
+                              <small className="fineprint">
+                                {t("portraitDetailHint")}
+                              </small>
+                            </span>
+                          </label>
+                        )}
+                        {portrait.enabled &&
+                          mode !== "color" &&
+                          portrait.detailStyle && (
+                            <label className="check">
+                              <input
+                                type="checkbox"
+                                aria-label={t("preservePortraitTone")}
+                                checked={
+                                  portrait.detailStyle ===
+                                  "contour-preparation/2"
+                                }
+                                disabled={busy}
+                                onChange={(e) =>
+                                  setPortrait((p) => ({
+                                    ...p,
+                                    detailStyle: e.target.checked
+                                      ? "contour-preparation/2"
+                                      : "contour-preparation/1",
+                                  }))
+                                }
+                              />
+                              <span>{t("preservePortraitTone")}</span>
+                            </label>
+                          )}
                         {portrait.enabled && mode !== "color" && (
                           <label>
                             {t("portraitSolver")}

@@ -120,6 +120,10 @@ const uz = {
   basisHint:
     "240 yoki 320 mixni tanlang. Yangi shablon va boshqa doska kerak; eski yo‘riqnoma mos kelmaydi. Sifat va haqiqiy yig‘ish sinovi hali ochiq.",
   anatomySolver: "Burun va lab ustuvorligi (v10, tajriba)",
+  portraitDetail: "Yuz konturlarini ajratish",
+  preservePortraitTone: "Asl soyani ko‘proq saqlash",
+  portraitDetailHint:
+    "Suratdagi mayda konturlarni kuchaytiradi. Asl soyani saqlashni o‘chirsangiz tekis joylar ochartiriladi; avval nishonni solishtiring.",
   anatomyHint:
     "Qo‘lda belgilangan burun va lab markazlariga ustuvorlik beradi. Surat o‘zgarmaydi; alohida variant yaratiladi. Sifat va haqiqiy yig‘ish hali tekshirilishi kerak.",
   physicalSolver: "Fizik masofali kontrast (v8, tajriba)",
@@ -458,6 +462,10 @@ const en: Record<Key, string> = {
   basisHint:
     "Choose 240 or 320 pins. Requires its own template and board; an older guide does not match. Portrait quality and physical assembly remain unverified.",
   anatomySolver: "Nose and lip priority (v10, experimental)",
+  portraitDetail: "Separate facial contours",
+  preservePortraitTone: "Retain more original shading",
+  portraitDetailHint:
+    "Emphasize existing fine detail. Turn off shading retention for a lighter contour style; compare the target before generating.",
   anatomyHint:
     "Prioritizes the centers of manually marked nose and lip regions. Keeps the target unchanged and creates a separate variant. Portrait quality and physical assembly still require validation.",
   physicalSolver: "Physical-distance contrast (v8, experimental)",
@@ -793,6 +801,10 @@ const ru: Record<Key, string> = {
   basisHint:
     "Выберите 240 или 320 гвоздей. Нужны отдельный шаблон и доска; старое руководство не подходит. Качество портрета и физическая сборка ещё не подтверждены.",
   anatomySolver: "Приоритет носа и губ (v10, эксперимент)",
+  portraitDetail: "Выделить контуры лица",
+  preservePortraitTone: "Сохранить больше исходных полутонов",
+  portraitDetailHint:
+    "Усилить мелкие детали исходного фото. Отключите сохранение полутонов для более светлого контурного стиля; сначала сравните цель.",
   anatomyHint:
     "Усиливает приоритет центров вручную отмеченных носа и губ. Исходное изображение сохраняется; создаётся отдельный вариант. Качество портрета и реальную сборку ещё нужно проверить.",
   physicalSolver: "Контраст по физическим расстояниям (v8, эксперимент)",
