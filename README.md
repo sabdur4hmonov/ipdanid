@@ -4,7 +4,7 @@ Real on-device photo-to-continuous-thread instructions. Development build; physi
 
 Portrait mode shows the exact local grayscale target and lets you place the face region. Stock is a supply estimate; shortages are shown rather than reducing quality. The 20,000-line ceiling and bounded continuation stages control compute, not material consumption. Every stage creates a new sequence and keeps confirmed progress attached to its original hash. Exact-photo comparisons are local under ignored `output/portrait/report.html`; they do not establish physical likeness or production readiness.
 
-Upload advice is available in UZ/RU/EN. Plain light backgrounds are optional; patterned and existing photos are welcome. Portrait mode adds a local background brush, restore, undo, strength, clear and before/after inspection. Finish cropping before painting. Unpainted light skin, hair, ears, jaw and neck are preserved without automatic segmentation. Background processing does not guarantee likeness. The controlled experiment and exact resume task are in [docs/BACKGROUND_CHECKPOINT.md](docs/BACKGROUND_CHECKPOINT.md); its light-background variant was not accepted as a portrait improvement.
+Upload/camera and advice are available in UZ/RU/EN. Local photo preparation automatically composites a white background using packaged models in a Worker, with manual correction, restore/undo, original/prepared review and all-person fitting. Reviewed face/eye/nose/mouth proposals must be inspected before use; missed faces and mask edges can require correction. No photo uploads or CDN inference occur. Background processing does not guarantee likeness. See [docs/PEOPLE_FEATURES_CHECKPOINT.md](docs/PEOPLE_FEATURES_CHECKPOINT.md). The earlier manual-only experiment in BACKGROUND_CHECKPOINT.md is historical, not the current preprocessing implementation.
 
 ## Run locally
 
@@ -43,11 +43,19 @@ cd android
 .\gradlew.bat assembleDebug
 ```
 
-APK: `android/app/build/outputs/apk/debug/app-debug.apk`. This is a development artifact, not store-signed. Native project uses Preferences for progress, Filesystem + native Share for exports, and App lifecycle/back events. Runtime camera/microphone/background audio features remain roadmap work. iOS needs macOS/Xcode; open `ios/App/App.xcodeproj` after sync and configure owner signing. No iOS test or store publication is claimed.
+APK: `android/app/build/outputs/apk/debug/app-debug.apk`. This is a development artifact, not store-signed. Native project uses Preferences for progress, Filesystem + native Share for exports, and App lifecycle/back events. Upload/camera controls and picker cancellation have earlier device evidence; current packaged model/paint inference and successful personal capture still require owner device trials. Background audio and microphone features remain roadmap work. iOS needs macOS/Xcode; open `ios/App/App.xcodeproj` after sync and configure owner signing. No iOS test or store publication is claimed.
 
-This Windows host successfully compiled the debug APK with JDK 21/SDK 36. The current copy is `output/mobile/ip-rasm-product-debug.apk`; its hash and exact bundled assets are in the matching build-evidence JSON. Installation on the owner's Android phone succeeded. Device execution results are tracked in the current checkpoint; installation alone does not establish runtime behavior.
+This Windows host successfully compiled the debug APK with JDK 21/SDK 36. The latest built copy is `output/mobile/ip-rasm-paint-debug.apk`; all31 packaged assets and its signature are audited in `output/paint/build-evidence.json`. Earlier builds were installed/tested on the owner's Android phone; this latest model/paint build has not been installed. Device execution results and exact continuation are tracked in [docs/PAINT_RENDER_CHECKPOINT.md](docs/PAINT_RENDER_CHECKPOINT.md).
 
 Use the scoped tasks `./gradlew.bat :app:assembleDebug :app:assembleDebugAndroidTest`. Tests cover packaged assets and actual WebView/Worker/Preferences/native exports, plus native sandbox session/support. To reach the computer's local sandbox while USB-connected, run `adb reverse tcp:4311 tcp:4311`. Only the debug manifest permits cleartext loopback; production mobile networking/provider configuration remains open. No personal photo or external message is used by the device tests.
+
+## Paint by numbers
+
+Open **Mozaika / Grid crafts → Raqamlar bo‘yicha bo‘yash / Paint by numbers**. Upload or capture a photo, inspect local background correction and choose a palette, rectangular canvas and minimum region size. The Worker generates actual connected colour territories and cell-edge contours. Physical labels print only when their measured clearance fits; narrow regions have a warning and selectable reference coordinates. Colour matching and paint consumption are not calibrated; geometric area is shown.
+
+Confirm/unconfirm regions in any order, undo progress, save/reopen and export validated JSON backups, region CSV, actual-size SVG and UZ/RU/EN tiled A4 PDFs. Use printer scale100% and inspect the50mm ruler before any assembly. Paint has its own20-project/8MB library and revision-conflict protection. Archive/delete/folders and cloud sync for paint remain open. Physical printing/painting and current native share/progress are not yet accepted.
+
+The shared thread renderer also corrects optical previews of unchanged v10/v11 guides. This display repair does not establish improved facial likeness. Current evidence and remaining work: [docs/PAINT_RENDER_CHECKPOINT.md](docs/PAINT_RENDER_CHECKPOINT.md).
 
 ## Data and integrity
 

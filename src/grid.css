@@ -123,3 +123,13 @@
   height: 100%;
   pointer-events: none;
 }
+.paint-preview svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 560px;
+}
+.paint-studio input[type="checkbox"] {
+  width: auto;
+  margin-right: 8px;
+}

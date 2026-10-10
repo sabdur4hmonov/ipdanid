@@ -1,7 +1,7 @@
 """Owner-authorized in-place update. Never clear/uninstall or print private preferences."""
 import subprocess, pathlib, zipfile, hashlib, json, shutil, argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('--artifact',choices=['white-background','people-features'],default='white-background')
+parser.add_argument('--artifact',choices=['white-background','people-features','paint'],default='white-background')
 parser.add_argument('--verify-only',action='store_true')
 args = parser.parse_args()
 root = pathlib.Path(__file__).resolve().parents[1]

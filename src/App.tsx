@@ -1,4 +1,4 @@
-import { GridStudio } from "./GridStudio";
+import { CraftStudio } from "./CraftStudio";
 import { PhotoActions } from "./PhotoActions";
 import { PersonBackground, type BackgroundState } from "./PersonBackground";
 import { backgroundText } from "./person-background-i18n";
@@ -3128,7 +3128,7 @@ export default function App() {
               </button>
             </section>
           )}
-          {view === "crafts" && <GridStudio locale={locale} />}
+          {view === "crafts" && <CraftStudio locale={locale} />}
         </main>
         <footer>
           <span>{PRODUCT_NAME}</span>

@@ -27,6 +27,8 @@ export function renderInstruction(
       "continuous-guarded/6",
       "density-multiscale/7",
       "density-physical/8",
+      "density-anatomy/10",
+      "density-pin-basis/11",
       "assembly-prune/9",
     ].includes(i.algorithm)
   ) {

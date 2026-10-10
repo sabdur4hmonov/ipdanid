@@ -62,7 +62,15 @@ public class PackagedAssetsTest {
             assertTrue(html.contains("/assets/index-"));
         }
         boolean engine = false;
+        boolean paint = false;
         for (String asset : context.getAssets().list("public/assets")) {
+            if(asset.startsWith("paint.worker-") && asset.endsWith(".js")) {
+                try(InputStream input=context.getAssets().open("public/assets/"+asset)) {
+                    String worker=new String(read(input),StandardCharsets.UTF_8);
+                    assertTrue("Connected-region paint engine must be packaged",worker.contains("iprasm.paint/1") && worker.contains("linear-rgb-connected-small-first/1"));
+                }
+                paint=true;
+            }
             if (asset.startsWith("generator.worker-") && asset.endsWith(".js")) {
                 try (InputStream input = context.getAssets().open("public/assets/" + asset)) {
                     String worker = new String(read(input), StandardCharsets.UTF_8);
@@ -77,6 +85,7 @@ public class PackagedAssetsTest {
             }
         }
         assertTrue("Real Worker engine must be available offline", engine);
+        assertTrue("Paint worker must be available offline",paint);
         try (InputStream font = context.getAssets().open("public/fonts/NotoSans-Regular.ttf")) {
             assertTrue("Export font must be available offline", read(font).length > 100000);
         }
