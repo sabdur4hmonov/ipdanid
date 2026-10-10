@@ -2135,7 +2135,7 @@ export default function App() {
                           key: "threadMm" as const,
                           value: threadMm,
                           set: setThreadMm,
-                          min: 0.1,
+                          min: 0.05,
                           max: 2,
                           step: 0.05,
                         },
@@ -2169,6 +2169,11 @@ export default function App() {
                               )
                             }
                           />
+                          {r.key === "threadMm" && (
+                            <small className="fineprint">
+                              {t("threadDetailHint")}
+                            </small>
+                          )}
                         </label>
                       ))}
                     </details>

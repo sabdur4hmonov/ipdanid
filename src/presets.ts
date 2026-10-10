@@ -67,7 +67,7 @@ function validate(p: MakerPreset) {
     [s.widthMm, 50, 2000, false],
     [s.heightMm, 50, 2000, false],
     [s.pinCount, 24, s.pinBasis ? 320 : 240, true],
-    [s.threadMm, 0.1, 2, false],
+    [s.threadMm, 0.05, 2, false],
     [s.stockMeters, 0, 100000, false],
     [s.edits?.zoom, CROP_ZOOM_MIN, CROP_ZOOM_MAX, false],
     [s.edits?.panX, -0.5, 0.5, false],

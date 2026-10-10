@@ -1,0 +1,38 @@
+"""Private controlled strand trials; display losses and changed materials explicitly."""
+import json
+from pathlib import Path
+out=Path('output/strand-quality');out.mkdir(parents=True,exist_ok=True)
+folders=['thread-fineness','integer-strands','face-focus','thread-fineness-025']
+data={f:json.loads((Path('output')/f/'comparison.json').read_text(encoding='utf8')) for f in folders}
+projects={f:json.loads((Path('output')/f/'candidate.json').read_text(encoding='utf8')) for f in folders}
+control=json.loads(Path('output/thread-fineness/control.json').read_text(encoding='utf8'))
+table=''
+for name,p in [('0.1 mm control',control)]+[(f,projects[f]) for f in folders]:
+    i=p['project']['instruction'];table+=f'<tr><td>{name}</td><td>{i["profile"]["threadMm"]}</td><td>{i["metrics"]["lines"]}</td><td>{i["metrics"]["estimatedMeters"]:.2f}</td><td>{p["evidence"]["stageMs"]/1000:.2f}</td></tr>'
+def metrics(folder):
+    text=''
+    for row in data[folder]['results']:
+        a,b=row['variants']
+        for key in ['eyes','nose','mouth','face']:
+            x,y=a['errors'][key],b['errors'][key]
+            text+=f'<tr><td>{row["resolution"]}</td><td>{key}</td><td>{x["mse"]:.6f} → {y["mse"]:.6f}</td><td>{x["edgeMse"]:.6f} → {y["edgeMse"]:.6f}</td></tr>'
+    return '<div class="scroll"><table><tr><th>Nuqta</th><th>Joy</th><th>Tonal MSE: control → trial</th><th>Edge MSE</th></tr>'+text+'</table></div>'
+def images(folder,n=160):
+    return f'<section><figure><img src="../{folder}/candidate-target-{n}.png" alt="Mustaqil source target"><figcaption>Asl nishon · {n}</figcaption></figure><figure><img src="../{folder}/control-{n}.png" alt="Control actual strands"><figcaption>0.1 mm control</figcaption></figure><figure><img src="../{folder}/candidate-{n}.png" alt="Trial actual strands"><figcaption>Alohida tajriba · {n}</figcaption></figure></section>'
+html='''<!doctype html><html lang="uz"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Ip Rasm — ipli yuz sifatining sinovlari</title><style>body{font:17px system-ui;background:#faf8ef;color:#173f35;margin:24px;max-width:1250px}p{line-height:1.6;max-width:100ch}section{display:flex;flex-wrap:wrap;gap:14px}figure{margin:0;width:30%;min-width:210px}img{width:100%;height:auto}th,td{padding:8px;border:1px solid #ccd5c7}table{border-collapse:collapse}.scroll{overflow:auto}a{color:#235544}code{overflow-wrap:anywhere}@media(max-width:650px){figure{width:100%}}</style>
+<h1>Yuz sifati: haqiqiy iplar bilan to‘rtta sinov</h1><p><b>Eng foydali natija: alohida 0.05 mm material varianti.</b> Shu original suratda ko‘z, burun va labning tonal/edge xatolari native160 va umumiy512 rekonstruksiyada pasaydi. 512 dagi burun edge MSE taxminan32%, labniki30% pasaydi. Bu xato kamayishi; “yuz 100% aniq” yoki barcha suratlardagi sifat foizi emas. Kesishgan iplar, soya va hajm hali ideal emas. Fizik yig‘ish/haqiqiy yangi telefon sinovi ochiq.</p>
+<p><a href="http://127.0.0.1:4183/">Ilovani sinash</a> · <a href="../mobile/ip-rasm-thread-fineness-debug.apk">Yangilangan APK</a>. Materiallarda 0.05 mm endi clamp qilinmaydi va preset/reuse’da saqlanadi. Faqat haqiqatan ishlatiladigan ip qalinligini kiriting; 0.1 mm ipni ishlatib 0.05 mm deb yozish bu natijani bermaydi. Oldingi defaultlar va progress saqlangan.</p>
+<h2>Bir xil original tonal surat va crop — boshqa ip materiali</h2><p>White-source qurilmadagi mahalliy model bilan tayyorlangan original surat. Har ikkala yangi fit: bir xil crop/target hash, 240 aylana mix, 400 × 400 mm, 160 computation, .85 opacity modeli, bo‘sh grafik, sakkizta integer sweep va32/160 guards. Preview va enlarged tasvirlar aynan tartibli ulanishlardan rekonstruksiya qilindi; surat overlay’i yo‘q. Ip eni o‘zgargan, shuning uchun “bir xil materialda optimizer yutug‘i” emas.</p>'''
+html+=images('thread-fineness',160)+images('thread-fineness',512)
+html+='<h2>Kattalashtirilgan detallar — original tone va ip geometry saqlangan</h2>'
+for key,label in [('eyes','Ko‘zlar'),('nose','Burun'),('mouth','Lab')]:
+    html+=f'<h3>{label}</h3><section><figure><img src="../thread-fineness/control-{key}-512.png" alt="Control feature"><figcaption>0.1 mm</figcaption></figure><figure><img src="../thread-fineness/candidate-{key}-512.png" alt="Fine thread feature"><figcaption>0.05 mm haqiqiy iplar</figcaption></figure></section>'
+html+='<p>Pastdagi xatolarda kichikroq yaxshi. Mustaqil source-target hash160’da tekshirildi; barcha routing ulanishlari hisoblangan. 512 — fizik parametrlar bir xil o‘lchov gridiga qayta chizilgan matematik model, fizik fotosurat emas.</p>'+metrics('thread-fineness')
+html+='<h2>Sifat va mijoz yig‘ish ishi birga</h2><div class="scroll"><table><tr><th>Variant</th><th>Ip mm</th><th>Ulanish</th><th>Taxminiy metr</th><th>Desktop full fit, s</th></tr>'+table+'</table></div><p>0.05 mm varianti 1356 → 2763 ulanish, 526.89 → 1064.89 m: ikki baravarga yaqin ko‘proq ish. Bu tejam emas. Vaqtlar alohida host yuklamalarida; nazoratli tezlik/telefon/human assembly benchmark emas. Ipning real diametri, opacity, sig‘im va yig‘ish vaqti fizik sinovda tekshirilishi kerak.</p>'
+html+='<h2>Qolgan sinovlar foydali deb chiqarilmadi</h2><p><b>To‘liq integer qidiruv</b> 32 gacha barcha ruxsat etilgan count o‘zgarishlarini tekshirdi. 37 ulanish kamroq chiqdi, ammo common512 ko‘z/burun/labning tone/edge xatolari yomonlashdi. Private copied solver ilovaga chiqarilmadi. Kamroq ulanish bu yerda teng sifat saqlangan tejam emas.</p>'+images('integer-strands')+metrics('integer-strands')
+html+='<p><b>Yuzni markazga yirikroq fit</b> mavjud qaytariladigan crop orqali 1.2665× yirikroq joylashtirdi. Ko‘zlar yaxshilandi, burun/lab mixed. Crop o‘zgargani uchun region MSE’da aynan bir xil raster vazifasi deb hisoblanmaydi; ko‘rinish va source mapping ham tekshirildi. Avtomatik defaultga chiqarilmadi.</p>'+images('face-focus')+metrics('face-focus')
+html+='<p><b>0.025 mm research</b> 5597 ulanish /2135.17 m talab qildi va0.05 mm’dan yaxshiroq bo‘lmadi. UI/preset minimum0.05 mm qoladi; bu private material tajribasi tavsiya qilinmaydi.</p>'+images('thread-fineness-025')+metrics('thread-fineness-025')
+html+='<h2>Exact guide va verification</h2><p>0.05 mm guide hash: <code>02ab608c777800bf94d59171a5234137e15ffffc8a455cd16eec68e8d09dce29</code>. <a href="../thread-fineness/candidate.json">Import qilinadigan alohida loyiha</a> · <a href="../thread-fineness/uz-guide.pdf">To‘liq o‘zbekcha PDF</a> · <a href="../thread-fineness/comparison.json">O‘lchovlar</a> · <a href="../thread-fineness/build-evidence.json">APK auditi</a>. PDF71 sahifa, barcha2763 qadam/hash/zero progress tekshirildi, har bir sahifa render qilindi. Printing/winding hali tekshirilmagan.</p><p>126/126 domain/PDF test; final6/6 desktop/touch import/preset/offline progress/export va optical byte checks. <a href="../fine-thread-unit-final.json">Domain hisobot</a> · <a href="../fine-thread-browser-final.json">Final browser hisobot</a>. Initial browser testlar noto‘g‘ri confirm/preset label taxminlari sabab timeout berdi; corrected tests app behavior’ni o‘zgartirmasdan o‘tdi. Dastlabki generic measurements normalized targetni byte-input API’ga bergan; ular superseded, hozirgi report source bytes bilan qayta o‘lchangan. Build va offline app-scoped Android compilation/all31 assets/signer verified; native device yangi APK’da tekshirilmagan. No push/photo upload/publication.</p></html>'
+html=html.replace('thread-fineness/uz-guide.pdf','thread-fineness/uz-material-guide.pdf')
+(out/'report.html').write_text(html,encoding='utf8')
+print('Private quality report: material gain, routing and all rejected trials documented.')

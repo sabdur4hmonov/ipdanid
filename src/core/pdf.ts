@@ -87,6 +87,7 @@ export async function exportPdf(
   for (const s of [
     t("provisional"),
     `${t(i.profile.shape)} · ${i.profile.widthMm} × ${i.profile.heightMm} mm · ${i.profile.pins.length} ${t("pdfPin")}`,
+    `${t("threadMm")}: ${i.profile.threadMm}`,
     `${i.metrics.lines} ${t("lines")} · ${i.metrics.estimatedMeters.toFixed(1)} ${t("meters")}`,
     `${t("stockMeters")}: ${i.profile.stockMeters.toFixed(1)} m · ${t("stockShortfall")}: ${(Math.ceil(Math.max(0, i.metrics.estimatedMeters - i.profile.stockMeters) * 10) / 10).toFixed(1)} m`,
     `${t("confirmed")}: ${confirmed}/${i.metrics.lines}`,

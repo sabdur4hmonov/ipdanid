@@ -335,6 +335,8 @@ const uz = {
   heightMm: "Balandlik (mm)",
   pinCount: "Mixlar soni",
   threadMm: "Ip qalinligi (mm)",
+  threadDetailHint:
+    "Faqat ishlatadigan ipingizning qalinligini kiriting. Ingichka ip ko‘proq ulanish talab qilishi mumkin; yuz sifati va yig‘ish ishini birga solishtiring.",
   stockMeters: "Mavjud ip (m)",
   conflict:
     "Boshqa oynada loyihalar o‘zgardi. Hozirgi loyiha JSON’ini zaxira oling, keyin saqlangan kutubxonani qayta yuklang.",
@@ -676,6 +678,8 @@ const en: Record<Key, string> = {
   heightMm: "Height (mm)",
   pinCount: "Number of pins",
   threadMm: "Thread thickness (mm)",
+  threadDetailHint:
+    "Enter the thickness of the thread you will actually use. Finer thread can require more connections; compare portrait detail and assembly work together.",
   stockMeters: "Available thread (m)",
   conflict:
     "Another tab changed your library. Export your current project JSON as a backup, then reload the saved library.",
@@ -1016,6 +1020,8 @@ const ru: Record<Key, string> = {
   heightMm: "Высота (мм)",
   pinCount: "Число гвоздей",
   threadMm: "Толщина нити (мм)",
+  threadDetailHint:
+    "Укажите толщину нити, которую будете использовать. Тонкая нить может требовать больше соединений; сравнивайте детализацию лица и объём сборки вместе.",
   stockMeters: "Доступная нить (м)",
   conflict:
     "Проекты изменены в другой вкладке. Сохраните JSON текущего проекта, затем перезагрузите библиотеку.",

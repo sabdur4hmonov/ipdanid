@@ -8,6 +8,8 @@ Upload/camera and advice are available in UZ/RU/EN. Local photo preparation auto
 
 For optional string-art detail preparation, enable **Prioritize portrait → Separate facial contours**. **Retain more original shading** uses bounded local contrast; disabling it selects a much lighter contour style. Review the exact target first. Both create different immutable sequences; savings against different tonal targets are not quality-equivalent. Native facial detail improved on one owner photo but common physical-scale errors remain mixed, so default tonal processing and quality/physical acceptance remain unchanged. See [docs/PORTRAIT_DETAIL_CHECKPOINT.md](docs/PORTRAIT_DETAIL_CHECKPOINT.md).
 
+Material controls and presets accept measured **0.05–2 mm** thread; PDF covers show the exact thickness. A separate0.05 mm owner-photo trial improves simulated facial errors but needs about twice the assembly steps and thread. Enter your actual material: thinner settings are not a same-material quality fix or a physical acceptance claim. See [docs/STRAND_QUALITY_CHECKPOINT.md](docs/STRAND_QUALITY_CHECKPOINT.md).
+
 ## Run locally
 
 Experimental global portrait fitting can remove misplaced strands and reroute a new immutable variant. It preserves its continuous comparison basis and never transfers old confirmed steps. Local same-source comparisons, enlarged facial regions, rejected trials and winding guards are documented in [docs/PORTRAIT_FIDELITY_CHECKPOINT.md](docs/PORTRAIT_FIDELITY_CHECKPOINT.md); report: ignored `output/fidelity/report.html`. Nose/mouth definition and physical winding validation remain open.
