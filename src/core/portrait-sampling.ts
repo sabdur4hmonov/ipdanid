@@ -14,7 +14,7 @@ export function portraitSampling(
   if (
     !Number.isInteger(n) ||
     n < 32 ||
-    n > 192 ||
+    n > 320 ||
     pixels.length !== n * n * 3 ||
     !["circle", "rectangle", "heart"].includes(shape)
   )

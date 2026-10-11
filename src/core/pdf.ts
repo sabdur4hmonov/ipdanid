@@ -132,6 +132,7 @@ export async function exportPdf(
         "density-physical/8",
         "density-anatomy/10",
         "density-pin-basis/11",
+        "density-resolved/12",
         "assembly-prune/9",
       ].includes(i.algorithm)
     ) {
@@ -228,6 +229,7 @@ export async function exportPdf(
       "density-physical/8",
       "density-anatomy/10",
       "density-pin-basis/11",
+      "density-resolved/12",
       "assembly-prune/9",
     ].includes(i.algorithm) &&
     i.profile.shape === "circle" &&

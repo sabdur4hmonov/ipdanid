@@ -9,11 +9,12 @@ if (
     "face-focus",
     "thread-fineness",
     "thread-fineness-025",
+    "portrait-resolved",
   ].includes(folder)
 )
   throw Error("Select a known local experiment");
 const out = "output/" + folder;
-const rows = ["control", "candidate"].map((name) => ({
+const rows = (folder === "portrait-resolved" ? ["control", "candidate-4", "candidate", "candidate-pruned"] : ["control", "candidate"]).map((name) => ({
   name,
   project: JSON.parse(readFileSync(`${out}/${name}.json`, "utf8")).project,
 }));
@@ -26,7 +27,7 @@ try {
       : r.abort(),
   );
   await page.goto("http://127.0.0.1:5183/");
-  const results = await page.evaluate(async (rows) => {
+  const results = await page.evaluate(async ({ rows, folder }) => {
     const { loadPhoto, prepare } = await import("/src/core/image.ts");
     const { processPortrait, putRgb, regionMeasurements, portraitRegions } =
       await import("/src/core/portrait.ts");
@@ -34,6 +35,7 @@ try {
     const { rasterSequenceAtResolution } = await import("/src/core/optical.ts");
     const { regionPixels } = await import("/src/core/coordinates.ts");
     const { hash } = await import("/src/core/engine.ts");
+    const { qualityDifferences, withinQualityTolerance } = await import("/src/core/simplify.ts");
     const image = await loadPhoto(
       new File(
         [
@@ -46,8 +48,9 @@ try {
       ),
     );
     const results = [];
-    for (const n of [160, 512]) {
+    for (const n of (folder === "portrait-resolved" ? [160, 320, 512] : [160, 512])) {
       const variants = [];
+      let referenceRaster, controlRaster;
       for (const { name, project } of rows) {
         const i = project.instruction,
           edits = project.edits;
@@ -77,6 +80,10 @@ try {
         const targetPng = c.toDataURL();
         const target = Float32Array.from(pixels, (v) => v / 255),
           raster = rasterSequenceAtResolution(i, n);
+        if (name === "control") controlRaster = raster;
+        if (name === "candidate") referenceRaster = raster;
+        const qualityAgainstControl = folder === "portrait-resolved" && name !== "control" ? qualityDifferences(controlRaster, raster, pixels, n, { ...i, params: { ...i.params, portrait } }) : undefined;
+        const simplificationDifferences = name === "candidate-pruned" ? qualityDifferences(referenceRaster, raster, pixels, n, { ...i, params: { ...i.params, portrait } }) : undefined;
         putRgb(
           c.getContext("2d"),
           Uint8Array.from(raster, (v) => Math.round(v * 255)),
@@ -131,6 +138,9 @@ try {
         }
         variants.push({
           name,
+          qualityAgainstControl,
+          simplificationDifferences,
+          simplificationWithinTolerance: simplificationDifferences ? withinQualityTolerance(simplificationDifferences) : undefined,
           targetHash,
           errors: regionMeasurements(pixels, raster, n, i.profile, portrait),
           contourCosine,
@@ -143,7 +153,7 @@ try {
     }
     image.close();
     return results;
-  }, rows);
+  }, { rows, folder });
   for (const row of results)
     for (const v of row.variants) {
       for (const [field, suffix] of [

@@ -25,6 +25,10 @@ with zipfile.ZipFile(apk) as archive:
     main_name = next(n for n in expected if '/index-' in n and n.endswith('.js'))
     main = archive.read(main_name).decode()
     assert 'Computation resolution' in main and 'resolution' in main and '192' in main, 'Resolution control missing'
+    if args.archive_name=='ip-rasm-portrait-resolved':
+        assert 'density-resolved/12' in worker and 'direct-source320/1' in worker, 'Resolved sampling engine/binding missing'
+        assert '320 samples the original more finely' in main, 'Localized resolved controls missing'
+        assert not any('/output/' in n or n.endswith('source.jpg') for n in archive.namelist()), 'Private photograph packaged'
     if args.archive_name=='ip-rasm-shape-fit':
         assert 'marked-face-shape-fit/1' in main and 'Fit marked face to shape' in main and 'not automatic detection' in main, 'Shape framing controls missing'
     if args.archive_name=='ip-rasm-outline':
@@ -71,8 +75,11 @@ evidence = dict(builtAt=datetime.now(timezone.utc).isoformat(), debug=True,
     backgroundSelection="manual 64x64 background and foreground masks",
     regionReference="processed-target/sample-centers-v1", workerJobAssociation=True,
     pinLayoutVersion="circle-phase/1", defaultPinLayoutUnchanged=True, templateVersion="radial-leaders/1",
-    defaultResolution=160, experimentalResolution=192, importedResolutionPreserved=True, maxLines=20000, stockPolicy='estimate', instrumentationCompiled=True,
+    defaultResolution=160, experimentalResolution=320 if args.archive_name=='ip-rasm-portrait-resolved' else 192, importedResolutionPreserved=True, maxLines=20000, stockPolicy='estimate', instrumentationCompiled=True,
     nativeDeviceTested=False, physicallyValidated=False, productionActive=False,
     assets=[dict(path=f.relative_to(dist).as_posix(),sha256=hashlib.sha256(f.read_bytes()).hexdigest()) for f in files])
+if args.archive_name=='ip-rasm-portrait-resolved':
+    evidence['algorithms'] += ['density-anatomy/10','density-pin-basis/11','density-resolved/12']
+    evidence['samplingVersion']='direct-source320/1; opt-in; guarded 240/320 circular basis; exact target/checkpoint binding'
 (out / ('build-evidence.json' if args.archive_name=='ip-rasm' else args.archive_name+'-build-evidence.json')).write_text(json.dumps(evidence, indent=2), encoding='utf-8')
 print(json.dumps({k:v for k,v in evidence.items() if k != 'assets'}))

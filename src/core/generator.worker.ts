@@ -74,6 +74,7 @@ self.onmessage = async ({ data }) => {
               data.strategy,
             )
           ? await generateDensity(options, {
+              resolved: data.strategy === "basis" && data.resolution === 320,
               edgeWeight:
                 data.seed?.params.optimization?.edgeWeight ??
                 (["multiscale", "physical", "anatomy", "basis"].includes(

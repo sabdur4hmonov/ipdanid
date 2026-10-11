@@ -79,7 +79,7 @@ export class PhysicalContrast {
     if (
       !Number.isInteger(n) ||
       n < 32 ||
-      n > 192 ||
+      n > 320 ||
       mask.length !== n * n ||
       importance.length !== n * n ||
       !Number.isFinite(edgeWeight) ||

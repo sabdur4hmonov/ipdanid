@@ -85,7 +85,8 @@ export interface Instruction {
     | "density-physical/8"
     | "assembly-prune/9"
     | "density-anatomy/10"
-    | "density-pin-basis/11";
+    | "density-pin-basis/11"
+    | "density-resolved/12";
   id: string;
   createdAt: string;
   imageHash: string;
@@ -102,6 +103,7 @@ export interface Instruction {
     refinementStage?: number;
     simplification?: import("./simplify").SimplificationSettings;
     optimization?: {
+      sampling?: { version: "direct-source320/1"; grid: 320 };
       kind?: "density-coordinate" | "optical-coordinate";
       order?: "dispersed-v1";
       overshoot?: "target-luminance-v1";

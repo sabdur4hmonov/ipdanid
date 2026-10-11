@@ -65,6 +65,8 @@ const uz = {
     "Belgilangan yuz bu sozlamalarda sig‘madi. Belgini va surat joylashuvini tekshiring.",
   computationResolution: "Hisoblash aniqligi",
   experimental: "tajriba",
+  resolvedHint:
+    "320 — tajribaviy aylana chord engine uchun originaldan mayda namuna. Mix soni va haqiqiy ipni alohida tekshiring. Ko‘proq hisoblash sifatni kafolatlamaydi.",
   resolutionHint:
     "Aniqlik mix yoki ipni o‘zgartirmaydi. 192 — tajriba: sekinroq, kontrastning piksel masshtabi o‘zgaradi; sifat kafolatlanmagan.",
   orientationMap:
@@ -409,6 +411,8 @@ const en: Record<Key, string> = {
     "The marked face cannot fit with these controls. Check the box and photo framing.",
   computationResolution: "Computation resolution",
   experimental: "experimental",
+  resolvedHint:
+    "320 samples the original more finely in the experimental circular chord engine. Check pin count and actual thread separately. More computation does not guarantee likeness.",
   resolutionHint:
     "Pins and thread stay unchanged. 192 is experimental: slower, with a changed pixel contrast scale; quality is unproven.",
   orientationMap:
@@ -751,6 +755,8 @@ const ru: Record<Key, string> = {
     "Отмеченное лицо не помещается при этих настройках. Проверьте рамку и положение фото.",
   computationResolution: "Разрешение расчёта",
   experimental: "эксперимент",
+  resolvedHint:
+    "320 — более подробное семплирование оригинала в экспериментальном круговом движке. Отдельно проверьте число гвоздей и реальную нить. Больше вычислений не гарантирует сходство.",
   resolutionHint:
     "Гвозди и нить не меняются. 192 — эксперимент: медленнее, пиксельный масштаб контраста меняется; качество не гарантировано.",
   orientationMap:

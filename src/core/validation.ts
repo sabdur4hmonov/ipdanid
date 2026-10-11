@@ -29,6 +29,7 @@ export async function validateInstruction(
       "density-physical/8",
       "density-anatomy/10",
       "density-pin-basis/11",
+      "density-resolved/12",
       "assembly-prune/9",
     ].includes(i.algorithm)
   )
@@ -41,6 +42,7 @@ export async function validateInstruction(
       "density-physical/8",
       "density-anatomy/10",
       "density-pin-basis/11",
+      "density-resolved/12",
       "assembly-prune/9",
     ].includes(i.algorithm),
     limit = qualityFirst ? MAX_LINES : 3000;
@@ -100,9 +102,12 @@ export async function validateInstruction(
     validatePinBasis(p);
     if (
       i.algorithm !== "density-pin-basis/11" &&
+      i.algorithm !== "density-resolved/12" &&
       !(
         i.algorithm === "assembly-prune/9" &&
-        i.params?.simplification?.sourceAlgorithm === "density-pin-basis/11"
+        ["density-pin-basis/11", "density-resolved/12"].includes(
+          i.params?.simplification?.sourceAlgorithm ?? "",
+        )
       )
     )
       throw Error("Unbound experimental pin basis");
@@ -162,7 +167,12 @@ export async function validateInstruction(
     !["dark", "light", "color"].includes(i.params.mode) ||
     !Number.isInteger(i.params.resolution) ||
     i.params.resolution < 32 ||
-    i.params.resolution > 192 ||
+    i.params.resolution >
+      (i.algorithm === "density-resolved/12" ||
+      (i.algorithm === "assembly-prune/9" &&
+        i.params.simplification?.sourceAlgorithm === "density-resolved/12")
+        ? 320
+        : 192) ||
     !Number.isInteger(i.params.requestedLines) ||
     i.params.requestedLines < total ||
     i.params.requestedLines > limit
@@ -175,6 +185,7 @@ export async function validateInstruction(
       "density-physical/8",
       "density-anatomy/10",
       "density-pin-basis/11",
+      "density-resolved/12",
       "assembly-prune/9",
     ].includes(i.algorithm)
   ) {
@@ -197,6 +208,7 @@ export async function validateInstruction(
         "density-physical/8",
         "density-anatomy/10",
         "density-pin-basis/11",
+        "density-resolved/12",
       ].includes(i.algorithm)
     ) {
       validPhysicalContrast(i.params.optimization.contrastPhysical!);
@@ -241,6 +253,26 @@ export async function validateInstruction(
       }
     }
   }
+  const sampling = i.params.optimization?.sampling;
+  if (
+    i.algorithm === "density-resolved/12" ||
+    (i.algorithm === "assembly-prune/9" &&
+      i.params.simplification?.sourceAlgorithm === "density-resolved/12")
+  ) {
+    if (
+      sampling?.version !== "direct-source320/1" ||
+      sampling.grid !== 320 ||
+      i.params.resolution !== 320 ||
+      i.params.mode === "color" ||
+      !i.params.portrait?.enabled ||
+      i.params.optimization?.anatomy ||
+      i.params.optimization?.exchange ||
+      i.params.optimization?.convergence ||
+      !p.pinBasis
+    )
+      throw Error("Invalid resolved sampling provenance");
+    validPhysicalContrast(i.params.optimization?.contrastPhysical!);
+  } else if (sampling !== undefined) throw Error("Unbound resolved sampling");
   const anatomy = i.params.optimization?.anatomy;
   if (
     i.algorithm === "density-anatomy/10" ||
@@ -271,6 +303,7 @@ export async function validateInstruction(
           "density-physical/8",
           "density-anatomy/10",
           "density-pin-basis/11",
+          "density-resolved/12",
           "continuous-guarded/6",
         ].includes(s.sourceAlgorithm) ||
         JSON.stringify(s.tolerances) !==
@@ -327,6 +360,7 @@ export async function validateInstruction(
         "density-physical/8",
         "density-anatomy/10",
         "density-pin-basis/11",
+        "density-resolved/12",
       ].includes(i.algorithm)
     ) {
       if (i.params.optimization?.pairLimit !== undefined) {
@@ -589,6 +623,7 @@ export function toTxt(i: Instruction): string {
     "density-physical/8",
     "density-anatomy/10",
     "density-pin-basis/11",
+    "density-resolved/12",
     "assembly-prune/9",
   ].includes(i.algorithm)
     ? i.segments

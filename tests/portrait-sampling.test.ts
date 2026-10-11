@@ -2,6 +2,18 @@ import { describe, it, expect } from "vitest";
 import { portraitSampling } from "../src/core/portrait-sampling";
 import { DEFAULT_PORTRAIT } from "../src/core/portrait";
 describe("portrait sampling on the immutable target", () => {
+  it("supports the direct 320 diagnostic without modifying its target or opening unbounded grids", () => {
+    const portrait = { ...DEFAULT_PORTRAIT, enabled: true };
+    const pixels = new Uint8Array(320 * 320 * 3).fill(200),
+      before = pixels.slice();
+    const result = portraitSampling(pixels, 320, "circle", portrait);
+    expect(result.map((r) => r.key)).toEqual(["eyes", "nose", "mouth"]);
+    expect(result.every((r) => r.samples > 0 && r.toneRange === 0)).toBe(true);
+    expect(Buffer.from(pixels).equals(Buffer.from(before))).toBe(true);
+    expect(() =>
+      portraitSampling(new Uint8Array(321 * 321 * 3), 321, "circle", portrait),
+    ).toThrow("sampling target");
+  });
   it("reports source windows at each grid without inventing contrast or changing pixels", () => {
     const portrait = {
       ...DEFAULT_PORTRAIT,

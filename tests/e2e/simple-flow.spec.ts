@@ -67,7 +67,7 @@ test("gallery still prepares locally, generates a real path and saves resumable 
   await page.getByLabel("Language").selectOption("en");
   await page
     .getByLabel("Upload from gallery", { exact: true })
-    .setInputFiles("output/outline/source.jpg");
+    .setInputFiles("output/portrait/source.jpg");
   await expect(page.getByLabel("Edited photo", { exact: true })).toBeVisible();
   // Preparation continues while its controls are collapsed.
   await expect(page.getByTestId("background-status")).toHaveAttribute(

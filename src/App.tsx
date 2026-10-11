@@ -254,6 +254,7 @@ export default function App() {
       setPinBasis(undefined);
       setPinLayout(undefined);
       setPinCoordinates(undefined);
+      if (resolution === 320) changeComputationResolution(160);
     }
   }, [portraitSolver, portrait.enabled, shape, mode]);
   useEffect(() => {
@@ -945,6 +946,7 @@ export default function App() {
             "density-physical/8",
             "density-anatomy/10",
             "density-pin-basis/11",
+            "density-resolved/12",
           ].includes(i.algorithm)
         ) {
           await clearOptimizerRecovery();
@@ -971,7 +973,9 @@ export default function App() {
               name:
                 i.algorithm === "assembly-prune/9"
                   ? `${label} · ${t("simplificationSolver")}`
-                  : i.algorithm === "density-pin-basis/11"
+                  : ["density-pin-basis/11", "density-resolved/12"].includes(
+                        i.algorithm ?? "",
+                      )
                     ? `${label} · ${t("basisSolver")}`
                     : i.algorithm === "density-anatomy/10"
                       ? `${label} · ${t("anatomySolver")}`
@@ -1017,7 +1021,9 @@ export default function App() {
       anatomy: resume?.anatomy ?? seed?.params.optimization?.anatomy ?? anatomy,
       strategy:
         strategyOverride ??
-        (seed?.algorithm === "density-pin-basis/11"
+        (["density-pin-basis/11", "density-resolved/12"].includes(
+          seed?.algorithm ?? "",
+        )
           ? "basis"
           : seed?.algorithm === "density-anatomy/10"
             ? "anatomy"
@@ -1097,6 +1103,23 @@ export default function App() {
     } finally {
       setPdfBusy(false);
     }
+  }
+  function changeComputationResolution(next: number) {
+    if (image && next !== resolution)
+      setPortrait((p) =>
+        remapPortrait(
+          p,
+          edits,
+          edits,
+          image.width,
+          image.height,
+          aspect,
+          next,
+          aspect,
+          resolution,
+        ),
+      );
+    setResolution(next);
   }
   function applyCrop(next: EditParams) {
     const previous = cropRef.current;
@@ -1692,7 +1715,7 @@ export default function App() {
                                 value={portraitSolver}
                                 onChange={(e) => {
                                   if (e.target.value === "basis") {
-                                    setPinCount(320);
+                                    setPinCount((v) => (v === 240 ? 240 : 320));
                                     setPinBasis(undefined);
                                     setPinLayout(undefined);
                                     setPinCoordinates(undefined);
@@ -1702,6 +1725,11 @@ export default function App() {
                                     setPinLayout(undefined);
                                     setPinCoordinates(undefined);
                                   }
+                                  if (
+                                    e.target.value !== "basis" &&
+                                    resolution === 320
+                                  )
+                                    changeComputationResolution(160);
                                   setPortraitSolver(
                                     e.target.value as
                                       | "continuous"
@@ -1758,26 +1786,13 @@ export default function App() {
                               aria-label={t("computationResolution")}
                               value={resolution}
                               disabled={busy}
-                              onChange={(e) => {
-                                const next = Number(e.target.value);
-                                if (image && next !== resolution)
-                                  setPortrait((p) =>
-                                    remapPortrait(
-                                      p,
-                                      edits,
-                                      edits,
-                                      image.width,
-                                      image.height,
-                                      aspect,
-                                      next,
-                                      aspect,
-                                      resolution,
-                                    ),
-                                  );
-                                setResolution(next);
-                              }}
+                              onChange={(e) =>
+                                changeComputationResolution(
+                                  Number(e.target.value),
+                                )
+                              }
                             >
-                              {![160, 192].includes(resolution) && (
+                              {![160, 192, 320].includes(resolution) && (
                                 <option value={resolution}>
                                   {resolution} × {resolution}
                                 </option>
@@ -1786,9 +1801,15 @@ export default function App() {
                               <option value={192}>
                                 192 × 192 · {t("experimental")}
                               </option>
+                              <option
+                                value={320}
+                                disabled={portraitSolver !== "basis"}
+                              >
+                                320 × 320 · {t("experimental")}
+                              </option>
                             </select>
                             <span className="fineprint">
-                              {t("resolutionHint")}
+                              {t("resolutionHint")} {t("resolvedHint")}
                             </span>
                           </label>
                           <RegionEditor
@@ -2419,6 +2440,7 @@ export default function App() {
                             "density-physical/8",
                             "density-anatomy/10",
                             "density-pin-basis/11",
+                            "density-resolved/12",
                           ].includes(result.algorithm) && (
                             <button
                               className="outline full"
@@ -2462,6 +2484,7 @@ export default function App() {
                             "density-physical/8",
                             "density-anatomy/10",
                             "density-pin-basis/11",
+                            "density-resolved/12",
                           ].includes(result.algorithm) ||
                             result.metrics.stoppedReason ===
                               "compute-limit") && (
@@ -2471,7 +2494,10 @@ export default function App() {
                               onClick={() =>
                                 generate(
                                   result,
-                                  result.algorithm === "density-pin-basis/11"
+                                  [
+                                    "density-pin-basis/11",
+                                    "density-resolved/12",
+                                  ].includes(result.algorithm ?? "")
                                     ? "basis"
                                     : result.algorithm === "density-anatomy/10"
                                       ? "anatomy"
@@ -2494,6 +2520,7 @@ export default function App() {
                                   "density-physical/8",
                                   "density-anatomy/10",
                                   "density-pin-basis/11",
+                                  "density-resolved/12",
                                 ].includes(result.algorithm)
                                   ? "continueGlobal"
                                   : "rerouteGlobal",

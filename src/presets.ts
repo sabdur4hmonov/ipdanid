@@ -86,7 +86,10 @@ function validate(p: MakerPreset) {
   }
   if (
     s.resolution !== undefined &&
-    (!Number.isInteger(s.resolution) || s.resolution < 32 || s.resolution > 192)
+    (!Number.isInteger(s.resolution) ||
+      s.resolution < 32 ||
+      (s.resolution > 192 &&
+        !(s.resolution === 320 && s.portraitSolver === "basis")))
   )
     throw new Error("Invalid saved computation resolution");
   if (s.portrait) validPortrait(s.portrait);

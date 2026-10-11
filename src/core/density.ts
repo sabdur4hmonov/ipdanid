@@ -54,6 +54,8 @@ export interface ChordExchangeSettings {
   selection: "initial-full-objective-gain/1" | "nose-lip-residual/1";
 }
 export interface DensityTuning {
+  // Separately versioned direct-source grid; never an enlarged old target/seed.
+  resolved?: boolean;
   edgeWeight: number;
   sweeps: number;
   multiscale?: boolean;
@@ -103,6 +105,17 @@ export async function generateDensity(
   )
     throw Error("Anatomical importance requires a separate physical fit");
   const importanceAt = anatomicalImportance(portrait, tuning.anatomy);
+  if (
+    tuning.resolved &&
+    (n !== 320 ||
+      !tuning.physical ||
+      !p.pinBasis ||
+      tuning.anatomy ||
+      tuning.extension ||
+      tuning.exchange ||
+      (o.seed && o.seed.algorithm !== "density-resolved/12"))
+  )
+    throw Error("Resolved sampling requires a separate 320 physical fit");
   const extension = tuning.extension;
   const exchange = tuning.exchange;
   if (
@@ -171,7 +184,7 @@ export async function generateDensity(
   if (
     !Number.isInteger(n) ||
     n < 32 ||
-    n > 192 ||
+    n > (tuning.resolved ? 320 : 192) ||
     o.pixels.length !== n * n * 3 ||
     !Number.isInteger(o.lines) ||
     o.lines < 1 ||
@@ -527,6 +540,9 @@ export async function generateDensity(
             sweeps: tuning.sweeps,
             multiscale: tuning.multiscale ?? false,
             physical: tuning.physical,
+            ...(tuning.resolved
+              ? { sampling: { version: "direct-source320/1", grid: 320 } }
+              : {}),
             ...(tuning.anatomy ? { anatomy: tuning.anatomy } : {}),
             ...(exchange ? { exchange } : {}),
             ...(extension
@@ -1092,15 +1108,17 @@ export async function generateDensity(
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: p.pinBasis
-      ? "density-pin-basis/11"
-      : tuning.anatomy
-        ? "density-anatomy/10"
-        : tuning.physical
-          ? "density-physical/8"
-          : tuning.multiscale
-            ? "density-multiscale/7"
-            : "density-optical/5",
+    algorithm: tuning.resolved
+      ? "density-resolved/12"
+      : p.pinBasis
+        ? "density-pin-basis/11"
+        : tuning.anatomy
+          ? "density-anatomy/10"
+          : tuning.physical
+            ? "density-physical/8"
+            : tuning.multiscale
+              ? "density-multiscale/7"
+              : "density-optical/5",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -1120,6 +1138,14 @@ export async function generateDensity(
           }
         : {}),
       optimization: {
+        ...(tuning.resolved
+          ? {
+              sampling: {
+                version: "direct-source320/1" as const,
+                grid: 320 as const,
+              },
+            }
+          : {}),
         lookahead: 0,
         coarseScale: 1,
         minimumRelativeGain: 0.0001,
