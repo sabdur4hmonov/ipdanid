@@ -1,5 +1,18 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
+async function reviewEveryPerson(page: import("@playwright/test").Page) {
+  // Each person is confirmed separately (R2); one click no longer confirms a group.
+  const people = page.getByTestId("people-region-editor");
+  const count = await people.getByTestId("person-status").count();
+  for (let k = 0; k < count; k++) {
+    await people.getByTestId("person-status").nth(k).locator("button").click();
+    await people.getByTestId("review-person").click();
+    await expect(people.getByTestId("person-status").nth(k)).toHaveAttribute(
+      "data-reviewed",
+      "true",
+    );
+  }
+}
 test("completed physical fit remains archived after recovery marker is cleared and page reloads", async ({
   page,
 }) => {
@@ -98,10 +111,7 @@ test("group Continue survives reload using frozen private pixels; deleting them 
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByTestId("mark-two-faces").click();
-  await page
-    .getByTestId("people-region-editor")
-    .getByRole("button", { name: "I checked the facial regions", exact: true })
-    .click();
+  await reviewEveryPerson(page);
   await page
     .getByTestId("advanced-generation")
     .locator("summary")

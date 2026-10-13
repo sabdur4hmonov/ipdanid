@@ -23,6 +23,17 @@ async function synthetic(
     "base64",
   );
 }
+async function openBackgroundOptions(page: import("@playwright/test").Page) {
+  // Simple flow keeps photo preparation inside a collapsed section.
+  const options = page.getByTestId("background-options");
+  if (!(await options.evaluate((d: HTMLDetailsElement) => d.open)))
+    await options.locator("summary").first().click();
+}
+async function openAdvancedPhoto(page: import("@playwright/test").Page) {
+  const advanced = page.getByTestId("advanced-photo");
+  if (!(await advanced.evaluate((d: HTMLDetailsElement) => d.open)))
+    await advanced.locator("summary").first().click();
+}
 test("failed model preserves original; manual source brush, undo and original toggle are exact", async ({
   page,
 }) => {
@@ -37,6 +48,9 @@ test("failed model preserves original; manual source brush, undo and original to
     mimeType: "image/png",
     buffer,
   });
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "failed",
@@ -48,6 +62,7 @@ test("failed model preserves original; manual source brush, undo and original to
     .getByRole("button", { name: "Whiten background", exact: true })
     .click();
   const canvas = page.getByLabel("Prepared photo", { exact: true });
+  await canvas.scrollIntoViewIfNeeded();
   const box = (await canvas.boundingBox())!;
   await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.5);
   await expect
@@ -68,14 +83,20 @@ test("failed model preserves original; manual source brush, undo and original to
   await expect
     .poll(() => edited.evaluate((c: HTMLCanvasElement) => c.toDataURL()))
     .toBe(original);
+  await page.getByText("One or more people", { exact: true }).click();
   await page
     .getByRole("checkbox", { name: "Two or more people", exact: true })
     .check();
+  await openAdvancedPhoto(page);
   await expect(
     page.getByRole("checkbox", { name: "Prioritize portrait", exact: true }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: "Fit marked face to shape", exact: true }),
+    page.getByRole("button", {
+      name: "Fit marked face to shape",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
 });
 test("latest photo survives a delayed model response and navigation", async ({
@@ -96,11 +117,17 @@ test("latest photo survives a delayed model response and navigation", async ({
     mimeType: "image/png",
     buffer: await synthetic(page, "#ff0000"),
   });
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await upload(page).setInputFiles({
     name: "latest.png",
     mimeType: "image/png",
     buffer: await synthetic(page, "#008800"),
   });
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   release();
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
@@ -135,6 +162,9 @@ test("actual local model keeps face pixels, group foreground and reversible phot
   });
   await start(page);
   await upload(page).setInputFiles(fixture);
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",
@@ -187,6 +217,9 @@ test("actual local model keeps face pixels, group foreground and reversible phot
     mimeType: "image/png",
     buffer: Buffer.from(group, "base64"),
   });
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",
@@ -195,6 +228,7 @@ test("actual local model keeps face pixels, group foreground and reversible phot
   await page
     .getByRole("checkbox", { name: "Two or more people", exact: true })
     .check();
+  await openAdvancedPhoto(page);
   await expect(
     page.getByRole("checkbox", { name: "Prioritize portrait", exact: true }),
   ).not.toBeChecked();
@@ -213,8 +247,13 @@ test("actual local model keeps face pixels, group foreground and reversible phot
   await expect
     .poll(() => edited.evaluate((c: HTMLCanvasElement) => c.toDataURL()))
     .toBe(prepared);
+  // The group section collapses for a single-person photo; its state still matters.
   await expect(
-    page.getByRole("checkbox", { name: "Two or more people", exact: true }),
+    page.getByRole("checkbox", {
+      name: "Two or more people",
+      exact: true,
+      includeHidden: true,
+    }),
   ).not.toBeChecked();
   expect(outbound.filter((u) => !u.includes("/api/"))).toEqual([]);
 });
@@ -236,6 +275,9 @@ test("PWA precaches local model and performs fresh inference after offline reloa
   await context.setOffline(true);
   await page.reload();
   await upload(page).setInputFiles(fixture);
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",

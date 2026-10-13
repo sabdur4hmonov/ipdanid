@@ -13,6 +13,8 @@ test("failed preparation opens the correction controls and preserves usable phot
   await page
     .getByLabel("Upload from gallery", { exact: true })
     .setInputFiles("tests/fixtures/transparency.png");
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "failed",
@@ -76,6 +78,8 @@ test("gallery still prepares locally, generates a real path and saves resumable 
   await page
     .getByLabel("Upload from gallery", { exact: true })
     .setInputFiles("output/portrait/source.jpg");
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
   await expect(page.getByLabel("Edited photo", { exact: true })).toBeVisible();
   // Preparation continues while its controls are collapsed.
   await expect(page.getByTestId("background-status")).toHaveAttribute(

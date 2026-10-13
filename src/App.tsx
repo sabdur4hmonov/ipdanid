@@ -390,6 +390,13 @@ export default function App() {
   const activeBackground = photoCandidates.find(
     (p) => p.id === photoId,
   )?.background;
+  // A failed preparation opens the correction section. It is never closed
+  // automatically, so a manual brush stroke (failed -> manual) keeps it open.
+  const backgroundOptions = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    if (activeBackground?.status === "failed" && backgroundOptions.current)
+      backgroundOptions.current.open = true;
+  }, [activeBackground?.status]);
   const activePeopleMask = activeBackground?.enabled
     ? activeBackground.mask
     : undefined;
@@ -799,7 +806,9 @@ export default function App() {
     const background = current?.subjectBackgrounds?.[kind];
     const nextPortrait = current?.subjectPortraits?.[kind] ?? {
       ...structuredClone(DEFAULT_PORTRAIT),
-      enabled: kind === "people",
+      // Choosing People starts local analysis only. Portrait weighting is
+      // enabled by reviewing a face, so the D9 "portrait is off" guard applies.
+      enabled: false,
       background: 0,
       localContrast: 0,
     };
@@ -1199,26 +1208,38 @@ export default function App() {
       setBusy(false);
       return;
     }
-    const generationSubject = resume
-      ? resume.subject
-      : seed
-        ? seed.params.subject
-        : makeSubjectPlan(
-            generationPortrait.enabled
-              ? "people"
-              : subjectKind === "people"
-                ? "whole-image"
-                : subjectKind,
-            generationPhoto?.sourceRevision ?? generationPhoto?.id ?? "sample",
-            generationEdits,
-            generationPortrait,
-            generationPhoto?.background?.enabled &&
-              generationPhoto.background.mask
-              ? generationPhoto.background.status === "manual"
-                ? "manual-subject-mask"
-                : "explicit-person-mask"
-              : "original",
-          );
+    let generationSubject;
+    try {
+      generationSubject = resume
+        ? resume.subject
+        : seed
+          ? seed.params.subject
+          : makeSubjectPlan(
+              generationPortrait.enabled
+                ? "people"
+                : subjectKind === "people"
+                  ? "whole-image"
+                  : subjectKind,
+              generationPhoto?.sourceRevision ??
+                generationPhoto?.id ??
+                "sample",
+              generationEdits,
+              generationPortrait,
+              generationPhoto?.background?.enabled &&
+                generationPhoto.background.mask
+                ? generationPhoto.background.status === "manual"
+                  ? "manual-subject-mask"
+                  : "explicit-person-mask"
+                : "original",
+            );
+    } catch (e) {
+      // An inconsistent plan is reported, never dispatched; the job is released.
+      if (jobs.current.accepts(jobId)) {
+        setError(String(e));
+        setBusy(false);
+      }
+      return;
+    }
     const w = new Worker(
       new URL("./core/generator.worker.ts", import.meta.url),
       { type: "module" },
@@ -1925,13 +1946,20 @@ export default function App() {
                       {t("step1")}
                       <ImagePlus size={17} />
                     </div>
-                    <SubjectChooser
-                      value={subjectKind}
-                      locale={locale}
-                      disabled={busy}
-                      onChoose={(kind) => chooseSubject(kind)}
-                    />
-                    <p className="fineprint">{subjectText(locale, "hint")}</p>
+                    {/* Photo-first start keeps two source actions; the subject is chosen for the loaded photo. */}
+                    {image && (
+                      <>
+                        <SubjectChooser
+                          value={subjectKind}
+                          locale={locale}
+                          disabled={busy}
+                          onChoose={(kind) => chooseSubject(kind)}
+                        />
+                        <p className="fineprint">
+                          {subjectText(locale, "hint")}
+                        </p>
+                      </>
+                    )}
                     <PhotoActions
                       locale={locale}
                       onPhoto={selectPhoto}
@@ -2147,10 +2175,7 @@ export default function App() {
                         <details
                           className="edits"
                           data-testid="background-options"
-                          open={
-                            photoCandidates.find((p) => p.id === photoId)
-                              ?.background?.status === "failed"
-                          }
+                          ref={backgroundOptions}
                         >
                           <summary>
                             {simple("background")}
@@ -2478,6 +2503,9 @@ export default function App() {
                             <input
                               type="checkbox"
                               checked={portrait.enabled}
+                              // A group gets portrait weighting from its people
+                              // editor, not from a single-face toggle.
+                              disabled={group && !portrait.people}
                               onChange={(e) => {
                                 setPortrait((v) => ({
                                   ...v,

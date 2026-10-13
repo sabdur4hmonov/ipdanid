@@ -1,6 +1,17 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
+async function openBackgroundOptions(page: import("@playwright/test").Page) {
+  // Simple flow keeps photo preparation inside a collapsed section.
+  const options = page.getByTestId("background-options");
+  if (!(await options.evaluate((d: HTMLDetailsElement) => d.open)))
+    await options.locator("summary").first().click();
+}
+async function openAdvancedPhoto(page: import("@playwright/test").Page) {
+  const advanced = page.getByTestId("advanced-photo");
+  if (!(await advanced.evaluate((d: HTMLDetailsElement) => d.open)))
+    await advanced.locator("summary").first().click();
+}
 test("localized optional photo advice, reversible local brush and exact exported target", async ({
   page,
   context,
@@ -8,9 +19,9 @@ test("localized optional photo advice, reversible local brush and exact exported
   test.setTimeout(120000);
   await page.goto("/");
   for (const [locale, fragment] of [
-    ["uz", "shart emas"],
-    ["ru", "не обязательно"],
-    ["en", "white is optional"],
+    ["uz", "Mavjud suratlar ham mos"],
+    ["ru", "Подойдут и существующие фотографии"],
+    ["en", "Existing photographs are welcome"],
   ]) {
     await page.getByLabel("Language").selectOption(locale);
     await expect(page.getByTestId("photo-guidance")).toContainText(fragment);
@@ -43,6 +54,9 @@ test("localized optional photo advice, reversible local brush and exact exported
       mimeType: "image/png",
       buffer: Buffer.from(png, "base64"),
     });
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   // This legacy target-space editor is exercised against the original source.
   // Source-space automatic separation is tested separately and must settle first.
   await expect(page.getByTestId("background-status")).not.toHaveAttribute(
@@ -56,7 +70,9 @@ test("localized optional photo advice, reversible local brush and exact exported
       exact: true,
     })
     .uncheck();
+  await openAdvancedPhoto(page);
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
+  await page.getByText("Face region", { exact: true }).click();
   await page.getByLabel("Simplify background", { exact: true }).fill("0.75");
   const target = page.getByLabel("Exact generation target", { exact: true });
   const initial = await target.evaluate((c: HTMLCanvasElement) =>
@@ -124,6 +140,7 @@ test("localized optional photo advice, reversible local brush and exact exported
   await paintPoint();
   // A mask cannot silently move to a new aspect while portrait processing is off.
   await page.getByLabel("Prioritize portrait", { exact: true }).uncheck();
+  await page.getByTestId("advanced-generation").locator("summary").first().click();
   await page.getByRole("button", { name: "Rectangle", exact: true }).click();
   await page.getByText("Dimensions and materials", { exact: true }).click();
   await page.getByLabel("Height (mm)", { exact: true }).fill("240");

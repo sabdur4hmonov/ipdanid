@@ -98,7 +98,13 @@ export function validSubjectPlan(s: SubjectPlan, portrait?: PortraitSettings) {
     new Set(s.subjects.map((x) => x.id)).size !== s.subjects.length
   )
     throw Error("Invalid subject plan");
-  if (s.kind !== "people" && s.preparation === "explicit-person-mask")
+  // Animals, vehicles and objects can never be prepared by person segmentation.
+  // "whole-image" may carry it only when People was chosen and the user then
+  // generated without portrait weighting; the mask was explicitly requested.
+  if (
+    ["animal", "vehicle", "object"].includes(s.kind) &&
+    s.preparation === "explicit-person-mask"
+  )
     throw Error("Person-only mask cannot prepare this subject");
   for (const subject of s.subjects)
     if (

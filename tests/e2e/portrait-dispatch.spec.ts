@@ -28,6 +28,8 @@ test("face photo cannot silently use the general solver; reviewed choices preser
   await page
     .getByLabel("Upload from gallery", { exact: true })
     .setInputFiles("output/portrait/source.jpg");
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",

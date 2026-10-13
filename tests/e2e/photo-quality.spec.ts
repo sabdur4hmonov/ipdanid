@@ -1,6 +1,19 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { validateInstruction } from "../../src/core/validation";
+async function reviewEveryPerson(page: import("@playwright/test").Page) {
+  // Each person is confirmed separately (R2); one click no longer confirms a group.
+  const people = page.getByTestId("people-region-editor");
+  const count = await people.getByTestId("person-status").count();
+  for (let k = 0; k < count; k++) {
+    await people.getByTestId("person-status").nth(k).locator("button").click();
+    await people.getByTestId("review-person").click();
+    await expect(people.getByTestId("person-status").nth(k)).toHaveAttribute(
+      "data-reviewed",
+      "true",
+    );
+  }
+}
 test("two-person manual regions, photo advice and guarded worker stay consistent through touch, saving and export", async ({
   page,
   context,
@@ -48,9 +61,7 @@ test("two-person manual regions, photo advice and guarded worker stay consistent
     await page.mouse.up();
   }
   await expect(mouth).not.toHaveAttribute("data-box", before!);
-  await people
-    .getByRole("button", { name: "I checked the facial regions", exact: true })
-    .click();
+  await expect(page.getByTestId("people-review-blocked")).toBeVisible();
   await page.getByRole("button", { name: "Turn right", exact: true }).click();
   await expect(page.getByTestId("shape-crop")).toHaveAttribute(
     "data-edits",
@@ -70,6 +81,9 @@ test("two-person manual regions, photo advice and guarded worker stay consistent
     await page.getByLabel("Language").selectOption(lang);
     await expect(page.getByTestId("photo-quality-advice")).toContainText(title);
   }
+  // Rotation remaps every face, so each person is confirmed again afterwards.
+  await reviewEveryPerson(page);
+  await expect(page.getByTestId("people-review-blocked")).toHaveCount(0);
   await page
     .getByTestId("advanced-generation")
     .locator("summary")

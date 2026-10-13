@@ -9,6 +9,17 @@ async function start(page: import("@playwright/test").Page) {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
 }
+async function openBackgroundOptions(page: import("@playwright/test").Page) {
+  // Simple flow keeps photo preparation inside a collapsed section.
+  const options = page.getByTestId("background-options");
+  if (!(await options.evaluate((d: HTMLDetailsElement) => d.open)))
+    await options.locator("summary").first().click();
+}
+async function openAdvancedPhoto(page: import("@playwright/test").Page) {
+  const advanced = page.getByTestId("advanced-photo");
+  if (!(await advanced.evaluate((d: HTMLDetailsElement) => d.open)))
+    await advanced.locator("summary").first().click();
+}
 test("local landmarks place mouth on actual source pixels; photo inference leaves UI responsive", async ({
   page,
 }) => {
@@ -31,6 +42,9 @@ test("local landmarks place mouth on actual source pixels; photo inference leave
     }, 50);
   });
   await page.locator("input[type=file]").first().setInputFiles(single);
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",
@@ -51,6 +65,8 @@ test("local landmarks place mouth on actual source pixels; photo inference leave
   await expect(panel.getByRole("status")).toContainText(
     "Fit the complete face",
   );
+  await openAdvancedPhoto(page);
+  await page.getByText("Zoom · Contrast", { exact: true }).click();
   await page.getByLabel("Zoom", { exact: true }).fill("0.9");
   await panel
     .getByRole("button", { name: "Use reviewed facial regions", exact: true })
@@ -133,6 +149,9 @@ test("two detected faces enable group controls; fitting removes lost-foreground 
   test.skip(!existsSync(group), "Private repeated-portrait diagnostic absent.");
   await start(page);
   await page.locator("input[type=file]").first().setInputFiles(group);
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",
@@ -170,6 +189,9 @@ test("missing face model keeps successful white-background preparation and manua
   );
   await start(page);
   await page.locator("input[type=file]").first().setInputFiles(single);
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",
@@ -197,6 +219,9 @@ test("cleanup failure preserves the primary mask, face suggestions and honest co
   );
   await start(page);
   await page.locator("input[type=file]").first().setInputFiles(single);
+  // R1: the subject is chosen explicitly; people analysis is not the default.
+  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await openBackgroundOptions(page);
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",
