@@ -1,3 +1,5 @@
+Updated handoff 2026-10-13 (later): R1 and R2 are implemented on branch `feat/r1-r2-subjects`; read SUBJECT_INPUT_CHECKPOINT.md. Next is the R4 first diagnostic (MULTI_SUBJECT_QUALITY_PLAN.md), then R3. Do not repeat old fits below.
+
 Updated handoff 2026-10-13: A/B and fine-feature C experiment are completed. Read FEATURE_CONTRAST_CHECKPOINT.md then MULTI_SUBJECT_QUALITY_PLAN.md. R0 checks are complete; next is R1 subject-safe input/immutable recipe, then manual third-person/per-person review. Do not repeat old fits below. All evidence and full original scope remain.
 
 # Resume after architecture/quality review — 2026-10-13
