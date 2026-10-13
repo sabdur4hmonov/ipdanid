@@ -26,8 +26,12 @@ beforeEach(() => {
   mocked.native = true;
   mocked.values.clear();
   mocked.request.mockReset();
+  vi.stubEnv("VITE_NATIVE_API_BASE", "https://configured-test.example/api");
 });
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+});
 it("native recovery retains only the replacement identity; its one-time key never enters preferences", async () => {
   mocked.request.mockResolvedValue({
     status: 200,
@@ -80,9 +84,20 @@ it("native unauthorized and redirect responses cannot be mistaken for a successf
   mocked.request.mockResolvedValue({ status: 302, data: {} });
   await expect(api.request("/account")).rejects.toBeInstanceOf(ApiError);
   expect(mocked.request.mock.calls.at(-1)![0]).toMatchObject({
-    url: "http://127.0.0.1:4311/api/account",
+    url: "https://configured-test.example/api/account",
     disableRedirects: true,
   });
+});
+it("unconfigured native commerce never silently calls loopback; local stored identity remains readable", async () => {
+  vi.stubEnv("VITE_NATIVE_API_BASE", "");
+  const { CustomerApi } = await import("../src/customer-api"),
+    api = new CustomerApi();
+  await api.retain({ id: "local-owner", token: "local-token" });
+  const restored = new CustomerApi();
+  await restored.restore();
+  expect(restored.session?.id).toBe("local-owner");
+  await expect(api.request("/account")).rejects.toMatchObject({ status: 503 });
+  expect(mocked.request).not.toHaveBeenCalled();
 });
 it("expired browser sign out clears local credentials and malformed saved sessions do not crash local artwork", async () => {
   mocked.native = false;
@@ -94,13 +109,11 @@ it("expired browser sign out clears local credentials and malformed saved sessio
   });
   vi.stubGlobal(
     "fetch",
-    vi
-      .fn()
-      .mockResolvedValue({
-        ok: false,
-        status: 401,
-        json: async () => ({ error: "expired" }),
-      }),
+    vi.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      json: async () => ({ error: "expired" }),
+    }),
   );
   const { CustomerApi } = await import("../src/customer-api"),
     api = new CustomerApi();

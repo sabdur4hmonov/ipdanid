@@ -4,7 +4,12 @@ import { validateInstruction } from "./validation";
 import { Distribution } from "./distribution";
 import { connectionAllowed, inside } from "./geometry";
 import { rasterSequence, strandFootprint, type Footprint } from "./optical";
-import { contains, portraitRegions, regionMeasurements } from "./portrait";
+import {
+  contains,
+  portraitPeople,
+  portraitRegions,
+  regionMeasurements,
+} from "./portrait";
 import { MAX_FOOTPRINT_BYTES } from "./limits";
 
 // Fixed before the portrait trial. These are conservative simulation tolerances,
@@ -57,25 +62,45 @@ export function qualityDifferences(
   n: number,
   i: Instruction,
 ) {
-  const regs = portraitRegions(i.params.portrait!),
-    eyes = regs.eyes,
-    face = regs.face;
-  const windows: Record<string, RegionBox> = {
-    face,
-    leftEye: { ...eyes, width: eyes.width * 0.48 },
-    rightEye: {
-      ...eyes,
-      left: eyes.left + eyes.width * 0.52,
-      width: eyes.width * 0.48,
-    },
-    nose: regs.nose,
-    lips: regs.mouth,
-    jaw: {
-      ...face,
-      top: face.top + face.height * 0.8,
-      height: face.height * 0.2,
-    },
-  };
+  const windows: Record<string, RegionBox> = {};
+  const skin = new Set<string>();
+  const people = portraitPeople(i.params.portrait!);
+  for (const [index, person] of people.entries()) {
+    const { eyes, face, nose, mouth } = portraitRegions(person);
+    const prefix = people.length > 1 ? `person${index + 1}.` : "";
+    for (const [key, box] of Object.entries({
+      face,
+      leftEye: { ...eyes, width: eyes.width * 0.48 },
+      rightEye: {
+        ...eyes,
+        left: eyes.left + eyes.width * 0.52,
+        width: eyes.width * 0.48,
+      },
+      nose,
+      lips: mouth,
+      jaw: {
+        ...face,
+        top: face.top + face.height * 0.8,
+        height: face.height * 0.2,
+      },
+      lightSkin: face,
+    }))
+      windows[prefix + key] = box;
+    skin.add(prefix + "lightSkin");
+  }
+  // Include hair in the root-relative simplification gate for whole-head guides.
+  // A bounding window is conservative: it includes the selected head plus its margin.
+  const head = i.params.optimization?.head;
+  if (head) {
+    const left = Math.min(...head.points.map((p) => p.x)),
+      top = Math.min(...head.points.map((p) => p.y));
+    windows.wholeHead = {
+      left,
+      top,
+      width: Math.max(...head.points.map((p) => p.x)) - left,
+      height: Math.max(...head.points.map((p) => p.y)) - top,
+    };
+  }
   const out: Record<string, RegionDifference> = {};
   const lum = (a: ArrayLike<number>, p: number) =>
     (a[p * 3] + a[p * 3 + 1] + a[p * 3 + 2]) / 3;
@@ -92,7 +117,7 @@ export function qualityDifferences(
     );
   };
   const normalized = Float32Array.from(target, (x) => x / 255);
-  for (const key of [...Object.keys(windows), "lightSkin"]) {
+  for (const key of Object.keys(windows)) {
     let pixels = 0,
       sum = 0,
       max = 0,
@@ -115,8 +140,8 @@ export function qualityDifferences(
         ny = y / (n - 1);
       if (
         !inside(i.profile.shape, nx, ny) ||
-        !contains(windows[key] ?? face, nx, ny) ||
-        (key === "lightSkin" && lum(normalized, p) < 0.65)
+        !contains(windows[key], nx, ny) ||
+        (skin.has(key) && lum(normalized, p) < 0.65)
       )
         continue;
       pixels++;

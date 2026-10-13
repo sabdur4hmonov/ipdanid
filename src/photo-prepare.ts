@@ -5,6 +5,7 @@ export type PhotoAnalysis = {
   faces: SourceFace[];
   faceUnavailable: boolean;
   cleanupUnavailable: boolean;
+  analysisTurn?: import("./core/photo-orientation").QuarterTurn;
 };
 let worker: Worker | undefined,
   id = 0;

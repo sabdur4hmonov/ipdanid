@@ -1,7 +1,23 @@
+import { BusinessAdmin } from "./BusinessAdmin";
+import { PromotionPreference } from "./Announcements";
+import { useBusiness } from "./BusinessContext";
+import { businessText } from "./business-i18n";
+import type { OrderCommerce } from "./business-types";
 import { useEffect, useRef, useState } from "react";
 import type { Instruction, Locale, Progress, Project } from "./core/types";
 import { validateInstruction } from "./core/validation";
-import { customerApi as api, ApiError } from "./customer-api";
+import {
+  customerApi as api,
+  ApiError,
+  customerCacheNamespace,
+} from "./customer-api";
+import {
+  checkoutSubmission,
+  validCheckoutAttempt,
+  type CheckoutAttempt,
+} from "./checkout-recovery";
+import { Capacitor } from "@capacitor/core";
+import { Preferences } from "@capacitor/preferences";
 import { customerText, type CustomerWord } from "./customer-i18n";
 import "./customer.css";
 import { StaffAccessPanel } from "./StaffAccessPanel";
@@ -23,6 +39,7 @@ type Order = {
   id: string;
   status: string;
   total_minor: number;
+  commerce?: OrderCommerce;
   items: { name: string; quantity: number }[];
   fulfillments: { tracking: string; state: string }[];
 };
@@ -61,6 +78,9 @@ export function CustomerHub({
   onProgress: (id: string, progress: Progress) => void;
   onApplyProfile: (profile: string) => void;
 }) {
+  const { settings: storefront } = useBusiness();
+  const bt = (key: Parameters<typeof businessText>[1]) =>
+    businessText(locale, key);
   const t = (key: CustomerWord) => customerText(locale, key);
   const [pane, setPane] = useState<Pane>("account"),
     [connected, setConnected] = useState(false),
@@ -94,8 +114,60 @@ export function CustomerHub({
     credits: number;
   } | null>(null);
   const [cart, setCart] = useState<Record<string, number>>({}),
-    [address, setAddress] = useState({ name: "", city: "", street: "" });
-  const orderRequest = useRef<{ key: string; payload: string } | null>(null);
+    [address, setAddress] = useState({
+      name: "",
+      phone: "",
+      city: "",
+      street: "",
+      deliveryMethod: "pickup",
+    });
+  const subtotal = Object.entries(cart).reduce(
+    (sum, [id, q]) =>
+      sum + q * (products.find((p) => p.id === id)?.price_minor ?? 0),
+    0,
+  );
+  const deliveryFee =
+    address.deliveryMethod === "courier" && storefront.deliveryEnabled
+      ? storefront.deliveryFeeMinor
+      : 0;
+  const checkoutTotal = subtotal + deliveryFee;
+  const orderRequest = useRef<CheckoutAttempt | null>(null);
+  const [pendingCheckout, setPendingCheckout] = useState(false);
+  const checkoutKey = () =>
+    `${customerCacheNamespace}:checkout:${api.session?.id ?? "none"}`;
+  async function retainCheckout(attempt: typeof orderRequest.current) {
+    const key = checkoutKey();
+    if (Capacitor.isNativePlatform()) {
+      if (attempt)
+        await Preferences.set({ key, value: JSON.stringify(attempt) });
+      else await Preferences.remove({ key });
+    } else if (attempt) localStorage.setItem(key, JSON.stringify(attempt));
+    else localStorage.removeItem(key);
+    orderRequest.current = attempt;
+    setPendingCheckout(Boolean(attempt));
+  }
+  async function restoreCheckout() {
+    const key = checkoutKey(),
+      raw = Capacitor.isNativePlatform()
+        ? (await Preferences.get({ key })).value
+        : localStorage.getItem(key);
+    if (!raw) return;
+    const attempt = JSON.parse(raw);
+    if (!validCheckoutAttempt(attempt))
+      throw Error("Invalid saved checkout; original orders remain available");
+    orderRequest.current = attempt;
+    setPendingCheckout(true);
+    const body = JSON.parse(attempt.payload);
+    setCart(
+      Object.fromEntries(
+        body.items.map((i: { productId: string; quantity: number }) => [
+          i.productId,
+          i.quantity,
+        ]),
+      ),
+    );
+    setAddress(body.address);
+  }
   const [subject, setSubject] = useState(""),
     [body, setBody] = useState("");
   const [snapshots, setSnapshots] = useState<Record<string, Progress>>({});
@@ -127,8 +199,10 @@ export function CustomerHub({
     adminSession?.permissions.includes(permission) ?? false;
   const [replies, setReplies] = useState<Record<string, string>>({}),
     [tracking, setTracking] = useState<Record<string, string>>({});
+  const busyGate = useRef(false);
   async function run(fn: () => Promise<void>) {
-    if (busy) return;
+    if (busyGate.current) return;
+    busyGate.current = true;
     setBusy(true);
     setError("");
     setNotice("");
@@ -153,6 +227,7 @@ export function CustomerHub({
       );
     } finally {
       setBusy(false);
+      busyGate.current = false;
     }
   }
   async function refresh() {
@@ -166,6 +241,7 @@ export function CustomerHub({
       api.request<Remote[]>("/instructions"),
     ]);
     setMe(m);
+    if (!orderRequest.current) await restoreCheckout();
     setProducts(c.products);
     setOrders(o);
     setTickets(s);
@@ -208,7 +284,13 @@ export function CustomerHub({
     setSnapshots({});
     setNewRecovery("");
     setCart({});
-    setAddress({ name: "", city: "", street: "" });
+    setAddress({
+      name: "",
+      phone: "",
+      city: "",
+      street: "",
+      deliveryMethod: "pickup",
+    });
     setClaim("");
     setGift(null);
     setMaterial("");
@@ -217,6 +299,7 @@ export function CustomerHub({
     setCode("");
     giftRequest.current = null;
     orderRequest.current = null;
+    setPendingCheckout(false);
   }
   async function adminRefresh() {
     setUnlocked(false);
@@ -299,6 +382,7 @@ export function CustomerHub({
       <p className="sandbox-notice" role="note">
         {t("sandbox")}
       </p>
+      <PromotionPreference locale={locale} />
       <div className="customer-tabs" role="group" aria-label={t("customer")}>
         {(["account", "shop", "sync", "support", "admin"] as Pane[]).map(
           (p) => (
@@ -575,7 +659,10 @@ export function CustomerHub({
                   </p>
                   <button
                     disabled={
-                      p.stock < 1 || (cart[p.id] ?? 0) >= Math.min(10, p.stock)
+                      pendingCheckout ||
+                      busy ||
+                      p.stock < 1 ||
+                      (cart[p.id] ?? 0) >= Math.min(10, p.stock)
                     }
                     onClick={() => {
                       setCart((v) => ({ ...v, [p.id]: (v[p.id] ?? 0) + 1 }));
@@ -589,79 +676,196 @@ export function CustomerHub({
             </div>
             <section className="card">
               <h2>{t("cart")}</h2>
-              {Object.entries(cart).map(([id, q]) => (
-                <div className="customer-row" key={id}>
-                  <span>
-                    {products.find((p) => p.id === id)?.name ?? id} × {q}
-                  </span>
-                  <button
-                    className="text-button"
-                    onClick={() => {
-                      setCart((v) => {
-                        const next = { ...v };
-                        delete next[id];
-                        return next;
-                      });
+              {pendingCheckout && (
+                <p data-testid="pending-checkout">{bt("pendingCheckout")}</p>
+              )}
+              <fieldset disabled={pendingCheckout || busy}>
+                {Object.entries(cart).map(([id, q]) => (
+                  <div className="customer-row" key={id}>
+                    <span>
+                      {products.find((p) => p.id === id)?.name ?? id} × {q}
+                    </span>
+                    <button
+                      className="text-button"
+                      onClick={() => {
+                        setCart((v) => {
+                          const next = { ...v };
+                          delete next[id];
+                          return next;
+                        });
+                        orderRequest.current = null;
+                      }}
+                    >
+                      {t("remove")}
+                    </button>
+                  </div>
+                ))}
+                <p data-testid="checkout-subtotal">
+                  {bt("subtotal")}:{" "}
+                  {money(orderRequest.current?.display?.subtotal ?? subtotal)}
+                </p>
+                <label>
+                  {bt("method")}{" "}
+                  <select
+                    aria-label={bt("method")}
+                    value={address.deliveryMethod}
+                    onChange={(e) => {
+                      setAddress((v) => ({
+                        ...v,
+                        deliveryMethod: e.target.value,
+                      }));
                       orderRequest.current = null;
                     }}
                   >
-                    {t("remove")}
-                  </button>
-                </div>
-              ))}
-              <p>
-                {t("price")}:{" "}
-                {money(
-                  Object.entries(cart).reduce(
-                    (sum, [id, q]) =>
-                      sum +
-                      q * (products.find((p) => p.id === id)?.price_minor ?? 0),
-                    0,
-                  ),
-                )}
-              </p>
-              {(["name", "city", "street"] as const).map((k) => (
-                <label key={k}>
-                  {t(k)}
+                    <option
+                      value="pickup"
+                      disabled={!storefront.pickupAddress.trim()}
+                    >
+                      {bt("pickup")}
+                    </option>
+                    <option
+                      value="courier"
+                      disabled={!storefront.deliveryEnabled}
+                    >
+                      {bt("courier")}
+                    </option>
+                  </select>
+                </label>
+                <label>
+                  {t("name")}
                   <input
-                    value={address[k]}
+                    value={address.name}
                     maxLength={200}
                     onChange={(e) => {
-                      setAddress((v) => ({ ...v, [k]: e.target.value }));
+                      setAddress((v) => ({ ...v, name: e.target.value }));
                       orderRequest.current = null;
                     }}
                   />
                 </label>
-              ))}
+                <label>
+                  {bt("phone")}
+                  <input
+                    type="tel"
+                    value={address.phone}
+                    maxLength={40}
+                    onChange={(e) => {
+                      setAddress((v) => ({ ...v, phone: e.target.value }));
+                      orderRequest.current = null;
+                    }}
+                  />
+                </label>
+                {address.deliveryMethod === "courier" &&
+                  (["city", "street"] as const).map((k) => (
+                    <label key={k}>
+                      {t(k)}
+                      <input
+                        value={address[k]}
+                        maxLength={200}
+                        onChange={(e) => {
+                          setAddress((v) => ({ ...v, [k]: e.target.value }));
+                          orderRequest.current = null;
+                        }}
+                      />
+                    </label>
+                  ))}
+                <p>
+                  {bt("deliveryTotal")}:{" "}
+                  {money(
+                    orderRequest.current?.display?.feeMinor ?? deliveryFee,
+                  )}
+                </p>
+                <p data-testid="checkout-total">
+                  <strong>
+                    {bt("total")}:{" "}
+                    {money(
+                      pendingCheckout
+                        ? JSON.parse(orderRequest.current!.payload).quote
+                            .totalMinor
+                        : checkoutTotal,
+                    )}
+                  </strong>
+                </p>
+                <div data-testid="checkout-seller">
+                  <p>{bt("seller")}</p>
+                  <p>
+                    {(orderRequest.current?.display?.sellerName ??
+                      storefront.sellerName) ||
+                      bt("unset")}
+                  </p>
+                  <p>
+                    {orderRequest.current?.display?.sellerPhone ??
+                      storefront.sellerPhone}
+                  </p>
+                  <p>
+                    {orderRequest.current?.display?.paymentDetails ??
+                      storefront.paymentDetails}
+                  </p>
+                  {address.deliveryMethod === "pickup" && (
+                    <p>
+                      {orderRequest.current?.display?.pickupAddress ??
+                        storefront.pickupAddress}
+                    </p>
+                  )}
+                </div>
+                <p>{bt("orderOnline")}</p>
+              </fieldset>
               <button
                 disabled={
-                  !Object.keys(cart).length ||
-                  Object.values(address).some((v) => v.trim().length < 2)
+                  !pendingCheckout &&
+                  (!Object.keys(cart).length ||
+                    address.name.trim().length < 2 ||
+                    address.phone.replace(/\D/g, "").length < 7 ||
+                    (address.deliveryMethod === "courier"
+                      ? !storefront.deliveryEnabled ||
+                        address.city.trim().length < 2 ||
+                        address.street.trim().length < 2
+                      : !storefront.pickupAddress.trim()))
                 }
                 onClick={() =>
                   void run(async () => {
                     const items = Object.entries(cart).map(
                       ([productId, quantity]) => ({ productId, quantity }),
                     );
-                    const payload = JSON.stringify({ items, address });
-                    if (orderRequest.current?.payload !== payload)
-                      orderRequest.current = {
+                    const quote = {
+                      totalMinor: checkoutTotal,
+                      settingsRevision: storefront.revision,
+                    };
+                    const payload = JSON.stringify({ items, address, quote });
+                    if (!orderRequest.current)
+                      await retainCheckout({
                         key: crypto.randomUUID(),
                         payload,
-                      };
-                    await api.request("/orders", {
-                      items,
-                      address,
-                      requestKey: orderRequest.current.key,
-                    });
+                        display: {
+                          subtotal,
+                          feeMinor: deliveryFee,
+                          sellerName: storefront.sellerName,
+                          sellerPhone: storefront.sellerPhone,
+                          paymentDetails: storefront.paymentDetails,
+                          pickupAddress: storefront.pickupAddress,
+                        },
+                      });
+                    try {
+                      await api.request(
+                        "/orders",
+                        checkoutSubmission(orderRequest.current!),
+                      );
+                    } catch (error) {
+                      // A known validation refusal created no order; allow corrected review.
+                      if (
+                        error instanceof ApiError &&
+                        [400, 409, 422].includes(error.status)
+                      )
+                        await retainCheckout(null);
+                      throw error;
+                    }
                     setCart({});
-                    orderRequest.current = null;
+                    await retainCheckout(null);
                     await refresh();
                     setNotice(t("saved"));
                   })
                 }
               >
-                {t("checkout")}
+                {pendingCheckout ? bt("retryCheckout") : t("checkout")}
               </button>
             </section>
             <section className="card">
@@ -673,6 +877,23 @@ export function CustomerHub({
                   <p>
                     {state(o.status)} · {money(o.total_minor)}
                   </p>
+                  {o.commerce && (
+                    <div data-testid="order-seller-snapshot">
+                      <p>
+                        {bt(
+                          o.commerce.method === "pickup" ? "pickup" : "courier",
+                        )}{" "}
+                        · {money(o.commerce.feeMinor)}
+                      </p>
+                      <p>
+                        {o.commerce.sellerName} · {o.commerce.sellerPhone}
+                      </p>
+                      <p>{o.commerce.paymentDetails}</p>
+                      {o.commerce.method === "pickup" && (
+                        <p>{o.commerce.pickupAddress}</p>
+                      )}
+                    </div>
+                  )}
                   {o.items.map((l, k) => (
                     <p key={k}>
                       {l.name} × {l.quantity}
@@ -901,6 +1122,13 @@ export function CustomerHub({
             </section>
             {unlocked && (
               <>
+                <BusinessAdmin
+                  locale={locale}
+                  token={adminToken}
+                  settingsAllowed={can("settings")}
+                  messagesAllowed={can("messages")}
+                  run={run}
+                />
                 {can("access") && (
                   <StaffAccessPanel
                     locale={locale}

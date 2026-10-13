@@ -1,3 +1,7 @@
+import { refineHairCycles } from "./hair-cycles";
+import { DEFAULT_FEATURE_CONTRAST } from "./feature-contrast";
+import { assertContinuation } from "./continuation";
+import { hash } from "./engine";
 import { validatePinBasis } from "./pin-basis";
 import {
   DEFAULT_ANATOMICAL_IMPORTANCE,
@@ -11,10 +15,24 @@ import { simplifySequence } from "./simplify";
 self.onmessage = async ({ data }) => {
   try {
     const started = performance.now();
+    if (
+      data.portrait?.enabled &&
+      data.portrait.people &&
+      !["continuous", "guarded", "simplify"].includes(data.strategy)
+    )
+      throw Error(
+        "Multiple portraits currently require the guarded continuous solver; experimental objectives are separate",
+      );
+    if (data.head && (data.strategy !== "basis" || data.resolution !== 320))
+      throw Error("Head importance requires a separate resolved basis");
     const options = {
       ...data,
       onProgress: (fraction: number) =>
-        self.postMessage({ type: "progress", jobId: data.jobId, fraction }),
+        self.postMessage({
+          type: "progress",
+          jobId: data.jobId,
+          fraction: data.headRefine ? 0.8 * fraction : fraction,
+        }),
       onDiagnostic: (diagnostic: Record<string, unknown>) =>
         self.postMessage({ type: "stage", jobId: data.jobId, diagnostic }),
     };
@@ -27,7 +45,7 @@ self.onmessage = async ({ data }) => {
     options.guarded =
       data.strategy === "guarded" ||
       data.strategy === "multiscale" ||
-      ["physical", "anatomy", "basis"].includes(data.strategy);
+      ["physical", "anatomy", "basis", "features"].includes(data.strategy);
     let baseline;
     if (
       ["global", "multiscale", "physical", "anatomy"].includes(data.strategy) &&
@@ -53,8 +71,20 @@ self.onmessage = async ({ data }) => {
           fraction: 0.5 + fraction * 0.5,
         });
     }
-    const instruction =
-      data.strategy === "simplify"
+    const cycleSeed =
+      data.hairSeed ??
+      (data.seed?.algorithm === "hair-cycles/14" ||
+      (data.headRefine && data.seed?.algorithm === "density-resolved/12")
+        ? data.seed
+        : undefined);
+    if (cycleSeed)
+      assertContinuation(
+        { ...options, seed: cycleSeed },
+        await hash(options.pixels),
+      );
+    const instruction = cycleSeed
+      ? cycleSeed
+      : data.strategy === "simplify"
         ? await simplifySequence(data.seed, data.pixels, {
             maxProposals: 512,
             onProgress: (d) =>
@@ -70,24 +100,42 @@ self.onmessage = async ({ data }) => {
                 instruction: i,
               }),
           })
-        : ["global", "multiscale", "physical", "anatomy", "basis"].includes(
-              data.strategy,
-            )
+        : [
+              "global",
+              "multiscale",
+              "physical",
+              "anatomy",
+              "basis",
+              "features",
+            ].includes(data.strategy)
           ? await generateDensity(options, {
-              resolved: data.strategy === "basis" && data.resolution === 320,
+              resolved:
+                ["basis", "features"].includes(data.strategy) &&
+                data.resolution === 320,
+              ...(data.strategy === "features"
+                ? {
+                    features:
+                      data.seed?.params.optimization?.features ??
+                      data.features ??
+                      DEFAULT_FEATURE_CONTRAST,
+                  }
+                : {}),
+              head: data.headRefine ? undefined : data.head,
               edgeWeight:
                 data.seed?.params.optimization?.edgeWeight ??
-                (["multiscale", "physical", "anatomy", "basis"].includes(
+                (["multiscale", "physical", "anatomy", "basis", "features"].includes(
                   data.strategy,
                 )
                   ? 2
                   : 1),
               sweeps:
-                data.strategy === "basis"
-                  ? (data.totalSweeps ??
-                    data.seed?.params.optimization?.sweeps ??
-                    8)
-                  : (data.seed?.params.optimization?.sweeps ?? 8),
+                data.strategy === "features"
+                  ? (data.totalSweeps ?? 8)
+                  : data.strategy === "basis"
+                    ? (data.totalSweeps ??
+                      data.seed?.params.optimization?.sweeps ??
+                      8)
+                    : (data.seed?.params.optimization?.sweeps ?? 8),
               multiscale: data.strategy === "multiscale",
               ...(data.strategy === "anatomy"
                 ? { anatomy: data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE }
@@ -97,14 +145,18 @@ self.onmessage = async ({ data }) => {
                 : {}),
               ...(data.exchange ? { exchange: data.exchange, sweeps: 1 } : {}),
               ...(data.materializeOnly ? { materializeOnly: true } : {}),
-              ...(["physical", "anatomy", "basis"].includes(data.strategy)
+              ...(["physical", "anatomy", "basis", "features"].includes(
+                data.strategy,
+              )
                 ? {
                     physical:
                       data.seed?.params.optimization?.contrastPhysical ??
                       defaultPhysicalContrast(),
                   }
                 : {}),
-              ...(["physical", "anatomy", "basis"].includes(data.strategy)
+              ...(["physical", "anatomy", "basis", "features"].includes(
+                data.strategy,
+              )
                 ? {
                     resume: data.resume,
                     onCheckpoint: (checkpoint: unknown) =>
@@ -127,19 +179,47 @@ self.onmessage = async ({ data }) => {
                             : data.totalSweeps,
                         exchange: data.exchange,
                         strategy: data.strategy,
+                        head: data.head,
+                        headRefine: data.headRefine,
                         anatomy:
                           data.strategy === "anatomy"
                             ? (data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE)
+                            : undefined,
+                        features:
+                          data.strategy === "features"
+                            ? (data.seed?.params.optimization?.features ??
+                              data.features ??
+                              DEFAULT_FEATURE_CONTRAST)
                             : undefined,
                       }),
                   }
                 : {}),
             })
           : await generate(options);
+    const finalInstruction =
+      (data.headRefine || cycleSeed) && data.strategy !== "simplify"
+        ? await refineHairCycles(instruction, options.pixels, data.head, {
+            resume: data.hairResume,
+            onProgress: (diagnostic) =>
+              self.postMessage({
+                type: "stage",
+                jobId: data.jobId,
+                diagnostic,
+              }),
+            onCheckpoint: (checkpoint) =>
+              self.postMessage({
+                type: "hair-checkpoint",
+                jobId: data.jobId,
+                root: instruction,
+                checkpoint,
+                head: data.head,
+              }),
+          })
+        : instruction;
     self.postMessage({
       type: "done",
       jobId: data.jobId,
-      instruction,
+      instruction: finalInstruction,
       baseline,
       durationMs: performance.now() - started,
     });

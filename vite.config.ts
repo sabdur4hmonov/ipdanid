@@ -18,12 +18,18 @@ const segmentationFiles = [
 export default defineConfig({
   // Native build caches and private evidence are served on demand, never source watched.
   server: {
-    proxy: { "/api": "http://127.0.0.1:4311" },
+    proxy: {
+      "/api": process.env.IP_RASM_BACKEND_PROXY || "http://127.0.0.1:4311",
+    },
     watch: {
       ignored: ["**/tmp/**", "**/output/**", "**/android/**", "**/ios/**"],
     },
   },
-  preview: { proxy: { "/api": "http://127.0.0.1:4311" } },
+  preview: {
+    proxy: {
+      "/api": process.env.IP_RASM_BACKEND_PROXY || "http://127.0.0.1:4311",
+    },
+  },
   plugins: [
     react(),
     {

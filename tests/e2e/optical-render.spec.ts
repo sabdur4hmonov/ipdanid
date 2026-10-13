@@ -60,6 +60,9 @@ for (const kind of ["anatomy", "basis"] as const)
     );
     await page.goto("/");
     await page.getByLabel("Language").selectOption("en");
+    await page
+      .getByRole("button", { name: "My projects", exact: true })
+      .click();
     await page.locator('input[accept=".json,.txt"]').setInputFiles({
       name: "optical.json",
       mimeType: "application/json",

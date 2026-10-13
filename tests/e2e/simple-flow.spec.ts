@@ -39,6 +39,14 @@ test("photo-first start has exactly two source actions in all languages", async 
   ]) {
     await page.getByLabel("Language").selectOption(locale);
     await expect(page.locator("main button:visible")).toHaveCount(2);
+    await expect(page.getByTestId("photo-guidance")).toBeVisible();
+    await expect(page.getByTestId("photo-guidance")).toContainText(
+      locale === "uz"
+        ? "Mavjud suratlar"
+        : locale === "ru"
+          ? "существующие фотографии"
+          : "Existing photographs",
+    );
     await expect(
       page.getByRole("button", { name: camera, exact: true }),
     ).toBeVisible();
@@ -88,6 +96,8 @@ test("gallery still prepares locally, generates a real path and saves resumable 
     "",
   );
   await expect(page.locator(".result-card")).toHaveCount(0);
+  // This regression intentionally exercises the legacy image method with an explicit opt-out.
+  await page.getByLabel("Use general image method (no portrait priority)", {exact:true}).check();
   await expect(page.getByTestId("material-summary")).toContainText(
     "400 × 400 mm",
   );

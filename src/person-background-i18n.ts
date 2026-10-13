@@ -1,3 +1,4 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const en = {
   cleanupUnavailable:
@@ -43,7 +44,7 @@ const en = {
     "For resuming a guide, reuse this prepared photo with automatic whitening off and the same crop/settings.",
   group: "Two or more people",
   groupHint:
-    "Keep all people inside the crop. Single-face priority and face fitting are disabled for group photos.",
+    "Keep all faces inside the shape. Apply all detected faces or mark each person manually; review their eyes, nose and lips.",
 };
 const uz: typeof en = {
   cleanupUnavailable:
@@ -90,7 +91,7 @@ const uz: typeof en = {
     "Yo‘riqnomani davom ettirish uchun shu suratni avtomatik oqartirishni o‘chirib, bir xil crop va sozlamalarda qayta yuklang.",
   group: "Ikki yoki ko‘proq odam",
   groupHint:
-    "Barcha odamlarni crop ichida qoldiring. Guruh suratida bitta yuz ustuvorligi va yuzga moslash o‘chiriladi.",
+    "Barcha yuzlar shakl ichida qolsin. Topilgan yuzlarni qo‘llang yoki har birini qo‘lda belgilang; ko‘z, burun va lablarni tekshiring.",
 };
 const ru: typeof en = {
   cleanupUnavailable:
@@ -135,7 +136,7 @@ const ru: typeof en = {
     "Для продолжения инструкции загрузите это фото с выключенным отбеливанием и теми же кадрированием и настройками.",
   group: "Два или больше человек",
   groupHint:
-    "Оставьте всех людей внутри кадра. Приоритет одного лица и подгонка по лицу отключены для группы.",
+    "Оставьте все лица внутри формы. Примените найденные лица или отметьте каждое вручную; проверьте глаза, нос и губы.",
 };
 export const backgroundText = (locale: Locale, key: keyof typeof en) =>
-  ({ en, uz, ru })[locale][key];
+  scriptText(({ en, uz, ru })[baseLocale(locale)][key], locale);

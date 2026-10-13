@@ -1,3 +1,4 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const words = {
   customer: ["Hisob va do‘kon", "Аккаунт и магазин", "Account & shop"],
@@ -274,5 +275,5 @@ const words = {
 } as const;
 export type CustomerWord = keyof typeof words;
 export function customerText(locale: Locale, key: CustomerWord) {
-  return words[key][locale === "uz" ? 0 : locale === "ru" ? 1 : 2];
+  return scriptText(words[key][baseLocale(locale) === "uz" ? 0 : locale === "ru" ? 1 : 2], locale);
 }

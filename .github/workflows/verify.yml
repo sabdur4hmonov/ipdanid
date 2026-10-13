@@ -1,8 +1,11 @@
 name: Verify Ip Rasm
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   web-domain:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -11,20 +14,23 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm test
+      - run: node -e "require('node:fs').mkdirSync('.ci-evidence',{recursive:true})"
+      - run: npm test -- --testTimeout=30000 --reporter=json --outputFile=.ci-evidence/unit.json
       - run: npm run test:sandbox
       - run: npm run test:customer:http
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      # Private portrait experiments require local evidence and are not public CI inputs.
+      - run: npm run test:e2e:ci
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: verification-evidence
           path: |
-            output/
-            test-results/
+            .ci-evidence/unit.json
+            .ci-evidence/browser.json
   android:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

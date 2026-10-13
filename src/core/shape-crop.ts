@@ -107,6 +107,28 @@ export function remapPortrait(
   oldAspect = aspect,
   oldResolution = n,
 ): PortraitSettings {
+  if (s.people) {
+    const faces = s.people.faces.map((f) => {
+      const nextFace = remapPortrait(
+        { ...s, people: undefined, face: f.face, regions: f.regions },
+        old,
+        next,
+        width,
+        height,
+        aspect,
+        n,
+        oldAspect,
+        oldResolution,
+      );
+      return { ...f, face: nextFace.face, regions: {...nextFace.regions!,...(f.id && (["zoom","panX","panY","rotation"] as const).some(k=>old[k]!==next[k])?{placement:"proportional-estimate" as const}:{})} };
+    });
+    return {
+      ...s,
+      face: faces[0].face,
+      regions: faces[0].regions,
+      people: { ...s.people, faces },
+    };
+  }
   const map = (b: RegionBox): RegionBox => {
     const corners = [
       [b.left, b.top],

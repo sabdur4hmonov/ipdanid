@@ -5,6 +5,7 @@ dist/
 !.env.example
 test-results/
 playwright-report/
+.ci-evidence/
 output/
 tmp/
 *.log

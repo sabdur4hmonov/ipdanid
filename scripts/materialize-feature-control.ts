@@ -1,0 +1,12 @@
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+import {generateDensity} from '../src/core/density';
+import {validateInstruction,progressFor} from '../src/core/validation';
+import {defaultPhysicalContrast} from '../src/core/physical-contrast';
+import {DEFAULT_FEATURE_CONTRAST} from '../src/core/feature-contrast';
+const out='output/feature-contrast';if(existsSync(out+'/features5.json'))throw Error('Preserve completed equal-evaluation snapshot');
+const parent=JSON.parse(readFileSync('output/resolved-convergence/final.json','utf8')),seed=await validateInstruction(parent.project.instruction);
+const checkpoint=JSON.parse(readFileSync(out+'/features-sweep-5.json','utf8'));
+const pixels=new Uint8Array(readFileSync('output/portrait-dispatch/target-320.bin'));
+const start=performance.now();
+const i=await generateDensity({pixels,profile:seed.profile,portrait:seed.params.portrait,resolution:320,mode:seed.params.mode,lines:seed.params.requestedLines,seed},{resolved:true,physical:defaultPhysicalContrast(),features:DEFAULT_FEATURE_CONTRAST,edgeWeight:2,sweeps:8,resume:checkpoint,materializeOnly:true});
+await validateInstruction(i);writeFileSync(out+'/features5.json',JSON.stringify({schema:'iprasm.project/1',project:{...parent.project,id:crypto.randomUUID(),name:'Fine feature contrast / equal5 snapshot',instruction:i,progress:progressFor(i)},evidence:{snapshot:true,actualSweeps:5,evaluations:i.metrics.densityFit?.evaluations,originalPlannedSweeps:8,bindingUnchanged:true,additionalFitEvaluations:0,materializationMs:performance.now()-start,fitStageElapsedMs:checkpoint.elapsedMs,rootSequence:seed.sequenceHash,physicalAcceptance:false,qualityAcceptance:'uninspected'}},null,2),{flag:'wx'});console.log({hash:i.sequenceHash,lines:i.metrics.lines,evaluations:i.metrics.densityFit?.evaluations});

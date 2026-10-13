@@ -74,8 +74,16 @@ export class PhysicalContrast {
     importance: Float64Array,
     edgeWeight: number,
     settings: PhysicalContrastSettings,
+    selectedScales: readonly number[] = [0, 1, 2],
   ) {
     validPhysicalContrast(settings);
+    if (
+      !selectedScales.length ||
+      selectedScales.length > 3 ||
+      new Set(selectedScales).size !== selectedScales.length ||
+      selectedScales.some((v) => !Number.isInteger(v) || v < 0 || v > 2)
+    )
+      throw Error("Invalid physical contrast scale selection");
     if (
       !Number.isInteger(n) ||
       n < 32 ||
@@ -106,6 +114,7 @@ export class PhysicalContrast {
       physicalOffset(d, p.heightMm, n),
     );
     this.legacyEquivalent =
+      selectedScales.length === 3 &&
       xOffsets.every((v, k) => v === [1, 2, 4][k]) &&
       yOffsets.every((v, k) => v === [1, 2, 4][k]) &&
       settings.distancesMm.every(
@@ -115,7 +124,7 @@ export class PhysicalContrast {
       if (mask[i]) {
         const x = i % n,
           y = Math.floor(i / n);
-        for (let s = 0; s < 3; s++)
+        for (const s of selectedScales)
           for (let axis = 0; axis < 2; axis++) {
             const d = (axis ? yOffsets : xOffsets)[s],
               anchor = axis ? y : x,

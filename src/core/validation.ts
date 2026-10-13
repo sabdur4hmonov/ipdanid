@@ -1,3 +1,6 @@
+import {validSubjectPlan} from "./subject-plan";
+import { validHeadImportance } from "./head-importance";
+import { validFeatureContrast } from "./feature-contrast";
 import { validatePinBasis } from "./pin-basis";
 import { validAnatomicalImportance } from "./anatomical-importance";
 import { Distribution } from "./distribution";
@@ -25,24 +28,33 @@ export async function validateInstruction(
       "greedy-optical/4",
       "density-optical/5",
       "continuous-guarded/6",
+      "group-optical/15",
       "density-multiscale/7",
       "density-physical/8",
       "density-anatomy/10",
       "density-pin-basis/11",
       "density-resolved/12",
+      "density-feature/16",
+      "density-head/13",
+      "hair-cycles/14",
       "assembly-prune/9",
     ].includes(i.algorithm)
   )
     throw new Error("Unsupported instruction version");
+  if(i.params?.subject!==undefined) validSubjectPlan(i.params.subject,i.params.portrait);
   const qualityFirst = [
       "greedy-optical/4",
       "density-optical/5",
       "continuous-guarded/6",
+      "group-optical/15",
       "density-multiscale/7",
       "density-physical/8",
       "density-anatomy/10",
       "density-pin-basis/11",
       "density-resolved/12",
+      "density-feature/16",
+      "density-head/13",
+      "hair-cycles/14",
       "assembly-prune/9",
     ].includes(i.algorithm),
     limit = qualityFirst ? MAX_LINES : 3000;
@@ -103,16 +115,32 @@ export async function validateInstruction(
     if (
       i.algorithm !== "density-pin-basis/11" &&
       i.algorithm !== "density-resolved/12" &&
+      i.algorithm !== "density-feature/16" &&
+      i.algorithm !== "density-head/13" &&
+      i.algorithm !== "hair-cycles/14" &&
       !(
         i.algorithm === "assembly-prune/9" &&
-        ["density-pin-basis/11", "density-resolved/12"].includes(
-          i.params?.simplification?.sourceAlgorithm ?? "",
-        )
+        [
+          "density-pin-basis/11",
+          "density-resolved/12",
+          "density-feature/16",
+          "density-head/13",
+          "hair-cycles/14",
+        ].includes(i.params?.simplification?.sourceAlgorithm ?? "")
       )
     )
       throw Error("Unbound experimental pin basis");
   } else if (i.algorithm === "density-pin-basis/11")
     throw Error("Missing experimental pin basis");
+  if (
+    i.algorithm === "group-optical/15" &&
+    (!i.params.portrait?.enabled ||
+      !i.params.portrait.people ||
+      i.params.portrait.people.faces.some(
+        (f) => f.regions.placement !== "manual",
+      ))
+  )
+    throw Error("Missing multiple portrait regions");
   validateProfileLayout(p);
   if (
     !/^#[0-9a-f]{6}$/i.test(p.baseColor) ||
@@ -168,9 +196,19 @@ export async function validateInstruction(
     !Number.isInteger(i.params.resolution) ||
     i.params.resolution < 32 ||
     i.params.resolution >
-      (i.algorithm === "density-resolved/12" ||
+      ([
+        "density-resolved/12",
+        "density-feature/16",
+        "density-head/13",
+        "hair-cycles/14",
+      ].includes(i.algorithm) ||
       (i.algorithm === "assembly-prune/9" &&
-        i.params.simplification?.sourceAlgorithm === "density-resolved/12")
+        [
+          "density-resolved/12",
+          "density-feature/16",
+          "density-head/13",
+          "hair-cycles/14",
+        ].includes(i.params.simplification?.sourceAlgorithm ?? ""))
         ? 320
         : 192) ||
     !Number.isInteger(i.params.requestedLines) ||
@@ -181,11 +219,15 @@ export async function validateInstruction(
   if (
     [
       "continuous-guarded/6",
+      "group-optical/15",
       "density-multiscale/7",
       "density-physical/8",
       "density-anatomy/10",
       "density-pin-basis/11",
       "density-resolved/12",
+      "density-feature/16",
+      "density-head/13",
+      "hair-cycles/14",
       "assembly-prune/9",
     ].includes(i.algorithm)
   ) {
@@ -209,6 +251,8 @@ export async function validateInstruction(
         "density-anatomy/10",
         "density-pin-basis/11",
         "density-resolved/12",
+        "density-feature/16",
+        "density-head/13",
       ].includes(i.algorithm)
     ) {
       validPhysicalContrast(i.params.optimization.contrastPhysical!);
@@ -255,9 +299,51 @@ export async function validateInstruction(
   }
   const sampling = i.params.optimization?.sampling;
   if (
-    i.algorithm === "density-resolved/12" ||
+    i.params.optimization?.initialObjective !== undefined &&
+    (i.params.optimization.initialObjective !== "consistent-undershoot/1" ||
+      ![
+        "density-optical/5",
+        "density-multiscale/7",
+        "density-physical/8",
+        "density-anatomy/10",
+        "assembly-prune/9",
+      ].includes(i.algorithm))
+  )
+    throw Error("Invalid initial objective version");
+  const features = i.params.optimization?.features;
+  if (
+    i.algorithm === "density-feature/16" ||
     (i.algorithm === "assembly-prune/9" &&
-      i.params.simplification?.sourceAlgorithm === "density-resolved/12")
+      i.params.simplification?.sourceAlgorithm === "density-feature/16")
+  ) {
+    validFeatureContrast(features!);
+    if (
+      !p.pinBasis ||
+      i.params.resolution !== 320 ||
+      i.params.portrait?.regions?.placement !== "manual" ||
+      i.params.portrait.people ||
+      i.params.optimization?.head ||
+      i.params.optimization?.anatomy ||
+      i.params.optimization?.convergence ||
+      i.params.optimization?.exchange
+    )
+      throw Error("Invalid source feature provenance");
+  } else if (features !== undefined)
+    throw Error("Unbound source feature objective");
+  if (
+    [
+      "density-resolved/12",
+      "density-feature/16",
+      "density-head/13",
+      "hair-cycles/14",
+    ].includes(i.algorithm) ||
+    (i.algorithm === "assembly-prune/9" &&
+      [
+        "density-resolved/12",
+        "density-feature/16",
+        "density-head/13",
+        "hair-cycles/14",
+      ].includes(i.params.simplification?.sourceAlgorithm ?? ""))
   ) {
     if (
       sampling?.version !== "direct-source320/1" ||
@@ -267,12 +353,69 @@ export async function validateInstruction(
       !i.params.portrait?.enabled ||
       i.params.optimization?.anatomy ||
       i.params.optimization?.exchange ||
-      i.params.optimization?.convergence ||
+      (i.params.optimization?.convergence &&
+        !(
+          i.algorithm === "density-resolved/12" &&
+          i.params.optimization.convergence.version === "resolved-convergence/1"
+        )) ||
       !p.pinBasis
     )
       throw Error("Invalid resolved sampling provenance");
     validPhysicalContrast(i.params.optimization?.contrastPhysical!);
   } else if (sampling !== undefined) throw Error("Unbound resolved sampling");
+  const head = i.params.optimization?.head;
+  if (
+    ["density-head/13", "hair-cycles/14"].includes(i.algorithm) ||
+    (i.algorithm === "assembly-prune/9" &&
+      ["density-head/13", "hair-cycles/14"].includes(
+        i.params.simplification?.sourceAlgorithm ?? "",
+      ))
+  ) {
+    validHeadImportance(head!);
+    if (i.params.portrait?.regions?.placement !== "manual")
+      throw Error("Head importance requires manual regions");
+  } else if (head !== undefined) throw Error("Unbound head importance");
+  const cycles = i.params.hairCycles,
+    cm = i.metrics.hairCycles;
+  if (i.algorithm === "hair-cycles/14") {
+    if (
+      !cycles ||
+      cycles.version !== "face-protected-cycles/1" ||
+      cycles.referenceHash !== i.params.parentSequenceHash ||
+      !/^[0-9a-f]{64}$/.test(cycles.referenceHash) ||
+      cycles.faceClearanceMm !== 4 ||
+      cycles.poolSize !== 256 ||
+      cycles.evaluationLimit !== 100000 ||
+      cycles.cycleLimit !== 512 ||
+      cycles.objective !== "head-physical-overshoot/1" ||
+      !cm ||
+      !Number.isSafeInteger(cm.evaluations) ||
+      cm.evaluations < 0 ||
+      cm.evaluations > 100000 ||
+      !Array.isArray(cm.cycles) ||
+      cm.cycles.length > 512 ||
+      cm.cycles.some(
+        (c) =>
+          !p.pins[c.from] ||
+          !p.pins[c.to] ||
+          !connectionAllowed(p, c.from, c.to),
+      ) ||
+      !Number.isFinite(cm.initialObjective) ||
+      !Number.isFinite(cm.finalObjective) ||
+      cm.initialObjective < 0 ||
+      cm.finalObjective < 0 ||
+      cm.finalObjective > cm.initialObjective + 1e-8 ||
+      !Number.isSafeInteger(cm.originalRoutingConnections) ||
+      cm.originalRoutingConnections < 0 ||
+      !Number.isSafeInteger(cm.poolCandidates) ||
+      cm.poolCandidates < 0 ||
+      cm.poolCandidates > 256 ||
+      cm.protectedFace !== "exact-native-pixels" ||
+      i.metrics.densityFit
+    )
+      throw Error("Invalid protected hair refinement provenance");
+  } else if (i.algorithm !== "assembly-prune/9" && (cycles || cm))
+    throw Error("Unbound hair refinement");
   const anatomy = i.params.optimization?.anatomy;
   if (
     i.algorithm === "density-anatomy/10" ||
@@ -304,7 +447,11 @@ export async function validateInstruction(
           "density-anatomy/10",
           "density-pin-basis/11",
           "density-resolved/12",
+          "density-feature/16",
+          "density-head/13",
+          "hair-cycles/14",
           "continuous-guarded/6",
+          "group-optical/15",
         ].includes(s.sourceAlgorithm) ||
         JSON.stringify(s.tolerances) !==
           JSON.stringify(SIMPLIFICATION_TOLERANCES) ||
@@ -335,6 +482,9 @@ export async function validateInstruction(
           "jaw",
           "lightSkin",
         ].every((k) => d[k] && Object.values(d[k]).every(Number.isFinite)) ||
+        (i.params.optimization?.head &&
+          (!d.wholeHead ||
+            !Object.values(d.wholeHead).every(Number.isFinite))) ||
         !withinQualityTolerance(d) ||
         i.metrics.densityFit ||
         i.metrics.weightedError
@@ -361,6 +511,8 @@ export async function validateInstruction(
         "density-anatomy/10",
         "density-pin-basis/11",
         "density-resolved/12",
+        "density-feature/16",
+        "density-head/13",
       ].includes(i.algorithm)
     ) {
       if (i.params.optimization?.pairLimit !== undefined) {
@@ -430,8 +582,14 @@ export async function validateInstruction(
       const convergence = i.params.optimization?.convergence;
       if (
         convergence &&
-        (i.algorithm !== "density-physical/8" ||
-          convergence.version !== "density-convergence/1" ||
+        (!(
+          (i.algorithm === "density-physical/8" &&
+            convergence.version === "density-convergence/1") ||
+          (i.algorithm === "density-resolved/12" &&
+            convergence.version === "resolved-convergence/1" &&
+            i.params.optimization?.sampling?.version === "direct-source320/1" &&
+            !i.params.optimization.head)
+        ) ||
           !/^[a-f0-9]{64}$/.test(convergence.rootSequenceHash) ||
           !/^[a-f0-9]{64}$/.test(convergence.originalCheckpointChecksum) ||
           ![
@@ -490,7 +648,11 @@ export async function validateInstruction(
     if (
       i.params.stockPolicy !== "estimate" ||
       !i.params.optimization ||
-      (["greedy-optical/4", "continuous-guarded/6"].includes(i.algorithm)
+      ([
+        "greedy-optical/4",
+        "continuous-guarded/6",
+        "group-optical/15",
+      ].includes(i.algorithm)
         ? i.params.optimization.lookahead !== 8 ||
           i.params.optimization.coarseScale !== 4 ||
           i.params.optimization.minimumRelativeGain !== 1e-7
@@ -619,11 +781,15 @@ export function toTxt(i: Instruction): string {
   const knots = [
     "density-optical/5",
     "continuous-guarded/6",
+    "group-optical/15",
     "density-multiscale/7",
     "density-physical/8",
     "density-anatomy/10",
     "density-pin-basis/11",
     "density-resolved/12",
+    "density-feature/16",
+    "density-head/13",
+    "hair-cycles/14",
     "assembly-prune/9",
   ].includes(i.algorithm)
     ? i.segments

@@ -4,18 +4,26 @@ import type {
   ChordExchangeSettings,
 } from "./core/density";
 import type { EditParams, Instruction } from "./core/types";
+import { RecoveryOrder } from "./recovery-order";
+const operations = new RecoveryOrder();
 export interface OptimizerRecovery {
   version: "iprasm.optimizer-recovery/1";
-  checkpoint: DensityCheckpoint;
+  checkpoint?: DensityCheckpoint;
+  hairCheckpoint?: import("./core/hair-cycles").HairCycleCheckpoint;
   seed?: Instruction;
   profile?: import("./core/types").MaterialProfile;
   portrait?: import("./core/types").PortraitSettings;
+  subject?: import("./core/subject-plan").SubjectPlan;
   resolution?: number;
   mode?: "dark" | "light" | "color";
   pixels: Uint8Array;
   lines: number;
-  strategy: "physical" | "anatomy" | "basis";
+  strategy: "physical" | "anatomy" | "basis" | "features";
+  headRefine?: boolean;
+  hairSeed?: Instruction;
+  head?: import("./core/head-importance").HeadImportance;
   anatomy?: import("./core/anatomical-importance").AnatomicalImportance;
+  features?: import("./core/feature-contrast").FeatureContrastSettings;
   edits: EditParams;
   name: string;
   extension?: DensityTuning["extension"];
@@ -33,6 +41,9 @@ async function database() {
 export async function readOptimizerRecovery(): Promise<
   OptimizerRecovery | undefined
 > {
+  return operations.run(readRecovery);
+}
+async function readRecovery(): Promise<OptimizerRecovery | undefined> {
   const db = await database();
   try {
     return await new Promise((resolve, reject) => {
@@ -48,6 +59,9 @@ export async function readOptimizerRecovery(): Promise<
   }
 }
 export async function saveOptimizerRecovery(value: OptimizerRecovery) {
+  return operations.run(() => writeRecovery(value));
+}
+async function writeRecovery(value: OptimizerRecovery) {
   const db = await database();
   try {
     await new Promise<void>((resolve, reject) => {
@@ -62,6 +76,9 @@ export async function saveOptimizerRecovery(value: OptimizerRecovery) {
   }
 }
 export async function clearOptimizerRecovery() {
+  return operations.run(() => deleteRecovery());
+}
+async function deleteRecovery() {
   const db = await database();
   try {
     await new Promise<void>((resolve, reject) => {

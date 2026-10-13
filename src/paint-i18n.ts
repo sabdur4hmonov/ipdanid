@@ -1,3 +1,4 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const en = {
   title: "Paint by numbers",
@@ -185,4 +186,4 @@ const ru: Record<Key, string> = {
   gray: "7 серых тонов краски",
 };
 export const paintText = (locale: Locale, key: Key) =>
-  ({ en, uz, ru })[locale][key];
+  scriptText(({ en, uz, ru })[baseLocale(locale)][key], locale);

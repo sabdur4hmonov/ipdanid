@@ -1,6 +1,9 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
+import { portraitHelp } from "./portrait-help-i18n";
+import { portraitChoiceText } from "./portrait-choice-i18n";
 // Domain/Worker messages remain stable for diagnostics; visible recovery text follows the chosen locale.
-const messages: [RegExp, Record<Locale, string>][] = [
+const messages: [RegExp, Record<Exclude<Locale, "uz-Cyrl">, string>][] = [
   [
     /\[(?:[^\]]*,)?target(?:,|\])/i,
     {
@@ -163,12 +166,29 @@ const messages: [RegExp, Record<Locale, string>][] = [
   ],
 ];
 export function customerError(message: string, locale: Locale): string {
-  return (
-    messages.find(([pattern]) => pattern.test(message))?.[1][locale] ??
-    {
-      uz: "Amal bajarilmadi. Qayta urinib ko‘ring; loyihangizni JSON zaxira orqali saqlang.",
-      ru: "Не удалось выполнить действие. Повторите попытку и сохраните JSON-копию проекта.",
-      en: "The action could not be completed. Retry and preserve your project with a JSON backup.",
-    }[locale]
+  if (/^(Error: )?local-input\/missing$/.test(message))
+    return portraitChoiceText(locale, "missingInput");
+  if (message === "portrait-choice/off")
+    return portraitChoiceText(locale, "off");
+  if (message === "portrait-config/group")
+    return portraitHelp(locale, "groupConfiguration");
+  if (message === "portrait-config/basis")
+    return portraitHelp(locale, "basisConfiguration");
+  if (
+    /Review every person's facial regions|Missing multiple portrait regions/.test(
+      message,
+    )
+  )
+    return portraitHelp(locale, "reviewRegions");
+  return scriptText(
+    messages.find(([pattern]) => pattern.test(message))?.[1][
+      baseLocale(locale)
+    ] ??
+      {
+        uz: "Amal bajarilmadi. Qayta urinib ko‘ring; loyihangizni JSON zaxira orqali saqlang.",
+        ru: "Не удалось выполнить действие. Повторите попытку и сохраните JSON-копию проекта.",
+        en: "The action could not be completed. Retry and preserve your project with a JSON backup.",
+      }[baseLocale(locale)],
+    locale,
   );
 }

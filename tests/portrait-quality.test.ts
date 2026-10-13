@@ -116,7 +116,7 @@ it("face-weighted continuous refinement improves facial regions against the same
       seed: current,
     }),
   ).rejects.toThrow(/same portrait/);
-}, 120000); // Two bounded refinement stages exceed 60 s on this Windows host; assertions are unchanged.
+}, 300000); // Two full bounded stages exceeded 120 s twice on this host; keep every quality/integrity assertion and the search effort unchanged.
 it("supports useful paths above 3,000 connections without stock truncation and detects accounting tampering", async () => {
   const profile = createProfile("circle", 48, "dark", {
     widthMm: 1200,

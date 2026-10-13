@@ -1,3 +1,10 @@
+import {validSubjectPlan} from "./subject-plan";
+import { headImportance, type HeadImportance } from "./head-importance";
+import {
+  featureContrast,
+  validFeatureContrast,
+  type FeatureContrastSettings,
+} from "./feature-contrast";
 import { validatePinBasis } from "./pin-basis";
 import {
   anatomicalImportance,
@@ -26,6 +33,7 @@ import {
 // Reversible integer strand counts, evaluated against the actual optical mean-RGB raster.
 // The chosen multigraph is connected and made Eulerian with explicit, measured routing strands.
 export interface DensityCheckpoint {
+  initialObjective?: "consistent-undershoot/1";
   version: "density-fit-checkpoint/1";
   binding: string;
   checksum: string;
@@ -54,8 +62,11 @@ export interface ChordExchangeSettings {
   selection: "initial-full-objective-gain/1" | "nose-lip-residual/1";
 }
 export interface DensityTuning {
+  initialObjective?: "consistent-undershoot/1";
+  features?: FeatureContrastSettings;
   // Separately versioned direct-source grid; never an enlarged old target/seed.
   resolved?: boolean;
+  head?: HeadImportance;
   edgeWeight: number;
   sweeps: number;
   multiscale?: boolean;
@@ -64,6 +75,7 @@ export interface DensityTuning {
   resume?: DensityCheckpoint;
   onCheckpoint?: (checkpoint: DensityCheckpoint) => Promise<void> | void;
   extension?: {
+    version?: "resolved-convergence/1";
     checkpoint: DensityCheckpoint;
     priorSweepLimit: number;
     reference: Instruction;
@@ -82,16 +94,57 @@ export async function generateDensity(
   const started = performance.now(),
     { resolution: n, profile: p } = o,
     portrait = o.portrait;
+  const initialObjective =
+    tuning.initialObjective ??
+    tuning.resume?.initialObjective ??
+    tuning.extension?.checkpoint.initialObjective ??
+    o.seed?.params.optimization?.initialObjective ??
+    (!o.seed && !o.profile.pinBasis && o.mode === "light" && !tuning.resume
+      ? ("consistent-undershoot/1" as const)
+      : undefined);
+  if (
+    initialObjective !== undefined &&
+    initialObjective !== "consistent-undershoot/1"
+  )
+    throw Error("Invalid initial objective version");
+  if(o.subject) validSubjectPlan(o.subject,portrait);
   if (!portrait?.enabled || !["dark", "light"].includes(o.mode))
     throw new Error("Density optimization requires a new monochrome portrait");
   if (o.seed) assertContinuation(o, await hash(o.pixels));
   validPortrait(portrait);
+  if (tuning.features) {
+    validFeatureContrast(tuning.features);
+    if (
+      !tuning.resolved ||
+      !tuning.physical ||
+      tuning.head ||
+      tuning.anatomy ||
+      tuning.extension ||
+      tuning.exchange ||
+      tuning.multiscale ||
+      portrait.people ||
+      portrait.regions?.placement !== "manual"
+    )
+      throw Error(
+        "Source feature contrast requires a separate resolved objective",
+      );
+  }
+  if (
+    o.seed?.algorithm === "density-feature/16" &&
+    JSON.stringify(o.seed.params.optimization?.features) !==
+      JSON.stringify(tuning.features)
+  )
+    throw Error("Continuation requires the same source feature objective");
   if (p.pinBasis) {
     validatePinBasis(p);
     if (
       !tuning.physical ||
       tuning.anatomy ||
-      tuning.extension ||
+      (tuning.extension &&
+        !(
+          tuning.resolved &&
+          tuning.extension.version === "resolved-convergence/1"
+        )) ||
       tuning.exchange
     )
       throw Error("Pin-basis experiment requires a separate physical fit");
@@ -104,19 +157,49 @@ export async function generateDensity(
     (!tuning.physical || tuning.extension || tuning.exchange)
   )
     throw Error("Anatomical importance requires a separate physical fit");
-  const importanceAt = anatomicalImportance(portrait, tuning.anatomy);
+  const anatomical = anatomicalImportance(portrait, tuning.anatomy);
+  if (
+    tuning.head &&
+    (!tuning.resolved ||
+      tuning.anatomy ||
+      portrait.regions?.placement !== "manual")
+  )
+    throw Error(
+      "Head importance requires a separate resolved fit and manual regions",
+    );
+  if (
+    o.seed &&
+    JSON.stringify(o.seed.params.optimization?.head) !==
+      JSON.stringify(tuning.head)
+  )
+    throw Error("Continuation requires the same manual head importance");
+  const importanceAt = tuning.head
+    ? headImportance(anatomical, tuning.head, p)
+    : anatomical;
   if (
     tuning.resolved &&
     (n !== 320 ||
       !tuning.physical ||
       !p.pinBasis ||
       tuning.anatomy ||
-      tuning.extension ||
+      (tuning.extension &&
+        tuning.extension.version !== "resolved-convergence/1") ||
       tuning.exchange ||
-      (o.seed && o.seed.algorithm !== "density-resolved/12"))
+      (o.seed &&
+        !(
+          tuning.features &&
+          ["density-resolved/12", "density-feature/16"].includes(
+            o.seed.algorithm,
+          )
+        ) &&
+        o.seed.algorithm !==
+          (tuning.head ? "density-head/13" : "density-resolved/12")))
   )
     throw Error("Resolved sampling requires a separate 320 physical fit");
   const extension = tuning.extension;
+  const convergenceVersion = tuning.resolved
+    ? ("resolved-convergence/1" as const)
+    : ("density-convergence/1" as const);
   const exchange = tuning.exchange;
   if (
     exchange &&
@@ -142,7 +225,11 @@ export async function generateDensity(
     await validateInstruction(reference);
     if (
       !tuning.physical ||
-      reference.algorithm !== "density-physical/8" ||
+      reference.algorithm !==
+        (tuning.resolved ? "density-resolved/12" : "density-physical/8") ||
+      (tuning.resolved
+        ? extension.version !== "resolved-convergence/1" || !!tuning.head
+        : extension.version !== undefined) ||
       reference.params.optimization?.convergence ||
       !Number.isSafeInteger(priorSweepLimit) ||
       priorSweepLimit < 1 ||
@@ -172,6 +259,7 @@ export async function generateDensity(
         sweeps: priorSweepLimit,
         multiscale: tuning.multiscale,
         physical: tuning.physical,
+        resolved: tuning.resolved,
         resume: checkpoint,
       },
     );
@@ -270,6 +358,12 @@ export async function generateDensity(
       )
     : undefined;
   const fractional = physical && !physical.legacyEquivalent;
+  const fine = tuning.features
+    ? featureContrast(n, p, portrait, target, mask, weight, tuning.features)
+        .operator
+    : undefined;
+  const fineObjective = () =>
+    fine!.objective(Float64Array.from(density, (v, i) => v - target[i]));
   const contrastObjective = () =>
     physical!.objective(Float64Array.from(density, (v, i) => v - target[i]));
   const neighbors = (i: number, visit: (j: number, w: number) => void) => {
@@ -319,12 +413,15 @@ export async function generateDensity(
     if (mask[i]) {
       objective +=
         weight[i] *
-        (p.pinBasis ? penalty(bl, target[i]) : (bl - target[i]) ** 2);
+        (p.pinBasis || initialObjective
+          ? penalty(bl, target[i])
+          : (bl - target[i]) ** 2);
       neighbors(i, (j, w) => {
         if (j > i) objective += w * (target[i] - target[j]) ** 2;
       });
     }
   if (fractional) objective += contrastObjective();
+  if (fine) objective += fineObjective();
   const initial = objective,
     counts = new Int32Array(p.pins.length ** 2),
     pinDegree = new Int32Array(p.pins.length),
@@ -417,7 +514,8 @@ export async function generateDensity(
       value +
       (fractional
         ? physical.gain(density, target, sparse, marks, epoch, f.pixels)
-        : 0)
+        : 0) +
+      (fine ? fine.gain(density, target, sparse, marks, epoch, f.pixels) : 0)
     );
   };
   const candidate = (id: number, f: Footprint, a: number, b: number) => {
@@ -512,6 +610,7 @@ export async function generateDensity(
         });
       }
     if (fractional) objective += contrastObjective();
+    if (fine) objective += fineObjective();
     if (total > o.lines)
       throw new Error("Seed leaves insufficient routing capacity");
     if (
@@ -533,6 +632,7 @@ export async function generateDensity(
             resolution: n,
             profile: p,
             portrait,
+            ...(o.subject ? {subject:o.subject}:{}),
             mode: o.mode,
             lines: o.lines,
             seed: o.seed?.sequenceHash,
@@ -540,15 +640,18 @@ export async function generateDensity(
             sweeps: tuning.sweeps,
             multiscale: tuning.multiscale ?? false,
             physical: tuning.physical,
+            ...(initialObjective ? { initialObjective } : {}),
             ...(tuning.resolved
               ? { sampling: { version: "direct-source320/1", grid: 320 } }
               : {}),
             ...(tuning.anatomy ? { anatomy: tuning.anatomy } : {}),
+            ...(tuning.head ? { head: tuning.head } : {}),
+            ...(tuning.features ? { features: tuning.features } : {}),
             ...(exchange ? { exchange } : {}),
             ...(extension
               ? {
                   extension: {
-                    version: "density-convergence/1",
+                    version: convergenceVersion,
                     reference: extension.reference.sequenceHash,
                     checkpointChecksum: extension.checkpoint.checksum,
                     priorSweepLimit: extension.priorSweepLimit,
@@ -633,8 +736,13 @@ export async function generateDensity(
         });
       }
     if (fractional) actual += contrastObjective();
+    if (fine) actual += fineObjective();
     if (Math.abs(actual - s.objective) > 1e-6 * Math.max(1, actual))
-      throw Error("Invalid checkpoint objective");
+      throw Error(
+        !o.seed && !p.pinBasis && o.mode === "light" && !initialObjective
+          ? "Legacy light checkpoint objective mismatch; generate a new variant without changing the old guide"
+          : "Invalid checkpoint objective",
+      );
     objective = s.objective;
     sweeps = s.sweeps;
     evaluations = s.evaluations;
@@ -680,6 +788,7 @@ export async function generateDensity(
     if (tuning.onCheckpoint) {
       const payload = {
         version: "density-fit-checkpoint/1" as const,
+        ...(initialObjective ? { initialObjective } : {}),
         binding,
         counts: Array.from(counts),
         density: Array.from(density),
@@ -738,6 +847,7 @@ export async function generateDensity(
       if (!tuning.onCheckpoint) return;
       const payload = {
         version: "density-fit-checkpoint/1" as const,
+        ...(initialObjective ? { initialObjective } : {}),
         binding,
         counts: Array.from(counts),
         density: Array.from(density),
@@ -1108,17 +1218,21 @@ export async function generateDensity(
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: tuning.resolved
-      ? "density-resolved/12"
-      : p.pinBasis
-        ? "density-pin-basis/11"
-        : tuning.anatomy
-          ? "density-anatomy/10"
-          : tuning.physical
-            ? "density-physical/8"
-            : tuning.multiscale
-              ? "density-multiscale/7"
-              : "density-optical/5",
+    algorithm: tuning.features
+      ? "density-feature/16"
+      : tuning.head
+        ? "density-head/13"
+        : tuning.resolved
+          ? "density-resolved/12"
+          : p.pinBasis
+            ? "density-pin-basis/11"
+            : tuning.anatomy
+              ? "density-anatomy/10"
+              : tuning.physical
+                ? "density-physical/8"
+                : tuning.multiscale
+                  ? "density-multiscale/7"
+                  : "density-optical/5",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -1131,6 +1245,7 @@ export async function generateDensity(
       mode: o.mode,
       stockPolicy: "estimate",
       portrait: structuredClone(portrait),
+      ...(o.subject ? {subject:structuredClone(o.subject)}:{}),
       ...(o.seed
         ? {
             parentSequenceHash: o.seed.sequenceHash,
@@ -1138,6 +1253,7 @@ export async function generateDensity(
           }
         : {}),
       optimization: {
+        ...(initialObjective ? { initialObjective } : {}),
         ...(tuning.resolved
           ? {
               sampling: {
@@ -1145,6 +1261,10 @@ export async function generateDensity(
                 grid: 320 as const,
               },
             }
+          : {}),
+        ...(tuning.head ? { head: structuredClone(tuning.head) } : {}),
+        ...(tuning.features
+          ? { features: structuredClone(tuning.features) }
           : {}),
         lookahead: 0,
         coarseScale: 1,
@@ -1161,7 +1281,7 @@ export async function generateDensity(
         ...(extension
           ? {
               convergence: {
-                version: "density-convergence/1" as const,
+                version: convergenceVersion,
                 rootSequenceHash: extension.reference.sequenceHash,
                 originalCheckpointChecksum: extension.checkpoint.checksum,
                 priorSweeps: extension.checkpoint.sweeps,

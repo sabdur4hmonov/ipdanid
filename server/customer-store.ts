@@ -1,3 +1,4 @@
+import { BusinessStore } from "./business-store";
 import {
   scryptSync,
   randomBytes,
@@ -259,6 +260,12 @@ export class CustomerStore extends Store {
       status: String(o.status),
       total_minor: Number(o.total_minor),
       address: JSON.parse(String(o.address)),
+      commerce: (() => {
+        const row = this.db
+          .prepare("SELECT data FROM order_commerce WHERE order_id=?")
+          .get(o.id);
+        return row ? JSON.parse(String(row.data)) : null;
+      })(),
       items: this.db
         .prepare(
           "SELECT l.*,p.name FROM order_lines l JOIN products p ON p.id=l.product_id WHERE order_id=?",
@@ -272,19 +279,72 @@ export class CustomerStore extends Store {
   override createOrder(
     user: string,
     items: { productId: string; quantity: number }[],
-    address: { name: string; city: string; street: string },
+    address: {
+      name: string;
+      city: string;
+      street: string;
+      phone?: string;
+      deliveryMethod?: string;
+    },
     key: string,
   ) {
-    if (
-      typeof key !== "string" ||
-      !key.trim() ||
-      !address ||
-      ![address.name, address.city, address.street].every(
-        (v) => typeof v === "string" && v.trim().length >= 2 && v.length <= 200,
-      )
-    )
-      throw new DomainError("Invalid order");
+    if (address?.deliveryMethod !== undefined)
+      return this.submitOrder(user, items, address, key);
     return super.createOrder(user, items, address, key);
+  }
+  submitOrder(
+    user: string,
+    items: { productId: string; quantity: number }[],
+    address: {
+      name: string;
+      city: string;
+      street: string;
+      phone?: string;
+      deliveryMethod?: string;
+    },
+    key: string,
+    quote?: { totalMinor: number; settingsRevision: number },
+  ) {
+    if (
+      !address ||
+      !["courier", "pickup"].includes(address.deliveryMethod ?? "") ||
+      typeof address.phone !== "string" ||
+      !/^\+?[\d ()-]{7,40}$/.test(address.phone) ||
+      !/^\d{7,15}$/.test(address.phone.replace(/\D/g, "")) ||
+      ![address.name].every(
+        (v) => typeof v === "string" && v.trim().length >= 2 && v.length <= 200,
+      ) ||
+      (address.deliveryMethod === "courier" &&
+        ![address.city, address.street].every(
+          (v) =>
+            typeof v === "string" && v.trim().length >= 2 && v.length <= 200,
+        ))
+    )
+      throw new DomainError("Invalid delivery details");
+    return super.createOrder(
+      user,
+      items,
+      address,
+      key,
+      () => {
+        const config = new BusinessStore(this).settings();
+        if (address.deliveryMethod === "courier" && !config.deliveryEnabled)
+          throw new DomainError("Delivery unavailable", 409);
+        if (address.deliveryMethod === "pickup" && !config.pickupAddress.trim())
+          throw new DomainError("Pickup unavailable", 409);
+        return {
+          method: address.deliveryMethod as "courier" | "pickup",
+          feeMinor:
+            address.deliveryMethod === "courier" ? config.deliveryFeeMinor : 0,
+          sellerName: config.sellerName,
+          sellerPhone: config.sellerPhone,
+          paymentDetails: config.paymentDetails,
+          pickupAddress: config.pickupAddress,
+          settingsRevision: config.revision,
+        };
+      },
+      quote,
+    );
   }
   requestReturn(user: string, id: string) {
     return this.transaction(() => {

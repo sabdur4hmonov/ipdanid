@@ -1,0 +1,70 @@
+# Saved input and resolved convergence — 2026-10-13
+
+Continues the analysis/handoff and preserved HEAD `2d0e39a427d0ef516ad3b6afde1d670cddce796e`. No reset/commit/push, external photo upload, publication, phone installation or transfer of assembly progress. All earlier source snapshots, guides, templates, project data and experiments remain. Phone testing is explicitly deferred. Full M0–M7 product and portrait/physical acceptance remain open.
+
+## Implemented
+
+- A shared generation/continuation capability helper corrects `group-optical/15` Continue to **guarded**, preserving Worker validation. New browser tests exercise actual grouped generation, save, reload without a working photo, exact target-byte continuation, separate child hash/zero progress and explicit local-input deletion without deleting either guide.
+- New **`iprasm.local-input/1`**, stored in local IndexedDB `iprasm.local-generation-inputs`: copied exact processed RGB bytes, target/recipe SHA, prepared-source revision, edits, resolution, full material profile/layout, actual portrait regions, mode/budget/strategy and objective. Input validation rejects recipe/target/material/region/objective inconsistencies. These private pixels are not properties of shareable project instructions or exports. Prepared-source replacement increments its revision. Continuation uses the stored target/edits rather than the latest photo candidate; older guides still use strict original-target validation.
+- Completed density fit state is archived under the executable sequence hash **before** the interrupted-job marker is cleared. If archival fails, the marker is retained and the error is disclosed. Physical Worker tests verify that completed state/checksum/binding survives clearing the marker and browser reload. Storage refuses exhausted32-record/64MiB serialized-estimate capacity instead of silently evicting other inputs. Explicit per-guide deletion removes the local target/state while preserving assembly instructions/progress; source photos and previous evidence remain separate.
+- Library has localized Continue saved calculation and local-input deletion. An eligible unsimplified eight-sweep v12 has explicit extended-search action, requiring its archived original fit state, transitioning to24 total without changing the target/materials. Legacy imported diagnostic guides without local target/state show a specific localized missing-input explanation, not fabricated recovery. Long restored jobs have progress/cancel even without an editor photo. The latest eligible320 UI action was built; actual full extended-generation evidence below comes from the real core runner, not a claimed end-to-end button run on a device.
+- Full current material-profile/portrait/mode/resolution/solver/budget and relevant anatomy settings participate in preserved-result warning; immutable save/export stays on the selected sequence. The current factory is shared between new generation and profile comparison. Photograph intent no longer silently depends on a successful face detector: non-sample photographs with portrait OFF require explicit general-image opt-out; manual portrait correction remains available. Existing sample flow remains.
+- **`resolved-convergence/1`** is new hash-bound provenance on `density-resolved/12`; the objective/renderer/materials are unchanged. v8 `density-convergence/1` remains supported. Original8-budget checkpoint must independently reproduce its executable reference before transitioning; old binding/checksum is never edited. Resolved extension cannot carry head/anatomy/exchange changes. Tests reject changed target/materials/regions/checksum, missing extension version, >24 allowance and forged convergence provenance. Legacy/new grid bounds and cancellation remain.
+
+## Controlled 8 + 16 = 24 experiment
+
+Exact original/root: `output/portrait-dispatch/resolved240.json`, hash `27fb06b8e8eb4e8d460c107678e85b95d4cbe30a97a192679ae6d1e29f0db5fd`.
+
+Same exact320 pixels `1d06c780d790a1554daf646c888824d2ae7f2ad97140c7b707239b16a9c727fa`, crop, grayscale-only preparation, manually reviewed facial regions,400mm unrotated240-pin circle/0.1mm/.85opacity/7.5° minimum angle,32undirected chord/160endpoint guards, contrast distances/objective and computational20,000 ceiling. Recorded stock1200m remains only a supply estimate. Existing8sweep fit reproduced before extension; it was not rerun.
+
+| Total sweeps | Executable SHA | Connections / routing | Thread m | Max chord / incidence |
+| --- | --- | --- | --- | --- |
+|8 preserved|`27fb06b8e8eb4e8d460c107678e85b95d4cbe30a97a192679ae6d1e29f0db5fd`|1684 /70|591.181323|4 /62|
+|12 snapshot|`385021fcde2635f5f54eaeda84f36a9cbccf9758e0d01cc25dd2f0c609f6e545`|1764 /58|617.933152|5 /64|
+|16 snapshot|`b24f25e0fa2c11ff39218e05aafade969a7d4c0b4f3ae5dc8c99236d5e91301f`|1822 /59|635.600762|5 /76|
+|20 snapshot|`77d055e22abfed32c4174427da58a00daea21d136ef12ef44cef35b584ad2aa2`|1848 /57|642.706363|6 /78|
+|24 snapshot|`7b77b309ea97328aedf5c4866fe4965295d08cba621194d31c4a83a628324936`|1852 /54|643.146599|6 /78|
+|24 final|`8d1f2dd8f3424a0d23c7bb09240228e447ebab8fb9b520310e636ac9873c8323`|1852 /54|643.146599|6 /78|
+
+Final and24 snapshot have exactly identical executable strands/raster; their metadata differs by the explicit snapshot flag and therefore hashes differ. Neither is an optimization graph masquerading as instructions. All start/finish knots, routing strands, wrapping/reserve, exact numbering and full guide steps remain. Every new project has zero progress. Stock shortfall0 is modeled, not a material supply/capacity validation.
+
+Final24 fit objective `.051138993007846585`; complete routed `.051326292253255856`. Final sweep19 changed chords, total665,280 chord evaluations. Stop **compute-limit**, not proven convergence or an optimum. Prior8 included221,760 evaluations; additional16 included443,520. See all genuine per-sweep `fit-N.json`, `latest-fit.json`, stages and executable snapshots in ignored `output/resolved-convergence`.
+
+The first invocation reached12 and saved fit+guide, then PNG authoring failed because Node exposes UPNG through nested default export. Fixed only the report runner import; actual generator/renderer unchanged. Resumed the unchanged12 checkpoint through24, without repeating8–12 sweeps. Interrupted evidence preserved. Final saved24 graph materialization reproduced exactly the final ordered strands; snapshot metadata deliberately changes hash. Core accumulated duration1312.423s; observed wall lower bound1363.120s (22.72min) including prior8, the first invocation through its saved12 snapshot and recovered invocation648.913s. Failure-exit overhead was not timed, so do not claim this is exact total wall time. Preprocessing/report/browser/export verification is additional. Maximum sampled process RSS436,961,280bytes (416.72MiB), not exact peak or phone measurement. Detailed stage disclosure: runtime.json.
+
+## Quality decision
+
+**INCONCLUSIVE for likeness; rejected for default promotion.** More search reduces errors but does not establish recognizable nostril volume, separate upper/lower lips or faithful hair. At ordinary size8 and24 remain similar;24 is darker. Full/enlarged actual eyes/nose/lips/jaw were inspected beside original crop and processed target, with no source overlay.
+
+Common direct512 target, complete optical path reconstruction and independent physical-mm forward differences (fractional interpolation, same boxes/scales):
+
+| Region |8 tone error →24|8 physical contrast residual →24|8 dark excess →24|
+| --- | --- | --- | --- |
+|nose|.00627746 → .00473090|.00320149 → .00223228|.0252632 → .0298402|
+|mouth|.00815193 → .00434099|.00310099 → .00167946|.0137406 → .0204345|
+
+Both eyes and jaw are in comparison.json; eye halves are documented splits of the reviewed box, jaw a lower-face proxy. Fixed light-tone proxy (target.6–.92 in face excluding features, not detected skin): dark excess `.0374136 → .0462108`, increase `.0087972`, exceeding the proposed1/255 screening tolerance. Visible limitations override lower errors. Keep the old strongest inspected `eeb26cf…c944` and its separate two-action-pruned guide; do not treat that different crop/preprocessing as a matched control. Current new-root8 also remains preserved. No new pruning because a demonstrably stronger quality reference was not chosen.
+
+Extra168connections/actions and51.965275m versus new-root8;1854total actions,1start/2knots/0color changes. Estimated assembly225.2→247.6minutes (8s/connection,20s/knot,30s/color); +22.4min, not measured customer effort. No quality-equivalent simplification or physical acceptance claim.
+
+## Next hypothesis sharpened by diagnostics
+
+Known-feasible synthetic target: a real180connection safeguarded guide is quantized from its optical raster; another bounded physical fit stops at20sweeps/181connections/plateau. Known full objective `.00000146355`, solver `.00000585301`, gap `.00000438946`. This demonstrates a **small** search gap for that synthetic case, not that the personal target is attainable or that this gap explains the much larger portrait problem. No fabricated photo/features.
+
+Actual source-gradient audit at1.25mm on common512: nose contrast-energy ratio versus target42.42 at8,26.28 at24, gradient correlation≈.038/.037; mouth ratios8.70/3.43, correlation≈.048/.054. These are diagnostics, not likeness scores. Additional search reduced crossing noise but its narrow gradients remain poorly aligned with real features. .8/1.25mm were evaluation probes only; optimizer distances were unchanged. No proven geometry ceiling.
+
+**Exact next task:** separately version a source-derived narrow-feature contrast objective. First define independent full loss and sparse gain tests on the actual mm/sample-center convention. Test1.25mm detail residual within corrected nose/lip regions against the existing2.516/5.031/10.063mm terms, with explicit smooth spatial weights and light-tone/eye preservation gates. Keep target/crop/profile/regions/guards fixed, use equal evaluation budgets and complete routed output. Do not increase pins/resolution/thread or repeat completed24 sweeps as the “solution.” The hypothesis is that finer correctly oriented source gradients are underrepresented while cross-face texture dominates; reject the change if it merely sharpens strands/darkens skin. Further search moves only if the measured synthetic/real residual demonstrates their need. Do not accumulate pruning tolerance or alter old bindings. Material/layout changes remain separate explicit experiments.
+
+Narrow legacy seedless non-basis LIGHT initial-objective bug from the audit is still pending, not the cause of this dark-thread portrait. Varied authorized individual/group photographs, actual owner pair original, physical assembly and current native acceptance remain open.
+
+## Verification and delivery
+
+- Full158/158 unit tests pass (`unit.json`); later final3/3 local input/error regressions pass after localized missing-target correction. Seven prior extension/basis/legacy regressions and six incompatible-state + forged-provenance local checks pass. Old checkpoint unchanged. Source changes after the full run are UI provenance/profile factory/cancel only; final TypeScript/production build and relevant browser checks cover them.
+- Final desktop/touch **6/6** checks: correct portrait dispatch/current versus explicit materials/cancellation; completed physical-fit archival after marker clear and reload; actual grouped continuation from frozen bytes after reload, exact parent/new hash/zero progress and deletion preserving guides. Earlier failed runs remain: first test omitted the existing group review confirmation; next run exposed the generic-error localization defect, now corrected. Do not count these as passing.
+- New exact-guide export desktop/touch **2/2**: player hash/0progress, full JSON/TXT equality, PNG/PDF.51page PDFs contain all1852ordered steps, exact final hash and zero progress. All51desktop pages rendered/contact inspected, readable cover/last reviewed; physical printing remains unverified. Browser export checks precede final UI-only warning/cancel change; shared PDF/render/core path unchanged.
+- Local report42images decode on1280px and390px, no horizontal overflow/runtime errors (`report-browser.json`). Same-size full portraits and enlarged regions, all hashes/costs/metrics/timing/decision available at **http://127.0.0.1:5184/output/resolved-convergence/report.html**. Website4194/report5184 returned200 in authorized loopback check; sandbox-default probes had denied access, not stopped servers. Original owner photo tab was not reloaded. Opening report is queued in the app.
+- Final production build passes; Android/shared instrumentation build and31byte-matched assets/signer verified, no private images/targets/reports packaged. APK `output/mobile/ip-rasm-saved-portrait-debug.apk`:36,261,395bytes, SHA`e5b0ca04e04bf25b4ae579f8cbc5ed69e94f18f228aaa341811a3f065f43aeb2`. Signer unchanged`8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90`. Earlier build of this increment is backed up by verifier. Built, not installed/current-device-tested. No push/publication/live provider changes.
+
+Do not rerun `portrait-resolved-converge.ts` on completed output: sealed final is preserved. Report rebuilding can overwrite its hand-authored visual decision; keep decision.json/runtime.json and final HTML. New scripts/probes use exclusive-create. Continue from the next hypothesis, not setup or these completed comparisons. No unattended computation is running or scheduled.
+
+Final preservation: working-source-2026-10-13.zip contains129 changed/untracked source files; SHA29c195caa945f637fb01d41acc8fcc405eeead43834e6f4014d6530d3a6a6df5. No private target/photo/report pixels included; ignored originals/evidence remain. Snapshot predates this appended manifest note. Both exported PDF native320 cover images are independently pixel-identical to the complete final sequence raster (pdf-preview-pixels.json). No computation job is running.

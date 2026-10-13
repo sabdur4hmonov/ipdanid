@@ -47,7 +47,7 @@ async function getModel() {
   }));
 }
 export async function cleanupBackground(
-  image: ImageBitmap,
+  image: ImageBitmap | OffscreenCanvas,
   primary: PersonMask,
   stillWanted: () => boolean,
 ) {

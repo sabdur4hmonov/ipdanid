@@ -1,8 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 const previewPort = Number(process.env.IP_RASM_TEST_PORT || 4183);
+const apiPort = Number(process.env.IP_RASM_TEST_API_PORT || 4311);
 if (!Number.isInteger(previewPort) || previewPort < 1024 || previewPort > 65535)
   throw Error("Invalid local test port");
 export default defineConfig({
+  outputDir: process.env.IP_RASM_TEST_ARTIFACTS || "test-results",
   reporter: process.env.IP_RASM_TEST_REPORT
     ? [["line"], ["json", { outputFile: process.env.IP_RASM_TEST_REPORT }]]
     : undefined,
@@ -17,7 +19,8 @@ export default defineConfig({
   webServer: [
     {
       command: "npm run server",
-      url: "http://127.0.0.1:4311/api/health",
+      env: {PORT:String(apiPort)},
+      url: `http://127.0.0.1:${apiPort}/api/health`,
       reuseExistingServer: !process.env.CI,
     },
     {

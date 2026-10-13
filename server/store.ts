@@ -7,6 +7,7 @@ import {
   createHash,
 } from "node:crypto";
 import { readFileSync } from "node:fs";
+import type { OrderCommerce } from "../src/business-types";
 import type { Instruction, Progress } from "../src/core/types";
 
 export class DomainError extends Error {
@@ -56,6 +57,9 @@ export class Store {
         new URL("./migrations/001_core.sql", import.meta.url),
         "utf8",
       ),
+    );
+    this.db.exec(
+      "CREATE TABLE IF NOT EXISTS order_commerce(order_id TEXT PRIMARY KEY REFERENCES orders(id),data TEXT NOT NULL)",
     );
     this.migrateJobs();
     this.tx(() => {
@@ -366,8 +370,16 @@ export class Store {
   createOrder(
     user: string,
     items: { productId: string; quantity: number }[],
-    address: { name: string; city: string; street: string },
+    address: {
+      name: string;
+      city: string;
+      street: string;
+      phone?: string;
+      deliveryMethod?: string;
+    },
     key: string,
+    commerce?: OrderCommerce | (() => OrderCommerce),
+    quote?: { totalMinor: number; settingsRevision: number },
   ) {
     if (
       typeof key !== "string" ||
@@ -375,13 +387,25 @@ export class Store {
       key.length > 100 ||
       !Array.isArray(items) ||
       !items.length ||
+      items.some(
+        (item) =>
+          !item ||
+          typeof item.productId !== "string" ||
+          !item.productId ||
+          item.productId.length > 100 ||
+          !Number.isSafeInteger(item.quantity),
+      ) ||
       items.length > 20 ||
       !address ||
-      ![address.name, address.city, address.street].every(
+      !(
+        address.deliveryMethod === "pickup"
+          ? [address.name]
+          : [address.name, address.city, address.street]
+      ).every(
         (v) => typeof v === "string" && v.trim().length >= 2 && v.length <= 200,
       ) ||
       Object.values(address).some(
-        (v) => typeof v !== "string" || v.trim().length < 2 || v.length > 200,
+        (v) => typeof v !== "string" || v.length > 200,
       )
     )
       throw new DomainError("Invalid order");
@@ -413,6 +437,18 @@ export class Store {
             normalizedAddress(address)
         )
           throw new DomainError("Order retry parameters differ", 409);
+        if (quote) {
+          const old = this.db
+            .prepare("SELECT data FROM order_commerce WHERE order_id=?")
+            .get(previous.id);
+          const accepted = old && JSON.parse(String(old.data)).acceptedQuote;
+          if (
+            !accepted ||
+            accepted.totalMinor !== quote.totalMinor ||
+            accepted.settingsRevision !== quote.settingsRevision
+          )
+            throw new DomainError("Order retry parameters differ", 409);
+        }
         return previous as Order;
       }
       const seen = new Set<string>(),
@@ -439,6 +475,27 @@ export class Store {
         total += product.price_minor * item.quantity;
         lines.push({ product, quantity: item.quantity });
       }
+      const commerceSnapshot =
+        typeof commerce === "function" ? commerce() : commerce;
+      if (commerceSnapshot) {
+        if (
+          !Number.isSafeInteger(commerceSnapshot.feeMinor) ||
+          commerceSnapshot.feeMinor < 0 ||
+          commerceSnapshot.feeMinor > 100000000
+        )
+          throw new DomainError("Invalid delivery fee");
+        total += commerceSnapshot.feeMinor;
+      }
+      if (
+        quote &&
+        (!Number.isSafeInteger(quote.totalMinor) ||
+          quote.totalMinor !== total ||
+          quote.settingsRevision !== commerceSnapshot?.settingsRevision)
+      )
+        throw new DomainError(
+          "Prices or delivery settings changed; review checkout",
+          409,
+        );
       const id = randomUUID();
       this.db
         .prepare("INSERT INTO orders VALUES(?,?,?,?,?,?,?,?)")
@@ -466,6 +523,14 @@ export class Store {
             l.product.credits,
           );
       }
+      if (commerceSnapshot)
+        this.db.prepare("INSERT INTO order_commerce VALUES(?,?)").run(
+          id,
+          JSON.stringify({
+            ...commerceSnapshot,
+            ...(quote ? { acceptedQuote: quote } : {}),
+          }),
+        );
       this.audit(user, "order.create", id);
       return this.order(user, id);
     });

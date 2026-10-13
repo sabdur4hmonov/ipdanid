@@ -1,5 +1,5 @@
 export type Shape = "circle" | "rectangle" | "heart";
-export type Locale = "uz" | "ru" | "en";
+export type Locale = "uz" | "uz-Cyrl" | "ru" | "en";
 export interface RegionBox {
   left: number;
   top: number;
@@ -7,6 +7,17 @@ export interface RegionBox {
   height: number;
 }
 export interface PortraitSettings {
+  personId?: string;
+  // Independent faces on the exact processed target; absent for all legacy guides.
+  people?: {
+    version: "multiple-portraits/1";
+    reference: "processed-target/sample-centers-v1";
+    faces: {
+      id?: string;
+      face: RegionBox;
+      regions: NonNullable<PortraitSettings["regions"]>;
+    }[];
+  };
   enabled: boolean;
   face: RegionBox;
   background: number;
@@ -86,7 +97,11 @@ export interface Instruction {
     | "assembly-prune/9"
     | "density-anatomy/10"
     | "density-pin-basis/11"
-    | "density-resolved/12";
+    | "density-resolved/12"
+    | "density-feature/16"
+    | "density-head/13"
+    | "hair-cycles/14"
+    | "group-optical/15";
   id: string;
   createdAt: string;
   imageHash: string;
@@ -98,12 +113,17 @@ export interface Instruction {
     requestedLines: number;
     mode: "dark" | "light" | "color";
     portrait?: PortraitSettings;
+    subject?: import('./subject-plan').SubjectPlan;
     stockPolicy?: "estimate";
     parentSequenceHash?: string;
     refinementStage?: number;
+    hairCycles?: import("./hair-cycles").HairCycleSettings;
     simplification?: import("./simplify").SimplificationSettings;
     optimization?: {
+      initialObjective?: "consistent-undershoot/1";
+      head?: import("./head-importance").HeadImportance;
       sampling?: { version: "direct-source320/1"; grid: 320 };
+      features?: import("./feature-contrast").FeatureContrastSettings;
       kind?: "density-coordinate" | "optical-coordinate";
       order?: "dispersed-v1";
       overshoot?: "target-luminance-v1";
@@ -115,7 +135,7 @@ export interface Instruction {
       edgeWeight?: number;
       sweeps?: number;
       convergence?: {
-        version: "density-convergence/1";
+        version: "density-convergence/1" | "resolved-convergence/1";
         rootSequenceHash: string;
         originalCheckpointChecksum: string;
         priorSweeps: number;
@@ -138,6 +158,15 @@ export interface Instruction {
       poolEvaluations: number;
       proposalEvaluations: number;
       stop: "evaluation-limit" | "candidate-pool-exhausted";
+    };
+    hairCycles?: {
+      evaluations: number;
+      cycles: { from: number; to: number }[];
+      initialObjective: number;
+      finalObjective: number;
+      protectedFace: "exact-native-pixels";
+      originalRoutingConnections: number;
+      poolCandidates: number;
     };
     densityFit?: {
       removedConnections?: number;

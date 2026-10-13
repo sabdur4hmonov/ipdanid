@@ -19,9 +19,11 @@ export function assertContinuation(
   if (!s) return;
   const failed: string[] = [];
   if (algorithms && !algorithms.includes(s.algorithm)) failed.push("algorithm");
-  if (!o.portrait?.enabled || o.mode === "color" || s.params.mode !== o.mode)
+  const general=Boolean(o.subject && o.subject.kind!=="people");
+  if ((!o.portrait?.enabled && !general) || o.mode === "color" || s.params.mode !== o.mode)
     failed.push("mode");
   if (s.imageHash !== targetHash) failed.push("target");
+  if(JSON.stringify(s.params.subject)!==JSON.stringify(o.subject))failed.push("subject");
   if (s.params.resolution !== o.resolution) failed.push("resolution");
   if (JSON.stringify(s.profile) !== JSON.stringify(o.profile))
     failed.push("profile");

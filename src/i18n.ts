@@ -1,8 +1,9 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const uz = {
   samplingTitle: "Hisoblashdan oldin yuz detallarini tekshiring",
   samplingHint:
-    "Qo‘lda belgilangan ko‘z, burun va lab zonalari. Sonlar aynan hozirgi ishlov berilgan nishondan olindi.",
+    "Ko‘z, burun va lab zonalari. Taxminiy chegaralarni haqiqiy qismlarga moslang. Sonlar aynan hozirgi ishlov berilgan nishondan olindi.",
   samplingFeature: "Zona",
   samplingSize: "O‘lcham (px)",
   samplingInside: "Shakl ichida",
@@ -65,6 +66,14 @@ const uz = {
     "Belgilangan yuz bu sozlamalarda sig‘madi. Belgini va surat joylashuvini tekshiring.",
   computationResolution: "Hisoblash aniqligi",
   experimental: "tajriba",
+  headPriority: "Yuz va sochga e’tibor · tajriba",
+  hairScanStage: "Qonuniy soch ip yo‘llari tekshirilmoqda",
+  hairVariant: "Yuz saqlangan · soch tajribasi",
+  legacyHairRecovery:
+    "Oldingi soch checkpointida aniq qidiruv holati yo‘q. Uning yo‘riqnomasini saqlash mumkin; uni bir xil budjet bilan davom ettirish mumkin emas.",
+  keepRecoveredGuide: "Tiklangan yo‘riqnomani alohida saqlash",
+  headPriorityHint:
+    "Avval suratda butun bosh konturini belgilang va qayta ishlangan suratda ko‘z, burun, lab oynalarini tekshiring. 320 hisoblash; kontur faqat shu suratniki. Bu sifat kafolati emas.",
   resolvedHint:
     "320 — tajribaviy aylana chord engine uchun originaldan mayda namuna. Mix soni va haqiqiy ipni alohida tekshiring. Ko‘proq hisoblash sifatni kafolatlamaydi.",
   resolutionHint:
@@ -88,7 +97,7 @@ const uz = {
     "Kattaroq hisoblash chegarasi bir xil ip yo‘lini berishi mumkin. Bu qidiruvda foydali ip topilmasa, yangi ulanishlar qo‘shilmaydi.",
 
   photoGuidance:
-    "Bitta yoki bir nechta odam aniq ko‘rinadigan tiniq surat tanlang. Fon qurilmada avtomatik oqartiriladi; oq fonda suratga tushish shart emas. Guruh suratida barcha odamlarni crop ichida qoldiring. Yorug‘lik tekis, ko‘zlar ko‘rinadigan bo‘lsin. Hisoblashdan oldin tayyorlangan suratni tekshiring.",
+    "Tiniq suratda yuz va ko‘zlar aniq ko‘rinsin, yuz kameraga qaragan bo‘lsin. Oddiy och fon va tekis yorug‘lik afzal; kuchli soya va ortiqcha yorug‘likdan saqlaning. Mavjud suratlar ham mos: fonni qurilmada tahrirlash va davom etishdan oldin natijani tekshirish mumkin. Guruh suratida hammani crop ichida qoldiring.",
   backgroundTools: "Fon bilan ishlash",
   softBackground: "Yumshatish (mavjud usul)",
   manualBackground: "Och fon: qo‘lda belgilash",
@@ -347,7 +356,7 @@ export type Key = keyof typeof uz;
 const en: Record<Key, string> = {
   samplingTitle: "Check facial detail before computing",
   samplingHint:
-    "Manually marked eye, nose and lip windows. Measurements use the exact current processed target.",
+    "Eye, nose and lip windows. Align estimated regions with actual features. Measurements use the exact current processed target.",
   samplingFeature: "Window",
   samplingSize: "Size (px)",
   samplingInside: "Inside shape",
@@ -411,6 +420,14 @@ const en: Record<Key, string> = {
     "The marked face cannot fit with these controls. Check the box and photo framing.",
   computationResolution: "Computation resolution",
   experimental: "experimental",
+  headPriority: "Face and hair priority · experimental",
+  hairScanStage: "Checking legal hair connections",
+  hairVariant: "Face preserved · hair trial",
+  legacyHairRecovery:
+    "This older hair checkpoint has no exact search state. You can keep its guide, but cannot resume it under the same search allowance.",
+  keepRecoveredGuide: "Keep recovered guide separately",
+  headPriorityHint:
+    "First mark the whole-head outline on the photo and review manual eye, nose and lip regions on the processed target. Uses320 computation; the outline belongs to this photo only. Quality is not guaranteed.",
   resolvedHint:
     "320 samples the original more finely in the experimental circular chord engine. Check pin count and actual thread separately. More computation does not guarantee likeness.",
   resolutionHint:
@@ -434,7 +451,7 @@ const en: Record<Key, string> = {
     "A larger computation ceiling can produce the same path. Connections stop when the current search finds no useful addition.",
 
   photoGuidance:
-    "Use a sharp photo with one or several clearly visible people. The background is whitened locally; taking a photo against white is optional. Keep everyone inside the crop for a group photo. Use even lighting and visible eyes. Inspect the prepared photo before generating.",
+    "Use a sharp photo with a clearly visible face and eyes, facing the camera. Prefer a plain light background and even lighting without strong shadows or overexposure. Existing photographs are welcome: adjust the background locally and inspect the result before proceeding. Keep everyone inside the crop for a group photo.",
   backgroundTools: "Background controls",
   softBackground: "Soften (existing method)",
   manualBackground: "Light background: manual selection",
@@ -691,7 +708,7 @@ const en: Record<Key, string> = {
 const ru: Record<Key, string> = {
   samplingTitle: "Проверьте детали лица до расчёта",
   samplingHint:
-    "Области глаз, носа и губ отмечены вручную. Измерения получены из текущей обработанной цели.",
+    "Области глаз, носа и губ. Совместите приблизительные зоны с настоящими чертами. Измерения получены из текущей обработанной цели.",
   samplingFeature: "Область",
   samplingSize: "Размер (px)",
   samplingInside: "Внутри формы",
@@ -755,6 +772,14 @@ const ru: Record<Key, string> = {
     "Отмеченное лицо не помещается при этих настройках. Проверьте рамку и положение фото.",
   computationResolution: "Разрешение расчёта",
   experimental: "эксперимент",
+  headPriority: "Приоритет лица и волос · эксперимент",
+  hairScanStage: "Проверка допустимых нитей для волос",
+  hairVariant: "Лицо сохранено · эксперимент с волосами",
+  legacyHairRecovery:
+    "В старом этапе волос нет точного состояния поиска. Можно сохранить его инструкцию, но нельзя продолжить с тем же лимитом поиска.",
+  keepRecoveredGuide: "Сохранить восстановленную инструкцию отдельно",
+  headPriorityHint:
+    "Сначала отметьте контур всей головы и проверьте ручные области глаз, носа и губ на обработанном фото. Расчёт320; контур только для этого фото. Сходство не гарантируется.",
   resolvedHint:
     "320 — более подробное семплирование оригинала в экспериментальном круговом движке. Отдельно проверьте число гвоздей и реальную нить. Больше вычислений не гарантирует сходство.",
   resolutionHint:
@@ -778,7 +803,7 @@ const ru: Record<Key, string> = {
     "Больший предел вычисления может дать тот же путь. Новые соединения не добавляются, если текущий поиск не находит полезного улучшения.",
 
   photoGuidance:
-    "Выберите резкое фото одного или нескольких людей. Фон автоматически отбеливается на устройстве; фотографировать на белом фоне не обязательно. В групповом фото оставьте всех внутри кадра. Используйте ровный свет и открытые глаза. Проверьте подготовленное фото до расчёта.",
+    "Используйте чёткое фото с хорошо видимыми лицом и глазами, направленными к камере. Предпочтительны простой светлый фон и ровное освещение без сильных теней или пересвета. Подойдут и существующие фотографии: фон можно исправить локально и проверить результат перед продолжением. На групповом фото оставьте всех в кадре.",
   backgroundTools: "Настройки фона",
   softBackground: "Смягчить (прежний метод)",
   manualBackground: "Светлый фон: ручное выделение",
@@ -1033,9 +1058,9 @@ const ru: Record<Key, string> = {
     "Проекты изменены в другой вкладке. Сохраните JSON текущего проекта, затем перезагрузите библиотеку.",
 };
 export const translate = (locale: Locale) => (key: Key) =>
-  ({ uz, en, ru })[locale][key];
+  scriptText(({ uz, en, ru })[baseLocale(locale)][key], locale);
 export function spokenPin(locale: Locale, pin: number): string {
-  if (locale !== "uz") return String(pin);
+  if (baseLocale(locale) !== "uz") return String(pin);
   const ones = [
       "nol",
       "bir",

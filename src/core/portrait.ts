@@ -34,7 +34,58 @@ export function contains(box: RegionBox, x: number, y: number) {
     y <= box.top + box.height
   );
 }
+export function portraitPeople(s: PortraitSettings): PortraitSettings[] {
+  return s.people
+    ? s.people.faces.map((f) => ({
+        ...s,
+        people: undefined,
+        personId: f.id,
+        face: f.face,
+        regions: f.regions,
+      }))
+    : [s];
+}
+export function portraitRegionSets(
+  s: PortraitSettings,
+): Record<string, RegionBox[]> {
+  const people = portraitPeople(s).map(portraitRegions);
+  return Object.fromEntries(
+    ["face", "eyes", "nose", "mouth", "outline"].map((key) => [
+      key,
+      people.map((r) => r[key]),
+    ]),
+  );
+}
 export function validPortrait(s: PortraitSettings) {
+  const ids=[s?.personId,...(s?.people?.faces??[]).map(f=>f?.id)].filter(v=>v!==undefined);
+  if(ids.some(id=>typeof id!=="string"||!/^[a-zA-Z0-9_-]{1,80}$/.test(id)))throw Error("Invalid person identity");
+  const groupIds=s?.people?.faces?.map(f=>f?.id).filter(v=>v!==undefined)??[];
+  if(new Set(groupIds).size!==groupIds.length)throw Error("Duplicate person identity");
+  if (s?.people) {
+    if (
+      s.people.version !== "multiple-portraits/1" ||
+      s.people.reference !== "processed-target/sample-centers-v1" ||
+      !Array.isArray(s.people.faces) ||
+      s.people.faces.length < 2 ||
+      s.people.faces.length > 8
+    )
+      throw Error("Invalid multiple portrait regions");
+    for (const f of s.people.faces) {
+      if (
+        !f ||
+        !f.face ||
+        !f.regions ||
+        !["manual", "proportional-estimate"].includes(f.regions.placement ?? "")
+      )
+        throw Error("Review every person's facial regions");
+      validPortrait({
+        ...s,
+        people: undefined,
+        face: f.face,
+        regions: f.regions,
+      });
+    }
+  }
   if (
     s?.detailStyle !== undefined &&
     !["contour-preparation/1", "contour-preparation/2"].includes(s.detailStyle)
@@ -198,16 +249,20 @@ export function processPortrait(
   const local = blur(gray, n, Math.max(2, Math.round(n * 0.04))),
     background = blur(gray, n, Math.max(3, Math.round(n * 0.08))),
     out = new Uint8Array(input.length),
-    f = s.face;
+    faces = portraitPeople(s).map((p) => p.face);
   // Expanded oval includes useful hair/chin around the manually selected face. Feathering avoids a cut-out edge.
   for (let y = 0; y < n; y++)
     for (let x = 0; x < n; x++) {
       const i = y * n + x,
         nx = x / (n - 1),
         ny = y / (n - 1);
-      const d = Math.hypot(
-        (nx - (f.left + f.width / 2)) / (f.width * 0.85),
-        (ny - (f.top + f.height * 0.28)) / (f.height * 0.95),
+      const d = Math.min(
+        ...faces.map((f) =>
+          Math.hypot(
+            (nx - (f.left + f.width / 2)) / (f.width * 0.85),
+            (ny - (f.top + f.height * 0.28)) / (f.height * 0.95),
+          ),
+        ),
       );
       const fade = Math.max(0, Math.min(1, (d - 0.85) / 0.35)) * s.background;
       const enhancement = Math.max(
@@ -317,7 +372,13 @@ export function regionMeasurements(
     string,
     { mse: number; edgeMse: number; pixels: number }
   > = {};
-  for (const [name, box] of Object.entries(portraitRegions(settings))) {
+  const sets =
+    "face" in settings
+      ? portraitRegionSets(settings)
+      : Object.fromEntries(
+          Object.entries(portraitRegions(settings)).map(([k, b]) => [k, [b]]),
+        );
+  for (const [name, boxes] of Object.entries(sets)) {
     let sum = 0,
       edge = 0,
       count = 0;
@@ -325,18 +386,26 @@ export function regionMeasurements(
       for (let x = 1; x < n - 1; x++) {
         const nx = x / (n - 1),
           ny = y / (n - 1);
-        if (!inside(p.shape, nx, ny) || !contains(box, nx, ny)) continue;
+        if (
+          !inside(p.shape, nx, ny) ||
+          !boxes.some((box) => contains(box, nx, ny))
+        )
+          continue;
         if (
           name === "outline" &&
-          contains(
-            {
-              left: face.left + face.width * 0.15,
-              top: face.top + face.height * 0.12,
-              width: face.width * 0.7,
-              height: face.height * 0.76,
-            },
-            nx,
-            ny,
+          !boxes.some(
+            (b) =>
+              contains(b, nx, ny) &&
+              !contains(
+                {
+                  left: b.left + b.width * 0.15,
+                  top: b.top + b.height * 0.12,
+                  width: b.width * 0.7,
+                  height: b.height * 0.76,
+                },
+                nx,
+                ny,
+              ),
           )
         )
           continue;
@@ -357,6 +426,13 @@ export function regionMeasurements(
       edgeMse: count ? edge / (count * 6) : 0,
       pixels: count,
     };
+  }
+  if ("face" in settings && settings.people) {
+    for (const [index, person] of portraitPeople(settings).entries()) {
+      const individual = regionMeasurements(target, raster, n, p, person);
+      for (const [key, value] of Object.entries(individual))
+        result[`person${index + 1}.${key}`] = value;
+    }
   }
   return result;
 }

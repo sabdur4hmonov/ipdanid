@@ -1,3 +1,4 @@
+import { usesOpticalRaster } from "./render-model";
 import {
   PDFDocument,
   rgb as pdfRgb,
@@ -122,20 +123,7 @@ export async function exportPdf(
       height: phs,
       color: hex(i.profile.baseColor),
     });
-    if (
-      [
-        "greedy-optical/3",
-        "greedy-optical/4",
-        "density-optical/5",
-        "continuous-guarded/6",
-        "density-multiscale/7",
-        "density-physical/8",
-        "density-anatomy/10",
-        "density-pin-basis/11",
-        "density-resolved/12",
-        "assembly-prune/9",
-      ].includes(i.algorithm)
-    ) {
+    if (usesOpticalRaster(i.algorithm)) {
       cover.drawImage(await doc.embedPng(previewPng(i)), {
         x: margin,
         y: bottom,
@@ -226,10 +214,13 @@ export async function exportPdf(
   // use separated leaders without inventing layout metadata for old boards.
   const canonicalNewCircle =
     [
+      "group-optical/15",
       "density-physical/8",
       "density-anatomy/10",
       "density-pin-basis/11",
       "density-resolved/12",
+      "density-head/13",
+      "hair-cycles/14",
       "assembly-prune/9",
     ].includes(i.algorithm) &&
     i.profile.shape === "circle" &&

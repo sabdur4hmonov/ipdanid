@@ -1,3 +1,4 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const words = {
   guide: ["Qadamlar ro‘yxati", "Список шагов", "Step list"],
@@ -52,5 +53,5 @@ const words = {
   ],
 } as const;
 export function guideText(locale: Locale, key: keyof typeof words) {
-  return words[key][locale === "uz" ? 0 : locale === "ru" ? 1 : 2];
+  return scriptText(words[key][baseLocale(locale) === "uz" ? 0 : locale === "ru" ? 1 : 2], locale);
 }

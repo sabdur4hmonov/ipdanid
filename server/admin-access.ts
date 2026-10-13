@@ -27,6 +27,7 @@ const permissions: Record<StaffRole, AdminPermission[]> = {
   ],
 };
 const owner: AdminPermission[] = [
+  "settings",
   "catalog",
   "support",
   "orders",
@@ -182,6 +183,15 @@ export function adminRoutePermission(
   method: string,
   path: string,
 ): AdminPermission | null {
+  if (path === "/api/admin/settings" && ["GET", "POST"].includes(method))
+    return "settings";
+  if (path === "/api/admin/announcements" && ["GET", "POST"].includes(method))
+    return "messages";
+  if (
+    method === "POST" &&
+    /^\/api\/admin\/announcements\/[^/]+\/revoke$/.test(path)
+  )
+    return "messages";
   if (path === "/api/admin/products" && ["GET", "POST"].includes(method))
     return "catalog";
   if (method === "GET" && path === "/api/admin/orders") return "orders";

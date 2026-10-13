@@ -1,0 +1,107 @@
+import type { Locale } from "./core/types";
+import { baseLocale, scriptText } from "./uzbek-script";
+const words = {
+  edit: ["Tahrirlash", "Изменить", "Edit"],
+  retryCheckout: ["Shu buyurtmani qayta tekshirish", "Повторить этот заказ", "Retry this exact order"],
+  pendingCheckout: ["Javob tasdiqlanmagan. Takrorlash avvalgi narx va buyurtma kalitidan foydalanadi; yangi buyurtma yaratmaydi.", "Ответ не подтверждён. Повтор использует прежнюю цену и ключ заказа.", "Response unconfirmed. Retrying uses the original price and request key."],
+  startsAt: ["Boshlanish vaqti", "Начало", "Starts at"],
+  active: ["Faol", "Активно", "Active"],
+  subtotal: ["Mahsulotlar jami", "Стоимость товаров", "Subtotal"],
+  total: ["Jami to‘lov", "Итого", "Total"],
+  shop: ["Buyurtma va dostavka", "Заказ и доставка", "Orders & delivery"],
+  admin: ["Admin boshqaruvi", "Управление", "Admin management"],
+  business: [
+    "Ilova va sotuvchi sozlamalari",
+    "Приложение и продавец",
+    "App & seller settings",
+  ],
+  brandName: ["Ilova nomi", "Название приложения", "App name"],
+  sellerName: ["Sotuvchi ismi", "Имя продавца", "Seller name"],
+  sellerPhone: ["Sotuvchi telefoni", "Телефон продавца", "Seller phone"],
+  paymentDetails: [
+    "To‘lov rekvizitlari / karta raqami",
+    "Реквизиты / номер карты",
+    "Payment details / card number",
+  ],
+  pickupAddress: ["Olib ketish manzili", "Адрес самовывоза", "Pickup address"],
+  deliveryEnabled: [
+    "Dostavka mavjud",
+    "Доставка доступна",
+    "Delivery available",
+  ],
+  deliveryFee: [
+    "Dostavka narxi (so‘m)",
+    "Стоимость доставки (сум)",
+    "Delivery fee (UZS)",
+  ],
+  homeTitle: [
+    "Boshlang‘ich ekran sarlavhasi",
+    "Заголовок главного экрана",
+    "Home screen heading",
+  ],
+  save: ["Saqlash", "Сохранить", "Save"],
+  saved: ["O‘zgarishlar saqlandi", "Изменения сохранены", "Changes saved"],
+  announcements: [
+    "Umumiy xabarlar va reklama",
+    "Объявления и реклама",
+    "Announcements & promotions",
+  ],
+  title: ["Sarlavha", "Заголовок", "Title"],
+  body: ["Xabar matni", "Текст сообщения", "Message text"],
+  news: ["Umumiy xabar", "Объявление", "Announcement"],
+  promotion: ["Reklama", "Реклама", "Promotion"],
+  kind: ["Xabar turi", "Тип сообщения", "Message type"],
+  expiry: ["Amal qilish muddati", "Дата окончания", "Expiry date"],
+  publish: ["Xabarni e’lon qilish", "Опубликовать", "Publish announcement"],
+  revoke: ["E’lonni o‘chirish", "Убрать объявление", "Remove announcement"],
+  messageDelivery: [
+    "Ulangan ilovalar xabarlarni ochilganda va internetga qaytganda oladi. Yopiq ilovaga push yuborish alohida ulanish talab qiladi.",
+    "Подключённые приложения получают сообщения при открытии и возвращении сети. Push в закрытое приложение требует отдельного подключения.",
+    "Connected apps fetch messages on opening and reconnecting. Push to closed apps needs a separate integration.",
+  ],
+  promotional: [
+    "Reklama xabarlarini ko‘rsatish",
+    "Показывать рекламу",
+    "Show promotional messages",
+  ],
+  dismiss: ["Xabarni yopish", "Закрыть сообщение", "Dismiss message"],
+  method: ["Yetkazib berish", "Получение заказа", "Delivery method"],
+  courier: ["Dostavka", "Курьер", "Delivery"],
+  pickup: ["O‘zim olib ketaman", "Самовывоз", "Pickup"],
+  phone: ["Telefon raqamingiz", "Ваш телефон", "Your phone number"],
+  deliveryTotal: ["Dostavka", "Доставка", "Delivery charge"],
+  seller: [
+    "Sotuvchi va to‘lov ma’lumotlari",
+    "Продавец и реквизиты",
+    "Seller & payment details",
+  ],
+  unset: [
+    "Sotuvchi ma’lumotlari hali kiritilmagan",
+    "Данные продавца ещё не указаны",
+    "Seller details have not been configured yet",
+  ],
+  orderOnline: [
+    "Buyurtma uchun internet kerak. Ipli rasmni yaratish va yig‘ish offline ishlaydi.",
+    "Для заказа нужен интернет. Создание и сборка картины работают офлайн.",
+    "Ordering needs internet. Creating and assembling string art work offline.",
+  ],
+  guideLanguage: ["Instruktor tili", "Язык инструктора", "Guide language"],
+  guideOne: ["Instruktor 1", "Инструктор 1", "Guide 1"],
+  guideTwo: ["Instruktor 2", "Инструктор 2", "Guide 2"],
+  guideDevice: ["Telefon ovozi", "Голос устройства", "Device voice"],
+  guideOffline: [
+    "Ilova ichidagi offline ovoz",
+    "Встроенный офлайн-голос",
+    "Bundled offline voice",
+  ],
+  guideHint: [
+    "Instruktor tilini alohida tanlang. Ovozning mavjudligi qurilmaga bog‘liq.",
+    "Выберите язык отдельно. Доступность голоса зависит от устройства.",
+    "Choose the guide language separately. Voice availability depends on the device.",
+  ],
+} as const;
+export const businessText = (locale: Locale, key: keyof typeof words) =>
+  scriptText(
+    words[key][baseLocale(locale) === "uz" ? 0 : locale === "ru" ? 1 : 2],
+    locale,
+  );

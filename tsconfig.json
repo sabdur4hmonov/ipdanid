@@ -17,6 +17,7 @@
     "vite.config.ts",
     "capacitor.config.ts",
     "playwright.config.ts",
+    "playwright.ci.config.ts",
     "server"
   ]
 }

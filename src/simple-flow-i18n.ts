@@ -1,3 +1,4 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const en = {
   variant: "Variant",
@@ -46,4 +47,4 @@ const ru: Record<Key, string> = {
   advancedGeneration: "Дополнительные настройки",
 };
 export const simpleText = (locale: Locale, key: Key) =>
-  ({ en, uz, ru })[locale][key];
+  scriptText(({ en, uz, ru })[baseLocale(locale)][key], locale);

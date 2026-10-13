@@ -1,6 +1,7 @@
 export type StaffRole =
   "catalog" | "support" | "fulfillment" | "finance" | "codes" | "manager";
 export type AdminPermission =
+  | "settings"
   | "catalog"
   | "support"
   | "orders"

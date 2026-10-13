@@ -1,3 +1,4 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const en = {
   upload: "Upload from gallery",
@@ -61,4 +62,4 @@ const ru: Record<Key, string> = {
     "Не удалось загрузить фотографию. Используйте JPEG или PNG до 15 МБ и 24 МП.",
 };
 export const photoSourceText = (locale: Locale, key: Key) =>
-  ({ en, uz, ru })[locale][key];
+  scriptText(({ en, uz, ru })[baseLocale(locale)][key], locale);

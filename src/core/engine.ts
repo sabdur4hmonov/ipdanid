@@ -1,3 +1,4 @@
+import {validSubjectPlan} from "./subject-plan";
 import { Distribution } from "./distribution";
 import { assertContinuation } from "./continuation";
 import type { Instruction, MaterialProfile, Segment, Step } from "./types";
@@ -6,7 +7,7 @@ import { MAX_LINES, MAX_FOOTPRINT_BYTES } from "./limits";
 import { refinePath } from "./refine";
 import {
   contains,
-  portraitRegions,
+  portraitRegionSets,
   regionMeasurements,
   validPortrait,
 } from "./portrait";
@@ -68,6 +69,7 @@ export interface GenerateOptions {
   lines: number;
   mode: "dark" | "light" | "color";
   portrait?: PortraitSettings;
+  subject?: import("./subject-plan").SubjectPlan;
   seed?: Instruction;
   onProgress?: (fraction: number) => void;
   cancelled?: () => boolean;
@@ -75,6 +77,19 @@ export interface GenerateOptions {
   onDiagnostic?: (data: Record<string, unknown>) => void;
 }
 export async function generate(o: GenerateOptions): Promise<Instruction> {
+  if(o.subject) validSubjectPlan(o.subject,o.portrait);
+  const grouped = Boolean(o.portrait?.enabled && o.portrait.people);
+  if (
+    grouped &&
+    o.portrait!.people!.faces.some((f) => f.regions.placement !== "manual")
+  )
+    throw Error("Review every person's facial regions");
+  if (grouped) o = { ...o, guarded: true };
+  const algorithm = grouped
+    ? "group-optical/15"
+    : o.guarded
+      ? "continuous-guarded/6"
+      : "greedy-optical/4";
   const started = performance.now(),
     { resolution: n, profile: p } = o;
   if (
@@ -112,9 +127,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
   assertPinSpacing(p);
   const portrait = o.portrait?.enabled ? o.portrait : undefined;
   if (o.seed) {
-    assertContinuation(o, await hash(o.pixels), [
-      o.guarded ? "continuous-guarded/6" : "greedy-optical/4",
-    ]);
+    assertContinuation(o, await hash(o.pixels), [algorithm]);
     const { validateInstruction } = await import("./validation");
     await validateInstruction(o.seed);
   }
@@ -130,7 +143,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
     rendered = Float32Array.from({ length: n * n * 3 }, (_, k) => base[k % 3]);
   const mask = new Uint8Array(n * n),
     weight = new Float32Array(n * n),
-    regions = portrait ? portraitRegions(portrait) : undefined;
+    regions = portrait ? portraitRegionSets(portrait) : undefined;
   const coarseScale = 4,
     cn = Math.ceil(n / coarseScale),
     cells = cn * cn,
@@ -163,10 +176,10 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
         );
       let w = 1 + Math.min(2, edge * 5);
       if (regions) {
-        if (contains(regions.face, nx, ny)) w *= 5;
+        if (regions.face.some((b) => contains(b, nx, ny))) w *= 5;
         if (
           ["eyes", "nose", "mouth"].some((name) =>
-            contains(regions[name], nx, ny),
+            regions[name].some((b) => contains(b, nx, ny)),
           )
         )
           w *= 2;
@@ -495,7 +508,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: o.guarded ? "continuous-guarded/6" : "greedy-optical/4",
+    algorithm: algorithm,
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -514,6 +527,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
           }
         : {}),
       ...(portrait ? { portrait: structuredClone(portrait) } : {}),
+      ...(o.subject ? { subject: structuredClone(o.subject) } : {}),
       optimization: {
         lookahead: 8,
         coarseScale,

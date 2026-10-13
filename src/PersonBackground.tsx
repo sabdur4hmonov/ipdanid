@@ -1,3 +1,5 @@
+import type { SubjectKind } from "./core/subject-plan";
+import { subjectText } from "./subject-i18n";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { Locale } from "./core/types";
 import { paintPersonMask, type PersonMask } from "./core/person-mask";
@@ -26,6 +28,7 @@ export function PersonBackground({
   onBusy,
   onUseFace,
   group = false,
+  kind = "people",
 }: {
   source: HTMLCanvasElement;
   initial?: BackgroundState;
@@ -34,9 +37,13 @@ export function PersonBackground({
   onBusy: (busy: boolean) => void;
   onUseFace?: (face: SourceFace) => void;
   group?: boolean;
+  kind?: SubjectKind;
 }) {
   const [state, setState] = useState<BackgroundState>(
-    initial ?? { enabled: true, status: "processing" },
+    initial ??
+      (kind === "people"
+        ? { enabled: true, status: "processing" }
+        : { enabled: false, status: "manual" }),
   );
   const current = useRef(state),
     generation = useRef(0),
@@ -63,6 +70,7 @@ export function PersonBackground({
     );
   }
   async function analyze() {
+    if (kind !== "people") return;
     controller.current?.abort();
     const request = new AbortController();
     controller.current = request;
@@ -92,7 +100,8 @@ export function PersonBackground({
     }
   }
   useEffect(() => {
-    if (!initial || initial.status === "processing") void analyze();
+    if (kind === "people" && (!initial || initial.status === "processing"))
+      void analyze();
     else callbacks.current.onBusy(false);
     return () => {
       generation.current++;
@@ -148,37 +157,45 @@ export function PersonBackground({
             publish({ ...current.current, enabled: e.target.checked });
           }}
         />
-        {t("automatic")}
+        {kind === "people" ? t("automatic") : subjectText(locale, "background")}
       </label>
       <p
         role="status"
         data-testid="background-status"
         data-status={state.status}
       >
-        {t(
-          state.status === "processing"
-            ? "loading"
-            : state.status === "manual"
-              ? "manual"
-              : state.status === "ready"
-                ? "ready"
-                : "failed",
-        )}
+        {kind !== "people"
+          ? subjectText(locale, "manual")
+          : !state.enabled
+            ? t("original")
+            : t(
+                state.status === "processing"
+                  ? "loading"
+                  : state.status === "manual"
+                    ? "manual"
+                    : state.status === "ready"
+                      ? "ready"
+                      : "failed",
+              )}
       </p>
-      <p className="fineprint">{t("local")}</p>
+      <p className="fineprint">
+        {kind === "people" ? t("local") : subjectText(locale, "local")}
+      </p>
       {state.cleanupUnavailable && (
         <p className="fineprint" data-testid="cleanup-unavailable">
           {t("cleanupUnavailable")}
         </p>
       )}
-      <FaceFeaturePanel
-        source={source}
-        faces={state.faces ?? []}
-        unavailable={state.faceUnavailable}
-        locale={locale}
-        group={group}
-        onUseFace={onUseFace}
-      />
+      {kind === "people" && (
+        <FaceFeaturePanel
+          source={source}
+          faces={state.faces ?? []}
+          unavailable={state.faceUnavailable}
+          locale={locale}
+          group={group}
+          onUseFace={onUseFace}
+        />
+      )}
       <details>
         <summary>{t("tools")}</summary>
         <p className="fineprint">
@@ -190,7 +207,7 @@ export function PersonBackground({
             aria-pressed={tool === "keep"}
             onClick={() => setTool("keep")}
           >
-            {t("keep")}
+            {kind === "people" ? t("keep") : subjectText(locale, "keep")}
           </button>
           <button
             type="button"
@@ -268,13 +285,15 @@ export function PersonBackground({
           >
             {t("reset")}
           </button>
-          <button
-            type="button"
-            disabled={state.status === "processing"}
-            onClick={() => void analyze()}
-          >
-            {t("retry")}
-          </button>
+          {kind === "people" && (
+            <button
+              type="button"
+              disabled={state.status === "processing"}
+              onClick={() => void analyze()}
+            >
+              {t("retry")}
+            </button>
+          )}
         </div>
       </details>
       <button

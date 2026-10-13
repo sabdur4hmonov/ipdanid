@@ -1,5 +1,5 @@
 import type { PortraitSettings, RegionBox } from "./types";
-import { contains, portraitRegions } from "./portrait";
+import { contains, portraitRegions, portraitPeople } from "./portrait";
 
 // Importance changes the loss only. It never changes target pixels or anatomy.
 export interface AnatomicalImportance {
@@ -43,7 +43,7 @@ export function anatomicalImportance(
         "Anatomical importance requires source-aligned manual regions",
       );
   }
-  const regions = portraitRegions(portrait);
+  const people = portraitPeople(portrait).map(portraitRegions);
   const taper = (box: RegionBox, x: number, y: number) => {
     if (!contains(box, x, y)) return 0;
     // Zero value and zero derivative at box edges, peak one at its center.
@@ -54,7 +54,13 @@ export function anatomicalImportance(
     );
   };
   return (x: number, y: number) => {
-    let base = contains(regions.face, x, y) ? 8 : 1;
+    const regions =
+      people.find((r) =>
+        ["eyes", "nose", "mouth"].some((k) => contains(r[k], x, y)),
+      ) ??
+      people.find((r) => contains(r.face, x, y)) ??
+      people[0];
+    let base = people.some((r) => contains(r.face, x, y)) ? 8 : 1;
     if (["eyes", "nose", "mouth"].some((key) => contains(regions[key], x, y)))
       base = 16;
     if (!tuning || contains(regions.eyes, x, y)) return base;

@@ -1,3 +1,4 @@
+import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const en = {
   title: "Grid crafts",
@@ -208,5 +209,5 @@ const ru: typeof en = {
     "Прогресс изменён в другом окне. Откройте сохранённый проект снова.",
 };
 export function gridText(locale: Locale, key: keyof typeof en) {
-  return { en, uz, ru }[locale][key];
+  return scriptText({ en, uz, ru }[baseLocale(locale)][key], locale);
 }

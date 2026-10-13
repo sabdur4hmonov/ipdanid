@@ -1,3 +1,4 @@
+import { usesOpticalRaster } from "./render-model";
 import type { Instruction } from "./types";
 import { flatten } from "./engine";
 import { rasterSequence } from "./optical";
@@ -19,20 +20,7 @@ export function renderInstruction(
   ctx.lineWidth = (p.threadMm / p.widthMm) * sx;
   ctx.lineCap = "round";
   const end = options.completed ?? steps.length;
-  if (
-    [
-      "greedy-optical/3",
-      "greedy-optical/4",
-      "density-optical/5",
-      "continuous-guarded/6",
-      "density-multiscale/7",
-      "density-physical/8",
-      "density-anatomy/10",
-      "density-pin-basis/11",
-      "density-resolved/12",
-      "assembly-prune/9",
-    ].includes(i.algorithm)
-  ) {
+  if (usesOpticalRaster(i.algorithm)) {
     const n = i.params.resolution,
       raster = rasterSequence(i, end);
     const surface = document.createElement("canvas");

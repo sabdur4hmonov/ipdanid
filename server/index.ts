@@ -1,3 +1,4 @@
+import { BusinessStore } from "./business-store.ts";
 import { createServer } from "node:http";
 import { randomBytes } from "node:crypto";
 import { mkdirSync } from "node:fs";
@@ -22,6 +23,7 @@ const store = new CustomerStore(
   paymentKey,
 );
 store.seed();
+const business = new BusinessStore(store);
 const staffAccess = new AdminAccess(store, adminToken);
 const budgets = new Map<string, { start: number; count: number }>();
 const authBudgets = new Map<string, { start: number; count: number }>();
@@ -46,6 +48,8 @@ const server = createServer(async (req, res) => {
         "http://127.0.0.1:4183",
         "http://localhost:5183",
         "http://localhost:4183",
+        "http://127.0.0.1:4194",
+        "http://127.0.0.1:4195",
         "http://localhost",
         "https://localhost",
         "capacitor://localhost",
@@ -76,6 +80,14 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Rate limit exceeded; retry after one minute", 429);
     const path = new URL(req.url ?? "/", "http://127.0.0.1").pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
+    if (req.method === "GET" && path === "/api/storefront") {
+      send(200, {
+        settings: business.settings(),
+        announcements: business.announcements(),
+        serverTime: Date.now(),
+      });
+      return;
+    }
     if (req.method === "GET" && path === "/api/catalog") {
       send(200, {
         sandbox: true,
@@ -85,7 +97,12 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (req.method === "GET" && path === "/api/health") {
-      send(200, { sandbox: true, livePayments: false, liveMessages: false });
+      send(200, {
+        sandbox: true,
+        livePayments: false,
+        liveMessages: false,
+        apiVersion: "business-sandbox/2",
+      });
       return;
     }
     const chunks: Buffer[] = [];
@@ -144,6 +161,32 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (path === "/api/admin/settings") {
+        send(
+          200,
+          req.method === "GET"
+            ? business.settings()
+            : business.saveSettings(actor, body),
+        );
+        return;
+      }
+      if (path === "/api/admin/announcements") {
+        send(
+          req.method === "GET" ? 200 : 201,
+          req.method === "GET"
+            ? business.announcements(true)
+            : business.publish(actor, body),
+        );
+        return;
+      }
+      const revokeAnnouncement = path.match(
+        /^\/api\/admin\/announcements\/([^/]+)\/revoke$/,
+      );
+      if (revokeAnnouncement && req.method === "POST") {
+        send(200, business.revoke(actor, revokeAnnouncement[1], body.revision));
+        return;
+      }
+
       if (path === "/api/admin/access" && req.method === "GET") {
         send(200, staffAccess.list(token));
         return;
@@ -285,7 +328,15 @@ const server = createServer(async (req, res) => {
     if (path === "/api/orders" && req.method === "POST") {
       send(
         201,
-        store.createOrder(user, body.items, body.address, body.requestKey),
+        body.address?.deliveryMethod
+          ? store.submitOrder(
+              user,
+              body.items,
+              body.address,
+              body.requestKey,
+              body.quote,
+            )
+          : store.createOrder(user, body.items, body.address, body.requestKey),
       );
       return;
     }

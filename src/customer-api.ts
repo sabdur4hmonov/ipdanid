@@ -1,3 +1,4 @@
+import { resolveBackendUrl } from "./backend-url";
 import { Capacitor, CapacitorHttp } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 
@@ -9,10 +10,16 @@ export class ApiError extends Error {
     super(message);
   }
 }
-const base = Capacitor.isNativePlatform()
-  ? "http://127.0.0.1:4311/api"
-  : "/api";
-const KEY = "iprasm.customer.product-4311.v1";
+const base = resolveBackendUrl(
+  Capacitor.isNativePlatform(),
+  import.meta.env.VITE_NATIVE_API_BASE,
+);
+const legacyKey = "iprasm.customer.product-4311.v1";
+const KEY =
+  !Capacitor.isNativePlatform() || base === "http://127.0.0.1:4311/api"
+    ? legacyKey
+    : `${legacyKey}:${encodeURIComponent(base ?? "unconfigured")}`;
+export const customerCacheNamespace = KEY;
 type Session = { id: string; token: string; email?: string };
 export class CustomerApi {
   session: Session | null = null;
@@ -48,6 +55,11 @@ export class CustomerApi {
     body?: unknown,
     token = this.session?.token,
   ): Promise<T> {
+    if (!base)
+      throw new ApiError(
+        503,
+        "Backend URL is not configured; local artwork remains available",
+      );
     const controller = new AbortController(),
       timer = setTimeout(() => controller.abort(), 12000);
     try {
