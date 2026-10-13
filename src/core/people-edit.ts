@@ -48,6 +48,52 @@ export function withPeople(
           },
   };
 }
+// Review state is per person: placement "manual" means that person's regions
+// were explicitly confirmed. Groups (2+) must have every person confirmed before
+// generation; this mirrors the Worker's existing group-optical/15 contract.
+export function unreviewedPeople(p: PortraitSettings): number[] {
+  if (!p.enabled || !p.people) return [];
+  return peopleEntries(p).flatMap((f, k) =>
+    f.regions.placement === "manual" ? [] : [k + 1],
+  );
+}
+export function setPersonReviewed(
+  p: PortraitSettings,
+  id: string,
+  reviewed: boolean,
+): PortraitSettings {
+  const faces = peopleEntries(p);
+  if (!faces.some((f) => f.id === id)) return p;
+  return withPeople(
+    p,
+    faces.map((f) =>
+      f.id === id
+        ? {
+            ...f,
+            regions: {
+              ...f.regions,
+              placement: reviewed ? "manual" : "proportional-estimate",
+            },
+          }
+        : f,
+    ),
+  );
+}
+export function removePerson(p: PortraitSettings, id: string) {
+  const faces = peopleEntries(p).filter((f) => f.id !== id);
+  // Removing a person never changes anyone else's boxes or review state.
+  return faces.length ? withPeople(p, faces) : p;
+}
+/** Detector suggestions keep their boxes but start unconfirmed for each person. */
+export function unconfirmedPeople(p: PortraitSettings): PortraitSettings {
+  return withPeople(
+    p,
+    peopleEntries(p).map((f) => ({
+      ...f,
+      regions: { ...f.regions, placement: "proportional-estimate" },
+    })),
+  );
+}
 export function addPerson(p: PortraitSettings, id: string): PortraitSettings {
   const faces = peopleEntries(p);
   if (faces.length >= 3 || faces.some((f) => f.id === id))

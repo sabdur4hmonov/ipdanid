@@ -1,3 +1,4 @@
+import { subjectText } from "./subject-i18n";
 import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 import { portraitHelp } from "./portrait-help-i18n";
@@ -170,6 +171,9 @@ export function customerError(message: string, locale: Locale): string {
     return portraitChoiceText(locale, "missingInput");
   if (message === "portrait-choice/off")
     return portraitChoiceText(locale, "off");
+  const review = /^people-review\/(\d+(?:,\d+)*)$/.exec(message);
+  if (review)
+    return `${subjectText(locale, "reviewBlocked")} ${review[1].replace(/,/g, ", ")}.`;
   if (message === "portrait-config/group")
     return portraitHelp(locale, "groupConfiguration");
   if (message === "portrait-config/basis")

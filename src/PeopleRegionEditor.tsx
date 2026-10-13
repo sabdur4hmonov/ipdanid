@@ -9,6 +9,8 @@ import {
   withPeople,
   addPerson,
   movePerson,
+  removePerson,
+  setPersonReviewed,
 } from "./core/people-edit";
 export function PeopleRegionEditor(
   props: ComponentProps<typeof RegionEditor> & {
@@ -46,11 +48,40 @@ export function PeopleRegionEditor(
           ))}
         </select>
       </label>
-      <p data-testid="person-review" data-person-id={selected.id}>
+      <p
+        data-testid="person-review"
+        data-person-id={selected.id}
+        data-reviewed={selected.regions.placement === "manual"}
+      >
         {t("personCount")}: {faces.length} ·{" "}
         {selected.regions.placement === "manual"
           ? t("reviewed")
           : t("needsReview")}
+      </p>
+      <ul className="person-status-list" data-testid="person-status-list">
+        {faces.map((f, k) => (
+          <li
+            key={f.id}
+            data-testid="person-status"
+            data-person-id={f.id}
+            data-reviewed={f.regions.placement === "manual"}
+          >
+            <button
+              type="button"
+              className="chip"
+              aria-pressed={k === index}
+              onClick={() => setSelectedId(f.id!)}
+            >
+              {portraitHelp(props.locale, "person")} {k + 1} ·{" "}
+              {f.regions.placement === "manual"
+                ? t("reviewed")
+                : t("needsReview")}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p className="fineprint">
+        {faces.length > 3 ? t("legacyPeople") : t("maxPeople")}
       </p>
       <div className="preset-row">
         <button
@@ -76,13 +107,8 @@ export function PeopleRegionEditor(
           data-testid="remove-person"
           disabled={faces.length <= 1}
           onClick={() => {
-            const id = selected.id;
-            props.setPortrait((p) =>
-              withPeople(
-                p,
-                peopleEntries(p).filter((f) => f.id !== id),
-              ),
-            );
+            const id = selected.id!;
+            props.setPortrait((p) => removePerson(p, id));
             setSelectedId(faces.find((f) => f.id !== id)!.id!);
           }}
         >
@@ -183,20 +209,12 @@ export function PeopleRegionEditor(
         type="button"
         className="outline"
         data-testid="review-person"
+        aria-pressed={selected.regions.placement === "manual"}
         onClick={() =>
-          props.setPortrait((p) =>
-            withPeople(
-              p,
-              peopleEntries(p).map((f) =>
-                f.id === selected.id
-                  ? { ...f, regions: { ...f.regions, placement: "manual" } }
-                  : f,
-              ),
-            ),
-          )
+          props.setPortrait((p) => setPersonReviewed(p, selected.id!, true))
         }
       >
-        {t("review")}
+        {t("review")} · {portraitHelp(props.locale, "person")} {index + 1}
       </button>
     </div>
   );

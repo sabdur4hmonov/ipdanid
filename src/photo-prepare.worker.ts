@@ -1,5 +1,5 @@
 import { segmentPeople } from "./person-background";
-import { detectSourceFaces } from "./face-detection";
+import { detectSourceFaces, closeFaceDetector } from "./face-detection";
 import { cleanupBackground } from "./background-cleanup";
 import type { SourceFace } from "./core/face-features";
 import { unturnMask, type QuarterTurn } from "./core/photo-orientation";
@@ -8,9 +8,20 @@ const scope = self as unknown as {
 };
 let latest = 0;
 self.onmessage = async (
-  e: MessageEvent<{ id: number; image?: ImageBitmap; cancel?: boolean }>,
+  e: MessageEvent<{
+    id: number;
+    image?: ImageBitmap;
+    cancel?: boolean;
+    dispose?: boolean;
+  }>,
 ) => {
-  const { id, image, cancel } = e.data;
+  const { id, image, cancel, dispose } = e.data;
+  if (dispose) {
+    latest = 0;
+    await closeFaceDetector();
+    self.close();
+    return;
+  }
   if (cancel) {
     if (latest === id) latest = 0;
     return;

@@ -12,9 +12,14 @@ import { generateDensity } from "./density";
 import { ContinuationError } from "./continuation";
 import { defaultPhysicalContrast } from "./physical-contrast";
 import { simplifySequence } from "./simplify";
+import { validSubjectPlan } from "./subject-plan";
 self.onmessage = async ({ data }) => {
   try {
     const started = performance.now();
+    // Subject plans are checked before any strategy runs; general subjects can
+    // never reach a person-anatomy objective or reuse a person-only mask.
+    if (data.subject !== undefined)
+      validSubjectPlan(data.subject, data.portrait);
     if (
       data.portrait?.enabled &&
       data.portrait.people &&
@@ -123,9 +128,13 @@ self.onmessage = async ({ data }) => {
               head: data.headRefine ? undefined : data.head,
               edgeWeight:
                 data.seed?.params.optimization?.edgeWeight ??
-                (["multiscale", "physical", "anatomy", "basis", "features"].includes(
-                  data.strategy,
-                )
+                ([
+                  "multiscale",
+                  "physical",
+                  "anatomy",
+                  "basis",
+                  "features",
+                ].includes(data.strategy)
                   ? 2
                   : 1),
               sweeps:

@@ -36,6 +36,23 @@ function getWorker() {
   }
   return worker;
 }
+/**
+ * Session teardown: lets the worker close the cached face model before exit.
+ * Superseded jobs still terminate an idle worker immediately (see abort below).
+ */
+export function disposePhotoAnalysis() {
+  const w = worker;
+  worker = undefined;
+  if (!w) return;
+  for (const job of pending.values())
+    job.reject(new DOMException("Photo analysis closed", "AbortError"));
+  pending.clear();
+  w.postMessage({ id: 0, dispose: true });
+}
+if (typeof window !== "undefined")
+  window.addEventListener("pagehide", (e) => {
+    if (!e.persisted) disposePhotoAnalysis();
+  });
 export async function preparePersonPhoto(
   source: HTMLCanvasElement,
   signal: AbortSignal,

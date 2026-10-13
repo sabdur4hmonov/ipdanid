@@ -142,3 +142,54 @@ export function validSubjectPlan(s: SubjectPlan, portrait?: PortraitSettings) {
   } else if (portrait?.enabled)
     throw Error("General subjects cannot use human anatomy weights");
 }
+
+export const LEGACY_SOURCE_REVISION = "legacy-unrecorded";
+/**
+ * Read-only adapter for guides made before subject-plan/1. Legacy params are
+ * never rewritten (their sequence hash covers params), so the derived plan is
+ * a view for display and inspection only and must not be stored back.
+ */
+export function subjectPlanOf(
+  params: { portrait?: PortraitSettings; subject?: SubjectPlan },
+  edits: EditParams = {
+    zoom: 1,
+    panX: 0,
+    panY: 0,
+    rotation: 0,
+    brightness: 0,
+    contrast: 1,
+  },
+): { plan: SubjectPlan; legacy: boolean } {
+  if (params.subject) {
+    validSubjectPlan(params.subject, params.portrait);
+    return { plan: structuredClone(params.subject), legacy: false };
+  }
+  const portrait = params.portrait?.enabled
+    ? snapshotPortraitRegions(params.portrait)
+    : undefined;
+  return {
+    plan: makeSubjectPlan(
+      portrait ? "people" : "whole-image",
+      LEGACY_SOURCE_REVISION,
+      edits,
+      portrait,
+    ),
+    legacy: true,
+  };
+}
+// Legacy single portraits may omit regions; the engine used the same
+// proportional estimate, so the adapter fills it the same way.
+function snapshotPortraitRegions(p: PortraitSettings): PortraitSettings {
+  const copy = structuredClone(p);
+  if (!copy.regions) {
+    const b = portraitRegions(copy);
+    copy.regions = {
+      reference: "processed-target/sample-centers-v1",
+      placement: "proportional-estimate",
+      eyes: b.eyes,
+      nose: b.nose,
+      mouth: b.mouth,
+    };
+  }
+  return copy;
+}

@@ -1,6 +1,30 @@
 import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const en = {
+  "people-desc": "1–3 faces. Each face is checked separately.",
+  "animal-desc": "Dog, cat, bird. Original pixels are kept.",
+  "vehicle-desc": "Car, motorbike. Original pixels are kept.",
+  "object-desc": "Any item. Original pixels are kept.",
+  "whole-image-desc": "Landscape or anything else, unchanged.",
+  reviewBlocked:
+    "Check every person before calculating. Not yet checked: person",
+  maxPeople: "Up to three people in a new composition.",
+  legacyPeople:
+    "This saved composition has more than three people. It still loads; quality beyond three is not tested.",
+  adviceTitle: "Photo advice",
+  adviceIntro: "Advice only. You can still calculate; nothing is rejected.",
+  adviceSmall:
+    "The face or subject is small for this shape (feature span under 8 samples). Zoom in on it.",
+  adviceManyPeople:
+    "More than three people. Faces become very small in thread; crop to fewer people or choose another photo.",
+  adviceContrast:
+    "Low contrast: the subject and background have similar brightness. Zoom/crop to the subject or choose another photo.",
+  adviceBlur:
+    "The photo looks soft or blurred (heuristic). A sharper photo usually gives clearer lines.",
+  fixZoom: "Zoom in",
+  fixCrop: "Crop to subject",
+  fixPhoto: "Choose another photo",
+  adviceNone: "No advice for this photo.",
   title: "What is in the photo?",
   people: "People (1–3)",
   animal: "Animal",
@@ -24,6 +48,31 @@ const en = {
     "Add a missed person and check each face separately. Estimated boxes are not detected anatomy.",
 };
 const uz: typeof en = {
+  "people-desc": "1–3 yuz. Har bir yuz alohida tekshiriladi.",
+  "animal-desc": "It, mushuk, qush. Asl piksellar saqlanadi.",
+  "vehicle-desc": "Mashina, mototsikl. Asl piksellar saqlanadi.",
+  "object-desc": "Istalgan buyum. Asl piksellar saqlanadi.",
+  "whole-image-desc": "Manzara yoki boshqa surat, o‘zgarishsiz.",
+  reviewBlocked:
+    "Hisoblashdan oldin har bir odamni tekshiring. Hali tekshirilmagan: odam",
+  maxPeople: "Yangi kompozitsiyada ko‘pi bilan uch odam.",
+  legacyPeople:
+    "Bu saqlangan kompozitsiyada uchdan ortiq odam bor. U ochiladi, lekin uchdan ortig‘i sinovdan o‘tmagan.",
+  adviceTitle: "Surat bo‘yicha maslahat",
+  adviceIntro:
+    "Faqat maslahat. Baribir hisoblashingiz mumkin, hech narsa rad etilmaydi.",
+  adviceSmall:
+    "Bu shakl uchun yuz yoki obyekt kichik (qism kengligi 8 nuqtadan kam). Kattalashtiring.",
+  adviceManyPeople:
+    "Uchdan ortiq odam bor. Ipda yuzlar juda kichik bo‘ladi; kamroq odamni kesib oling yoki boshqa surat tanlang.",
+  adviceContrast:
+    "Kontrast past: obyekt va fon yorug‘ligi o‘xshash. Obyektga yaqinlashtiring yoki boshqa surat tanlang.",
+  adviceBlur:
+    "Surat xira yoki loyqa ko‘rinadi (taxminiy). Aniqroq surat odatda tiniqroq chiziq beradi.",
+  fixZoom: "Kattalashtirish",
+  fixCrop: "Obyektga kesish",
+  fixPhoto: "Boshqa surat tanlash",
+  adviceNone: "Bu surat uchun maslahat yo‘q.",
   title: "Suratda nima bor?",
   people: "Odamlar (1–3)",
   animal: "Hayvon",
@@ -47,6 +96,31 @@ const uz: typeof en = {
     "Topilmagan odamni qo‘shing va har bir yuzni alohida tekshiring. Taxminiy chegaralar aniqlangan yuz qismlari emas.",
 };
 const ru: typeof en = {
+  "people-desc": "1–3 лица. Каждое лицо проверяется отдельно.",
+  "animal-desc": "Собака, кошка, птица. Исходные пиксели сохраняются.",
+  "vehicle-desc": "Машина, мотоцикл. Исходные пиксели сохраняются.",
+  "object-desc": "Любой предмет. Исходные пиксели сохраняются.",
+  "whole-image-desc": "Пейзаж или другое фото без изменений.",
+  reviewBlocked:
+    "Перед расчётом проверьте каждого человека. Ещё не проверен: человек",
+  maxPeople: "В новой композиции не более трёх человек.",
+  legacyPeople:
+    "В этой сохранённой композиции больше трёх человек. Она открывается, но качество сверх трёх не проверено.",
+  adviceTitle: "Совет по фото",
+  adviceIntro:
+    "Только совет. Рассчитать всё равно можно, ничего не отклоняется.",
+  adviceSmall:
+    "Лицо или объект мал для этой формы (деталь меньше 8 отсчётов). Увеличьте его.",
+  adviceManyPeople:
+    "Больше трёх человек. В нитях лица станут очень мелкими; обрежьте до меньшего числа людей или выберите другое фото.",
+  adviceContrast:
+    "Низкий контраст: объект и фон близки по яркости. Приблизьте объект или выберите другое фото.",
+  adviceBlur:
+    "Фото выглядит мягким или размытым (оценка). Более резкое фото обычно даёт более чёткие линии.",
+  fixZoom: "Увеличить",
+  fixCrop: "Обрезать по объекту",
+  fixPhoto: "Выбрать другое фото",
+  adviceNone: "Для этого фото советов нет.",
   title: "Что на фотографии?",
   people: "Люди (1–3)",
   animal: "Животное",

@@ -1,6 +1,7 @@
+import { SubjectChooser } from "./SubjectChooser";
 import {
-  SUBJECT_KINDS,
   makeSubjectPlan,
+  subjectPlanOf,
   type SubjectKind,
 } from "./core/subject-plan";
 import { subjectText } from "./subject-i18n";
@@ -9,7 +10,14 @@ import { Announcements } from "./Announcements";
 import { useBusiness } from "./BusinessContext";
 import { baseLocale } from "./uzbek-script";
 import { PeopleRegionEditor } from "./PeopleRegionEditor";
+import { unconfirmedPeople, unreviewedPeople } from "./core/people-edit";
 import { PhotoQualityAdvice } from "./PhotoQualityAdvice";
+import { SubjectAdvice } from "./SubjectAdvice";
+import {
+  adviceCrop,
+  subjectAdvice,
+  type SubjectAdviceResult,
+} from "./core/subject-advice";
 import {
   photoQualityAdvice,
   type PhotoQualityAdvice as QualityAdvice,
@@ -212,6 +220,33 @@ function Supply({
     </div>
   );
 }
+function ResultSubject({
+  instruction,
+  locale,
+}: {
+  instruction: Instruction;
+  locale: Locale;
+}) {
+  let view;
+  try {
+    view = subjectPlanOf(instruction.params);
+  } catch {
+    return null;
+  }
+  const { plan, legacy } = view;
+  return (
+    <p
+      className="fineprint"
+      data-testid="result-subject"
+      data-kind={plan.kind}
+      data-legacy={legacy}
+      data-subjects={plan.subjects.length}
+    >
+      {subjectText(locale, "title")} {subjectText(locale, plan.kind)}
+      {plan.kind === "people" ? ` · ${plan.subjects.length}` : ""}
+    </p>
+  );
+}
 function Preview({
   instruction,
   step = 0,
@@ -271,6 +306,8 @@ export default function App() {
   const [resolution, setResolution] = useState(160);
   const [currentTargetHash, setCurrentTargetHash] = useState<string>();
   const [subjectKind, setSubjectKind] = useState<SubjectKind>("whole-image");
+  // Animal/vehicle/object never show human anatomy controls or person masks.
+  const generalSubject = ["animal", "vehicle", "object"].includes(subjectKind);
   const [generalImageConfirmed, setGeneralImageConfirmed] = useState(false);
   useEffect(() => setGeneralImageConfirmed(false), [image]);
   const [portrait, setPortrait] = useState(structuredClone(DEFAULT_PORTRAIT));
@@ -451,6 +488,9 @@ export default function App() {
     null,
   );
   const [sampling, setSampling] = useState<PortraitSampling | null>(null);
+  const [adviceResult, setAdviceResult] = useState<SubjectAdviceResult | null>(
+    null,
+  );
   const stopSpeech = cancelGuideSpeech;
   const pause = () => {
     setPlaying(false);
@@ -563,6 +603,23 @@ export default function App() {
         setQualityAdvice(
           photoQualityAdvice(pixels, resolution, shape, portrait),
         );
+        try {
+          setAdviceResult(
+            subjectAdvice({
+              pixels,
+              n: resolution,
+              shape,
+              kind: portrait.enabled ? "people" : subjectKind,
+              portrait,
+              detectedPeople: activeBackground?.faces?.length,
+              masked: Boolean(
+                activeBackground?.enabled && activeBackground.mask,
+              ),
+            }),
+          );
+        } catch {
+          setAdviceResult(null);
+        }
         if (headPriority && portraitSolver === "basis" && resolution === 320) {
           try {
             const h = mappedHeadImportance(
@@ -606,6 +663,8 @@ export default function App() {
     headPriority,
     headOutline,
     portraitSolver,
+    subjectKind,
+    activeBackground,
   ]);
   useEffect(() => {
     let active = true;
@@ -1003,7 +1062,15 @@ export default function App() {
         (!(portraitSolver === "anatomy") ||
           JSON.stringify(i.params.optimization?.anatomy) ===
             JSON.stringify(anatomy)) &&
-        (i.params.optimization?.sweeps ?? 8) === 8
+        (i.params.optimization?.sweeps ?? 8) === 8 &&
+        // A kind change can leave pixels identical (object vs whole image).
+        (!i.params.subject ||
+          i.params.subject.kind ===
+            (portrait.enabled
+              ? "people"
+              : subjectKind === "people"
+                ? "whole-image"
+                : subjectKind))
       );
     } catch {
       return false;
@@ -1025,6 +1092,11 @@ export default function App() {
       subjectKind === "people"
     ) {
       setError("portrait-choice/off");
+      return;
+    }
+    // New group compositions need every person confirmed individually.
+    if (!seed && !resume && unreviewedPeople(portrait).length) {
+      setError(`people-review/${unreviewedPeople(portrait).join(",")}`);
       return;
     }
     if (resume?.hairSeed && !resume.hairCheckpoint) {
@@ -1853,24 +1925,12 @@ export default function App() {
                       {t("step1")}
                       <ImagePlus size={17} />
                     </div>
-                    <label className="range-label">
-                      {subjectText(locale, "title")}
-                      <select
-                        data-testid="subject-kind"
-                        aria-label={subjectText(locale, "title")}
-                        value={subjectKind}
-                        disabled={busy}
-                        onChange={(e) =>
-                          chooseSubject(e.target.value as SubjectKind)
-                        }
-                      >
-                        {SUBJECT_KINDS.map((kind) => (
-                          <option key={kind} value={kind}>
-                            {subjectText(locale, kind)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    <SubjectChooser
+                      value={subjectKind}
+                      locale={locale}
+                      disabled={busy}
+                      onChoose={(kind) => chooseSubject(kind)}
+                    />
                     <p className="fineprint">{subjectText(locale, "hint")}</p>
                     <PhotoActions
                       locale={locale}
@@ -1954,7 +2014,7 @@ export default function App() {
                     )}
                     {image && (
                       <>
-                        {shape === "heart" && (
+                        {shape === "heart" && !generalSubject && (
                           <p
                             className="workflow-notice"
                             data-testid="heart-people-guidance"
@@ -1991,10 +2051,50 @@ export default function App() {
                           >
                             {portraitHelp(locale, "rotateRight")}
                           </button>
-                          {(activeBackground?.faces?.length ?? 0) > 1 && (
+                          {!generalSubject &&
+                            (activeBackground?.faces?.length ?? 0) > 1 && (
+                              <button
+                                className="outline"
+                                data-testid="apply-people-faces"
+                                onClick={() => {
+                                  if (
+                                    resolution > 192 ||
+                                    pinCount > 240 ||
+                                    pinBasis
+                                  ) {
+                                    setError("portrait-config/group");
+                                    return;
+                                  }
+                                  try {
+                                    // Detector boxes are suggestions; each person is confirmed separately.
+                                    setPortrait(
+                                      unconfirmedPeople(
+                                        reviewedPeoplePortrait(
+                                          activeBackground!.faces!,
+                                          portrait,
+                                          edits,
+                                          image.width,
+                                          image.height,
+                                          aspect,
+                                          resolution,
+                                          shape,
+                                        ),
+                                      ),
+                                    );
+                                    setGroup(true);
+                                    setPortraitSolver("guarded");
+                                  } catch (e) {
+                                    setError(String(e));
+                                  }
+                                }}
+                              >
+                                {portraitHelp(locale, "usePeople")}
+                              </button>
+                            )}
+                          {!generalSubject && (
                             <button
                               className="outline"
-                              data-testid="apply-people-faces"
+                              data-testid="mark-two-faces"
                               onClick={() => {
                                 if (
                                   resolution > 192 ||
@@ -2004,57 +2104,45 @@ export default function App() {
                                   setError("portrait-config/group");
                                   return;
                                 }
-                                try {
-                                  setPortrait(
-                                    reviewedPeoplePortrait(
-                                      activeBackground!.faces!,
-                                      portrait,
-                                      edits,
-                                      image.width,
-                                      image.height,
-                                      aspect,
-                                      resolution,
-                                      shape,
-                                    ),
+                                setGroup(true);
+                                setPortraitSolver("guarded");
+                                setPortrait(estimatedPairPortrait(portrait));
+                                const panel =
+                                  document.querySelector<HTMLDetailsElement>(
+                                    '[data-testid="advanced-photo"]',
                                   );
-                                  setGroup(true);
-                                  setPortraitSolver("guarded");
-                                } catch (e) {
-                                  setError(String(e));
-                                }
+                                if (panel) panel.open = true;
                               }}
                             >
-                              {portraitHelp(locale, "usePeople")}
+                              {portraitHelp(locale, "manualPeople")}
                             </button>
                           )}
-                          <button
-                            className="outline"
-                            data-testid="mark-two-faces"
-                            onClick={() => {
-                              if (
-                                resolution > 192 ||
-                                pinCount > 240 ||
-                                pinBasis
-                              ) {
-                                setError("portrait-config/group");
-                                return;
-                              }
-                              setGroup(true);
-                              setPortraitSolver("guarded");
-                              setPortrait(estimatedPairPortrait(portrait));
-                              const panel =
-                                document.querySelector<HTMLDetailsElement>(
-                                  '[data-testid="advanced-photo"]',
-                                );
-                              if (panel) panel.open = true;
-                            }}
-                          >
-                            {portraitHelp(locale, "manualPeople")}
-                          </button>
                         </div>
-                        <PhotoQualityAdvice
-                          advice={qualityAdvice}
+                        {!generalSubject && (
+                          <PhotoQualityAdvice
+                            advice={qualityAdvice}
+                            locale={locale}
+                          />
+                        )}
+                        <SubjectAdvice
+                          advice={adviceResult}
                           locale={locale}
+                          disabled={busy}
+                          onFix={(item) => {
+                            if (item.fix === "photo") {
+                              upload.current?.click();
+                              return;
+                            }
+                            applyCrop(
+                              adviceCrop(
+                                edits,
+                                adviceResult?.subject,
+                                aspect,
+                                resolution,
+                                item.key === "small" ? item.value : undefined,
+                              ),
+                            );
+                          }}
                         />
                         <details
                           className="edits"
@@ -2264,124 +2352,126 @@ export default function App() {
                         {sample && (
                           <p className="fineprint">{t("sampleNotice")}</p>
                         )}
-                        <section
-                          className="notice"
-                          data-testid="portrait-quality-setup"
-                          aria-label={portraitChoiceText(locale, "title")}
-                        >
-                          <h3>{portraitChoiceText(locale, "title")}</h3>
-                          <p className="fineprint">
-                            {portraitChoiceText(locale, "localInput")}
-                          </p>
-                          <p>{portraitChoiceText(locale, "hint")}</p>
-                          <button
-                            disabled={busy || backgroundBusy}
-                            onClick={() => {
-                              const face =
-                                activeBackground?.faces?.length === 1
-                                  ? activeBackground.faces[0]
-                                  : undefined;
-                              if (face && !group) {
-                                try {
-                                  setPortrait(
-                                    reviewedFacePortrait(
-                                      face,
-                                      portrait,
-                                      edits,
-                                      image.width,
-                                      image.height,
-                                      aspect,
-                                      resolution,
-                                      shape,
-                                    ),
-                                  );
-                                  setLines(MAX_LINES);
-                                } catch (e) {
-                                  setError(String(e));
+                        {!generalSubject && (
+                          <section
+                            className="notice"
+                            data-testid="portrait-quality-setup"
+                            aria-label={portraitChoiceText(locale, "title")}
+                          >
+                            <h3>{portraitChoiceText(locale, "title")}</h3>
+                            <p className="fineprint">
+                              {portraitChoiceText(locale, "localInput")}
+                            </p>
+                            <p>{portraitChoiceText(locale, "hint")}</p>
+                            <button
+                              disabled={busy || backgroundBusy}
+                              onClick={() => {
+                                const face =
+                                  activeBackground?.faces?.length === 1
+                                    ? activeBackground.faces[0]
+                                    : undefined;
+                                if (face && !group) {
+                                  try {
+                                    setPortrait(
+                                      reviewedFacePortrait(
+                                        face,
+                                        portrait,
+                                        edits,
+                                        image.width,
+                                        image.height,
+                                        aspect,
+                                        resolution,
+                                        shape,
+                                      ),
+                                    );
+                                    setLines(MAX_LINES);
+                                  } catch (e) {
+                                    setError(String(e));
+                                  }
                                 }
+                                const panel =
+                                  document.querySelector<HTMLDetailsElement>(
+                                    '[data-testid="advanced-photo"]',
+                                  );
+                                if (panel) {
+                                  panel.open = true;
+                                  panel.scrollIntoView({ block: "start" });
+                                }
+                              }}
+                            >
+                              {portraitChoiceText(locale, "review")}
+                            </button>
+                            {portrait.regions?.placement !== "manual" && (
+                              <p>{portraitChoiceText(locale, "pending")}</p>
+                            )}
+                            <button
+                              data-testid="portrait-current-materials"
+                              disabled={
+                                busy ||
+                                !portrait.enabled ||
+                                portrait.regions?.placement !== "manual" ||
+                                resolution > 192 ||
+                                pinCount > 240 ||
+                                Boolean(pinBasis) ||
+                                mode === "color"
                               }
-                              const panel =
-                                document.querySelector<HTMLDetailsElement>(
-                                  '[data-testid="advanced-photo"]',
+                              onClick={() => {
+                                setPortraitSolver(
+                                  portrait.people ? "guarded" : "physical",
                                 );
-                              if (panel) {
-                                panel.open = true;
-                                panel.scrollIntoView({ block: "start" });
+                                setLines(MAX_LINES);
+                                setHeadPriority(false);
+                                setError("");
+                              }}
+                            >
+                              {portraitChoiceText(locale, "keep")}
+                            </button>
+                            <p>{portraitChoiceText(locale, "detailHint")}</p>
+                            <button
+                              data-testid="portrait-detail-profile"
+                              disabled={
+                                busy ||
+                                !portrait.enabled ||
+                                Boolean(portrait.people) ||
+                                portrait.regions?.placement !== "manual" ||
+                                aspect !== 1
                               }
-                            }}
-                          >
-                            {portraitChoiceText(locale, "review")}
-                          </button>
-                          {portrait.regions?.placement !== "manual" && (
-                            <p>{portraitChoiceText(locale, "pending")}</p>
-                          )}
-                          <button
-                            data-testid="portrait-current-materials"
-                            disabled={
-                              busy ||
-                              !portrait.enabled ||
-                              portrait.regions?.placement !== "manual" ||
-                              resolution > 192 ||
-                              pinCount > 240 ||
-                              Boolean(pinBasis) ||
-                              mode === "color"
-                            }
-                            onClick={() => {
-                              setPortraitSolver(
-                                portrait.people ? "guarded" : "physical",
-                              );
-                              setLines(MAX_LINES);
-                              setHeadPriority(false);
-                              setError("");
-                            }}
-                          >
-                            {portraitChoiceText(locale, "keep")}
-                          </button>
-                          <p>{portraitChoiceText(locale, "detailHint")}</p>
-                          <button
-                            data-testid="portrait-detail-profile"
-                            disabled={
-                              busy ||
-                              !portrait.enabled ||
-                              Boolean(portrait.people) ||
-                              portrait.regions?.placement !== "manual" ||
-                              aspect !== 1
-                            }
-                            onClick={() => {
-                              changeComputationResolution(320);
-                              setShape("circle");
-                              setMode("dark");
-                              setWidthMm(400);
-                              setHeightMm(400);
-                              setPinCount(240);
-                              setThreadMm(0.1);
-                              setPinBasis({
-                                version: "circle-chords/1",
-                                count: 240,
-                                minimumAngularGapDegrees: 7.5,
-                                experimental: true,
-                              });
-                              setPinLayout(undefined);
-                              setPinCoordinates(undefined);
-                              setPortraitSolver("basis");
-                              setLines(MAX_LINES);
-                              setHeadPriority(false);
-                              setError("");
-                            }}
-                          >
-                            {portraitChoiceText(locale, "detail")}
-                          </button>
-                          <label className="toggle">
-                            <input
-                              type="checkbox"
-                              checked={generalImageConfirmed}
-                              onChange={(e) =>
-                                setGeneralImageConfirmed(e.target.checked)
-                              }
-                            />
-                            {portraitChoiceText(locale, "general")}
-                          </label>
-                        </section>
+                              onClick={() => {
+                                changeComputationResolution(320);
+                                setShape("circle");
+                                setMode("dark");
+                                setWidthMm(400);
+                                setHeightMm(400);
+                                setPinCount(240);
+                                setThreadMm(0.1);
+                                setPinBasis({
+                                  version: "circle-chords/1",
+                                  count: 240,
+                                  minimumAngularGapDegrees: 7.5,
+                                  experimental: true,
+                                });
+                                setPinLayout(undefined);
+                                setPinCoordinates(undefined);
+                                setPortraitSolver("basis");
+                                setLines(MAX_LINES);
+                                setHeadPriority(false);
+                                setError("");
+                              }}
+                            >
+                              {portraitChoiceText(locale, "detail")}
+                            </button>
+                            <label className="toggle">
+                              <input
+                                type="checkbox"
+                                checked={generalImageConfirmed}
+                                onChange={(e) =>
+                                  setGeneralImageConfirmed(e.target.checked)
+                                }
+                              />
+                              {portraitChoiceText(locale, "general")}
+                            </label>
+                          </section>
+                        )}
                         <details className="edits" data-testid="advanced-photo">
                           <summary>{simple("advancedPhoto")}</summary>
                           <label className="toggle">
@@ -3053,9 +3143,27 @@ export default function App() {
                       <p className="provisional">
                         <span /> {t("provisional")}
                       </p>
+                      {unreviewedPeople(portrait).length > 0 && (
+                        <p
+                          role="status"
+                          className="workflow-notice"
+                          data-testid="people-review-blocked"
+                        >
+                          {customerError(
+                            `people-review/${unreviewedPeople(portrait).join(",")}`,
+                            locale,
+                          )}
+                        </p>
+                      )}
                       <button
                         className="primary full"
-                        disabled={!image || busy || backgroundBusy}
+                        data-testid="generate"
+                        disabled={
+                          !image ||
+                          busy ||
+                          backgroundBusy ||
+                          unreviewedPeople(portrait).length > 0
+                        }
                         onClick={() => generate()}
                       >
                         {busy
@@ -3207,6 +3315,7 @@ export default function App() {
                           </p>
                         </details>
                         <Supply instruction={result} locale={locale} />
+                        <ResultSubject instruction={result} locale={locale} />
                         {result.params.resolution === 320 &&
                           [
                             "density-resolved/12",

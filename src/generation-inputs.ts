@@ -8,6 +8,7 @@ import type {
 import type { GenerationStrategy } from "./core/generation-strategy";
 import type { OptimizerRecovery } from "./optimizer-storage";
 import { RecoveryOrder } from "./recovery-order";
+import { validSubjectPlan } from "./core/subject-plan";
 export interface LocalGenerationInput {
   version: "iprasm.local-input/1";
   recipeHash: string;
@@ -68,13 +69,15 @@ export async function validateLocalInput(
     JSON.stringify(value.recipe.profile) !== JSON.stringify(i.profile) ||
     JSON.stringify(value.recipe.portrait) !==
       JSON.stringify(i.params.portrait) ||
-    JSON.stringify(value.recipe.subject)!==JSON.stringify(i.params.subject) ||
+    JSON.stringify(value.recipe.subject) !== JSON.stringify(i.params.subject) ||
     value.recipe.mode !== i.params.mode ||
     value.recipe.lines !== i.params.requestedLines ||
     JSON.stringify(value.recipe.objective) !==
       JSON.stringify(i.params.optimization)
   )
     throw Error("Local target integrity mismatch");
+  if (value.recipe.subject !== undefined)
+    validSubjectPlan(value.recipe.subject, value.recipe.portrait);
   return structuredClone(value);
 }
 export async function readGenerationInput(
