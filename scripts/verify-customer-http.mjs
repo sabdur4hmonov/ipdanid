@@ -5,17 +5,17 @@ import assert from "node:assert/strict";
 import { generate } from "../src/core/engine.ts";
 import { createProfile } from "../src/core/geometry.ts";
 import { progressFor } from "../src/core/validation.ts";
+import { freshTestDatabase } from "./test-artifacts.mjs";
 
 const port = 4321,
   base = `http://127.0.0.1:${port}/api`,
-  directory = `test-results/customer-http-${randomUUID()}`;
-mkdirSync(directory, { recursive: true });
+  { directory, databasePath } = freshTestDatabase("customer-http");
 const admin = randomBytes(32).toString("base64url");
 const env = {
   ...process.env,
   IP_RASM_TEST_SERVER: "1",
   PORT: String(port),
-  DATABASE_PATH: `${directory}/database.sqlite`,
+  DATABASE_PATH: databasePath,
   LOCAL_ADMIN_TOKEN: admin,
   CODE_PEPPER: randomBytes(32).toString("base64url"),
   SANDBOX_PAYMENT_KEY: randomBytes(32).toString("base64url"),

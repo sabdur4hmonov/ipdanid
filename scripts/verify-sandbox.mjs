@@ -2,6 +2,8 @@ import { spawn } from "node:child_process";
 import { randomBytes, randomUUID } from "node:crypto";
 import assert from "node:assert/strict";
 import { mkdirSync, writeFileSync } from "node:fs";
+import { freshTestDatabase } from "./test-artifacts.mjs";
+const { databasePath } = freshTestDatabase("sandbox-http");
 const admin = randomBytes(32).toString("base64url");
 const child = spawn(process.execPath, ["--import", "tsx", "server/index.ts"], {
   env: {
@@ -10,7 +12,7 @@ const child = spawn(process.execPath, ["--import", "tsx", "server/index.ts"], {
     LOCAL_ADMIN_TOKEN: admin,
     CODE_PEPPER: randomBytes(32).toString("base64url"),
     SANDBOX_PAYMENT_KEY: randomBytes(32).toString("base64url"),
-    DATABASE_PATH: ":memory:",
+    DATABASE_PATH: databasePath,
     PORT: "4322",
   },
   stdio: ["ignore", "pipe", "pipe"],

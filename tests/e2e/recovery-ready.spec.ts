@@ -201,8 +201,7 @@ test("legacy partial hair guide remains exportable without pretending its search
 
 test("production worker rejects checkpoint/head and exact-target mismatches with job association intact", async ({
   page,
-}, info) => {
-  test.skip(info.project.name !== "desktop");
+}) => {
   await page.goto("/");
   const worker = readdirSync("dist/assets").find((n) =>
     n.startsWith("generator.worker-"),

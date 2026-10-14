@@ -11,6 +11,10 @@ for (const port of [previewPort, apiPort])
 if (previewPort === apiPort) throw Error("Test ports must differ");
 assertTestDatabasePath(process.env.DATABASE_PATH || ":memory:");
 const artifacts = resolve(process.env.IP_RASM_TEST_ARTIFACTS || "test-results");
+// Reject a protected artifacts root before creating even a test directory.
+assertTestDatabasePath(join(artifacts, "test.sqlite"));
+if (process.env.IP_RASM_TEST_REPORT)
+  assertTestDatabasePath(process.env.IP_RASM_TEST_REPORT);
 mkdirSync(artifacts, { recursive: true });
 const database = join(mkdtempSync(join(artifacts, "api-")), "test.sqlite");
 for (const name of ["LOCAL_ADMIN_TOKEN", "CODE_PEPPER", "SANDBOX_PAYMENT_KEY"]) {

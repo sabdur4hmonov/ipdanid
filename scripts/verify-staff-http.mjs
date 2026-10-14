@@ -2,16 +2,16 @@ import { spawn } from "node:child_process";
 import { randomBytes, randomUUID } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
-const directory = `test-results/staff-http-${randomUUID()}`,
+import { freshTestDatabase } from "./test-artifacts.mjs";
+const { directory, databasePath } = freshTestDatabase("staff-http"),
   port = 4322,
   owner = randomBytes(32).toString("base64url");
-mkdirSync(directory, { recursive: true });
 const child = spawn(process.execPath, ["--import", "tsx", "server/index.ts"], {
   env: {
     ...process.env,
     IP_RASM_TEST_SERVER: "1",
     PORT: String(port),
-    DATABASE_PATH: `${directory}/test.sqlite`,
+    DATABASE_PATH: databasePath,
     LOCAL_ADMIN_TOKEN: owner,
     CODE_PEPPER: randomBytes(32).toString("base64url"),
     SANDBOX_PAYMENT_KEY: randomBytes(32).toString("base64url"),

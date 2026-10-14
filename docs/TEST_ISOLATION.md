@@ -4,7 +4,7 @@ All browser API tests use a fresh SQLite database beneath `IP_RASM_TEST_ARTIFACT
 
 The browser config generates private test secrets once per run and propagates them to every worker and its API. It never reads `tmp/data/local-secrets.json`. The test API accepts only the configured loopback preview origin in addition to the existing local allowlist. The ordinary owner server retains its existing configuration and restrictions.
 
-`server/test-safety.mjs` rejects missing test database configuration, `tmp/data` paths, traversal into that directory, and existing symlink/junction ancestors that resolve into it. The server activates the check before secrets or SQLite when `IP_RASM_TEST_SERVER=1` or `NODE_ENV=test`. HTTP verification scripts set the flag and use memory or fresh `test-results/*` databases. They supply their own secrets and never open owner data.
+`server/test-safety.mjs` rejects missing test database configuration, `tmp/data` paths, traversal into that directory, and existing symlink/junction ancestors that resolve into it. The server activates the check before secrets or SQLite when `IP_RASM_TEST_SERVER=1` or `NODE_ENV=test`. HTTP verification scripts set the flag and allocate fresh databases through `scripts/test-artifacts.mjs`, beneath `IP_RASM_TEST_ARTIFACTS` (default `test-results`). Protected roots are rejected before mkdir. Scripts supply their own secrets and never open owner data. Playwright also checks its artifacts/report paths before creating directories.
 
 Use installed Chrome without downloading a browser:
 

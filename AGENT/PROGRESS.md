@@ -1,15 +1,15 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase 0 test-navigation milestone, final verification in progress.
-Session commit: `f7fab35` — Checkpoint roadmap protocol and isolated test infrastructure. This milestone adds remaining test corrections and evidence; later milestones record its hash.
+Last update: 2026-10-14 — Phase 0 complete; Phase 1 is next.
+Session commits: `f7fab35` — isolated infrastructure/protocol; `44b9f74` — legacy browser workflow corrections. Phase 0 completion is committed with this record; later milestones record its hash.
 
 ## Phase status
 
 | Phase | Status | Notes |
 | --- | --- | --- |
 | R1/R2 subject input | DONE | Branch `feat/r1-r2-subjects`, see docs/SUBJECT_INPUT_CHECKPOINT.md |
-| 0 Test safety | IN PROGRESS | Isolated DB/secrets/ports implemented. 185/185 unit tests, production build, 37 customer HTTP + 67 staff HTTP outcomes passed. Full 154 desktop/mobile outcomes still running; no full-suite pass claim. |
+| 0 Test safety | DONE / TESTED | 186/186 unit tests (56 files), 154 unique executed browser outcomes, build, 37 customer HTTP + 67 staff HTTP + sandbox checks passed. Final full desktop 77/77; full mobile 76 passed/1 legacy desktop-only skip, then that missing case passed 1/1 on mobile with skip removed. |
 | 1 Research | TODO | |
 | 2 String quality | TODO | |
 | 3 Generalized solver | TODO | |
@@ -20,11 +20,11 @@ Session commit: `f7fab35` — Checkpoint roadmap protocol and isolated test infr
 
 ## Exact next step
 
-Finish the diagnostic 154-outcome sweep (session 10164, `test-results/phase0-full-v3/report.json`, 4289/4429; last observed 145/154, 19 failures already reported across old test revisions). It is not a final-source acceptance run because tests were corrected while it was running.
+Phase 1 public research: inspect official public QBRIX, RingString, String Ring, Let's String and public product listings, without code-gate bypass/photo uploads/private API scraping. Read public papers/GitHub licenses; write docs/COMPETITOR_WORKFLOW.md and docs/ALGORITHM_SURVEY.md with verified specs, unknowns, licenses, a comparison against the actual current engine, and ranked new hypotheses. Do not rerun completed/rejected experiments. Then validate build/relevant checks, update PROGRESS/LOG/OWNER_TESTS and commit before Phase 2 R4 diagnostic.
 
-The complete final desktop suite is running on frozen corrected tests: session 83242, 4296/4436, `test-results/phase0-final-desktop/report.json`; last observed 20/77, no failure reported so far. After the diagnostic sweep ends, start a complete **mobile-browser** suite in a separate fresh DB/ports/artifact folder. Keep one worker per run; desktop/mobile final runs may overlap because their databases/ports are separate. Do not rebuild dist during them. Inspect final reports; correct any remaining failures and repeat the affected complete project. Then record full desktop + mobile outcomes, update records and commit **before Phase 1 public research**.
+No test process is left running from this session. All final test services were on separate ports from the owner and terminated after their runs. Aggregate evidence is test-results/phase0-final/summary.json: it verifies exactly 154 unique project/file/title cases passed across the final complete project runs plus the explicit supplemental mobile case. The earlier diagnostic full-v3 completed at 134 pass /19 fail /1 skip while tests changed; its evidence remains and is not presented as final acceptance.
 
-Current-source TypeScript passes. `npm run build -- --outDir test-results/phase0-checkpoint-build` passed (1875 modules, same asset names as dist, existing warnings), without disrupting previews. Sandbox HTTP verification passed. Targeted corrections v5: 6/7 desktop passed; the remaining assertion expected old default /4, now corrected to the existing R1 /6 default. Continuation's real Worker error was a 400-line routing cap, not a lost photo: 2000 QA allowance passed in v5. No safeguards were removed.
+Final build: npm run build passed, 1875 modules, existing warnings; same product asset names as before Phase 0. Final unit JSON: test-results/phase0-final-unit.json (186/186, 56 files). Final browser JSONs: phase0-final-desktop/report.json (77 passed, 14.6 min), phase0-final-mobile/report.json (76 passed +1 legacy skip, 13.1 min), phase0-mobile-worker/report.json (1 passed, 10.4 sec). Desktop-only skip was removed for future full runs. All reside beneath test-results.
 
 Reproduction: PowerShell env `IP_RASM_TEST_BROWSER_CHANNEL=chrome`, `IP_RASM_TEST_PORT=4289`, `IP_RASM_TEST_API_PORT=4429`, `IP_RASM_TEST_ARTIFACTS=test-results/phase0-full-v3`, `IP_RASM_TEST_REPORT=test-results/phase0-full-v3/report.json`, then `npm run test:e2e`. Choose fresh unused ports for a later run; existing owner services must not be reused/stopped.
 
@@ -36,6 +36,7 @@ Reproduction: PowerShell env `IP_RASM_TEST_BROWSER_CHANNEL=chrome`, `IP_RASM_TES
 
 - Additional test-only corrections: More menu vs existing photo candidate scoped separately; explicit interface/guide language; hidden settings opened through summaries without double toggling; upload waits for completion; missing outline photo replaced by committed orientation fixture; delayed digest intercept limited to sequence validation rather than photo hash; geometry checked against actual delivered pointer coordinates and frame bounds at each event with unchanged 6-digit accuracy; synthetic pickup settings; business announcement/settings cleanup between projects. No UI/engine edits.
 - Explicit test-server owner-path startup probe failed before SQLite/secrets with the expected owner-data error (exit 1).
+- Every HTTP verification script now uses scripts/test-artifacts.mjs for a fresh disk DB beneath the configured artifacts folder, with protected-root validation before mkdir. Playwright protects report/artifact paths as well as DATABASE_PATH. Protected-artifacts config probe also failed before creating directories. New unit checks verify fresh paths and no protected directory creation.
 
 - Owner server: `Start-Ip-Rasm.cmd` → http://127.0.0.1:4194 (API 4331). Do not stop it.
 - Playwright browsers not installed; use installed Chrome.
