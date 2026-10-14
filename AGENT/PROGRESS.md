@@ -2,6 +2,8 @@
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
 Last update: 2026-10-14 — Phase7 recorded voice mechanism tested; real clips missing, APK/final regression next.
+
+Live final-verification checkpoint aftercf38df2: full176-case desktop/mobile browser run is session67865,4314/4454,test-results/final-full-e2e/report.json (first23 reached without failures; no final result yet). Full unit session66132→test-results/final-full-unit.json still running. Final HTTP completed: customer37/37(customer-http-cEqyvP), staff67/67(staff-http-q0sj67), kit38/38(kit-http-Fy4z00). Never rebuild dist while the browser run is alive. Added scripts/verify-roadmap-apk.py; --prepare preserved and SHA-snapshotted67 old APKs, including both prior Gradle outputs, at output/mobile/roadmap-20261014-old-apks.json. No Android compile started and no new APK claimed yet. After full tests resolve, build/sync/Gradle sequentially and run verifier with local Java/SDK paths.
 Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
 
 ## Phase status
@@ -61,6 +63,9 @@ Reproduction: PowerShell env `IP_RASM_TEST_BROWSER_CHANNEL=chrome`, `IP_RASM_TES
 ## Waiting for owner
 
 - Phase3 visual acceptance later needs real two/three-person, animal and object photographs; mechanics work continues with procedural fixtures. Existing one-person owner photo remains private/local and is not a group/animal acceptance set.
+- Phase6 actual comparison needs the exact original/crop, permitted QBRIX preview/guide and board/pin/material settings in ignored comparison/qbrix; howto written. No comparative result exists.
+- Phase7 two real offline instructors need consented UZ/RU/EN WAV clips,590 total across both slots; exact CSV/howto written,0 installed. Browser synthetic tones verify mechanics only.
+- Real phone/physical board/text/QR acceptance remains owner testing. Native production kit login requires a configured HTTPS backend/signing trust; no production credentials/domain or release signing/publishing authorized here. Debug APK/build verification is independent and continues without installation.
 
 ## Known facts carried over
 
