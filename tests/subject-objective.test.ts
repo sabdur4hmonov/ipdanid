@@ -79,6 +79,16 @@ it("equalizes unequal subject mass and uses max through overlaps, without human 
   expect(() =>
     subjectWeightField(p, n, profile, pixels, DEFAULT_SUBJECT_OBJECTIVE),
   ).toThrow("review");
+  p.subjects[1].reviewed = true;
+  p.subjects[1].regions = [
+    {
+      role: "detail",
+      box: { left: 0.2, top: 0.2, width: 0.001, height: 0.001 },
+    },
+  ];
+  expect(() =>
+    subjectWeightField(p, n, profile, pixels, DEFAULT_SUBJECT_OBJECTIVE),
+  ).toThrow("subject-fit/clipped");
 });
 it("worst-subject screen rejects a lost small subject even when the large subject is exact", () => {
   const p = plan(),

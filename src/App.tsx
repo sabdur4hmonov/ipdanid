@@ -1,4 +1,9 @@
 import { SubjectChooser } from "./SubjectChooser";
+import { SubjectMarksEditor } from "./SubjectMarksEditor";
+import { subjectFitText, subjectMetricLabel } from "./subject-fit-i18n";
+import { defaultSubjectMarks, subjectRecipeKey } from "./core/subject-edit";
+import { capabilityProblem } from "./core/capabilities";
+import type { SubjectPlan } from "./core/subject-plan";
 import {
   makeSubjectPlan,
   subjectPlanOf,
@@ -306,6 +311,19 @@ export default function App() {
   const [resolution, setResolution] = useState(160);
   const [currentTargetHash, setCurrentTargetHash] = useState<string>();
   const [subjectKind, setSubjectKind] = useState<SubjectKind>("whole-image");
+  const [strongSubjectFit, setStrongSubjectFit] = useState(false);
+  const [subjectScreens, setSubjectScreens] = useState<
+    Record<
+      string,
+      {
+        worstSubjectPass: boolean;
+        subjects: { id: string; metricsPass: boolean }[];
+      }
+    >
+  >({});
+  const [subjectMarks, setSubjectMarks] = useState<
+    Record<string, SubjectPlan["subjects"]>
+  >({});
   // Animal/vehicle/object never show human anatomy controls or person masks.
   const generalSubject = ["animal", "vehicle", "object"].includes(subjectKind);
   const [generalImageConfirmed, setGeneralImageConfirmed] = useState(false);
@@ -390,6 +408,18 @@ export default function App() {
   const activeBackground = photoCandidates.find(
     (p) => p.id === photoId,
   )?.background;
+  const marksKey = subjectRecipeKey(
+    photoCandidates.find((p) => p.id === photoId)?.sourceRevision ??
+      photoId ??
+      "sample",
+    subjectKind,
+    edits,
+    aspect,
+    resolution,
+    shape,
+    currentTargetHash ?? "preparing",
+  );
+  const currentMarks = subjectMarks[marksKey] ?? defaultSubjectMarks();
   // A failed preparation opens the correction section. It is never closed
   // automatically, so a manual brush stroke (failed -> manual) keeps it open.
   const backgroundOptions = useRef<HTMLDetailsElement>(null);
@@ -672,6 +702,7 @@ export default function App() {
     portraitSolver,
     subjectKind,
     activeBackground,
+    strongSubjectFit,
   ]);
   useEffect(() => {
     let active = true;
@@ -1067,7 +1098,14 @@ export default function App() {
           JSON.stringify(
             portrait.enabled ? snapshotPortrait(portrait) : undefined,
           ) &&
-        (!portrait.enabled || generationStrategy(i) === portraitSolver) &&
+        (i.algorithm === "density-subject/18") === strongSubjectFit &&
+        (!portrait.enabled ||
+          generationStrategy(i) ===
+            (strongSubjectFit ? "subjects" : portraitSolver)) &&
+        (!strongSubjectFit ||
+          portrait.enabled ||
+          JSON.stringify(i.params.subject?.subjects) ===
+            JSON.stringify(currentMarks)) &&
         (!(portraitSolver === "anatomy") ||
           JSON.stringify(i.params.optimization?.anatomy) ===
             JSON.stringify(anatomy)) &&
@@ -1138,11 +1176,15 @@ export default function App() {
     );
     const generationImage = generationPhoto?.image ?? image;
     c.width = c.height = generationResolution;
-    const generationPortrait = resume?.portrait
-      ? structuredClone(resume.portrait)
-      : seed
-        ? structuredClone(seed.params.portrait ?? portrait)
-        : snapshotPortrait(portrait);
+    const continuationSubject = resume?.subject ?? seed?.params.subject;
+    const generationPortrait =
+      continuationSubject && continuationSubject.kind !== "people"
+        ? { ...structuredClone(DEFAULT_PORTRAIT), enabled: false }
+        : resume?.portrait
+          ? structuredClone(resume.portrait)
+          : seed
+            ? structuredClone(seed.params.portrait ?? portrait)
+            : snapshotPortrait(portrait);
     let generationEdits =
       resume?.edits ??
       (seed
@@ -1232,6 +1274,30 @@ export default function App() {
                   : "explicit-person-mask"
                 : "original",
             );
+      if (
+        !seed &&
+        !resume &&
+        strongSubjectFit &&
+        generationSubject &&
+        generationSubject.kind !== "people"
+      )
+        generationSubject = {
+          ...generationSubject,
+          subjects: structuredClone(currentMarks),
+        };
+      if (
+        (!seed && !resume && strongSubjectFit) ||
+        seed?.algorithm === "density-subject/18" ||
+        resume?.strategy === "subjects"
+      ) {
+        const problem = capabilityProblem("density-subject/18", {
+          subject: generationSubject,
+          mode: resume?.mode ?? seed?.params.mode ?? mode,
+          resolution: generationResolution,
+          shape: profile.shape,
+        });
+        if (problem) throw Error(`subject-fit/${problem}`);
+      }
     } catch (e) {
       // An inconsistent plan is reported, never dispatched; the job is released.
       if (jobs.current.accepts(jobId)) {
@@ -1266,11 +1332,13 @@ export default function App() {
       strategyOverride ??
       (seed
         ? continuationStrategy(seed)
-        : generationPortrait.enabled && mode !== "color"
-          ? portraitSolver
-          : generationSubject
-            ? "guarded"
-            : "continuous");
+        : strongSubjectFit
+          ? "subjects"
+          : generationPortrait.enabled && mode !== "color"
+            ? portraitSolver
+            : generationSubject
+              ? "guarded"
+              : "continuous");
     const handleWorkerMessage = async (data: any) => {
       if (!currentJob() || data.jobId !== jobId) return;
       if (data.type === "progress") {
@@ -1293,7 +1361,7 @@ export default function App() {
           anatomy: data.anatomy,
           features: data.features,
           texture: data.texture,
-          subjectObjective:data.subjectObjective,
+          subjectObjective: data.subjectObjective,
           head: data.head,
           headRefine: data.headRefine,
           edits: generationEdits,
@@ -1399,6 +1467,11 @@ export default function App() {
           : undefined;
         if (!currentJob()) return;
         let archivedSuccessfully = false;
+        if (data.subjectScreen?.candidate === i.sequenceHash)
+          setSubjectScreens((v) => ({
+            ...v,
+            [i.sequenceHash]: data.subjectScreen,
+          }));
         try {
           const input = await sealGenerationInput(
             {
@@ -1437,6 +1510,8 @@ export default function App() {
             "density-pin-basis/11",
             "density-resolved/12",
             "density-feature/16",
+            "density-texture/17",
+            "density-subject/18",
             "density-head/13",
             "hair-cycles/14",
           ].includes(i.algorithm) &&
@@ -1547,7 +1622,8 @@ export default function App() {
       anatomy: resume?.anatomy ?? seed?.params.optimization?.anatomy ?? anatomy,
       features: resume?.features ?? seed?.params.optimization?.features,
       texture: resume?.texture ?? seed?.params.optimization?.texture,
-      subjectObjective:resume?.subjectObjective??seed?.params.optimization?.subjectObjective,
+      subjectObjective:
+        resume?.subjectObjective ?? seed?.params.optimization?.subjectObjective,
       strategy: requestedStrategy,
     });
   }
@@ -2090,7 +2166,7 @@ export default function App() {
                                 data-testid="apply-people-faces"
                                 onClick={() => {
                                   if (
-                                    resolution > 192 ||
+                                    (resolution > 192 && !strongSubjectFit) ||
                                     pinCount > 240 ||
                                     pinBasis
                                   ) {
@@ -2129,7 +2205,7 @@ export default function App() {
                               data-testid="mark-two-faces"
                               onClick={() => {
                                 if (
-                                  resolution > 192 ||
+                                  (resolution > 192 && !strongSubjectFit) ||
                                   pinCount > 240 ||
                                   pinBasis
                                 ) {
@@ -2378,6 +2454,28 @@ export default function App() {
                             <Upload size={17} />
                           </button>
                         </ShapeCropEditor>
+                        <details
+                          className="edits"
+                          data-testid="subject-fit-options"
+                        >
+                          <summary>{subjectFitText(locale, "title")}</summary>
+                          <label>
+                            <input
+                              type="checkbox"
+                              data-testid="subject-fit-enable"
+                              checked={strongSubjectFit}
+                              disabled={busy}
+                              onChange={(e) => {
+                                setStrongSubjectFit(e.target.checked);
+                                setHeadPriority(false);
+                              }}
+                            />
+                            {subjectFitText(locale, "enable")}
+                          </label>
+                          <p className="fineprint">
+                            {subjectFitText(locale, "hint")}
+                          </p>
+                        </details>
                         {sample && (
                           <p className="fineprint">{t("sampleNotice")}</p>
                         )}
@@ -2503,28 +2601,32 @@ export default function App() {
                         )}
                         <details className="edits" data-testid="advanced-photo">
                           <summary>{simple("advancedPhoto")}</summary>
-                          <label className="toggle">
-                            <input
-                              type="checkbox"
-                              checked={portrait.enabled}
-                              // A group gets portrait weighting from its people
-                              // editor, not from a single-face toggle.
-                              disabled={group && !portrait.people}
-                              onChange={(e) => {
-                                setPortrait((v) => ({
-                                  ...v,
-                                  enabled: e.target.checked,
-                                }));
-                                if (e.target.checked) setLines(MAX_LINES);
-                              }}
-                            />
-                            {t("portraitMode")}
-                          </label>
-                          <p className="fineprint">{t("portraitHint")}</p>
-                          {!portrait.enabled && (
-                            <p role="status" className="workflow-notice">
-                              {t("portraitOffNotice")}
-                            </p>
+                          {!generalSubject && (
+                            <>
+                              <label className="toggle">
+                                <input
+                                  type="checkbox"
+                                  checked={portrait.enabled}
+                                  // A group gets portrait weighting from its people
+                                  // editor, not from a single-face toggle.
+                                  disabled={group && !portrait.people}
+                                  onChange={(e) => {
+                                    setPortrait((v) => ({
+                                      ...v,
+                                      enabled: e.target.checked,
+                                    }));
+                                    if (e.target.checked) setLines(MAX_LINES);
+                                  }}
+                                />
+                                {t("portraitMode")}
+                              </label>
+                              <p className="fineprint">{t("portraitHint")}</p>
+                              {!portrait.enabled && (
+                                <p role="status" className="workflow-notice">
+                                  {t("portraitOffNotice")}
+                                </p>
+                              )}
+                            </>
                           )}
                           <p
                             className="workflow-notice"
@@ -2533,13 +2635,15 @@ export default function App() {
                             {t("actualSettings")}: {shape} · {widthMm} ×{" "}
                             {boardHeight} mm · {pinCount} {t("pinCount")} ·{" "}
                             {threadMm} mm ·{" "}
-                            {portrait.enabled && portrait.people
-                              ? portraitHelp(locale, "groupSolver")
-                              : portrait.enabled && mode !== "color"
-                                ? t(
-                                    `${portraitSolver === "global" ? "global" : portraitSolver}Solver` as import("./i18n").Key,
-                                  )
-                                : t("continuousSolver")}
+                            {strongSubjectFit
+                              ? subjectFitText(locale, "enable")
+                              : portrait.enabled && portrait.people
+                                ? portraitHelp(locale, "groupSolver")
+                                : portrait.enabled && mode !== "color"
+                                  ? t(
+                                      `${portraitSolver === "global" ? "global" : portraitSolver}Solver` as import("./i18n").Key,
+                                    )
+                                  : t("continuousSolver")}
                           </p>
                           {portrait.enabled && mode !== "color" && (
                             <label className="check">
@@ -2612,7 +2716,8 @@ export default function App() {
                                   }
                                   if (
                                     e.target.value !== "basis" &&
-                                    resolution === 320
+                                    resolution === 320 &&
+                                    !strongSubjectFit
                                   )
                                     changeComputationResolution(160);
                                   setPortraitSolver(
@@ -2703,7 +2808,10 @@ export default function App() {
                               </option>
                               <option
                                 value={320}
-                                disabled={portraitSolver !== "basis"}
+                                disabled={
+                                  portraitSolver !== "basis" &&
+                                  !strongSubjectFit
+                                }
                               >
                                 320 × 320 · {t("experimental")}
                               </option>
@@ -2726,27 +2834,50 @@ export default function App() {
                               <span>{t("headPriorityHint")}</span>
                             </label>
                           )}
-                          <PeopleRegionEditor
-                            canAddPeople={!pinBasis && pinCount <= 240}
-                            locale={locale}
-                            resolution={resolution}
-                            portrait={portrait}
-                            setPortrait={setPortrait}
-                            image={
-                              photoCandidates.find((p) => p.id === photoId)
-                                ?.original ?? image
-                            }
-                            edits={edits}
-                            aspect={aspect}
-                            t={t}
-                          >
-                            <canvas
-                              ref={targetCanvas}
-                              width={resolution}
-                              height={resolution}
-                              aria-label={t("processedTarget")}
-                            />
-                          </PeopleRegionEditor>
+                          {strongSubjectFit && !portrait.enabled ? (
+                            <SubjectMarksEditor
+                              subjects={currentMarks}
+                              n={resolution}
+                              aspect={aspect}
+                              locale={locale}
+                              disabled={busy}
+                              onChange={(subjects) =>
+                                setSubjectMarks((v) => ({
+                                  ...v,
+                                  [marksKey]: subjects,
+                                }))
+                              }
+                            >
+                              <canvas
+                                ref={targetCanvas}
+                                width={resolution}
+                                height={resolution}
+                                aria-label={t("processedTarget")}
+                              />
+                            </SubjectMarksEditor>
+                          ) : (
+                            <PeopleRegionEditor
+                              canAddPeople={!pinBasis && pinCount <= 240}
+                              locale={locale}
+                              resolution={resolution}
+                              portrait={portrait}
+                              setPortrait={setPortrait}
+                              image={
+                                photoCandidates.find((p) => p.id === photoId)
+                                  ?.original ?? image
+                              }
+                              edits={edits}
+                              aspect={aspect}
+                              t={t}
+                            >
+                              <canvas
+                                ref={targetCanvas}
+                                width={resolution}
+                                height={resolution}
+                                aria-label={t("processedTarget")}
+                              />
+                            </PeopleRegionEditor>
+                          )}
                           {portrait.enabled && sampling && (
                             <PortraitSamplingPanel sampling={sampling} t={t} />
                           )}
@@ -3274,6 +3405,36 @@ export default function App() {
                             <span>{t("minutes")}</span>
                           </div>
                         </div>
+                        {result.algorithm === "density-subject/18" && (
+                          <section
+                            className="notice"
+                            data-testid="subject-quality-review"
+                            role="status"
+                          >
+                            <p>{subjectFitText(locale, "inspect")}</p>
+                            {subjectScreens[result.sequenceHash] && (
+                              <p>
+                                {subjectFitText(
+                                  locale,
+                                  subjectScreens[result.sequenceHash]
+                                    .worstSubjectPass
+                                    ? "screenPass"
+                                    : "screenFail",
+                                )}
+                              </p>
+                            )}
+                            <ul>
+                              {result.params.subject!.subjects.map((s, k) => (
+                                <li key={s.id}>
+                                  {subjectFitText(locale, "subject")} {k + 1}
+                                  {subjectScreens[result.sequenceHash]
+                                    ? ` · ${subjectFitText(locale, subjectScreens[result.sequenceHash].subjects.find((v) => v.id === s.id)?.metricsPass ? "screenPass" : "screenFail")}`
+                                    : ""}
+                                </li>
+                              ))}
+                            </ul>
+                          </section>
+                        )}
                         <div className="variant-tabs">
                           {variants.map((v, j) => (
                             <button
@@ -3494,16 +3655,24 @@ export default function App() {
                                 ).map(([key, m]) => (
                                   <tr key={key}>
                                     <th>
-                                      {key.startsWith("person") &&
+                                      {result.algorithm !==
+                                        "density-subject/18" &&
+                                        key.startsWith("person") &&
                                         `${portraitHelp(locale, "person")} ${key.split(".")[0].slice(6)} · `}
-                                      {t(
-                                        key.split(".").at(-1) as
-                                          | "face"
-                                          | "eyes"
-                                          | "nose"
-                                          | "mouth"
-                                          | "outline",
-                                      )}
+                                      {result.algorithm === "density-subject/18"
+                                        ? subjectMetricLabel(
+                                            locale,
+                                            key,
+                                            result.params.subject!,
+                                          )
+                                        : t(
+                                            key.split(".").at(-1) as
+                                              | "face"
+                                              | "eyes"
+                                              | "nose"
+                                              | "mouth"
+                                              | "outline",
+                                          )}
                                     </th>
                                     <td>{m.mse.toFixed(4)}</td>
                                     <td>{m.edgeMse.toFixed(4)}</td>

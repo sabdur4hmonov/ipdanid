@@ -1,7 +1,10 @@
 import { refineHairCycles } from "./hair-cycles";
 import { DEFAULT_FEATURE_CONTRAST } from "./feature-contrast";
 import { DEFAULT_LOCAL_TEXTURE } from "./local-texture";
-import { DEFAULT_SUBJECT_OBJECTIVE } from "./subject-objective";
+import {
+  DEFAULT_SUBJECT_OBJECTIVE,
+  reviewSubjectCandidate,
+} from "./subject-objective";
 import { capabilityProblem } from "./capabilities";
 import { assertContinuation } from "./continuation";
 import { hash } from "./engine";
@@ -53,6 +56,8 @@ self.onmessage = async ({ data }) => {
       onDiagnostic: (diagnostic: Record<string, unknown>) =>
         self.postMessage({ type: "stage", jobId: data.jobId, diagnostic }),
     };
+    if (data.strategy === "subjects" && !options.portrait?.enabled)
+      delete options.portrait;
     if (data.strategy === "anatomy")
       anatomicalImportance(
         options.portrait,
@@ -292,6 +297,15 @@ self.onmessage = async ({ data }) => {
       type: "done",
       jobId: data.jobId,
       instruction: finalInstruction,
+      ...(data.strategy === "subjects" && data.seed
+        ? {
+            subjectScreen: await reviewSubjectCandidate(
+              data.seed,
+              finalInstruction,
+              data.pixels,
+            ),
+          }
+        : {}),
       baseline,
       durationMs: performance.now() - started,
     });

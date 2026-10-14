@@ -1,7 +1,10 @@
 import { it, expect } from "vitest";
 import { generateDensity, type DensityCheckpoint } from "../src/core/density";
 import { makeSubjectPlan } from "../src/core/subject-plan";
-import { DEFAULT_SUBJECT_OBJECTIVE } from "../src/core/subject-objective";
+import {
+  DEFAULT_SUBJECT_OBJECTIVE,
+  reviewSubjectCandidate,
+} from "../src/core/subject-objective";
 import { DEFAULT_EDITS, type PortraitSettings } from "../src/core/types";
 import { createProfile } from "../src/core/geometry";
 import { defaultPhysicalContrast } from "../src/core/physical-contrast";
@@ -12,7 +15,7 @@ import {
   parseProjectFile,
 } from "../src/core/validation";
 import { Distribution } from "../src/core/distribution";
-import {rasterSequence} from "../src/core/optical";
+import { rasterSequence } from "../src/core/optical";
 import { DEFAULT_PORTRAIT, portraitRegions } from "../src/core/portrait";
 const tuning = {
   subjectObjective: DEFAULT_SUBJECT_OBJECTIVE,
@@ -84,6 +87,14 @@ for (const count of [1, 2, 3])
       },
     });
     await validateInstruction(i);
+    expect((await reviewSubjectCandidate(i, i, pixels)).worstSubjectPass).toBe(
+      true,
+    );
+    const changedTarget = new Uint8Array(pixels);
+    changedTarget[0] ^= 1;
+    await expect(reviewSubjectCandidate(i, i, changedTarget)).rejects.toThrow(
+      "review target",
+    );
     const missing = structuredClone(i);
     delete missing.metrics.regions!.final[
       Object.keys(missing.metrics.regions!.final)[0]
@@ -191,8 +202,14 @@ it("320 is explicit and unsupported/cancelled combinations cannot fall back", as
 it("native320 actually fits and routes generic input without downsampling", async () => {
   const subject = makeSubjectPlan("object", "native320", DEFAULT_EDITS);
   subject.subjects[0].reviewed = true;
-  const profile=createProfile("circle",24),known={profile,params:{resolution:320},segments:[{color:profile.colors[0],path:[0,6,12,18,0]}],metrics:{lines:4}} as any,
-    pixels=Uint8Array.from(rasterSequence(known),v=>Math.round(v*255));
+  const profile = createProfile("circle", 24),
+    known = {
+      profile,
+      params: { resolution: 320 },
+      segments: [{ color: profile.colors[0], path: [0, 6, 12, 18, 0] }],
+      metrics: { lines: 4 },
+    } as any,
+    pixels = Uint8Array.from(rasterSequence(known), (v) => Math.round(v * 255));
   const i = await generateDensity(
     {
       subject,

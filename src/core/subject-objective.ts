@@ -7,6 +7,9 @@ import {
   type RegionQuality,
 } from "./quality-screen";
 import type { MaterialProfile, PortraitSettings, RegionBox } from "./types";
+import type { Instruction } from "./types";
+import { rasterSequence } from "./optical";
+import { hash } from "./engine";
 export interface SubjectObjectiveSettings {
   version: "normalized-subject/1";
   normalization: "equal-subject-mass-max-overlap/1";
@@ -62,6 +65,19 @@ export function subjectWeightField(
     masses: number[] = [];
   const tone = (k: number) =>
     (pixels[k * 3] + pixels[k * 3 + 1] + pixels[k * 3 + 2]) / 765;
+  // A tiny/clipped detail cannot disappear from the worst-subject comparison.
+  // Refuse it before fitting instead of later reporting an empty/zero-term metric.
+  try {
+    const target = Float64Array.from({ length: n * n }, (_, k) => tone(k));
+    if (
+      Object.values(measureSubjects(plan, target, target, n, p)).some(
+        (q) => !q.physicalTerms,
+      )
+    )
+      throw Error("Empty contrast support");
+  } catch {
+    throw Error("subject-fit/clipped");
+  }
   for (const subject of plan.subjects) {
     const field = new Float64Array(n * n);
     let sum = 0;
@@ -135,5 +151,51 @@ export function screenSubjects(
       metricsPass: !screen.failures.some((f) => f.region.startsWith(`${id}.`)),
     })),
     worstSubjectPass: screen.metricsPass,
+  };
+}
+export async function reviewSubjectCandidate(
+  reference: Instruction,
+  candidate: Instruction,
+  pixels: Uint8Array,
+) {
+  if (
+    reference.algorithm !== "density-subject/18" ||
+    candidate.algorithm !== "density-subject/18" ||
+    reference.imageHash !== candidate.imageHash ||
+    JSON.stringify(reference.params.subject) !==
+      JSON.stringify(candidate.params.subject) ||
+    JSON.stringify(reference.profile) !== JSON.stringify(candidate.profile) ||
+    reference.params.resolution !== candidate.params.resolution
+  )
+    throw Error(
+      "Subject review requires an identical source, plan and physical reference",
+    );
+  const n = reference.params.resolution;
+  if (
+    pixels.length !== n * n * 3 ||
+    (await hash(pixels)) !== reference.imageHash
+  )
+    throw Error("Invalid subject review target");
+  const target = Float64Array.from(
+      { length: n * n },
+      (_, k) => (pixels[k * 3] + pixels[k * 3 + 1] + pixels[k * 3 + 2]) / 765,
+    ),
+    measure = (i: Instruction) => {
+      const r = rasterSequence(i);
+      return measureSubjects(
+        i.params.subject!,
+        target,
+        Float64Array.from(
+          target,
+          (_, k) => (r[k * 3] + r[k * 3 + 1] + r[k * 3 + 2]) / 3,
+        ),
+        n,
+        i.profile,
+      );
+    };
+  return {
+    ...screenSubjects(measure(reference), measure(candidate)),
+    reference: reference.sequenceHash,
+    candidate: candidate.sequenceHash,
   };
 }

@@ -1,8 +1,8 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase3 generalized core implemented/tested; manual UI integration next.
-Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2. Phase3 core is committed with this record; next milestone records its hash.
+Last update: 2026-10-14 — Phase3 implemented and mechanics verified; Phase4 next.
+Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7` — Phase3 core. UI milestone is committed with this record; next milestone records its hash.
 
 ## Phase status
 
@@ -12,7 +12,7 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 | 0 Test safety | DONE / TESTED | 186/186 unit tests (56 files), 154 unique executed browser outcomes, build, 37 customer HTTP + 67 staff HTTP + sandbox checks passed. Final full desktop 77/77; full mobile 76 passed/1 legacy desktop-only skip, then that missing case passed 1/1 on mobile with skip removed. |
 | 1 Research | DONE / DOCUMENTED | Public workflows, market SKU conflicts/unknowns, paper/repository/license survey and ranked new hypotheses. No competitor/code/assets copied; no comparative-quality claim. |
 | 2 String quality | DONE / NEW HYPOTHESIS REJECTED | R4 diagnosed; one frozen v17/control pass55440 fitting evaluations each, full routing. Skin tone/coarse loss violates fixed gate despite less texture; no default promotion. Count-knee/simplification/set-promotion conditional on acceptance, therefore inapplicable. |
-| 3 Generalized solver | IN PROGRESS / CORE TESTED | New opt-in18 shares integer fitter/physical routing for1–3 subjects, equal mass/max overlap, all-subject screen, typed capability registry, strict recovery/metrics. Worker wired; manual UI/browser acceptance next. |
+| 3 Generalized solver | DONE / MECHANICS TESTED | Full209/209 unit61files, browser16/16+latest6/6+final display2/2, build. Opt-in18, exact reviewed subjects/target, groups320, localized errors, worst-subject continuation screen. Visual/physical acceptance waits real photos; no default promotion. |
 | 4 Thread products (text/Arabic/animals) | TODO | |
 | 5 Kit login + credits | TODO | |
 | 6 QBRIX comparison | TODO | needs owner files in comparison/qbrix/ |
@@ -20,7 +20,11 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 
 ## Exact next step
 
-Phase3 integration: expose explicit experimental subject fitter choice (keep defaults unchanged); generic subject bounds/detail editor with eyes/muzzle labels for animals, measured source silhouette/detail emphasis for objects/vehicles. Bind marks to photo/category/crop/resolution; editing invalidates review and switching photos cannot leak marks. Allow reviewed1–3 people at320 on the same new path, no existing192 greedy group downgrade. Localize capability errors; persist subjectObjective in recovery. Test real Chrome Worker, manual UI, exact exports/recovery and legacy input on desktop/mobile, update docs/owner tests, commit. Then Phase4 text/outline products. Do not rerun rejected quality experiments.
+Phase4: inspect existing offline Noto Sans/OFL assets and core physical-template validation, obtain/verify compatible Arabic font from primary source. Implement text rendered through generalized fitter plus a new exact glyph-outline pin template, RTL joining tests, offline PDF/player/export and four-language UI; optional name+portrait only with honest preparation/review. Animal/object presets reuse18. Keep all old guide hashes and no default promotion. Phase5–7 remain ordered afterward; do not end after partial work. No process from Phase3 is still running; owner4194/data remain untouched.
+
+Phase3 final evidence: full209/209 unit61files(test-results/phase3-final-full-unit.json); latest targeted18/18(phase3-final-guards-unit.json); production build1882modules passes existing warnings. Final new browser6/6 passed46.5s at4303/4443(phase3-ui-final-v2/report.json), plus final visible-human-toggle removal/input2/2 passed23.2s at4304/4444(phase3-final-ui-display/report.json). Prior new+legacy16/16 remains separate. Earlier final5pass1fail was an off-viewport desktop pointer test, corrected by scrolling actual target before same assertion. Tiny/clipped details now refused before fitting, not excluded from gates. Screenshot inspected; human portrait toggle/hint removed from generic animal input and actual-settings label names the selected new solver. All completion checks finished before commit.
+
+UI evidence: first browser attempt2/4 passed; BMP fixture correctly rejected and replaced by actual PNG. Next desktop/mobile suite16/16 passed2.6min at4301/4441(phase3-ui-e2e-v2/report.json): new manual marking and legacy subject-input. That preceded final prepared-hash/review-screen additions, now verified by later6/6 at4303/4443, including actual320 Worker/continuation screen, exact zero-progress JSON/TXT/optical PDF and pointer review invalidation. Fresh build1882 passes; unit18/18 passes. User said continue; protocol/status/log read without resetting work. Owner instructions in Uzbek and docs/GENERALIZED_SOLVER_CHECKPOINT.md updated. Screenshots are synthetic/private test artifacts; no owner photo upload/commit.
 
 Phase3 core: density-subject/18 opt-in only. Shares strong fitter rather than duplicating engines; exact normalized SubjectPlan weights and measured source-gradient/detail emphasis. Same path1–3 people/all generic kinds dark/light/circle/rectangle/heart32–320. Capability registry drives render/generation/continuation with legacy conditional behavior retained. Every stable subject/detail metric required; omitted small-subject metrics rejected; screenSubjects exposes worst-subject gate. Strict checkpoint identity/replay/JSON/TXT. Full206/206 (60files, test-results/phase3-core-full-unit.json); latest16/16 including actual native320 known-feasible raster (phase3-fit-final-unit-v2.json). Build1879 modules passes, existing warnings. Earlier11 regional validation failures and flat320 target with no improving chord were diagnostic failures retained, fixed/test fixture replaced by physically known synthetic target. No likeness acceptance/default promotion.
 

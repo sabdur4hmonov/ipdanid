@@ -1,4 +1,5 @@
 import { subjectText } from "./subject-i18n";
+import { capabilityMessage, type CapabilityProblem } from "./core/capabilities";
 import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 import { portraitHelp } from "./portrait-help-i18n";
@@ -167,6 +168,10 @@ const messages: [RegExp, Record<Exclude<Locale, "uz-Cyrl">, string>][] = [
   ],
 ];
 export function customerError(message: string, locale: Locale): string {
+  const subjectProblem =
+    /^(Error: )?subject-fit\/(review|combination|clipped)$/.exec(message);
+  if (subjectProblem)
+    return capabilityMessage(locale, subjectProblem[2] as CapabilityProblem);
   if (/^(Error: )?local-input\/missing$/.test(message))
     return portraitChoiceText(locale, "missingInput");
   if (message === "portrait-choice/off")
