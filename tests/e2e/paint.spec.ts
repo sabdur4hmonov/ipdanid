@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync, mkdirSync } from "node:fs";
 import {
@@ -8,9 +9,8 @@ import {
 async function enter(page: any) {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Grid crafts", exact: true })
+  await openMore(page);
+  await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Paint by numbers", exact: true })
@@ -20,9 +20,13 @@ async function create(page: any) {
   await page
     .getByRole("button", { name: "Use paint sample", exact: true })
     .click();
+  await revealControl(page.getByLabel("Paint columns", { exact: true }));
   await page.getByLabel("Paint columns", { exact: true }).fill("16");
+  await revealControl(page.getByLabel("Paint rows", { exact: true }));
   await page.getByLabel("Paint rows", { exact: true }).fill("16");
+  await revealControl(page.getByLabel("Minimum region (cells)", { exact: true }));
   await page.getByLabel("Minimum region (cells)", { exact: true }).fill("4");
+  await revealControl(page.getByLabel("Cell size (mm)", { exact: true }));
   await page.getByLabel("Cell size (mm)", { exact: true }).fill("10");
   await page
     .getByRole("button", { name: "Create paint guide", exact: true })
@@ -36,7 +40,9 @@ test("paint actual photo upload waits for local background preparation and produ
   await page
     .getByLabel("Paint photo", { exact: true })
     .setInputFiles("output/white-background/source.png");
+  await revealControl(page.getByLabel("Paint columns", { exact: true }));
   await page.getByLabel("Paint columns", { exact: true }).fill("48");
+  await revealControl(page.getByLabel("Paint rows", { exact: true }));
   await page.getByLabel("Paint rows", { exact: true }).fill("48");
   const generate = page.getByRole("button", {
     name: "Create paint guide",
@@ -59,6 +65,7 @@ test("paint actual photo upload waits for local background preparation and produ
   await (
     await event
   ).saveAs(`output/paint/photo-${test.info().project.name}.json`);
+  await revealControl(page.getByLabel("Colour preview", { exact: true }));
   await page.getByLabel("Colour preview", { exact: true }).check();
   await page
     .locator(".paint-preview")
@@ -78,6 +85,7 @@ test("paint uses connected regions, independent progress, undo, same immutable o
   await page
     .getByRole("button", { name: "Save paint project", exact: true })
     .click();
+  await revealControl(page.getByLabel("Region", { exact: true }));
   await page.getByLabel("Region", { exact: true }).fill("2");
   await page
     .getByRole("button", { name: "Mark region painted", exact: true })
@@ -117,9 +125,8 @@ test("paint uses connected regions, independent progress, undo, same immutable o
   await page.reload();
   await context.setOffline(true);
   await page.reload();
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Grid crafts", exact: true })
+  await openMore(page);
+  await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Paint by numbers", exact: true })
@@ -205,9 +212,8 @@ test("paint validation and worker cancellation preserve the prior guide, and off
   const hash = await page
     .locator("[data-paint-hash]")
     .getAttribute("data-paint-hash");
-  await page
-    .getByLabel("Paint palette", { exact: true })
-    .fill("B,#000000\nB,#ffffff");
+  await revealControl(page.getByLabel("Paint palette", { exact: true }));
+  await page.getByLabel("Paint palette", { exact: true }).fill("B,#000000\nB,#ffffff");
   await page
     .getByRole("button", { name: "Create paint guide", exact: true })
     .click();
@@ -216,9 +222,8 @@ test("paint validation and worker cancellation preserve the prior guide, and off
     "data-paint-hash",
     hash!,
   );
-  await page
-    .getByLabel("Paint palette", { exact: true })
-    .fill("B,#000000\nW,#ffffff");
+  await revealControl(page.getByLabel("Paint palette", { exact: true }));
+  await page.getByLabel("Paint palette", { exact: true }).fill("B,#000000\nW,#ffffff");
   // Deterministically hold an actual Worker result so cancellation is exercised.
   await page.evaluate(() => {
     const original = Worker.prototype.postMessage;

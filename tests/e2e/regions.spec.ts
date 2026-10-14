@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { generate } from "../../src/core/engine";
@@ -10,9 +11,11 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
   test.setTimeout(180000);
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
   for (const [locale, text] of [
     ["uz", "faqat taxmin"],
@@ -84,10 +87,12 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
   ).toBeGreaterThan(moved.width);
   const expected = JSON.parse((await mouth.getAttribute("data-box"))!);
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("48");
   const hashes: string[] = [],
     canvases: string[] = [];
   for (const count of [200, 400]) {
+    await revealControl(page.getByLabel("Maximum lines", { exact: true }));
     await page.getByLabel("Maximum lines", { exact: true }).fill(String(count));
     await page
       .getByRole("button", { name: "Calculate thread path", exact: true })
@@ -144,6 +149,7 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
   const beforeCrop = JSON.parse(
     (await page.getByTestId("shape-crop").getAttribute("data-portrait"))!,
   );
+  await revealControl(page.getByLabel("Zoom", { exact: true }));
   await page.getByLabel("Zoom", { exact: true }).fill("1.2");
   await expect(page.getByTestId("region-editor")).toContainText(
     "Manually positioned regions",
@@ -233,6 +239,7 @@ test("cancel during asynchronous validation and reject mismatched Worker jobs", 
   );
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();

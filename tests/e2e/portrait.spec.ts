@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 test.afterEach(async ({ page }, info) => {
@@ -54,23 +55,28 @@ test("portrait target, manual regions, low stock, cancellation and immutable sta
   });
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   const raw = await page
     .getByLabel("Edited photo", { exact: true })
     .evaluate((c: HTMLCanvasElement) => c.toDataURL());
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
   await expect(page.getByLabel("Maximum lines", { exact: true })).toHaveValue(
     "20000",
   );
+  await revealControl(page.getByLabel("Face region Top", { exact: true }));
   await page.getByLabel("Face region Top", { exact: true }).fill("0.2");
   const processed = await page
     .getByLabel("Exact generation target", { exact: true })
     .evaluate((c: HTMLCanvasElement) => c.toDataURL());
   expect(processed).not.toBe(raw);
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("60");
+  await revealControl(page.getByLabel("Available thread (m)", { exact: true }));
   await page.getByLabel("Available thread (m)", { exact: true }).fill("1");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })
@@ -80,6 +86,7 @@ test("portrait target, manual regions, low stock, cancellation and immutable sta
     page.getByRole("button", { name: "Calculate thread path", exact: true }),
   ).toBeEnabled();
   // A small CPU stage for the browser regression; exact personal-photo evidence is a separate local script.
+  await revealControl(page.getByLabel("Maximum lines", { exact: true }));
   await page.getByLabel("Maximum lines", { exact: true }).fill("400");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })

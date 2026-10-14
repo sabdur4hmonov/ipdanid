@@ -2,13 +2,14 @@ import { spawn } from "node:child_process";
 import { randomBytes, randomUUID } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
-const directory = `tmp/staff-http-${randomUUID()}`,
+const directory = `test-results/staff-http-${randomUUID()}`,
   port = 4322,
   owner = randomBytes(32).toString("base64url");
 mkdirSync(directory, { recursive: true });
 const child = spawn(process.execPath, ["--import", "tsx", "server/index.ts"], {
   env: {
     ...process.env,
+    IP_RASM_TEST_SERVER: "1",
     PORT: String(port),
     DATABASE_PATH: `${directory}/test.sqlite`,
     LOCAL_ADMIN_TOKEN: owner,

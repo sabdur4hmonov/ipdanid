@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync, mkdirSync } from "node:fs";
 import {
@@ -14,15 +15,17 @@ for (const kind of ["mosaic", "diamond"] as const)
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/");
     await page.getByLabel("Language").selectOption("en");
-    await page
-      .locator("nav")
-      .getByRole("button", { name: "Grid crafts", exact: true })
+    await openMore(page);
+    await page.getByRole("button", { name: "Grid crafts", exact: true })
       .click();
     await page
       .getByLabel("Grid photo", { exact: true })
       .setInputFiles("output/outline/source.jpg");
+    await revealControl(page.getByLabel("Craft type", { exact: true }));
     await page.getByLabel("Craft type", { exact: true }).selectOption(kind);
+    await revealControl(page.getByLabel("Grid columns", { exact: true }));
     await page.getByLabel("Grid columns", { exact: true }).fill("12");
+    await revealControl(page.getByLabel("Grid rows", { exact: true }));
     await page.getByLabel("Grid rows", { exact: true }).fill("8");
     await page
       .getByRole("button", { name: "Create piece guide", exact: true })
@@ -34,6 +37,7 @@ for (const kind of ["mosaic", "diamond"] as const)
     await page
       .getByRole("button", { name: "Save grid project", exact: true })
       .click();
+    await revealControl(page.getByLabel("Assembly step", { exact: true }));
     await page.getByLabel("Assembly step", { exact: true }).fill("5");
     await page
       .getByRole("button", {
@@ -46,6 +50,7 @@ for (const kind of ["mosaic", "diamond"] as const)
       .getByRole("button", { name: "Undo last confirmation", exact: true })
       .click();
     await expect(page.getByTestId("grid-progress")).toContainText("0/96");
+    await revealControl(page.getByLabel("Assembly step", { exact: true }));
     await page.getByLabel("Assembly step", { exact: true }).fill("5");
     await page
       .getByRole("button", {
@@ -116,9 +121,8 @@ for (const kind of ["mosaic", "diamond"] as const)
     await page.reload();
     await context.setOffline(true);
     await page.reload();
-    await page
-      .locator("nav")
-      .getByRole("button", { name: "Grid crafts", exact: true })
+    await openMore(page);
+    await page.getByRole("button", { name: "Grid crafts", exact: true })
       .click();
     await page
       .getByRole("button", { name: "Open grid project", exact: true })
@@ -146,9 +150,8 @@ for (const kind of ["mosaic", "diamond"] as const)
       newColor =
         (source.guide.cells[next.index] + 1) %
         source.guide.profile.palette.length;
-    await page
-      .getByLabel("Replacement color", { exact: true })
-      .selectOption(String(newColor));
+    await revealControl(page.getByLabel("Replacement color", { exact: true }));
+    await page.getByLabel("Replacement color", { exact: true }).selectOption(String(newColor));
     await page
       .getByRole("button", { name: "Create edited variant", exact: true })
       .click();
@@ -183,16 +186,14 @@ test("insufficient actual stock is refused before a guide is created", async ({
 }) => {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Grid crafts", exact: true })
+  await openMore(page);
+  await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Use original sample", exact: true })
     .click();
-  await page
-    .getByLabel("Palette and stock", { exact: true })
-    .fill("W,#ffffff,1\nB,#000000,1");
+  await revealControl(page.getByLabel("Palette and stock", { exact: true }));
+  await page.getByLabel("Palette and stock", { exact: true }).fill("W,#ffffff,1\nB,#000000,1");
   await page
     .getByRole("button", { name: "Create piece guide", exact: true })
     .click();
@@ -208,14 +209,15 @@ test("two windows reject stale grid confirmations without losing another window 
 }) => {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Grid crafts", exact: true })
+  await openMore(page);
+  await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Use original sample", exact: true })
     .click();
+  await revealControl(page.getByLabel("Grid columns", { exact: true }));
   await page.getByLabel("Grid columns", { exact: true }).fill("4");
+  await revealControl(page.getByLabel("Grid rows", { exact: true }));
   await page.getByLabel("Grid rows", { exact: true }).fill("4");
   await page
     .getByRole("button", { name: "Create piece guide", exact: true })
@@ -234,6 +236,7 @@ test("two windows reject stale grid confirmations without losing another window 
     .first()
     .click();
   await expect(other.getByTestId("grid-progress")).toContainText("0/16");
+  await revealControl(page.getByLabel("Assembly step", { exact: true }));
   await page.getByLabel("Assembly step", { exact: true }).fill("2");
   await page
     .getByRole("button", {

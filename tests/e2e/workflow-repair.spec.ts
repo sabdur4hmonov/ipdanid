@@ -1,9 +1,11 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 test("head fit requires correction; burst gestures accumulate and per-photo regions survive switching", async ({
   page,
 }) => {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -41,12 +43,12 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
     el.dispatchEvent(event("pointerup", 0.5));
   });
   expect((await edits()).panX).toBeCloseTo(0.1, 6);
+  await revealControl(page.getByLabel("Zoom", { exact: true }));
   await page.getByLabel("Zoom", { exact: true }).fill("0.65");
   await expect(page.getByTestId("missing-photo")).toBeVisible();
   await page.getByText("Saved settings", { exact: true }).first().click();
-  await page
-    .getByLabel("Settings name", { exact: true })
-    .fill("Small crop retained");
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
+  await page.getByLabel("Settings name", { exact: true }).fill("Small crop retained");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
@@ -57,17 +59,18 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
     .getByRole("button", { name: "Fill and center photo", exact: true })
     .click();
   await expect(page.getByTestId("missing-photo")).toHaveCount(0);
-  await page
-    .getByLabel("Saved settings", { exact: true })
-    .selectOption({ label: "Small crop retained" });
+  await revealControl(page.getByLabel("Saved settings", { exact: true }));
+  await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "Small crop retained" });
   expect((await edits()).zoom).toBe(0.65);
   await page
     .getByRole("button", { name: "Fill and center photo", exact: true })
     .click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
   await expect(
     page.getByLabel("Portrait optimization", { exact: true }),
   ).toHaveValue("guarded");
+  await revealControl(page.getByLabel("Eyes Left", { exact: true }));
   await page.getByLabel("Eyes Left", { exact: true }).fill("0.25");
   const saved = await portrait();
   await page
@@ -108,6 +111,7 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
     page.getByRole("button", { name: "second.png", exact: true }),
   ).toBeVisible();
   expect((await portrait()).regions).toBeUndefined();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();

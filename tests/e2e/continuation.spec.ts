@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { validateInstruction } from "../../src/core/validation";
@@ -7,13 +8,18 @@ test("continuing an older variant after changing the photo uses its recorded sou
   test.setTimeout(180000);
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
+  await revealControl(page.getByLabel("Face region Top", { exact: true }));
   await page.getByLabel("Face region Top", { exact: true }).fill("0.2");
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("60");
+  await revealControl(page.getByLabel("Maximum lines", { exact: true }));
   await page.getByLabel("Maximum lines", { exact: true }).fill("400");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })
@@ -50,12 +56,12 @@ test("continuing an older variant after changing the photo uses its recorded sou
     .locator("input[type=file]")
     .first()
     .setInputFiles("tests/fixtures/orientation-6.jpg");
-  await page
-    .getByLabel("Computation resolution", { exact: true })
-    .selectOption("192");
-  await page
-    .getByRole("button", { name: "Continue path refinement", exact: true })
-    .click();
+  await revealControl(page.getByLabel("Computation resolution", { exact: true }));
+  await page.getByLabel("Computation resolution", { exact: true }).selectOption("192");
+  // Current solvers may reach a plateau, so continuation is always entered
+  // through the saved guide rather than a compute-limit-only result button.
+  await page.locator("nav").getByRole("button", { name: "My projects", exact: true }).click();
+  await page.getByTestId("continue-saved-calculation").first().click();
   await expect(
     page.getByRole("button", { name: "Cancel", exact: true }),
   ).toBeHidden({ timeout: 120000 });

@@ -8,11 +8,12 @@ import { progressFor } from "../src/core/validation.ts";
 
 const port = 4321,
   base = `http://127.0.0.1:${port}/api`,
-  directory = `tmp/customer-http-${randomUUID()}`;
+  directory = `test-results/customer-http-${randomUUID()}`;
 mkdirSync(directory, { recursive: true });
 const admin = randomBytes(32).toString("base64url");
 const env = {
   ...process.env,
+  IP_RASM_TEST_SERVER: "1",
   PORT: String(port),
   DATABASE_PATH: `${directory}/database.sqlite`,
   LOCAL_ADMIN_TOKEN: admin,

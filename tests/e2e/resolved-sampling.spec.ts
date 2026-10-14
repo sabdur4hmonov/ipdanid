@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync, readdirSync } from "node:fs";
 const folder = "output/portrait-resolved";
@@ -97,6 +98,7 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     .getByRole("button", { name: "Reuse settings", exact: true })
     .click();
   await page.getByText("More", { exact: true }).click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -123,14 +125,14 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
   ).toHaveValue("0.1");
   // Settings persist on a synthetic photo without embedding the personal photo in the test page.
   await page.getByText("Saved settings", { exact: true }).first().click();
-  await page
-    .getByLabel("Settings name", { exact: true })
-    .fill("Resolved 320 actual240pins");
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
+  await page.getByLabel("Settings name", { exact: true }).fill("Resolved 320 actual240pins");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
   await page.reload();
   await page.getByText("More", { exact: true }).click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -140,16 +142,14 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     .first()
     .click();
   await page.getByText("Saved settings", { exact: true }).first().click();
-  await page
-    .getByLabel("Saved settings", { exact: true })
-    .selectOption({ label: "Resolved 320 actual240pins" });
+  await revealControl(page.getByLabel("Saved settings", { exact: true }));
+  await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "Resolved 320 actual240pins" });
   await page.getByTestId("advanced-photo").locator("summary").first().click();
   await expect(
     page.getByLabel("Computation resolution", { exact: true }),
   ).toHaveValue("320");
-  await page
-    .getByLabel("Portrait optimization", { exact: true })
-    .selectOption("guarded");
+  await revealControl(page.getByLabel("Portrait optimization", { exact: true }));
+  await page.getByLabel("Portrait optimization", { exact: true }).selectOption("guarded");
   await expect(
     page.getByLabel("Computation resolution", { exact: true }),
   ).toHaveValue("160");

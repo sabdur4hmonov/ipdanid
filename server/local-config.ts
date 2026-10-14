@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
+import { assertTestDatabasePath } from "./test-safety.mjs";
 
 // Stable local secrets prevent code/session invalidation on ordinary server restart.
 // Only ignored local files contain these values; never return them from HTTP/logs.
-mkdirSync("tmp/data", { recursive: true });
 const file = "tmp/data/local-secrets.json";
 const names = [
   "LOCAL_ADMIN_TOKEN",
@@ -11,7 +11,13 @@ const names = [
   "SANDBOX_PAYMENT_KEY",
 ] as const;
 let saved: Record<string, string> = {};
-if (existsSync(file)) {
+const testing = process.env.IP_RASM_TEST_SERVER === "1" || process.env.NODE_ENV === "test";
+if (testing)
+  assertTestDatabasePath(process.env.DATABASE_PATH);
+const isolated =
+  testing ||
+  names.every((name) => process.env[name] !== undefined);
+if (!isolated && existsSync(file)) {
   saved = JSON.parse(readFileSync(file, "utf8"));
   if (
     !saved ||
@@ -29,5 +35,7 @@ for (const name of names) {
     throw new Error(`${name} must have at least 32 characters`);
   process.env[name] ??= saved[name];
 }
-if (!existsSync(file))
+if (!isolated && !existsSync(file)) {
+  mkdirSync("tmp/data", { recursive: true });
   writeFileSync(file, JSON.stringify(saved), { mode: 0o600, flag: "wx" });
+}

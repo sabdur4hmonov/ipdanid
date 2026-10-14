@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync, mkdirSync } from "node:fs";
 test.use({
@@ -46,6 +47,7 @@ test("browser camera captures an actual frame into crop; cancel and navigation r
   );
   await page.getByTestId("advanced-photo").locator("summary").first().click();
   await page.getByText("Zoom · Contrast", { exact: true }).click();
+  await revealControl(page.getByLabel("Zoom", { exact: true }));
   await page.getByLabel("Zoom", { exact: true }).fill("1.3");
   const crop = await page.getByTestId("shape-crop").getAttribute("data-edits"),
     source = await page
@@ -230,7 +232,9 @@ test("grid crafts accept a real captured browser frame and native input contract
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
   await page.getByText("More", { exact: true }).click();
-  await page.getByRole("button", { name: "Grid crafts", exact: true }).click();
+  await openMore(page);
+  await page
+    .getByRole("button", { name: "Grid crafts", exact: true }).click();
   await expect(page.getByTestId("native-photo-capture")).toHaveAttribute(
     "accept",
     "image/*",
@@ -255,7 +259,9 @@ test("grid crafts accept a real captured browser frame and native input contract
     /ready|failed|manual/,
     { timeout: 45000 },
   );
+  await revealControl(page.getByLabel("Grid columns", { exact: true }));
   await page.getByLabel("Grid columns", { exact: true }).fill("8");
+  await revealControl(page.getByLabel("Grid rows", { exact: true }));
   await page.getByLabel("Grid rows", { exact: true }).fill("8");
   await expect(page.getByLabel("Grid columns", { exact: true })).toHaveValue(
     "8",

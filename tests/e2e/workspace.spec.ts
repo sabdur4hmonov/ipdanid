@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { cpus, platform, arch, totalmem } from "node:os";
@@ -11,6 +12,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -179,13 +181,16 @@ test("rectangular material dimensions drive crop, worker, preview and multicolor
 }) => {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByRole("button", { name: "Rectangle", exact: true }).click();
   await page.getByLabel("Thread and base").selectOption("color");
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Height (mm)", { exact: true }));
   await page.getByLabel("Height (mm)", { exact: true }).fill("300");
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("60");
   await page.getByRole("button", { name: "Lighter", exact: true }).click();
   await page.getByRole("button", { name: "Calculate thread path" }).click();
@@ -210,19 +215,23 @@ test("photo candidates retain edits and reusable settings persist without storin
 }) => {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   const png = await page
     .getByLabel("Edited photo", { exact: true })
     .screenshot();
+  await revealControl(page.getByLabel("Brightness", { exact: true }));
   await page.getByLabel("Brightness", { exact: true }).fill("25");
   await page.locator("input[type=file]").first().setInputFiles({
     name: "second-photo.png",
     mimeType: "image/png",
     buffer: png,
   });
+  await revealControl(page.getByLabel("Brightness", { exact: true }));
   await page.getByLabel("Brightness", { exact: true }).fill("-20");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -237,13 +246,15 @@ test("photo candidates retain edits and reusable settings persist without storin
   );
   await page.getByRole("button", { name: "Rectangle", exact: true }).click();
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Height (mm)", { exact: true }));
   await page.getByLabel("Height (mm)", { exact: true }).fill("300");
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("60");
   await page.getByRole("button", { name: "Lighter", exact: true }).click();
+  await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
-  await page
-    .getByLabel("Settings name", { exact: true })
-    .fill("Small rectangular board");
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
+  await page.getByLabel("Settings name", { exact: true }).fill("Small rectangular board");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
@@ -252,14 +263,16 @@ test("photo candidates retain edits and reusable settings persist without storin
   await expect(
     page.getByRole("button", { name: "Try my photo", exact: true }),
   ).toBeVisible();
+  await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
-  await page
-    .getByLabel("Saved settings", { exact: true })
-    .selectOption({ label: "Small rectangular board" });
+  await revealControl(page.getByLabel("Saved settings", { exact: true }));
+  await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "Small rectangular board" });
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   // Crop is specific to a new source and starts at default; material settings still persist.
+  await revealControl(page.getByLabel("Brightness", { exact: true }));
   await page.getByLabel("Brightness", { exact: true }).fill("-20");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })

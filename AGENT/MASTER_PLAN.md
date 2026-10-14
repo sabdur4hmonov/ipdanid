@@ -1,0 +1,104 @@
+# Ip Rasm — Master plan for the autonomous coding agent
+
+Owner: Humoyun. He speaks Uzbek. Every progress note, question and final summary for him: short Uzbek (Latin). Code, docs and commit messages: English.
+
+Project root: `D:\Coding projects\ipdan face yasaydigan app`
+Product: "Ip Rasm" — photo → physical string art (nails on a board + one continuous thread), plus related craft products.
+Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQLite server, Vitest, Playwright, pdf-lib.
+
+---
+
+## 1. Working protocol (read every session)
+
+1. Start of EVERY session (including after "continue"):
+   - Read `AGENT/PROGRESS.md` → find the current phase and the exact next step.
+   - Read the last entries of `AGENT/LOG.md`.
+   - Run `git status` and `git log --oneline -5`. Never lose uncommitted work.
+2. Work fully autonomously through the phases below **in order**. Do not wait for a new prompt between steps or phases.
+3. After every meaningful milestone (at least every ~1 hour of work):
+   - run the relevant tests and the build;
+   - `git commit` (local only);
+   - update `AGENT/PROGRESS.md` (status of every phase + **exact next step**);
+   - append a dated entry to `AGENT/LOG.md` (what was done, test results, decisions, problems).
+   Write this BEFORE starting the next big step, so a usage-limit stop never loses the state.
+4. If the owner must test something, append it to `AGENT/OWNER_TESTS.md` in Uzbek (what to open, what to click, what should happen) and **continue working**. Do not stop to wait.
+5. Ask the owner (in Uzbek) ONLY for: competitor sample images, real photos for acceptance, voice recordings, production credentials/money decisions. If missing → record in `PROGRESS.md` under "Waiting for owner", skip that sub-step, continue.
+6. When the owner writes only "continue" / "davom et": do step 1, then continue from the exact next step.
+7. When ALL phases are done or blocked only by owner inputs: write the final Uzbek summary into `AGENT/FINAL_REPORT.md` and in chat.
+
+## 2. Hard rules
+
+- Git: work on branch `feat/full-roadmap` (create it from `feat/r1-r2-subjects` if it does not exist). Commit per milestone. NO push, reset, rebase, `git clean`, force, or history rewrite. Never commit `tmp/`, `output/`, photos, secrets, DB files.
+- Never touch `tmp/data` or the owner database (`tmp/data/iprasm.sqlite`, `tmp/data/local-secrets.json`). Tests always use an isolated temp DB, isolated ports and a separate `IP_RASM_TEST_ARTIFACTS` folder.
+- Never stop the owner's server on port 4194. Stop only processes you started yourself.
+- Old guides, sequence hashes and saved progress stay valid. New algorithms get new version ids; old engines untouched.
+- No fake previews, no source-photo overlay, no invented facial details. The exact same ordered sequence drives preview, player, PDF, JSON and TXT.
+- No default promotion without visual + metric acceptance (Phase 2 rules).
+- Do NOT repeat experiments marked completed/rejected in `docs/` (v12/v16 fits, 24-sweep, head weighting, resolution/pin-phase/material sweeps, old pruning probes).
+- Competitors: public information only. Never bypass kit-code gates, never upload photos to third-party sites automatically, never scrape private APIs, never copy their images, logos, guides or code.
+- Open-source code: reuse only with a compatible license (MIT/Apache/BSD) and attribution; otherwise reimplement the idea from the paper.
+
+## 3. Read first (once, then as needed)
+
+`docs/SUBJECT_INPUT_CHECKPOINT.md`, `docs/FEATURE_CONTRAST_CHECKPOINT.md`, `docs/MULTI_SUBJECT_QUALITY_PLAN.md`, `docs/PRODUCT_DIAGNOSIS_AND_EXECUTION_PLAN.md`, `docs/DECISIONS.md`, latest sections of `docs/STATUS.md`, `docs/OWNER_PRODUCT_REQUIREMENTS_2026-10-12.md`.
+
+## 4. Owner requirements (summary)
+
+1. Highest priority: recognizable likeness and a physically buildable thread sequence. Nose, lips, hair and cross-face strands must improve in the REAL sequence, not just the preview.
+2. Thread count must be the most efficient: best quality for the fewest connections.
+3. Works for 1, 2, 3 people, animals (dogs etc.), vehicles, objects, and text (Latin, Cyrillic, Arabic).
+4. Very simple, bright, iPhone-like UI; camera/gallery first; advanced settings hidden.
+5. Kit business model: one login per delivered kit; free unlimited previews; steps locked until a kit credit is used; 4 full builds per kit.
+6. Compare our quality with QBRIX (qbrix.me) honestly.
+7. Two distinct offline instructor voices (UZ/RU/EN), Android APK, later physical and phone tests, then real shop services.
+
+---
+
+## 5. Phases
+
+### PHASE 0 — test safety
+- `playwright.config.ts` and every test server/script default to a fresh temp DB under the test artifacts folder; fail loudly if `DATABASE_PATH` points into `tmp/data`.
+- Fix the full-suite e2e failures caused by navigation buttons now behind "More" (update tests, not the UI).
+- Playwright browsers are not installed: use the installed Chrome via an env option (e.g. `IP_RASM_CHROME_CHANNEL=chrome`), no download.
+- Run the FULL desktop + mobile e2e suite isolated; record exact pass/fail. Commit.
+
+### PHASE 1 — legitimate research
+- Public info only: qbrix.me product/generator pages, public product listings (Amazon/Walmart etc.), similar products (RingString, String Ring, Let's String, string-art apps). Document customer workflow (code in box → photo → preview → instructions), kit contents, pin counts, board sizes, thread length, step counts, product types (portraits, animals, text, other thread products).
+- Survey open-source string-art algorithms on GitHub and papers (e.g. Birsak et al. 2018 "String Art: Towards Computational Fabrication of String Images"; greedy + importance maps; supersampling; line removal/exchange). Record license, method, measured strengths, and what is better than our engine.
+- Output: `docs/COMPETITOR_WORKFLOW.md`, `docs/ALGORITHM_SURVEY.md` with ranked, concrete ideas to test.
+
+### PHASE 2 — string quality (highest priority)
+1. R4 diagnostic (see MULTI_SUBJECT_QUALITY_PLAN.md): frozen baseline manifest — root24 `8d1f2dd8f3424a0d23c7bb09240228e447ebab8fb9b520310e636ac9873c8323` on target `1d06c780d790a1554daf646c888824d2ae7f2ad97140c7b707239b16a9c727fa`; old best `eeb26cf5539462c9d0321579f2025307ea0d94735d08e0ca5497ef3ec8ebc944` as context only (different crop). Fit vs routed; per-region (each eye, nose, mouth, jaw, skin, hair) tone error, physical-contrast residual, dark excess; objective-term shares; cross-face texture energy in skin.
+2. Using the diagnostic + Phase 1 survey, test the strongest ideas ONE AT A TIME as new versioned opt-in algorithms (examples: importance-map supersampled objective; local excess-texture penalty; line-removal/exchange pass; face-fill framing as a separately labelled experiment; black+white thread on grey board as a separately labelled material experiment). Equal evaluation budget vs an unmodified control; full routing included; 32-chord/160-incident guards; recovery checkpoints for long runs.
+3. Acceptance: same-size and enlarged comparison of original crop, target and full sequence; no regional residual worse than max(2% of baseline, 0.0001); light-tone excess rise ≤ 1/255; any visible likeness loss rejects.
+4. Thread efficiency: for the accepted method, build a quality-vs-connections curve (e.g. 1000–4000) and choose the knee as the recommended count. Then simplify only that reference (all routing counted). Report connections, thread metres, estimated minutes.
+5. Promote to default ONLY if clearly better on the owner photo AND a synthetic/licensed set; otherwise keep opt-in. Write `docs/QUALITY_CHECKPOINT.md` (ACCEPTED / INCONCLUSIVE / REJECTED per idea, with report paths).
+
+### PHASE 3 — R3 generalized solver
+- Extract subject-independent fitter parts; one capability registry; SubjectPlan regions for 1–3 people (per-person normalized weights + worst-subject gate), animals (user-marked eyes/muzzle), vehicles/objects (silhouette + marked details). Groups use the same strong path as singles.
+- Unsupported combinations show a clear localized message, never a silent fallback. Legacy engines and imports unchanged.
+
+### PHASE 4 — more thread products
+- Text/lettering string art: Latin, Cyrillic AND Arabic (correct RTL shaping and joining; bundle OFL fonts offline, e.g. Noto Naskh Arabic / Noto Kufi Arabic / Noto Sans). Mode (a): text rendered as target through the main solver. Mode (b): outline style with pins placed along glyph shapes (new physical template with exact coordinates). Name + portrait combination if feasible.
+- Animal and object presets using Phase 3. Add other thread products found in Phase 1 if feasible (document what was skipped and why).
+- Every new mode: exact PDF template, player, offline export, tests, UI in UZ Latin / UZ Cyrillic / RU / EN.
+
+### PHASE 5 — kit login and build credits (server-authoritative)
+- Admin generates kit codes in batches (printable list + QR for the box insert). A code redeems into ONE customer account (login by phone + password, or code-based login).
+- Each kit grants N full builds (default 4). Admin settings: N per kit; optional validity window (default no expiry; can be set e.g. "4 per 30 days"); per-account limits.
+- FREE and unlimited for everyone: photo → generation → preview image + thread length + time estimate.
+- LOCKED until a credit is spent: step list, player, PDF/TXT/JSON export. Clear localized "Buy a kit / enter kit code" screen.
+- Unlock: server issues a signed token bound to account + sequence hash; exactly one credit consumed; the guide then works offline on that device. Locked sequence data must not be shown or exported in the UI. Document honestly that this is a deterrent, not unbreakable DRM; prepare an optional server-side generation path for stronger protection later.
+- Idempotent redemption/unlock (no double spend on retry), audit log, admin view of codes/credits/usage, rate limiting. Unit + e2e tests in an isolated DB.
+
+### PHASE 6 — QBRIX comparison
+- If `comparison/qbrix/` contains the owner's QBRIX outputs plus the same source photo: generate our result for the same photo, board shape and similar pin count; build `output/qbrix-compare/report.html` with same-size + enlarged eyes/nose/mouth/hair, connection counts, thread length and an honest per-region verdict. Summarize in `AGENT/FINAL_REPORT.md`.
+- If the folder is empty: write `docs/QBRIX_COMPARE_HOWTO_UZ.md` (Uzbek: what to buy/upload, which files to put where), add it to OWNER_TESTS.md, mark "Waiting for owner", continue.
+
+### PHASE 7 — design, voice, APK
+- Split `App.tsx` (4000+ lines) into screens: Create / Assemble / My projects / More. Bright clean background, navy accents, large touch targets, iPhone-like simplicity; advanced settings in "Details". Accessibility, safe areas, keyboard, empty/loading/error states.
+- Voice: two distinct offline instructors for UZ/RU/EN from recorded clips (numbers 0–19, tens, hundreds + ~60 phrases, concatenated, e.g. "ikki yuz o'ttiz besh"). Implement player + clip manifest + `docs/VOICE_RECORDING_UZ.md` (exact list of clips to record). Fallback to device TTS and text. Do not claim voices exist until real recordings are added.
+- Rebuild the APK; verify assets and signer; preserve old APKs. No phone install.
+
+### FINAL
+`AGENT/FINAL_REPORT.md` + chat, in Uzbek: every phase done / tested / pending (with reason), branch, commit list, report paths, and exactly what the owner should test (`npm run local` → http://127.0.0.1:4194).

@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { validateInstruction, progressFor } from "../../src/core/validation";
@@ -7,17 +8,22 @@ test("global Worker bootstrap preserves comparison, cancellation, legal exports 
   test.setTimeout(180000);
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
-  await page
-    .getByLabel("Portrait optimization", { exact: true })
-    .selectOption("global");
+  await revealControl(page.getByLabel("Portrait optimization", { exact: true }));
+  await page.getByLabel("Portrait optimization", { exact: true }).selectOption("global");
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("48");
+  await revealControl(page.getByLabel("Thread thickness (mm)", { exact: true }));
   await page.getByLabel("Thread thickness (mm)", { exact: true }).fill("0.1");
+  await revealControl(page.getByLabel("Available thread (m)", { exact: true }));
   await page.getByLabel("Available thread (m)", { exact: true }).fill("1");
+  await revealControl(page.getByLabel("Maximum lines", { exact: true }));
   await page.getByLabel("Maximum lines", { exact: true }).fill("1200");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })

@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { DEFAULT_ANATOMICAL_IMPORTANCE } from "../../src/core/anatomical-importance";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -194,12 +195,13 @@ test("source-matched anatomy action creates a separate variant and preserves sav
   await page
     .getByRole("button", { name: "Reuse settings", exact: true })
     .click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
-  await page
-    .getByLabel("Portrait optimization", { exact: true })
-    .selectOption("physical");
+  await revealControl(page.getByLabel("Portrait optimization", { exact: true }));
+  await page.getByLabel("Portrait optimization", { exact: true }).selectOption("physical");
+  await revealControl(page.getByLabel("Eyes Left", { exact: true }));
   await page.getByLabel("Eyes Left", { exact: true }).fill("0.3");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })
@@ -262,10 +264,10 @@ test("source-matched anatomy action creates a separate variant and preserves sav
   await expect(
     page.getByLabel("Portrait optimization", { exact: true }),
   ).toHaveValue("anatomy");
+  await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
-  await page
-    .getByLabel("Settings name", { exact: true })
-    .fill("Saved anatomy priority");
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
+  await page.getByLabel("Settings name", { exact: true }).fill("Saved anatomy priority");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
@@ -284,13 +286,14 @@ test("source-matched anatomy action creates a separate variant and preserves sav
   expect(stored[0].settings.portraitSolver).toBe("anatomy");
   expect(stored[0].settings.anatomy).toEqual(DEFAULT_ANATOMICAL_IMPORTANCE);
   await page.reload();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
-  await page
-    .getByLabel("Saved settings", { exact: true })
-    .selectOption(stored[0].id);
+  await revealControl(page.getByLabel("Saved settings", { exact: true }));
+  await page.getByLabel("Saved settings", { exact: true }).selectOption(stored[0].id);
   await expect(
     page.getByLabel("Portrait optimization", { exact: true }),
   ).toHaveValue("anatomy");

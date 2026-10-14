@@ -1,3 +1,4 @@
+import { openMore } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { validateInstruction } from "../../src/core/validation";
@@ -22,6 +23,7 @@ test("two-person manual regions, photo advice and guarded worker stay consistent
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
   await page.getByText("More", { exact: true }).click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();

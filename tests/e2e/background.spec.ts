@@ -1,3 +1,4 @@
+import { revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
@@ -71,8 +72,10 @@ test("localized optional photo advice, reversible local brush and exact exported
     })
     .uncheck();
   await openAdvancedPhoto(page);
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
   await page.getByText("Face region", { exact: true }).click();
+  await revealControl(page.getByLabel("Simplify background", { exact: true }));
   await page.getByLabel("Simplify background", { exact: true }).fill("0.75");
   const target = page.getByLabel("Exact generation target", { exact: true });
   const initial = await target.evaluate((c: HTMLCanvasElement) =>
@@ -121,12 +124,14 @@ test("localized optional photo advice, reversible local brush and exact exported
   const restored = await target.evaluate((c: HTMLCanvasElement) => [
     ...c.getContext("2d")!.getImageData(13, 88, 1, 1).data,
   ]);
+  await revealControl(page.getByLabel("Simplify background", { exact: true }));
   await page.getByLabel("Simplify background", { exact: true }).fill("0");
   expect(restored).toEqual(
     await target.evaluate((c: HTMLCanvasElement) => [
       ...c.getContext("2d")!.getImageData(13, 88, 1, 1).data,
     ]),
   );
+  await revealControl(page.getByLabel("Simplify background", { exact: true }));
   await page.getByLabel("Simplify background", { exact: true }).fill("0.75");
   await page
     .getByRole("button", { name: "Clear background selections", exact: true })
@@ -139,12 +144,15 @@ test("localized optional photo advice, reversible local brush and exact exported
     .click();
   await paintPoint();
   // A mask cannot silently move to a new aspect while portrait processing is off.
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).uncheck();
   await page.getByTestId("advanced-generation").locator("summary").first().click();
   await page.getByRole("button", { name: "Rectangle", exact: true }).click();
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Height (mm)", { exact: true }));
   await page.getByLabel("Height (mm)", { exact: true }).fill("240");
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
   expect(await target.evaluate((c: HTMLCanvasElement) => c.toDataURL())).toBe(
     await page
@@ -178,7 +186,9 @@ test("localized optional photo advice, reversible local brush and exact exported
       .join("");
   });
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("24");
+  await revealControl(page.getByLabel("Maximum lines", { exact: true }));
   await page.getByLabel("Maximum lines", { exact: true }).fill("200");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })

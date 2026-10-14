@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 async function reviewEveryPerson(page: import("@playwright/test").Page) {
@@ -20,20 +21,22 @@ test("completed physical fit remains archived after recovery marker is cleared a
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
   await page.getByText("More", { exact: true }).click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByTestId("advanced-photo").locator("summary").first().click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
-  await page
-    .getByLabel("Portrait optimization", { exact: true })
-    .selectOption("physical");
+  await revealControl(page.getByLabel("Portrait optimization", { exact: true }));
+  await page.getByLabel("Portrait optimization", { exact: true }).selectOption("physical");
   await page
     .getByTestId("advanced-generation")
     .locator("summary")
     .first()
     .click();
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("24");
   await page.getByLabel("Maximum lines", { exact: true }).focus();
   await page.keyboard.press("Home");
@@ -107,6 +110,7 @@ test("group Continue survives reload using frozen private pixels; deleting them 
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
   await page.getByText("More", { exact: true }).click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();

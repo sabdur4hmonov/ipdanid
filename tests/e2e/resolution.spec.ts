@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { generate } from "../../src/core/engine";
@@ -28,6 +29,7 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
   };
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -58,8 +60,10 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
   await expect(
     page.getByLabel("Computation resolution", { exact: true }),
   ).toHaveValue("192");
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
   // Portrait enablement intentionally raises the quality ceiling; use a small explicit QA budget.
+  await revealControl(page.getByLabel("Maximum lines", { exact: true }));
   await page.getByLabel("Maximum lines", { exact: true }).fill("200");
   const target = page.getByLabel("Exact generation target", { exact: true });
   await expect(target).toHaveAttribute("width", "192");
@@ -100,17 +104,17 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
   }
   const moved = JSON.parse((await mouth.getAttribute("data-box"))!);
   expect(moved.top).toBeCloseTo(box.top - ((20 / frame.height) * 192) / 191, 6);
+  await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
   await page.getByLabel("Settings name", { exact: true }).fill("192 settings");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
-  await page
-    .getByLabel("Computation resolution", { exact: true })
-    .selectOption("160");
-  await page
-    .getByLabel("Saved settings", { exact: true })
-    .selectOption({ label: "192 settings" });
+  await revealControl(page.getByLabel("Computation resolution", { exact: true }));
+  await page.getByLabel("Computation resolution", { exact: true }).selectOption("160");
+  await revealControl(page.getByLabel("Saved settings", { exact: true }));
+  await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "192 settings" });
   await expect(target).toHaveAttribute("width", "192");
   await expect(page.getByLabel("Maximum lines", { exact: true })).toHaveValue(
     "200",

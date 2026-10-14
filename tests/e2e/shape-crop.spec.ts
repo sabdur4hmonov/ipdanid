@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 test("shape framing uses mouse/touch, reversible fit and immutable saved crop", async ({
@@ -7,11 +8,14 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
   test.setTimeout(120000);
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByRole("button", { name: "Heart", exact: true }).click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
+  await revealControl(page.getByLabel("Eyes Left", { exact: true }));
   await page.getByLabel("Eyes Left", { exact: true }).fill("0.3");
   const frame = page.getByTestId("shape-crop");
   await expect(frame.locator("svg[data-shape]")).toHaveAttribute(
@@ -71,6 +75,7 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
   expect(gestured.panX).not.toBe(initial.panX);
   const beforeSlider = JSON.parse((await frame.getAttribute("data-portrait"))!);
   expect(beforeSlider.regions.placement).toBe("manual");
+  await revealControl(page.getByLabel("Zoom", { exact: true }));
   await page.getByLabel("Zoom", { exact: true }).fill("1.5");
   const afterSlider = JSON.parse((await frame.getAttribute("data-portrait"))!);
   expect(afterSlider.regions).not.toEqual(beforeSlider.regions);
@@ -146,7 +151,9 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
     .click();
   const expected = JSON.parse((await frame.getAttribute("data-edits"))!);
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("48");
+  await revealControl(page.getByLabel("Maximum lines", { exact: true }));
   await page.getByLabel("Maximum lines", { exact: true }).fill("200");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })

@@ -6,6 +6,7 @@ const admin = randomBytes(32).toString("base64url");
 const child = spawn(process.execPath, ["--import", "tsx", "server/index.ts"], {
   env: {
     ...process.env,
+    IP_RASM_TEST_SERVER: "1",
     LOCAL_ADMIN_TOKEN: admin,
     CODE_PEPPER: randomBytes(32).toString("base64url"),
     SANDBOX_PAYMENT_KEY: randomBytes(32).toString("base64url"),

@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync, writeFileSync } from "node:fs";
 test("real fine-thread guide retains exact material, progress and reusable preset", async ({
@@ -27,6 +28,7 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     .getByRole("button", { name: "Reuse settings", exact: true })
     .click();
   await page.getByText("More", { exact: true }).click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -43,14 +45,14 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     .first()
     .click();
   await page.getByText("Saved settings", { exact: true }).first().click();
-  await page
-    .getByLabel("Settings name", { exact: true })
-    .fill("Actual 0.05 mm thread");
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
+  await page.getByLabel("Settings name", { exact: true }).fill("Actual 0.05 mm thread");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
   await page.reload();
   await page.getByText("More", { exact: true }).click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -60,9 +62,8 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     .first()
     .click();
   await page.getByText("Saved settings", { exact: true }).first().click();
-  await page
-    .getByLabel("Saved settings", { exact: true })
-    .selectOption({ label: "Actual 0.05 mm thread" });
+  await revealControl(page.getByLabel("Saved settings", { exact: true }));
+  await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "Actual 0.05 mm thread" });
   await page.getByText("Dimensions and materials", { exact: true }).click();
   await expect(
     page.getByLabel("Thread thickness (mm)", { exact: true }),

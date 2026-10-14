@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { generate } from "../../src/core/engine";
 import { createProfile } from "../../src/core/geometry";
@@ -30,6 +31,7 @@ test("explicit rotated board survives import, presets, reuse and actual Worker g
   };
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -59,7 +61,9 @@ test("explicit rotated board survives import, presets, reuse and actual Worker g
     await page.getByLabel("Language").selectOption(locale);
     await expect(page.getByTestId("layout-settings")).toContainText("0.75°");
   }
+  await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
   await page.getByLabel("Settings name", { exact: true }).fill("Phase test");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
@@ -71,9 +75,8 @@ test("explicit rotated board survives import, presets, reuse and actual Worker g
     })
     .click();
   await expect(page.getByTestId("layout-settings")).toHaveCount(0);
-  await page
-    .getByLabel("Saved settings", { exact: true })
-    .selectOption({ label: "Phase test" });
+  await revealControl(page.getByLabel("Saved settings", { exact: true }));
+  await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "Phase test" });
   await expect(page.getByTestId("layout-settings")).toContainText("0.75°");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })

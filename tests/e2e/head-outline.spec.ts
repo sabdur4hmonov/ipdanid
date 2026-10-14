@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { targetToSource } from "../../src/core/coordinates";
 
@@ -7,11 +8,14 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
 }, info) => {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByRole("button", { name: "Heart", exact: true }).click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
+  await revealControl(page.getByLabel("Eyes Left", { exact: true }));
   await page.getByLabel("Eyes Left", { exact: true }).fill("0.3");
   const frame = page.getByTestId("shape-crop");
   const state = async () => ({
@@ -114,9 +118,8 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
     .getByRole("button", { name: "Undo shape fit", exact: true })
     .click();
   expect(await state()).toEqual(before);
-  await page
-    .getByLabel("Computation resolution", { exact: true })
-    .selectOption("192");
+  await revealControl(page.getByLabel("Computation resolution", { exact: true }));
+  await page.getByLabel("Computation resolution", { exact: true }).selectOption("192");
   const highResolution = await state();
   for (const key of ["eyes", "nose", "mouth"]) {
     const a = before.portrait.regions[key],
@@ -144,9 +147,8 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
       expect(next.y).toBeCloseTo(old.y, 7);
     }
   }
-  await page
-    .getByLabel("Computation resolution", { exact: true })
-    .selectOption("160");
+  await revealControl(page.getByLabel("Computation resolution", { exact: true }));
+  await page.getByLabel("Computation resolution", { exact: true }).selectOption("160");
   const restoredResolution = await state();
   expect(restoredResolution.edits).toEqual(before.edits);
   for (const key of ["eyes", "nose", "mouth"])
@@ -173,12 +175,14 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
     .click();
   expect(await state()).toEqual(before);
   await lighten.click();
+  await revealControl(page.getByLabel("Zoom", { exact: true }));
   await page.getByLabel("Zoom", { exact: true }).fill("0.8");
   await expect
     .poll(async () => (await state()).portrait.backgroundMask)
     .toBeUndefined();
   expect((await state()).outline).toEqual(before.outline);
   await page.getByText("Point coordinates", { exact: true }).click();
+  await revealControl(page.getByLabel("Outline point 1 X", { exact: true }));
   await page.getByLabel("Outline point 1 X", { exact: true }).fill("65");
   expect((await state()).outline[0].x).toBe(0.65);
   const saved = await state();
@@ -193,6 +197,7 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
         .screenshot(),
     });
   expect((await state()).outline).toEqual([]);
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -227,12 +232,10 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
   await page.getByText("Point coordinates", { exact: true }).click();
   // A nonadjacent point touches the first: fitting must reject, never mutate the crop.
   const crossed = await state();
-  await page
-    .getByLabel("Outline point 5 X", { exact: true })
-    .fill(String(crossed.outline[0].x * 100));
-  await page
-    .getByLabel("Outline point 5 Y", { exact: true })
-    .fill(String(crossed.outline[0].y * 100));
+  await revealControl(page.getByLabel("Outline point 5 X", { exact: true }));
+  await page.getByLabel("Outline point 5 X", { exact: true }).fill(String(crossed.outline[0].x * 100));
+  await revealControl(page.getByLabel("Outline point 5 Y", { exact: true }));
+  await page.getByLabel("Outline point 5 Y", { exact: true }).fill(String(crossed.outline[0].y * 100));
   const invalid = await state();
   await page
     .getByRole("button", { name: "Fit marked outline", exact: true })

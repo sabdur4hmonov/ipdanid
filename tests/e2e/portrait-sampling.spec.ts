@@ -1,12 +1,15 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 test("manual facial sampling exposes small/clipped windows without blocking generation", async ({
   page,
 }) => {
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
   const panel = page.getByTestId("portrait-sampling"),
     mouth = panel.locator('[data-feature="mouth"]');
@@ -15,6 +18,7 @@ test("manual facial sampling exposes small/clipped windows without blocking gene
     .getByTestId("region-editor")
     .getByRole("button", { name: "Mouth", exact: true })
     .click();
+  await revealControl(page.getByLabel("Mouth Height", { exact: true }));
   await page.getByLabel("Mouth Height", { exact: true }).fill("0.03");
   await expect(mouth).toHaveAttribute("data-small", "true");
   await expect
@@ -24,20 +28,23 @@ test("manual facial sampling exposes small/clipped windows without blocking gene
   await expect(
     page.getByRole("button", { name: "Calculate thread path", exact: true }),
   ).toBeEnabled();
-  await page
-    .getByLabel("Computation resolution", { exact: true })
-    .selectOption("192");
+  await revealControl(page.getByLabel("Computation resolution", { exact: true }));
+  await page.getByLabel("Computation resolution", { exact: true }).selectOption("192");
   await expect
     .poll(async () => Number(await mouth.getAttribute("data-height")))
     .toBeCloseTo(5.724, 6);
   // The same source extent gets 20% more samples, without a framing zoom.
+  await revealControl(page.getByLabel("Mouth Height", { exact: true }));
   await page.getByLabel("Mouth Height", { exact: true }).fill("0.08");
   await expect(mouth).toHaveAttribute("data-small", "false");
   await expect
     .poll(async () => Number(await mouth.getAttribute("data-height")))
     .toBeCloseTo(15.28, 6);
+  await revealControl(page.getByLabel("Mouth Width", { exact: true }));
   await page.getByLabel("Mouth Width", { exact: true }).fill("0.1");
+  await revealControl(page.getByLabel("Mouth Left", { exact: true }));
   await page.getByLabel("Mouth Left", { exact: true }).fill("0");
+  await revealControl(page.getByLabel("Mouth Top", { exact: true }));
   await page.getByLabel("Mouth Top", { exact: true }).fill("0");
   await expect(mouth).toHaveAttribute("data-clipped", "true");
   await expect(panel.getByText(/outside the board/)).toBeVisible();
@@ -58,6 +65,7 @@ test("manual facial sampling exposes small/clipped windows without blocking gene
     panel.getByRole("heading", { name: "Проверьте детали лица до расчёта" }),
   ).toBeVisible();
   await page.getByLabel("Language").selectOption("en");
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).uncheck();
   await expect(panel).toHaveCount(0);
 });

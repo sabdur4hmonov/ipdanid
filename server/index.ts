@@ -2,6 +2,7 @@ import { BusinessStore } from "./business-store.ts";
 import { createServer } from "node:http";
 import { randomBytes } from "node:crypto";
 import { mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 import "./local-config.ts";
 import { DomainError } from "./store.ts";
 import { CustomerStore } from "./customer-store.ts";
@@ -16,7 +17,10 @@ if (process.env.NODE_ENV === "production")
   throw new Error(
     "This sandbox server is not a production deployment. Configure production adapters/auth/retention first.",
   );
-mkdirSync("tmp/data", { recursive: true });
+if (process.env.DATABASE_PATH !== ":memory:")
+  mkdirSync(dirname(process.env.DATABASE_PATH ?? "tmp/data/iprasm.sqlite"), {
+    recursive: true,
+  });
 const store = new CustomerStore(
   process.env.DATABASE_PATH ?? "tmp/data/iprasm.sqlite",
   pepper,
@@ -40,6 +44,9 @@ const server = createServer(async (req, res) => {
     const origin = req.headers.origin;
     if (
       origin &&
+      !(process.env.IP_RASM_TEST_SERVER === "1" &&
+        origin === process.env.IP_RASM_TEST_ORIGIN &&
+        /^http:\/\/127\.0\.0\.1:\d+$/.test(origin)) &&
       ![
         "http://127.0.0.1:5173",
         "http://127.0.0.1:4173",

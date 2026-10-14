@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 test("contour target toggles exactly; real Worker, preset, progress and offline exports retain the style", async ({
@@ -20,9 +21,11 @@ test("contour target toggles exactly; real Worker, preset, progress and offline 
   });
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
   const target = page.getByLabel("Exact generation target", { exact: true }),
     original = await target.evaluate((c: HTMLCanvasElement) => c.toDataURL());
@@ -33,15 +36,13 @@ test("contour target toggles exactly; real Worker, preset, progress and offline 
   await expect(
     page.getByLabel("Retain more original shading", { exact: true }),
   ).toBeChecked();
-  await page
-    .getByLabel("Retain more original shading", { exact: true })
-    .uncheck();
+  await revealControl(page.getByLabel("Retain more original shading", { exact: true }));
+  await page.getByLabel("Retain more original shading", { exact: true }).uncheck();
   expect(
     await target.evaluate((c: HTMLCanvasElement) => c.toDataURL()),
   ).not.toBe(styled);
-  await page
-    .getByLabel("Retain more original shading", { exact: true })
-    .check();
+  await revealControl(page.getByLabel("Retain more original shading", { exact: true }));
+  await page.getByLabel("Retain more original shading", { exact: true }).check();
   expect(await target.evaluate((c: HTMLCanvasElement) => c.toDataURL())).toBe(
     styled,
   );
@@ -51,12 +52,13 @@ test("contour target toggles exactly; real Worker, preset, progress and offline 
   );
   await detail.check();
   await page.getByText("Dimensions and materials", { exact: true }).click();
+  await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("24");
+  await revealControl(page.getByLabel("Maximum lines", { exact: true }));
   await page.getByLabel("Maximum lines", { exact: true }).fill("200");
   await page.getByText("Saved settings", { exact: true }).first().click();
-  await page
-    .getByLabel("Settings name", { exact: true })
-    .fill("Exact contour preparation");
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
+  await page.getByLabel("Settings name", { exact: true }).fill("Exact contour preparation");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
@@ -140,6 +142,7 @@ test("preserved real portrait import retains exact path/progress and contour pre
   await page
     .getByRole("button", { name: "Reuse settings", exact: true })
     .click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -147,13 +150,13 @@ test("preserved real portrait import retains exact path/progress and contour pre
     page.getByLabel("Separate facial contours", { exact: true }),
   ).toBeChecked();
   await page.getByText("Saved settings", { exact: true }).first().click();
-  await page
-    .getByLabel("Settings name", { exact: true })
-    .fill("Imported contour");
+  await revealControl(page.getByLabel("Settings name", { exact: true }));
+  await page.getByLabel("Settings name", { exact: true }).fill("Imported contour");
   await page
     .getByRole("button", { name: "Save settings", exact: true })
     .click();
   await page.reload();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();

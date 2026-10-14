@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync, mkdirSync } from "node:fs";
 import { generate } from "../../src/core/engine";
@@ -10,11 +11,10 @@ test("customer account, code, gift, order, administrator fulfillment and support
 }, testInfo) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  const secrets = JSON.parse(
-    readFileSync("tmp/data/local-secrets.json", "utf8"),
-  );
+  const secrets = ({ LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN! });
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
     .click();
@@ -35,6 +35,7 @@ test("customer account, code, gift, order, administrator fulfillment and support
   const recovery = await hub.locator(".recovery-key code").textContent();
   expect(recovery!.length).toBeGreaterThan(30);
   await page.reload();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
     .click();
@@ -151,6 +152,7 @@ test("customer account, code, gift, order, administrator fulfillment and support
     "Exact local support reply",
   );
   await page.reload();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
     .click();
@@ -195,9 +197,7 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
     progress: progressFor(i),
     edits: DEFAULT_EDITS,
   };
-  const secrets = JSON.parse(
-    readFileSync("tmp/data/local-secrets.json", "utf8"),
-  );
+  const secrets = ({ LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN! });
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
   await page
@@ -211,10 +211,10 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
       ),
     });
   await expect(page.getByTestId("player-hash")).toHaveText(i.sequenceHash);
+  await revealControl(page.getByLabel("Jump to exact step", { exact: true }));
   await page.getByLabel("Jump to exact step", { exact: true }).fill("10");
-  await page
-    .getByLabel("Bookmark label", { exact: true })
-    .fill("Check this pin");
+  await revealControl(page.getByLabel("Bookmark label", { exact: true }));
+  await page.getByLabel("Bookmark label", { exact: true }).fill("Check this pin");
   await page
     .getByRole("button", { name: "Bookmark this step", exact: true })
     .click();
@@ -233,6 +233,7 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
     .getByLabel("Folder", { exact: true })
     .fill("Portrait tests");
   await page.locator(".project-card h2").click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
     .click();
@@ -241,7 +242,7 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
     .getByRole("button", { name: "Start sandbox session", exact: true })
     .click();
   const response = await page.request.post(
-    "http://127.0.0.1:4311/api/admin/codes",
+    (process.env.IP_RASM_TEST_API_URL! + "/api/admin/codes"),
     {
       headers: { Authorization: `Bearer ${secrets.LOCAL_ADMIN_TOKEN}` },
       data: {
@@ -278,6 +279,7 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
   await expect(remote).toContainText("Confirmed: 10");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.getByRole("button", { name: "Resume", exact: true }).click();
+  await revealControl(page.getByLabel("Jump to exact step", { exact: true }));
   await page.getByLabel("Jump to exact step", { exact: true }).fill("15");
   await page
     .getByRole("button", {
@@ -285,6 +287,7 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
       exact: true,
     })
     .click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
     .click();

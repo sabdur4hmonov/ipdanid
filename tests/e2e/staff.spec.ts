@@ -1,14 +1,14 @@
+import { openMore } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 test("owner issues scoped staff access, staff sees only duties, revocation blocks further access", async ({
   page,
 }, info) => {
-  const root = JSON.parse(
-    readFileSync("tmp/data/local-secrets.json", "utf8"),
-  ).LOCAL_ADMIN_TOKEN;
+  const root = ({ LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN! }).LOCAL_ADMIN_TOKEN;
   const name = `Synthetic support ${info.project.name} ${Date.now()}`;
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
     .click();

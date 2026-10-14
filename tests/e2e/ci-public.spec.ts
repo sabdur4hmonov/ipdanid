@@ -1,3 +1,4 @@
+import { openMore } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
@@ -29,6 +30,7 @@ test("committed original illustration generates a real immutable guide with offl
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
   await page.getByText("More", { exact: true }).click();
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();

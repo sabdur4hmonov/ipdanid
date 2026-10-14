@@ -1,3 +1,4 @@
+import { revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { existsSync } from "node:fs";
 import { DEFAULT_EDITS } from "../../src/core/types";
@@ -67,6 +68,7 @@ test("local landmarks place mouth on actual source pixels; photo inference leave
   );
   await openAdvancedPhoto(page);
   await page.getByText("Zoom · Contrast", { exact: true }).click();
+  await revealControl(page.getByLabel("Zoom", { exact: true }));
   await page.getByLabel("Zoom", { exact: true }).fill("0.9");
   await panel
     .getByRole("button", { name: "Use reviewed facial regions", exact: true })

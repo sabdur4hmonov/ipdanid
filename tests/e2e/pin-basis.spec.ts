@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { withPinBasis } from "../../src/core/pin-basis";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -152,19 +153,16 @@ for (const mode of ["dark", "light"] as const)
       expected.metrics.densityFit!.sweeps,
     );
     // Connected sandbox persistence must accept the exact new instruction version too.
-    await page
-      .locator("nav")
-      .getByRole("button", { name: "Account & shop", exact: true })
+    await openMore(page);
+    await page.getByRole("button", { name: "Account & shop", exact: true })
       .click();
     const hub = page.locator(".customer-hub");
     await hub
       .getByRole("button", { name: "Start sandbox session", exact: true })
       .click();
-    const secrets = JSON.parse(
-      readFileSync("tmp/data/local-secrets.json", "utf8"),
-    );
+    const secrets = ({ LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN! });
     const issued = await page.request.post(
-      "http://127.0.0.1:4311/api/admin/codes",
+      (process.env.IP_RASM_TEST_API_URL! + "/api/admin/codes"),
       {
         headers: { Authorization: `Bearer ${secrets.LOCAL_ADMIN_TOKEN}` },
         data: { profile: profile.id, quota: 1, expiresAt: Date.now() + 60000 },
@@ -198,16 +196,17 @@ for (const mode of ["dark", "light"] as const)
       .getByRole("button", { name: "Reuse settings", exact: true })
       .first()
       .click();
+    await openMore(page);
     await page
-      .getByRole("button", { name: "Try an original sample", exact: true })
+    .getByRole("button", { name: "Try an original sample", exact: true })
       .click();
     await expect(
       page.getByLabel("Portrait optimization", { exact: true }),
     ).toHaveValue("basis");
+    await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
     await page.locator("summary").filter({ hasText: "Saved settings" }).click();
-    await page
-      .getByLabel("Settings name", { exact: true })
-      .fill("Exact 320-pin QA");
+    await revealControl(page.getByLabel("Settings name", { exact: true }));
+    await page.getByLabel("Settings name", { exact: true }).fill("Exact 320-pin QA");
     await page
       .getByRole("button", { name: "Save settings", exact: true })
       .click();
@@ -226,13 +225,14 @@ for (const mode of ["dark", "light"] as const)
     expect(presets[0].settings.pinCoordinates).toEqual(profile.pins);
     expect(presets[0].settings.pinBasis).toEqual(profile.pinBasis);
     await page.reload();
+    await openMore(page);
     await page
-      .getByRole("button", { name: "Try an original sample", exact: true })
+    .getByRole("button", { name: "Try an original sample", exact: true })
       .click();
+    await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
     await page.locator("summary").filter({ hasText: "Saved settings" }).click();
-    await page
-      .getByLabel("Saved settings", { exact: true })
-      .selectOption(presets[0].id);
+    await revealControl(page.getByLabel("Saved settings", { exact: true }));
+    await page.getByLabel("Saved settings", { exact: true }).selectOption(presets[0].id);
     await expect(
       page.getByLabel("Portrait optimization", { exact: true }),
     ).toHaveValue("basis");

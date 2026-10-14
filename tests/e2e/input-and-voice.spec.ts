@@ -1,3 +1,4 @@
+import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 
 test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inputs", async ({
@@ -119,6 +120,7 @@ test("matching voice fallback and cancellation keep playback distinct from confi
   });
   await page.goto("/");
   await page.getByLabel("Language").selectOption("en");
+  await openMore(page);
   await page
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
@@ -166,6 +168,7 @@ test("matching voice fallback and cancellation keep playback distinct from confi
     ),
   ).toBe(before);
   await page.getByLabel("Language").selectOption("en");
+  await revealControl(page.getByLabel("Seconds per step", { exact: true }));
   await page.getByLabel("Seconds per step", { exact: true }).fill("2");
   await page.getByRole("button", { name: "Play", exact: true }).click();
   await expect(page.getByLabel("Jump to exact step")).toHaveValue("3", {
