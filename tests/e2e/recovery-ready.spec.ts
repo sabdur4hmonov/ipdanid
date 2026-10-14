@@ -89,7 +89,7 @@ test("exact hair search survives no-photo reload, touch/mouse cancellation and o
 }, info) => {
   test.setTimeout(180000);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await installRecovery(page);
   await expect(page.getByTestId("shape-crop")).toHaveCount(0);
   const resume = page.getByRole("button", {
@@ -158,7 +158,7 @@ test("legacy partial hair guide remains exportable without pretending its search
   page,
 }, info) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await installRecovery(page, true);
   await expect(
     page.getByRole("button", {
@@ -171,7 +171,7 @@ test("legacy partial hair guide remains exportable without pretending its search
     ["ru", "Сохранить восстановленную инструкцию отдельно"],
     ["en", "Keep recovered guide separately"],
   ]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(
       page.getByRole("button", { name: label, exact: true }),
     ).toBeVisible();

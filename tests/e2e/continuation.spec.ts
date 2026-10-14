@@ -6,10 +6,28 @@ test("continuing an older variant after changing the photo uses its recorded sou
   page,
 }) => {
   test.setTimeout(180000);
+  await page.addInitScript(() => {
+    const Original = Worker;
+    (window as any).__continuationRequests = [];
+    (window as any).__continuationTerminals = [];
+    window.Worker = class extends Original {
+      constructor(url: string | URL, options?: WorkerOptions) {
+        super(url, options);
+        this.addEventListener("message", ({ data }) => {
+          if (["done", "error"].includes(data.type))
+            (window as any).__continuationTerminals.push({ type: data.type, message: data.message, hash: data.instruction?.sequenceHash, parent: data.instruction?.params.parentSequenceHash });
+        });
+      }
+      postMessage(data: any) {
+        if (data.profile) (window as any).__continuationRequests.push({ strategy: data.strategy, seed: data.seed?.sequenceHash, resolution: data.resolution });
+        super.postMessage(data);
+      }
+    } as typeof Worker;
+  });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
@@ -20,7 +38,9 @@ test("continuing an older variant after changing the photo uses its recorded sou
   await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("60");
   await revealControl(page.getByLabel("Maximum lines", { exact: true }));
-  await page.getByLabel("Maximum lines", { exact: true }).fill("400");
+  // Leave room for the density continuation's real connecting strands;
+  // a 400-strand seed at a 400-strand cap legitimately refuses routing.
+  await page.getByLabel("Maximum lines", { exact: true }).fill("2000");
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })
     .click();
@@ -56,12 +76,26 @@ test("continuing an older variant after changing the photo uses its recorded sou
     .locator("input[type=file]")
     .first()
     .setInputFiles("tests/fixtures/orientation-6.jpg");
+  await expect(page.getByRole("button", { name: "orientation-6.jpg", exact: true, includeHidden: true })).toBeAttached();
+  // This source-change test does not need asynchronous human inference.
+  await page.getByRole("radio", { name: /^Keep full image/ }).click();
+  await expect(page.getByTestId("background-status")).toHaveAttribute(
+    "data-status", /ready|failed|manual/, { timeout: 60000 },
+  );
   await revealControl(page.getByLabel("Computation resolution", { exact: true }));
   await page.getByLabel("Computation resolution", { exact: true }).selectOption("192");
   // Current solvers may reach a plateau, so continuation is always entered
   // through the saved guide rather than a compute-limit-only result button.
   await page.locator("nav").getByRole("button", { name: "My projects", exact: true }).click();
   await page.getByTestId("continue-saved-calculation").first().click();
+  await expect.poll(() => page.evaluate(() => (window as any).__continuationRequests), { timeout: 15000 }).toHaveLength(2);
+  await expect.poll(() => page.evaluate(() => (window as any).__continuationTerminals), { timeout: 120000 }).toHaveLength(2);
+  const terminal = await page.evaluate(() => (window as any).__continuationTerminals.at(-1));
+  expect(terminal.type, JSON.stringify(terminal)).toBe("done");
+  expect(terminal).toMatchObject({ type: "done", parent: oldHash });
+  await expect(page.locator(".result-card canvas[data-sequence-hash]")).not.toHaveAttribute(
+    "data-sequence-hash", oldHash!, { timeout: 120000 },
+  );
   await expect(
     page.getByRole("button", { name: "Cancel", exact: true }),
   ).toBeHidden({ timeout: 120000 });

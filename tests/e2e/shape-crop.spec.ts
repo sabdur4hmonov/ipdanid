@@ -7,11 +7,12 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
 }, info) => {
   test.setTimeout(120000);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByRole("button", { name: "Heart", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Heart", exact: true }).click();
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
@@ -82,6 +83,7 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
   expect(afterSlider.regions.placement).toBe("manual");
   await frame.scrollIntoViewIfNeeded();
   const moved = JSON.parse((await frame.getAttribute("data-edits"))!);
+  await revealControl(page.getByRole("button", { name: "Mark face bounds", exact: true, includeHidden: true }));
   await page
     .getByRole("button", { name: "Mark face bounds", exact: true })
     .click();
@@ -129,6 +131,7 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
   const marked = JSON.parse((await frame.getAttribute("data-portrait"))!);
   expect(marked.face).not.toEqual(originalPortrait.face);
   expect(marked.regions).toEqual(originalPortrait.regions);
+  await revealControl(page.getByRole("button", { name: "Fit marked face to shape", exact: true, includeHidden: true }));
   await page
     .getByRole("button", { name: "Fit marked face to shape", exact: true })
     .click();
@@ -143,9 +146,10 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
     ["ru", "не автоматическое распознавание"],
     ["en", "not automatic detection"],
   ]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.locator("body")).toContainText(text);
   }
+  await revealControl(page.getByRole("button", { name: "Fit marked face to shape", exact: true, includeHidden: true }));
   await page
     .getByRole("button", { name: "Fit marked face to shape", exact: true })
     .click();

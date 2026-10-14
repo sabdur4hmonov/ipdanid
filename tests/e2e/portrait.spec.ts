@@ -54,9 +54,9 @@ test("portrait target, manual regions, low stock, cancellation and immutable sta
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   const raw = await page

@@ -16,7 +16,7 @@ test("browser camera captures an actual frame into crop; cancel and navigation r
 }, info) => {
   await context.grantPermissions(["camera"]);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await expect(
     page.getByRole("button", { name: "Upload from gallery", exact: true }),
   ).toBeVisible();
@@ -78,7 +78,7 @@ test("browser camera captures an actual frame into crop; cancel and navigation r
       .getByLabel("Edited photo", { exact: true })
       .evaluate((c: HTMLCanvasElement) => c.toDataURL()),
   ).toBe(source);
-  await page.getByLabel("Language").selectOption("uz");
+  await page.getByLabel("Language", { exact: true }).selectOption("uz");
   await expect(
     page.getByRole("button", { name: "Galereyadan yuklash", exact: true }),
   ).toBeVisible();
@@ -172,7 +172,7 @@ test("camera denial is localized and retains the valid photo; stale photo decodi
     }) as typeof createImageBitmap;
   });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByLabel("Upload from gallery", { exact: true }).setInputFiles({
     name: "slow.png",
     mimeType: "image/png",
@@ -215,7 +215,7 @@ test("camera denial is localized and retains the valid photo; stale photo decodi
       .getByLabel("Edited photo", { exact: true })
       .evaluate((c: HTMLCanvasElement) => c.toDataURL()),
   ).toBe(source);
-  await page.getByLabel("Language").selectOption("ru");
+  await page.getByLabel("Language", { exact: true }).selectOption("ru");
   await page
     .getByRole("button", { name: "Сделать фотографию", exact: true })
     .click();
@@ -230,7 +230,7 @@ test("grid crafts accept a real captured browser frame and native input contract
 }) => {
   await context.grantPermissions(["camera"]);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
   await page

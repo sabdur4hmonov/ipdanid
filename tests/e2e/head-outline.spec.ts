@@ -7,11 +7,12 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
   context,
 }, info) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByRole("button", { name: "Heart", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Heart", exact: true }).click();
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).check();
@@ -23,6 +24,7 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
     portrait: JSON.parse((await frame.getAttribute("data-portrait"))!),
     outline: JSON.parse((await frame.getAttribute("data-outline"))!),
   });
+  await revealControl(page.getByText("Whole-head outline · experimental", { exact: true }));
   await page
     .getByText("Whole-head outline · experimental", { exact: true })
     .click();
@@ -197,11 +199,12 @@ test("manual outline keeps source coordinates, independent anatomy and per-photo
         .screenshot(),
     });
   expect((await state()).outline).toEqual([]);
-  await openMore(page);
-  await page
+  await revealControl(page.getByTestId("advanced-photo").getByRole("button", { name: "Try an original sample", exact: true, includeHidden: true }));
+  await page.getByTestId("advanced-photo")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   expect(await state()).toEqual(saved);
+  await revealControl(page.getByText("Whole-head outline · experimental", { exact: true }));
   await page
     .getByText("Whole-head outline · experimental", { exact: true })
     .click();

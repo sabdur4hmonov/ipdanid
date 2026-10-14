@@ -24,7 +24,7 @@ test("localized optional photo advice, reversible local brush and exact exported
     ["ru", "Подойдут и существующие фотографии"],
     ["en", "Existing photographs are welcome"],
   ]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.getByTestId("photo-guidance")).toContainText(fragment);
   }
   // Patterned image is accepted; no background classifier or mandatory face detector.
@@ -147,6 +147,7 @@ test("localized optional photo advice, reversible local brush and exact exported
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).uncheck();
   await page.getByTestId("advanced-generation").locator("summary").first().click();
+  await revealControl(page.getByRole("button", { name: "Rectangle", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Rectangle", exact: true }).click();
   await page.getByText("Dimensions and materials", { exact: true }).click();
   await revealControl(page.getByLabel("Height (mm)", { exact: true }));
@@ -167,6 +168,7 @@ test("localized optional photo advice, reversible local brush and exact exported
       .getByLabel("Before manual background", { exact: true })
       .evaluate((c: HTMLCanvasElement) => c.toDataURL()),
   );
+  await revealControl(page.getByRole("button", { name: "Circle", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Circle", exact: true }).click();
   await page
     .getByRole("button", { name: "Paint background", exact: true })

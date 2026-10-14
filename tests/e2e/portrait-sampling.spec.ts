@@ -4,9 +4,9 @@ test("manual facial sampling exposes small/clipped windows without blocking gene
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
@@ -51,20 +51,21 @@ test("manual facial sampling exposes small/clipped windows without blocking gene
   await expect(
     page.getByRole("button", { name: "Calculate thread path", exact: true }),
   ).toBeEnabled();
+  await revealControl(page.getByRole("button", { name: "Rectangle", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Rectangle", exact: true }).click();
   await expect(mouth).toHaveAttribute("data-clipped", "false");
   await expect(mouth).toHaveAttribute("data-inside", "1");
-  await page.getByLabel("Language").selectOption("uz");
+  await page.getByLabel("Language", { exact: true }).selectOption("uz");
   await expect(
     panel.getByRole("heading", {
       name: "Hisoblashdan oldin yuz detallarini tekshiring",
     }),
   ).toBeVisible();
-  await page.getByLabel("Language").selectOption("ru");
+  await page.getByLabel("Language", { exact: true }).selectOption("ru");
   await expect(
     panel.getByRole("heading", { name: "Проверьте детали лица до расчёта" }),
   ).toBeVisible();
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
   await page.getByLabel("Prioritize portrait", { exact: true }).uncheck();
   await expect(panel).toHaveCount(0);

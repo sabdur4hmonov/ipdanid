@@ -8,7 +8,7 @@ const single = "output/white-background/source.png",
 test.use({ serviceWorkers: "block" });
 async function start(page: import("@playwright/test").Page) {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
 }
 async function openBackgroundOptions(page: import("@playwright/test").Page) {
   // Simple flow keeps photo preparation inside a collapsed section.

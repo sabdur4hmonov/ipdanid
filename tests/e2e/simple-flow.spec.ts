@@ -9,7 +9,7 @@ test("failed preparation opens the correction controls and preserves usable phot
     (route) => route.abort(),
   );
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page
     .getByLabel("Upload from gallery", { exact: true })
     .setInputFiles("tests/fixtures/transparency.png");
@@ -39,7 +39,7 @@ test("photo-first start has exactly two source actions in all languages", async 
     ["ru", "Сделать фотографию", "Выбрать из галереи"],
     ["en", "Take photo", "Upload from gallery"],
   ]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.locator("main button:visible")).toHaveCount(2);
     await expect(page.getByTestId("photo-guidance")).toBeVisible();
     await expect(page.getByTestId("photo-guidance")).toContainText(
@@ -74,7 +74,7 @@ test("gallery still prepares locally, generates a real path and saves resumable 
   page,
 }, info) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page
     .getByLabel("Upload from gallery", { exact: true })
     .setInputFiles("output/portrait/source.jpg");

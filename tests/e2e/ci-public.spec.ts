@@ -11,7 +11,7 @@ test("public photo-first UI explains optional light backgrounds in all three lan
     ["ru", "существующие фотографии"],
     ["en", "Existing photographs"],
   ]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.locator("main button:visible")).toHaveCount(2);
     await expect(page.getByTestId("photo-guidance")).toContainText(guidance);
     expect(
@@ -28,10 +28,10 @@ test("committed original illustration generates a real immutable guide with offl
 }) => {
   test.setTimeout(180000);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await expect(page.getByLabel("Edited photo", { exact: true })).toBeVisible();

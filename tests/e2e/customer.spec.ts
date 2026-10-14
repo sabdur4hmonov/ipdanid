@@ -12,8 +12,15 @@ test("customer account, code, gift, order, administrator fulfillment and support
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   const secrets = ({ LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN! });
+  const settingsUrl = process.env.IP_RASM_TEST_API_URL! + "/api/admin/settings";
+  const headers = { Authorization: `Bearer ${secrets.LOCAL_ADMIN_TOKEN}` };
+  const settings = await (await page.request.get(settingsUrl, { headers })).json();
+  const configured = await page.request.post(settingsUrl, {
+    headers, data: { ...settings, pickupAddress: "Synthetic test pickup location" },
+  });
+  expect(configured.ok()).toBe(true);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
@@ -73,8 +80,9 @@ test("customer account, code, gift, order, administrator fulfillment and support
     .first()
     .click();
   await hub.getByLabel("Name", { exact: true }).fill("Local Test Maker");
-  await hub.getByLabel("City", { exact: true }).fill("Tashkent");
-  await hub.getByLabel("Address", { exact: true }).fill("Development address");
+  await hub.getByLabel("Your phone number", { exact: true }).fill("901234567");
+  await expect(hub.getByLabel("City", { exact: true })).toHaveCount(0);
+  await expect(hub.getByLabel("Address", { exact: true })).toHaveCount(0);
   await hub
     .getByRole("button", { name: "Place sandbox order", exact: true })
     .click();
@@ -199,7 +207,7 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
   };
   const secrets = ({ LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN! });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page
     .locator("input[type=file]")
     .last()

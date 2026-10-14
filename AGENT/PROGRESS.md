@@ -1,8 +1,8 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — session checkpoint, Phase 0 validation in progress.
-Commits this session before this checkpoint: none. This checkpoint is committed with the test-safety changes; later milestones record its hash.
+Last update: 2026-10-14 — Phase 0 test-navigation milestone, final verification in progress.
+Session commit: `f7fab35` — Checkpoint roadmap protocol and isolated test infrastructure. This milestone adds remaining test corrections and evidence; later milestones record its hash.
 
 ## Phase status
 
@@ -20,7 +20,11 @@ Commits this session before this checkpoint: none. This checkpoint is committed 
 
 ## Exact next step
 
-Finish Phase 0 full-suite run `test-results/phase0-full-v3/report.json` (running exec session 10164, preview 4289 / API 4429, installed Chrome). Inspect failures and update tests to current visible navigation/disclosures; do not weaken assertions or change the UI to satisfy old tests. Current run was at 6/154, with no failure yet. Poll session 42989 for the TypeScript + sandbox check. Preserve all failed/interrupted reports. After corrections, run a complete desktop + mobile suite on the final source, build, update this file/LOG.md/OWNER_TESTS.md, and commit before Phase 1.
+Finish the diagnostic 154-outcome sweep (session 10164, `test-results/phase0-full-v3/report.json`, 4289/4429; last observed 145/154, 19 failures already reported across old test revisions). It is not a final-source acceptance run because tests were corrected while it was running.
+
+The complete final desktop suite is running on frozen corrected tests: session 83242, 4296/4436, `test-results/phase0-final-desktop/report.json`; last observed 20/77, no failure reported so far. After the diagnostic sweep ends, start a complete **mobile-browser** suite in a separate fresh DB/ports/artifact folder. Keep one worker per run; desktop/mobile final runs may overlap because their databases/ports are separate. Do not rebuild dist during them. Inspect final reports; correct any remaining failures and repeat the affected complete project. Then record full desktop + mobile outcomes, update records and commit **before Phase 1 public research**.
+
+Current-source TypeScript passes. `npm run build -- --outDir test-results/phase0-checkpoint-build` passed (1875 modules, same asset names as dist, existing warnings), without disrupting previews. Sandbox HTTP verification passed. Targeted corrections v5: 6/7 desktop passed; the remaining assertion expected old default /4, now corrected to the existing R1 /6 default. Continuation's real Worker error was a 400-line routing cap, not a lost photo: 2000 QA allowance passed in v5. No safeguards were removed.
 
 Reproduction: PowerShell env `IP_RASM_TEST_BROWSER_CHANNEL=chrome`, `IP_RASM_TEST_PORT=4289`, `IP_RASM_TEST_API_PORT=4429`, `IP_RASM_TEST_ARTIFACTS=test-results/phase0-full-v3`, `IP_RASM_TEST_REPORT=test-results/phase0-full-v3/report.json`, then `npm run test:e2e`. Choose fresh unused ports for a later run; existing owner services must not be reused/stopped.
 
@@ -29,6 +33,9 @@ Reproduction: PowerShell env `IP_RASM_TEST_BROWSER_CHANNEL=chrome`, `IP_RASM_TES
 - (none yet)
 
 ## Known facts carried over
+
+- Additional test-only corrections: More menu vs existing photo candidate scoped separately; explicit interface/guide language; hidden settings opened through summaries without double toggling; upload waits for completion; missing outline photo replaced by committed orientation fixture; delayed digest intercept limited to sequence validation rather than photo hash; geometry checked against actual delivered pointer coordinates and frame bounds at each event with unchanged 6-digit accuracy; synthetic pickup settings; business announcement/settings cleanup between projects. No UI/engine edits.
+- Explicit test-server owner-path startup probe failed before SQLite/secrets with the expected owner-data error (exit 1).
 
 - Owner server: `Start-Ip-Rasm.cmd` → http://127.0.0.1:4194 (API 4331). Do not stop it.
 - Playwright browsers not installed; use installed Chrome.

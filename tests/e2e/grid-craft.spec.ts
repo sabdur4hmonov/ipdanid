@@ -14,13 +14,13 @@ for (const kind of ["mosaic", "diamond"] as const)
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/");
-    await page.getByLabel("Language").selectOption("en");
+    await page.getByLabel("Language", { exact: true }).selectOption("en");
     await openMore(page);
     await page.getByRole("button", { name: "Grid crafts", exact: true })
       .click();
     await page
       .getByLabel("Grid photo", { exact: true })
-      .setInputFiles("output/outline/source.jpg");
+      .setInputFiles("tests/fixtures/orientation-6.jpg");
     await revealControl(page.getByLabel("Craft type", { exact: true }));
     await page.getByLabel("Craft type", { exact: true }).selectOption(kind);
     await revealControl(page.getByLabel("Grid columns", { exact: true }));
@@ -185,7 +185,7 @@ test("insufficient actual stock is refused before a guide is created", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();
@@ -208,7 +208,7 @@ test("two windows reject stale grid confirmations without losing another window 
   context,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();
@@ -227,8 +227,8 @@ test("two windows reject stale grid confirmations without losing another window 
     .click();
   const other = await context.newPage();
   await other.goto("/");
+  await openMore(other);
   await other
-    .locator("nav")
     .getByRole("button", { name: "Grid crafts", exact: true })
     .click();
   await other

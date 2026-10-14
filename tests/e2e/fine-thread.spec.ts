@@ -9,7 +9,7 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     readFileSync("output/thread-fineness/candidate.json", "utf8"),
   ).project.instruction;
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[type=file][accept=".json,.txt"]')
@@ -29,7 +29,7 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     .click();
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByText("Dimensions and materials", { exact: true }).click();
@@ -44,6 +44,7 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     .locator("summary")
     .first()
     .click();
+  await revealControl(page.getByText("Saved settings", { exact: true }).first());
   await page.getByText("Saved settings", { exact: true }).first().click();
   await revealControl(page.getByLabel("Settings name", { exact: true }));
   await page.getByLabel("Settings name", { exact: true }).fill("Actual 0.05 mm thread");
@@ -53,7 +54,7 @@ test("real fine-thread guide retains exact material, progress and reusable prese
   await page.reload();
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page
@@ -61,6 +62,7 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     .locator("summary")
     .first()
     .click();
+  await revealControl(page.getByText("Saved settings", { exact: true }).first());
   await page.getByText("Saved settings", { exact: true }).first().click();
   await revealControl(page.getByLabel("Saved settings", { exact: true }));
   await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "Actual 0.05 mm thread" });

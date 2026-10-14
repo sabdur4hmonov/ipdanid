@@ -1,12 +1,29 @@
 import { test,expect } from "@playwright/test";
+let originalSettings: any;
+let announcementTitle: string | undefined;
+test.afterEach(async ({ request }) => {
+  const headers = { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN!}` };
+  if (announcementTitle) {
+    const items = await (await request.get("/api/admin/announcements", { headers })).json();
+    for (const item of items.filter((row: any) => row.title === announcementTitle && row.active))
+      expect((await request.post(`/api/admin/announcements/${item.id}/revoke`, { headers, data: { revision: item.revision } })).ok()).toBe(true);
+  }
+  if (originalSettings) {
+    const current = await (await request.get("/api/admin/settings", { headers })).json();
+    expect((await request.post("/api/admin/settings", { headers, data: { ...originalSettings, revision: current.revision } })).ok()).toBe(true);
+  }
+  announcementTitle = undefined;
+  originalSettings = undefined;
+});
 test.use({trace:"off"});
 test("isolated storefront pickup retries a lost response after reload without duplicate orders; owner messages and settings really persist",async({page,request},info)=>{
  test.skip(process.env.IP_RASM_BUSINESS_TEST!=="isolated","Only mutate the explicitly isolated sandbox test database");
  const token=process.env.LOCAL_ADMIN_TOKEN!;
  const headers={Authorization:`Bearer ${token}`};
  let config=await(await request.get("/api/admin/settings",{headers})).json();
+ originalSettings = { ...config };
  config=await(await request.post("/api/admin/settings",{headers,data:{...config,pickupAddress:"Test pickup A",sellerName:"Test seller A",paymentDetails:"Test terms A",deliveryEnabled:true,deliveryFeeMinor:12500}})).json();
- await page.goto("/");await page.getByLabel("Language").selectOption("en");
+ await page.goto("/");await page.getByLabel("Language", { exact: true }).selectOption("en");
  async function openAccount(){await page.getByText("More",{exact:true}).click();await page.getByRole("button",{name:"Account & shop",exact:true}).click();}
  await openAccount();const hub=page.locator(".customer-hub");await hub.getByRole("button",{name:"Start sandbox session",exact:true}).click();
  await hub.getByRole("button",{name:"Shop",exact:true}).click();await hub.getByRole("button",{name:"Add to cart",exact:true}).first().click();
@@ -25,6 +42,7 @@ test("isolated storefront pickup retries a lost response after reload without du
  const business=hub.getByTestId("business-admin");await expect(business).toBeVisible();await business.getByLabel("Pickup address",{exact:true}).fill("Test pickup C");await business.getByRole("button",{name:"Save",exact:true}).click();
  await expect.poll(async()=> (await(await request.get("/api/storefront")).json()).settings.pickupAddress).toBe("Test pickup C");
  const title=`Local test news ${info.project.name} ${Date.now()}`;
+ announcementTitle = title;
  await business.getByLabel("Title",{exact:true}).fill(title);await business.getByLabel("Message text",{exact:true}).fill("Local sandbox only; no external delivery");await business.getByRole("button",{name:"Publish announcement",exact:true}).click();
  await expect(page.getByTestId("announcements")).toContainText(title);await page.getByTestId("announcements").locator("article").filter({hasText:title}).getByRole("button",{name:"Dismiss message",exact:true}).click();await expect(page.getByTestId("announcements")).not.toContainText(title);
 });

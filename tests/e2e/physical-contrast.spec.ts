@@ -25,9 +25,9 @@ test("real physical Worker checkpoints survive reload; exact recovery, separate 
     };
   });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
@@ -57,7 +57,7 @@ test("real physical Worker checkpoints survive reload; exact recovery, separate 
   await page.evaluate(() => {
     (window as any).__interrupted = true;
   });
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await expect(
     page.getByRole("button", {
       name: "Resume saved optimization",
@@ -106,7 +106,7 @@ test("real physical Worker checkpoints survive reload; exact recovery, separate 
     .getByRole("button", { name: "Create", exact: true })
     .click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page

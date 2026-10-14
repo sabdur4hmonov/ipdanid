@@ -12,7 +12,7 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     ),
     i = file.project.instruction;
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[type=file][accept=".json,.txt"]')
@@ -99,7 +99,7 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     .click();
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page
@@ -112,10 +112,10 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     page.getByLabel("Computation resolution", { exact: true }),
   ).toHaveValue("320");
   for(const [locale,hint] of [["uz","Ko‘proq hisoblash sifatni kafolatlamaydi."],["ru","Больше вычислений не гарантирует сходство."],["en","More computation does not guarantee likeness."]]){
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.getByText(hint,{exact:false})).toBeVisible();
   }
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByText("Dimensions and materials", { exact: true }).click();
   await expect(page.getByLabel("Number of pins", { exact: true })).toHaveValue(
     "240",
@@ -124,6 +124,7 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     page.getByLabel("Thread thickness (mm)", { exact: true }),
   ).toHaveValue("0.1");
   // Settings persist on a synthetic photo without embedding the personal photo in the test page.
+  await revealControl(page.getByText("Saved settings", { exact: true }).first());
   await page.getByText("Saved settings", { exact: true }).first().click();
   await revealControl(page.getByLabel("Settings name", { exact: true }));
   await page.getByLabel("Settings name", { exact: true }).fill("Resolved 320 actual240pins");
@@ -133,7 +134,7 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
   await page.reload();
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page
@@ -141,6 +142,7 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     .locator("summary")
     .first()
     .click();
+  await revealControl(page.getByText("Saved settings", { exact: true }).first());
   await page.getByText("Saved settings", { exact: true }).first().click();
   await revealControl(page.getByLabel("Saved settings", { exact: true }));
   await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "Resolved 320 actual240pins" });

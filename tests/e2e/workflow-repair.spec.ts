@@ -4,9 +4,9 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   const frame = page.getByTestId("shape-crop");
@@ -15,6 +15,7 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
   const portrait = async () =>
     JSON.parse((await frame.getAttribute("data-portrait"))!);
   const original = await edits();
+  await revealControl(page.getByRole("button", { name: "Fit marked face to shape", exact: true, includeHidden: true }));
   await page
     .getByRole("button", { name: "Fit marked face to shape", exact: true })
     .click();
@@ -23,6 +24,7 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
   await expect(
     page.getByRole("status").filter({ hasText: "First mark the whole head" }),
   ).toContainText("First mark the whole head");
+  await revealControl(page.getByRole("button", { name: "Mark face bounds", exact: true, includeHidden: true }));
   await page
     .getByRole("button", { name: "Mark face bounds", exact: true })
     .click();
@@ -46,6 +48,7 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
   await revealControl(page.getByLabel("Zoom", { exact: true }));
   await page.getByLabel("Zoom", { exact: true }).fill("0.65");
   await expect(page.getByTestId("missing-photo")).toBeVisible();
+  await revealControl(page.getByText("Saved settings", { exact: true }).first());
   await page.getByText("Saved settings", { exact: true }).first().click();
   await revealControl(page.getByLabel("Settings name", { exact: true }));
   await page.getByLabel("Settings name", { exact: true }).fill("Small crop retained");
@@ -73,6 +76,7 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
   await revealControl(page.getByLabel("Eyes Left", { exact: true }));
   await page.getByLabel("Eyes Left", { exact: true }).fill("0.25");
   const saved = await portrait();
+  await revealControl(page.getByRole("button", { name: "Mark face bounds", exact: true, includeHidden: true }));
   await page
     .getByRole("button", { name: "Mark face bounds", exact: true })
     .click();
@@ -107,12 +111,13 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
         .getByLabel("Edited photo", { exact: true })
         .screenshot(),
     });
+  await revealControl(page.getByRole("button", { name: "second.png", exact: true, includeHidden: true }));
   await expect(
     page.getByRole("button", { name: "second.png", exact: true }),
   ).toBeVisible();
   expect((await portrait()).regions).toBeUndefined();
-  await openMore(page);
-  await page
+  await revealControl(page.getByTestId("advanced-photo").getByRole("button", { name: "Try an original sample", exact: true, includeHidden: true }));
+  await page.getByTestId("advanced-photo")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   expect(await portrait()).toEqual(corrected);
@@ -121,7 +126,7 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
     ["ru", "Текущие параметры генерации"],
     ["en", "Current generation settings"],
   ]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.getByTestId("actual-settings")).toContainText(text);
   }
 });

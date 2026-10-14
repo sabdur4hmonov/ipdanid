@@ -7,9 +7,9 @@ test("global Worker bootstrap preserves comparison, cancellation, legal exports 
 }) => {
   test.setTimeout(180000);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));

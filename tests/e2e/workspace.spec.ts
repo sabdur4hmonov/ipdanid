@@ -11,9 +11,9 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   // Exercise the actual validated PNG photo-upload path, using an original test fixture.
@@ -25,6 +25,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
     mimeType: "image/png",
     buffer: png,
   });
+  await revealControl(page.getByRole("button", { name: "Lighter", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Lighter", exact: true }).click();
   const start = Date.now();
   await page.getByRole("button", { name: "Calculate thread path" }).click();
@@ -43,7 +44,8 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   const previewHash = await page
     .locator("canvas[data-sequence-hash]")
     .getAttribute("data-sequence-hash");
-  await page.getByLabel("Project name").fill("Verified original sample");
+  await revealControl(page.getByLabel("Project name", { exact: true }));
+  await page.getByLabel("Project name", { exact: true }).fill("Verified original sample");
   await page.getByRole("button", { name: "Save & assemble" }).click();
   await expect(page.getByTestId("player-hash")).toHaveText(previewHash!);
   await expect(page.getByTestId("confirmed-step")).toContainText("0/");
@@ -85,7 +87,9 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   ]);
   const path = await json.path();
   const exported = JSON.parse(readFileSync(path!, "utf8"));
-  expect(exported.project.instruction.algorithm).toBe("greedy-optical/4");
+  // R1's explicit whole-image path uses the guarded solver; legacy /4 imports
+  // remain covered by their pinned compatibility tests.
+  expect(exported.project.instruction.algorithm).toBe("continuous-guarded/6");
   expect(exported.project.instruction.params.resolution).toBe(160);
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.locator("input[type=file]").last().setInputFiles(path!);
@@ -180,11 +184,12 @@ test("rectangular material dimensions drive crop, worker, preview and multicolor
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByRole("button", { name: "Rectangle", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Rectangle", exact: true }).click();
   await page.getByLabel("Thread and base").selectOption("color");
   await page.getByText("Dimensions and materials", { exact: true }).click();
@@ -192,6 +197,7 @@ test("rectangular material dimensions drive crop, worker, preview and multicolor
   await page.getByLabel("Height (mm)", { exact: true }).fill("300");
   await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("60");
+  await revealControl(page.getByRole("button", { name: "Lighter", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Lighter", exact: true }).click();
   await page.getByRole("button", { name: "Calculate thread path" }).click();
   await expect(
@@ -214,9 +220,9 @@ test("photo candidates retain edits and reusable settings persist without storin
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   const png = await page
@@ -231,8 +237,8 @@ test("photo candidates retain edits and reusable settings persist without storin
   });
   await revealControl(page.getByLabel("Brightness", { exact: true }));
   await page.getByLabel("Brightness", { exact: true }).fill("-20");
-  await openMore(page);
-  await page
+  await revealControl(page.getByTestId("advanced-photo").getByRole("button", { name: "Try an original sample", exact: true, includeHidden: true }));
+  await page.getByTestId("advanced-photo")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await expect(page.getByLabel("Brightness", { exact: true })).toHaveValue(
@@ -244,12 +250,14 @@ test("photo candidates retain edits and reusable settings persist without storin
   await expect(page.getByLabel("Brightness", { exact: true })).toHaveValue(
     "-20",
   );
+  await revealControl(page.getByRole("button", { name: "Rectangle", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Rectangle", exact: true }).click();
   await page.getByText("Dimensions and materials", { exact: true }).click();
   await revealControl(page.getByLabel("Height (mm)", { exact: true }));
   await page.getByLabel("Height (mm)", { exact: true }).fill("300");
   await revealControl(page.getByLabel("Number of pins", { exact: true }));
   await page.getByLabel("Number of pins", { exact: true }).fill("60");
+  await revealControl(page.getByRole("button", { name: "Lighter", exact: true, includeHidden: true }));
   await page.getByRole("button", { name: "Lighter", exact: true }).click();
   await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
@@ -260,17 +268,13 @@ test("photo candidates retain edits and reusable settings persist without storin
     .click();
   await expect(page.locator(".alert.success")).toHaveText("Settings saved");
   await page.reload();
-  await expect(
-    page.getByRole("button", { name: "Try my photo", exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Upload from gallery", exact: true })).toBeVisible();
+  await openMore(page);
+  await page.locator(".more-menu").getByRole("button", { name: "Try an original sample", exact: true }).click();
   await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
   await revealControl(page.getByLabel("Saved settings", { exact: true }));
   await page.getByLabel("Saved settings", { exact: true }).selectOption({ label: "Small rectangular board" });
-  await openMore(page);
-  await page
-    .getByRole("button", { name: "Try an original sample", exact: true })
-    .click();
   // Crop is specific to a new source and starts at default; material settings still persist.
   await revealControl(page.getByLabel("Brightness", { exact: true }));
   await page.getByLabel("Brightness", { exact: true }).fill("-20");

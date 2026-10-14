@@ -19,10 +19,10 @@ test("completed physical fit remains archived after recovery marker is cleared a
 }) => {
   test.setTimeout(150000);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByTestId("advanced-photo").locator("summary").first().click();
@@ -108,10 +108,10 @@ test("group Continue survives reload using frozen private pixels; deleting them 
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByTestId("mark-two-faces").click();

@@ -21,10 +21,10 @@ test("two-person manual regions, photo advice and guarded worker stay consistent
 }, info) => {
   test.setTimeout(180000);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page.getByTestId("mark-two-faces").click();
@@ -80,7 +80,7 @@ test("two-person manual regions, photo advice and guarded worker stay consistent
     ["ru", "Проверьте фотографию"],
     ["en", "Check your photo"],
   ]) {
-    await page.getByLabel("Language").selectOption(lang);
+    await page.getByLabel("Language", { exact: true }).selectOption(lang);
     await expect(page.getByTestId("photo-quality-advice")).toContainText(title);
   }
   // Rotation remaps every face, so each person is confirmed again afterwards.

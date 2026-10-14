@@ -10,9 +10,9 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
 }, info) => {
   test.setTimeout(180000);
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
@@ -22,7 +22,7 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
     ["ru", "приблизительные"],
     ["en", "proportional estimates"],
   ]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.getByTestId("region-editor")).toContainText(text);
   }
   const mouth = page.locator('[data-region="mouth"]');
@@ -197,7 +197,14 @@ test("cancel during asynchronous validation and reject mismatched Worker jobs", 
       crypto.subtle.digest = async (
         ...args: Parameters<SubtleCrypto["digest"]>
       ) => {
-        if (initial) {
+        // Target/recipe hashes are also computed on photo selection now.
+        // Delay only immutable instruction validation, the event under test.
+        let sequence = false;
+        try {
+          const payload = JSON.parse(new TextDecoder().decode(args[1]));
+          sequence = Array.isArray(payload.segments) && typeof payload.algorithm === "string";
+        } catch { /* image bytes are not a sequence payload */ }
+        if (initial && sequence) {
           initial = false;
           (window as any).validationStarted = true;
           await new Promise<void>((resolve) => {
@@ -205,7 +212,7 @@ test("cancel during asynchronous validation and reject mismatched Worker jobs", 
           });
         }
         const result = await digest(...args);
-        (window as any).validationReturned =
+        if (sequence) (window as any).validationReturned =
           ((window as any).validationReturned ?? 0) + 1;
         return result;
       };
@@ -238,9 +245,9 @@ test("cancel during asynchronous validation and reject mismatched Worker jobs", 
     { first, second },
   );
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page

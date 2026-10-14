@@ -101,7 +101,7 @@ test("manual anatomical objective survives reload and exact real Worker recovery
     },
   );
   await page.reload();
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page
     .getByRole("button", { name: "Resume saved optimization", exact: true })
     .click();
@@ -173,7 +173,7 @@ test("source-matched anatomy action creates a separate variant and preserves sav
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page
     .locator("nav")
     .getByRole("button", { name: "My projects", exact: true })
@@ -196,7 +196,7 @@ test("source-matched anatomy action creates a separate variant and preserves sav
     .getByRole("button", { name: "Reuse settings", exact: true })
     .click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await revealControl(page.getByLabel("Portrait optimization", { exact: true }));
@@ -287,7 +287,7 @@ test("source-matched anatomy action creates a separate variant and preserves sav
   expect(stored[0].settings.anatomy).toEqual(DEFAULT_ANATOMICAL_IMPORTANCE);
   await page.reload();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));

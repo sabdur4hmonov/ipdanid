@@ -33,7 +33,7 @@ async function start(page: Page) {
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
 }
 async function uploadFixture(page: Page, kind: SyntheticSubject, name: string) {
   const pixels = Array.from(syntheticSubject(kind, N));
@@ -295,7 +295,7 @@ test("third person added when two were detected; review gates each person; local
     ["ru", "человек 2, 3", "Автомобиль"],
     ["en", "person 2, 3", "Vehicle"],
   ]) {
-    await page.getByLabel("Language").selectOption(lang);
+    await page.getByLabel("Language", { exact: true }).selectOption(lang);
     await expect(blocked).toContainText(gate);
     await expect(card(page, "vehicle")).toContainText(vehicle);
   }

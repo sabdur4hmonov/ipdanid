@@ -24,12 +24,12 @@ test("face photo cannot silently use the general solver; reviewed choices preser
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page
     .getByLabel("Upload from gallery", { exact: true })
     .setInputFiles("output/portrait/source.jpg");
   // R1: the subject is chosen explicitly; people analysis is not the default.
-  await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
+  await page.getByRole("radio", { name: /^People \(1–3\)/ }).click();
   await expect(page.getByTestId("background-status")).toHaveAttribute(
     "data-status",
     "ready",

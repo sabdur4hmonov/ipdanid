@@ -120,7 +120,7 @@ for (const mode of ["dark", "light"] as const)
       },
     );
     await page.reload();
-    await page.getByLabel("Language").selectOption("en");
+    await page.getByLabel("Language", { exact: true }).selectOption("en");
     await page
       .getByRole("button", { name: "Resume saved optimization", exact: true })
       .click();
@@ -197,7 +197,7 @@ for (const mode of ["dark", "light"] as const)
       .first()
       .click();
     await openMore(page);
-    await page
+    await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
       .click();
     await expect(
@@ -226,7 +226,7 @@ for (const mode of ["dark", "light"] as const)
     expect(presets[0].settings.pinBasis).toEqual(profile.pinBasis);
     await page.reload();
     await openMore(page);
-    await page
+    await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
       .click();
     await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
@@ -240,6 +240,7 @@ for (const mode of ["dark", "light"] as const)
     await expect(
       page.getByLabel("Number of pins", { exact: true }),
     ).toHaveValue("320");
+    await revealControl(page.getByRole("button", { name: "Heart", exact: true, includeHidden: true }));
     await page.getByRole("button", { name: "Heart", exact: true }).click();
     await expect(
       page.getByLabel("Portrait optimization", { exact: true }),

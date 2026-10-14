@@ -28,9 +28,9 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
     progress: { ...progressFor(instruction), confirmed: 3 },
   };
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await expect(
@@ -72,7 +72,7 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
     ["ru", "Разрешение расчёта"],
     ["en", "Computation resolution"],
   ]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.getByLabel(label, { exact: true })).toHaveValue("192");
   }
   const mouth = page.locator('[data-region="mouth"]');
@@ -80,6 +80,14 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
   const box = JSON.parse((await mouth.getAttribute("data-box"))!);
   const r = (await mouth.boundingBox())!;
   const frame = (await page.locator(".target-frame").boundingBox())!;
+  await mouth.evaluate((node) => {
+    (window as any).__regionPointer = [];
+    for (const kind of ["pointerdown", "pointermove"])
+      node.addEventListener(kind, (event) => {
+        const rect = node.closest(".target-frame")!.getBoundingClientRect();
+        (window as any).__regionPointer.push({ y: (event as PointerEvent).clientY, top: rect.top, height: rect.height });
+      });
+  });
   if (info.project.name === "mobile-browser") {
     const cdp = await context.newCDPSession(page);
     await cdp.send("Input.dispatchTouchEvent", {
@@ -103,7 +111,15 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
     await page.mouse.up();
   }
   const moved = JSON.parse((await mouth.getAttribute("data-box"))!);
-  expect(moved.top).toBeCloseTo(box.top - ((20 / frame.height) * 192) / 191, 6);
+  const delivered = await page.evaluate(() => {
+    const values = (window as any).__regionPointer;
+    const first = values[0], last = values.at(-1);
+    return { pixels: last.y - first.y, normalized: (last.y-last.top)/last.height - (first.y-first.top)/first.height };
+  });
+  // Native mouse/CDP coordinates are rounded; verify the mapping against the
+  // actual delivered pointer displacement while still checking the gesture.
+  expect(Math.abs(delivered.pixels + 20)).toBeLessThanOrEqual(1);
+  expect(moved.top).toBeCloseTo(box.top + (delivered.normalized * 192) / 191, 6);
   await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
   await page.locator("summary").filter({ hasText: "Saved settings" }).click();
   await revealControl(page.getByLabel("Settings name", { exact: true }));

@@ -20,9 +20,9 @@ test("contour target toggles exactly; real Worker, preset, progress and offline 
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await revealControl(page.getByLabel("Prioritize portrait", { exact: true }));
@@ -56,6 +56,7 @@ test("contour target toggles exactly; real Worker, preset, progress and offline 
   await page.getByLabel("Number of pins", { exact: true }).fill("24");
   await revealControl(page.getByLabel("Maximum lines", { exact: true }));
   await page.getByLabel("Maximum lines", { exact: true }).fill("200");
+  await revealControl(page.getByText("Saved settings", { exact: true }).first());
   await page.getByText("Saved settings", { exact: true }).first().click();
   await revealControl(page.getByLabel("Settings name", { exact: true }));
   await page.getByLabel("Settings name", { exact: true }).fill("Exact contour preparation");
@@ -127,7 +128,7 @@ test("preserved real portrait import retains exact path/progress and contour pre
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[type=file][accept=".json,.txt"]')
@@ -143,12 +144,13 @@ test("preserved real portrait import retains exact path/progress and contour pre
     .getByRole("button", { name: "Reuse settings", exact: true })
     .click();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await expect(
     page.getByLabel("Separate facial contours", { exact: true }),
   ).toBeChecked();
+  await revealControl(page.getByText("Saved settings", { exact: true }).first());
   await page.getByText("Saved settings", { exact: true }).first().click();
   await revealControl(page.getByLabel("Settings name", { exact: true }));
   await page.getByLabel("Settings name", { exact: true }).fill("Imported contour");
@@ -157,12 +159,14 @@ test("preserved real portrait import retains exact path/progress and contour pre
     .click();
   await page.reload();
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
+  await revealControl(page.getByText("Saved settings", { exact: true }).first());
   await page.getByText("Saved settings", { exact: true }).first().click();
   const select = page.getByLabel("Saved settings", { exact: true });
   const id = await select.locator("option").last().getAttribute("value");
+  await revealControl(select);
   await select.selectOption(id!);
   await expect(
     page.getByLabel("Separate facial contours", { exact: true }),

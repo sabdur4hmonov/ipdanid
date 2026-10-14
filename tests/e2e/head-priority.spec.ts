@@ -10,7 +10,7 @@ test("face-protected hair-cycle guide imports as its immutable sequence and expo
     file = JSON.parse(readFileSync(path, "utf8")),
     i = file.project.instruction;
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[type=file][accept=".json,.txt"]')

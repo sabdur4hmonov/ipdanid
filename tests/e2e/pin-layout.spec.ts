@@ -30,9 +30,9 @@ test("explicit rotated board survives import, presets, reuse and actual Worker g
     progress: { ...progressFor(instruction), confirmed: 3 },
   };
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.getByLabel("Language", { exact: true }).selectOption("en");
   await openMore(page);
-  await page
+  await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
     .click();
   await page
@@ -58,7 +58,7 @@ test("explicit rotated board survives import, presets, reuse and actual Worker g
     .getByRole("button", { name: "Reuse settings", exact: true })
     .click();
   for (const locale of ["uz", "ru", "en"]) {
-    await page.getByLabel("Language").selectOption(locale);
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
     await expect(page.getByTestId("layout-settings")).toContainText("0.75°");
   }
   await revealControl(page.locator("summary").filter({ hasText: "Saved settings" }));
