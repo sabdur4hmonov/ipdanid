@@ -1,4 +1,7 @@
 import { SubjectChooser } from "./SubjectChooser";
+import { recordedClipPlayer } from "./recorded-player";
+import { recordedStepEntries } from "./core/recorded-voices";
+import { recordedVoiceText } from "./recorded-voice-i18n";
 import { BuildGate } from "./BuildGate";
 import { useBuildAccess } from "./useBuildAccess";
 import { SubjectMarksEditor } from "./SubjectMarksEditor";
@@ -439,25 +442,59 @@ export function useAppController() {
     if (view !== "assemble" || !active || !chosenVoice || !voiceEnabled) return;
     const guideT = translate(guideLocale);
     const text = `${guideT("pdfStep")} ${spokenPin(guideLocale, current)}. ${spokenPin(guideLocale, active.from)} ${guideT("from")}, ${spokenPin(guideLocale, active.to)} ${guideT("to")}.${active.segmentStart ? " " + guideT(active.segment === 0 ? "startKnot" : "colorChange") : ""}`;
-    if (chosenVoice.native) {
-      void nativeGuideSpeech(text, chosenVoice, guideLocale, speechRate).catch(
-        () => {
-          setVoiceEnabled(false);
-          setError(t("noVoice"));
-        },
-      );
+    const fallback = (voice: GuideVoice) => {
+      if (voice.native) {
+        void nativeGuideSpeech(text, voice, guideLocale, speechRate).catch(
+          () => {
+            setVoiceEnabled(false);
+            setError(t("noVoice"));
+          },
+        );
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = voice.browser!;
+      u.lang = voice.lang;
+      u.rate = speechRate;
+      u.volume = 1;
+      if (gain.current) gain.current.gain.value = volume * 0.15;
+      u.onend = () => {
+        if (gain.current) gain.current.gain.value = volume;
+      };
+      window.speechSynthesis.speak(u);
+    };
+    if (chosenVoice.recorded) {
+      if (gain.current) gain.current.gain.value = volume * 0.15;
+      void recordedClipPlayer
+        .play(
+          recordedStepEntries(
+            chosenVoice.recorded,
+            current,
+            active.from,
+            active.to,
+            active.segmentStart
+              ? active.segment === 0
+                ? "first"
+                : "color"
+              : undefined,
+          ),
+          speechRate,
+        )
+        .then((played) => {
+          if (played && gain.current) gain.current.gain.value = volume;
+        })
+        .catch(() => {
+          setNotice(recordedVoiceText(locale, "fallback"));
+          const voice = matchingVoices.find((v) => !v.recorded);
+          if (voice) fallback(voice);
+          else {
+            setVoiceEnabled(false);
+            setError(t("noVoice"));
+          }
+        });
       return;
     }
-    const u = new SpeechSynthesisUtterance(text);
-    u.voice = chosenVoice.browser!;
-    u.lang = chosenVoice.lang;
-    u.rate = speechRate;
-    u.volume = 1;
-    if (gain.current) gain.current.gain.value = volume * 0.15;
-    u.onend = () => {
-      if (gain.current) gain.current.gain.value = volume;
-    };
-    window.speechSynthesis.speak(u);
+    fallback(chosenVoice);
   };
   useEffect(() => {
     void readPresets()

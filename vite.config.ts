@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { offlineShellSource } from "./src/core/offline-shell";
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { availableRecordedVoices } from "./src/core/recorded-voices";
 const segmentationFiles = [
   "vision_bundle.js",
   "wasm/vision_wasm_internal.js",
@@ -94,6 +95,26 @@ export default defineConfig({
     {
       name: "offline-app-shell",
       generateBundle(_options, bundle) {
+        const recorded = availableRecordedVoices(
+            JSON.parse(readFileSync("public/voices/manifest.json", "utf8")),
+          ),
+          voiceFiles = [
+            "/voices/manifest.json",
+            ...new Set(
+              recorded.flatMap((v) =>
+                Object.values(v.clips).map((c) => {
+                  const bytes = readFileSync("public" + c.path);
+                  if (
+                    bytes.length !== c.bytes ||
+                    createHash("sha256").update(bytes).digest("hex") !==
+                      c.sha256
+                  )
+                    throw Error("Voice asset integrity mismatch");
+                  return c.path;
+                }),
+              ),
+            ),
+          ];
         const files = [
           "/",
           "/index.html",
@@ -101,6 +122,7 @@ export default defineConfig({
           "/manifest.webmanifest",
           ...fontFiles,
           ...segmentationFiles,
+          ...voiceFiles,
           ...Object.keys(bundle)
             .filter((f) => !f.endsWith(".map"))
             .map((f) => "/" + f),
@@ -108,7 +130,7 @@ export default defineConfig({
         const version =
           Object.keys(bundle).sort().join("|") +
           "|" +
-          [...segmentationFiles, ...fontFiles]
+          [...segmentationFiles, ...fontFiles, ...voiceFiles]
             .map((f) =>
               createHash("sha256")
                 .update(readFileSync("public" + f))

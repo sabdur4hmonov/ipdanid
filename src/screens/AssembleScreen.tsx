@@ -1,4 +1,5 @@
 import type { AppScreenContext } from "../useAppController";
+import { recordedVoiceText } from "../recorded-voice-i18n";
 type ScreenContext = Pick<
   AppScreenContext,
   | "ArrowRight"
@@ -444,6 +445,15 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
               </button>
             </>
           )}
+          <p className="fineprint" data-testid="recorded-voice-availability">
+            {recordedVoiceText(
+              locale,
+              matchingVoices.some((v) => v.recorded) ? "available" : "missing",
+            )}
+            {matchingVoices.some((v) => v.recorded)
+              ? `: ${matchingVoices.filter((v) => v.recorded).length}`
+              : ""}
+          </p>
           <label className="check-label">
             <input
               type="checkbox"

@@ -1,10 +1,13 @@
 import { Capacitor, registerPlugin } from "@capacitor/core";
+import { recordedVoices, type RecordedVoice } from "./core/recorded-voices";
+import { recordedClipPlayer } from "./recorded-player";
 export type GuideVoice = {
   id: string;
   name: string;
   lang: string;
   native: boolean;
   browser?: SpeechSynthesisVoice;
+  recorded?: RecordedVoice;
 };
 type NativeVoice = { id: string; name: string; lang: string };
 const native = registerPlugin<{
@@ -23,17 +26,31 @@ let requestId = 0;
 const session = crypto.randomUUID();
 export const androidSpeech = () => Capacitor.getPlatform() === "android";
 export async function guideVoices(): Promise<GuideVoice[]> {
-  if (androidSpeech())
-    return (await native.voices()).voices.map((v) => ({ ...v, native: true }));
-  return (window.speechSynthesis?.getVoices() ?? []).map((v) => ({
-    id: v.voiceURI,
+  const recorded = (await recordedVoices()).map((v) => ({
+    id: v.id,
     name: v.name,
     lang: v.lang,
     native: false,
-    browser: v,
+    recorded: v,
   }));
+  if (androidSpeech())
+    return [
+      ...recorded,
+      ...(await native.voices()).voices.map((v) => ({ ...v, native: true })),
+    ];
+  return [
+    ...recorded,
+    ...(window.speechSynthesis?.getVoices() ?? []).map((v) => ({
+      id: v.voiceURI,
+      name: v.name,
+      lang: v.lang,
+      native: false,
+      browser: v,
+    })),
+  ];
 }
 export function cancelGuideSpeech() {
+  recordedClipPlayer.stop();
   if (androidSpeech())
     void native.stop({ requestId: ++requestId, session }).catch(() => {});
   else window.speechSynthesis?.cancel();

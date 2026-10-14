@@ -1,0 +1,15 @@
+{
+  "version": "recorded-instructors/1",
+  "profiles": [
+    {
+      "id": "instructor-a",
+      "name": "Instructor A",
+      "clips": {}
+    },
+    {
+      "id": "instructor-b",
+      "name": "Instructor B",
+      "clips": {}
+    }
+  ]
+}
