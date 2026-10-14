@@ -22,6 +22,7 @@ import { validSubjectPlan } from "./subject-plan";
 self.onmessage = async ({ data }) => {
   try {
     const started = performance.now();
+    if (data.strategy === "outline") throw Error("lettering/rebuild");
     if (data.strategy === "subjects") {
       const problem = capabilityProblem("density-subject/18", {
         subject: data.subject,
@@ -231,6 +232,7 @@ self.onmessage = async ({ data }) => {
                         seed: options.seed,
                         profile: options.profile,
                         portrait: options.portrait,
+                        product: options.product,
                         resolution: options.resolution,
                         mode: options.mode,
                         lines: data.lines,

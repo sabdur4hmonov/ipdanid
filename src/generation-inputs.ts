@@ -20,6 +20,7 @@ export interface LocalGenerationInput {
     profile: MaterialProfile;
     portrait?: PortraitSettings;
     subject?: import("./core/subject-plan").SubjectPlan;
+    product?: import("./core/lettering-contract").LetteringProduct;
     mode: Instruction["params"]["mode"];
     lines: number;
     strategy: GenerationStrategy;
@@ -70,6 +71,7 @@ export async function validateLocalInput(
     JSON.stringify(value.recipe.portrait) !==
       JSON.stringify(i.params.portrait) ||
     JSON.stringify(value.recipe.subject) !== JSON.stringify(i.params.subject) ||
+    JSON.stringify(value.recipe.product) !== JSON.stringify(i.params.product) ||
     value.recipe.mode !== i.params.mode ||
     value.recipe.lines !== i.params.requestedLines ||
     JSON.stringify(value.recipe.objective) !==

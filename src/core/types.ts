@@ -53,6 +53,7 @@ export interface MaterialProfile {
   // Optional for legacy compatibility. Board top is y=0; IDs increase clockwise.
   pinLayout?: CircleLayout;
   pinBasis?: import("./pin-basis").PinBasis;
+  glyphLayout?: import("./lettering-contract").GlyphLayout;
   shaftMm: number;
   threadMm: number;
   opacity: number;
@@ -101,6 +102,7 @@ export interface Instruction {
     | "density-feature/16"
     | "density-texture/17"
     | "density-subject/18"
+    | "glyph-outline/19"
     | "density-head/13"
     | "hair-cycles/14"
     | "group-optical/15";
@@ -116,6 +118,7 @@ export interface Instruction {
     mode: "dark" | "light" | "color";
     portrait?: PortraitSettings;
     subject?: import("./subject-plan").SubjectPlan;
+    product?: import("./lettering-contract").LetteringProduct;
     stockPolicy?: "estimate";
     parentSequenceHash?: string;
     refinementStage?: number;
@@ -128,7 +131,7 @@ export interface Instruction {
       features?: import("./feature-contrast").FeatureContrastSettings;
       texture?: import("./local-texture").LocalTextureSettings;
       subjectObjective?: import("./subject-objective").SubjectObjectiveSettings;
-      kind?: "density-coordinate" | "optical-coordinate";
+      kind?: "density-coordinate" | "optical-coordinate" | "glyph-outline";
       order?: "dispersed-v1";
       overshoot?: "target-luminance-v1";
       pairLimit?: 32;

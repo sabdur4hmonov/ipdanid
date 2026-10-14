@@ -17,6 +17,7 @@ export function generationStrategy(i: Instruction): GenerationStrategy {
   return capability.strategy;
 }
 export function continuationStrategy(i: Instruction): GenerationStrategy {
+  if (!CAPABILITIES[i.algorithm]?.canContinue) throw Error("lettering/rebuild");
   if (i.algorithm !== "density-subject/18") {
     if (i.algorithm === "density-texture/17") return "texture";
     if (i.params.subject && i.params.subject.kind !== "people")

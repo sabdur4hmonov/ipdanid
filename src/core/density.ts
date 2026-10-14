@@ -1,4 +1,5 @@
 import { validSubjectPlan } from "./subject-plan";
+import { validLetteringProduct } from "./lettering-contract";
 import {
   subjectWeightField,
   measureSubjects,
@@ -123,6 +124,15 @@ export async function generateDensity(
   )
     throw Error("Invalid initial objective version");
   if (o.subject) validSubjectPlan(o.subject, portrait);
+  if (o.product) {
+    validLetteringProduct(o.product);
+    if (
+      !general ||
+      o.product.style !== "target" ||
+      o.subject?.kind !== "whole-image"
+    )
+      throw Error("lettering/strategy");
+  }
   if ((!portrait?.enabled && !general) || !["dark", "light"].includes(o.mode))
     throw new Error("Density optimization requires a new monochrome portrait");
   if (o.seed) assertContinuation(o, await hash(o.pixels));
@@ -745,6 +755,7 @@ export async function generateDensity(
             profile: p,
             portrait,
             ...(o.subject ? { subject: o.subject } : {}),
+            ...(o.product ? { product: o.product } : {}),
             mode: o.mode,
             lines: o.lines,
             seed: o.seed?.sequenceHash,
@@ -1366,6 +1377,7 @@ export async function generateDensity(
       stockPolicy: "estimate",
       portrait: structuredClone(portrait),
       ...(o.subject ? { subject: structuredClone(o.subject) } : {}),
+      ...(o.product ? { product: structuredClone(o.product) } : {}),
       ...(o.seed
         ? {
             parentSequenceHash: o.seed.sequenceHash,

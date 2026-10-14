@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase4 offline font/shaping foundation implemented/tested.
+Last update: 2026-10-14 — Phase4 exact lettering guide construction and provenance tested; UI next.
 Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
 
 ## Phase status
@@ -20,7 +20,9 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 
 ## Exact next step
 
-Phase4 next milestone after the font foundation commit: bind text target metadata to generalized18 and implement a new versioned glyph-outline physical layout/sequence19 with actual coordinates, closed glyph loops and every visible bridge in one continuous path. Use separate glyphLayout metadata rather than weakening circle pinLayout assumptions. Validate pinned font/provenance/coordinate hash, counts/spacing/continuity/metres and actual raster; preserve old engine/hash branches. Reuse shared optical preview/player/PDF/JSON/TXT, add four-language text UI and exact template/offline tests. Optional name+portrait only as explicit prepared target with renewed manual review; animal/object presets reuse18. No default promotion. Ordered Phase5–7 remain; do not stop after partial work.
+Phase4 next milestone after exact-guide core commit: add four-language lettering UI in Crafts, explicit prepared-target review, real subjects Worker for filled text, outline19 generation, save/open in shared player/library and exact PDF/JSON/TXT browser checks. Preserve private prepared target/checkpoint for18 continuation. Then finish presets/feasibility documentation and continue Phase5–7. No default promotion; do not stop after partial work.
+
+Core milestone after0c362e6: glyph-outline/19 deterministic closed glyph loops, every inter-loop bridge counted in one continuous path, separate glyphLayout coordinate hash, physical spacing, 32/160 guards, exact material accounting including .5m knots. True baseline/reconstruction MSE retained without fabricated fitting improvement or weighted objective. Product/font/shaping provenance bound to18/19, checkpoint identity, archived input and continuation;19 cannot be continued by a fitter. Shared optical renderer/normal exact-coordinate PDF template reused; existing circle metadata untouched. Relevant10/10 then final7/7 tests (including real filled-text18 fit/recovery and altered-text refusal) pass. Full unit report phase4-guide-full-unit.json and build1884modules completed; full counts recorded in LOG before commit. No text UI yet.
 
 Font foundation: public/fonts/NotoNaskhArabic-Regular.ttf unmodified official248220bytes Version2.021; OFL-NotoNaskhArabic.txt retains upstream copyright/license. SHA pins in SOURCE.md and core loader. Fontkit OpenType shaping used, no reverse-Unicode trick/system fallback. Latin/Cyrillic/Arabic6/6 mechanics tests(test-results/phase4-lettering-core-unit.json), including actual joined-vs-spaced Arabic raster connectivity, counters, circle/heart fit, all-pair physical spacing/refusals. New src/core/lettering.ts supplies physical glyph paths(.2mm flattening), actual deterministic4× target and24–240 contour pins. Mixed Arabic+Latin/Cyrillic single-line bidi explicitly unsupported; no missing-glyph fallback. Glyph loops include counters/joining contours; future bridges visible. Font/license/static CSS added to offline cache/content version. docs/LETTERING_CHECKPOINT.md records limits and primary sources. No product UI/guide19 yet. Font-stage build1882modules passed(existing warnings), SW/font assets included; offline regression checked before commit.
 

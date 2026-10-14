@@ -1,4 +1,4 @@
-import {validSubjectPlan} from "./subject-plan";
+import { validSubjectPlan } from "./subject-plan";
 import { Distribution } from "./distribution";
 import { assertContinuation } from "./continuation";
 import type { Instruction, MaterialProfile, Segment, Step } from "./types";
@@ -63,6 +63,7 @@ export function deepFreeze<T>(obj: T): T {
   return obj;
 }
 export interface GenerateOptions {
+  product?: import("./lettering-contract").LetteringProduct;
   pixels: Uint8Array;
   resolution: number;
   profile: MaterialProfile;
@@ -77,7 +78,8 @@ export interface GenerateOptions {
   onDiagnostic?: (data: Record<string, unknown>) => void;
 }
 export async function generate(o: GenerateOptions): Promise<Instruction> {
-  if(o.subject) validSubjectPlan(o.subject,o.portrait);
+  if (o.product) throw Error("lettering/strategy");
+  if (o.subject) validSubjectPlan(o.subject, o.portrait);
   const grouped = Boolean(o.portrait?.enabled && o.portrait.people);
   if (
     grouped &&

@@ -14,6 +14,7 @@ export interface OptimizerRecovery {
   profile?: import("./core/types").MaterialProfile;
   portrait?: import("./core/types").PortraitSettings;
   subject?: import("./core/subject-plan").SubjectPlan;
+  product?: import("./core/lettering-contract").LetteringProduct;
   resolution?: number;
   mode?: "dark" | "light" | "color";
   pixels: Uint8Array;

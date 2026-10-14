@@ -12,8 +12,10 @@ export type GenerationStrategy =
   | "features"
   | "texture"
   | "subjects"
+  | "outline"
   | "simplify";
 interface Capability {
+  canContinue: boolean;
   render: "legacy-lines" | "optical-raster";
   strategy: GenerationStrategy;
   continuation: GenerationStrategy;
@@ -37,6 +39,7 @@ const cap = (
   options: Partial<Capability> = {},
 ): Capability => ({
   render: "optical-raster",
+  canContinue: true,
   strategy,
   continuation: strategy,
   kinds: allKinds,
@@ -118,6 +121,14 @@ export const CAPABILITIES: Readonly<
     modes: ["dark", "light"],
     maximumResolution: 320,
     maximumSubjects: 3,
+    experimental: true,
+  }),
+  "glyph-outline/19": cap("outline", {
+    kinds: ["whole-image"],
+    modes: ["dark"],
+    shapes: ["rectangle"],
+    maximumResolution: 320,
+    canContinue: false,
     experimental: true,
   }),
   "assembly-prune/9": cap("simplify", {

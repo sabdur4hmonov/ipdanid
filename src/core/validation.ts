@@ -1,4 +1,6 @@
 import { validSubjectPlan } from "./subject-plan";
+import { validLetteringProduct } from "./lettering-contract";
+import { validateGlyphInstruction } from "./glyph-layout";
 import { validSubjectObjective } from "./subject-objective";
 import { capabilityProblem } from "./capabilities";
 import { validHeadImportance } from "./head-importance";
@@ -43,6 +45,7 @@ export async function validateInstruction(
       "density-head/13",
       "hair-cycles/14",
       "assembly-prune/9",
+      "glyph-outline/19",
     ].includes(i.algorithm)
   )
     throw new Error("Unsupported instruction version");
@@ -64,6 +67,7 @@ export async function validateInstruction(
       "density-head/13",
       "hair-cycles/14",
       "assembly-prune/9",
+      "glyph-outline/19",
     ].includes(i.algorithm),
     limit = qualityFirst ? MAX_LINES : 3000;
   if (
@@ -154,6 +158,19 @@ export async function validateInstruction(
   )
     throw Error("Missing multiple portrait regions");
   validateProfileLayout(p);
+  if (p.glyphLayout || i.algorithm === "glyph-outline/19")
+    await validateGlyphInstruction(i);
+  if (i.params?.product) {
+    validLetteringProduct(i.params.product);
+    if (!(
+      (i.algorithm === "density-subject/18" &&
+        i.params.product.style === "target" &&
+        i.params.subject?.kind === "whole-image") ||
+      (i.algorithm === "glyph-outline/19" &&
+        i.params.product.style === "outline")
+    ))
+      throw Error("Unbound lettering product");
+  }
   if (
     !/^#[0-9a-f]{6}$/i.test(p.baseColor) ||
     !Array.isArray(p.colors) ||
@@ -199,7 +216,8 @@ export async function validateInstruction(
     i.metrics.reconstructionMse < 0 ||
     !Number.isFinite(i.metrics.baselineMse) ||
     i.metrics.baselineMse < 0 ||
-    i.metrics.reconstructionMse > i.metrics.baselineMse + 1e-6
+    (i.algorithm !== "glyph-outline/19" &&
+      i.metrics.reconstructionMse > i.metrics.baselineMse + 1e-6)
   )
     throw new Error("Invalid sequence limits");
   if (
@@ -210,6 +228,7 @@ export async function validateInstruction(
     i.params.resolution >
       ([
         "density-resolved/12",
+        "glyph-outline/19",
         "density-feature/16",
         "density-texture/17",
         "density-subject/18",
@@ -742,18 +761,23 @@ export async function validateInstruction(
         ? i.params.optimization.lookahead !== 8 ||
           i.params.optimization.coarseScale !== 4 ||
           i.params.optimization.minimumRelativeGain !== 1e-7
-        : !["density-coordinate", "optical-coordinate"].includes(
-            i.params.optimization.kind ?? "",
-          ) ||
-          i.params.optimization.lookahead !== 0 ||
-          i.params.optimization.coarseScale !== 1 ||
-          i.params.optimization.minimumRelativeGain !== 0.0001 ||
-          !Number.isFinite(i.params.optimization.edgeWeight) ||
-          i.params.optimization.edgeWeight! < 0 ||
-          i.params.optimization.edgeWeight! > 4 ||
-          !Number.isInteger(i.params.optimization.sweeps) ||
-          i.params.optimization.sweeps! < 1 ||
-          i.params.optimization.sweeps! > 24)
+        : i.algorithm === "glyph-outline/19"
+          ? i.params.optimization.kind !== "glyph-outline" ||
+            i.params.optimization.lookahead !== 0 ||
+            i.params.optimization.coarseScale !== 1 ||
+            i.params.optimization.minimumRelativeGain !== 0
+          : !["density-coordinate", "optical-coordinate"].includes(
+              i.params.optimization.kind ?? "",
+            ) ||
+            i.params.optimization.lookahead !== 0 ||
+            i.params.optimization.coarseScale !== 1 ||
+            i.params.optimization.minimumRelativeGain !== 0.0001 ||
+            !Number.isFinite(i.params.optimization.edgeWeight) ||
+            i.params.optimization.edgeWeight! < 0 ||
+            i.params.optimization.edgeWeight! > 4 ||
+            !Number.isInteger(i.params.optimization.sweeps) ||
+            i.params.optimization.sweeps! < 1 ||
+            i.params.optimization.sweeps! > 24)
     )
       throw new Error("Invalid generation parameters");
     if (i.params.portrait) validPortrait(i.params.portrait);
@@ -791,6 +815,7 @@ export async function validateInstruction(
       throw new Error("Invalid material accounting");
     if (
       i.algorithm !== "assembly-prune/9" &&
+      i.algorithm !== "glyph-outline/19" &&
       (!i.metrics.weightedError ||
         !Number.isFinite(i.metrics.weightedError.baseline) ||
         !Number.isFinite(i.metrics.weightedError.final) ||
@@ -875,6 +900,7 @@ export function mergeProgress(
 }
 export function toTxt(i: Instruction): string {
   const knots = [
+    "glyph-outline/19",
     "density-optical/5",
     "continuous-guarded/6",
     "group-optical/15",

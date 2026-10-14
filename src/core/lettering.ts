@@ -2,20 +2,16 @@ import fontkit from "@pdf-lib/fontkit";
 import { hash } from "./engine";
 import { inside } from "./geometry";
 import type { Pin, RegionBox, Shape } from "./types";
-
-export const LETTERING_FONTS = {
-  sans: {
-    path: "/fonts/NotoSans-Regular.ttf",
-    family: "Noto Sans",
-    sha256: "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
-  },
-  arabic: {
-    path: "/fonts/NotoNaskhArabic-Regular.ttf",
-    family: "Noto Naskh Arabic",
-    sha256: "a87da9e7687b097af15f9dc217fe3e2dd80bcb3d50eccb394a4aece74b1ca4d9",
-  },
-} as const;
-export type LetteringFont = keyof typeof LETTERING_FONTS;
+import {
+  LETTERING_FONTS,
+  letteringInput,
+  type LetteringFont,
+} from "./lettering-contract";
+export {
+  LETTERING_FONTS,
+  letteringInput,
+  type LetteringFont,
+} from "./lettering-contract";
 export type GlyphCommand = {
   command:
     "moveTo" | "lineTo" | "quadraticCurveTo" | "bezierCurveTo" | "closePath";
@@ -35,21 +31,6 @@ export interface LetteringGeometry {
   bounds: RegionBox;
   commands: GlyphCommand[];
   contours: { x: number; y: number }[][];
-}
-export function letteringInput(input: string) {
-  if (typeof input !== "string") throw Error("lettering/text");
-  const text = input.trim().normalize("NFC"),
-    arabic = /\p{Script=Arabic}/u.test(text);
-  if (
-    !text ||
-    [...text].length > 64 ||
-    /[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u.test(text)
-  )
-    throw Error("lettering/text");
-  // Full mixed-direction paragraph bidi is not implemented. Never reverse code points.
-  if (arabic && /[\p{Script=Latin}\p{Script=Cyrillic}]/u.test(text))
-    throw Error("lettering/mixed-script");
-  return { text, font: (arabic ? "arabic" : "sans") as LetteringFont };
 }
 const fontData = new Map<LetteringFont, Promise<Uint8Array>>();
 export async function loadLetteringFont(font: LetteringFont) {

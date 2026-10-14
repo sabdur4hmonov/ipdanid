@@ -2,7 +2,7 @@ import { SubjectChooser } from "./SubjectChooser";
 import { SubjectMarksEditor } from "./SubjectMarksEditor";
 import { subjectFitText, subjectMetricLabel } from "./subject-fit-i18n";
 import { defaultSubjectMarks, subjectRecipeKey } from "./core/subject-edit";
-import { capabilityProblem } from "./core/capabilities";
+import { capabilityProblem, CAPABILITIES } from "./core/capabilities";
 import type { SubjectPlan } from "./core/subject-plan";
 import {
   makeSubjectPlan,
@@ -1353,6 +1353,7 @@ export default function App() {
           profile: data.profile,
           portrait: data.portrait,
           subject: generationSubject,
+          product: data.product,
           resolution: data.resolution,
           mode: data.mode,
           pixels,
@@ -1486,6 +1487,7 @@ export default function App() {
               profile: i.profile,
               portrait: i.params.portrait,
               subject: i.params.subject,
+              product: i.params.product,
               mode: i.params.mode,
               lines: i.params.requestedLines,
               strategy: requestedStrategy,
@@ -1608,6 +1610,7 @@ export default function App() {
       mode: resume?.mode ?? seed?.params.mode ?? mode,
       portrait: generationPortrait,
       subject: generationSubject,
+      product: resume?.product ?? seed?.params.product,
       seed,
       resume: resume?.checkpoint,
       extension: resume?.extension,
@@ -4289,22 +4292,24 @@ export default function App() {
                           {p.deletedAt ? t("archived") : t("confirmed")}
                         </p>
                         <div>
-                          {!p.deletedAt && (
-                            <button
-                              className="outline"
-                              disabled={busy}
-                              data-testid="continue-saved-calculation"
-                              onClick={() => {
-                                setView("create");
-                                void generate(
-                                  p.instruction,
-                                  continuationStrategy(p.instruction),
-                                );
-                              }}
-                            >
-                              {portraitChoiceText(locale, "continueSaved")}
-                            </button>
-                          )}
+                          {!p.deletedAt &&
+                            CAPABILITIES[p.instruction.algorithm]
+                              .canContinue && (
+                              <button
+                                className="outline"
+                                disabled={busy}
+                                data-testid="continue-saved-calculation"
+                                onClick={() => {
+                                  setView("create");
+                                  void generate(
+                                    p.instruction,
+                                    continuationStrategy(p.instruction),
+                                  );
+                                }}
+                              >
+                                {portraitChoiceText(locale, "continueSaved")}
+                              </button>
+                            )}
                           {!p.deletedAt &&
                             p.instruction.algorithm === "density-resolved/12" &&
                             p.instruction.metrics.densityFit?.sweeps === 8 &&
