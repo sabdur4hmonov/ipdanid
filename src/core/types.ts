@@ -99,6 +99,7 @@ export interface Instruction {
     | "density-pin-basis/11"
     | "density-resolved/12"
     | "density-feature/16"
+    | "density-texture/17"
     | "density-head/13"
     | "hair-cycles/14"
     | "group-optical/15";
@@ -113,7 +114,7 @@ export interface Instruction {
     requestedLines: number;
     mode: "dark" | "light" | "color";
     portrait?: PortraitSettings;
-    subject?: import('./subject-plan').SubjectPlan;
+    subject?: import("./subject-plan").SubjectPlan;
     stockPolicy?: "estimate";
     parentSequenceHash?: string;
     refinementStage?: number;
@@ -124,6 +125,7 @@ export interface Instruction {
       head?: import("./head-importance").HeadImportance;
       sampling?: { version: "direct-source320/1"; grid: 320 };
       features?: import("./feature-contrast").FeatureContrastSettings;
+      texture?: import("./local-texture").LocalTextureSettings;
       kind?: "density-coordinate" | "optical-coordinate";
       order?: "dispersed-v1";
       overshoot?: "target-luminance-v1";
@@ -175,6 +177,11 @@ export interface Instruction {
       evaluations: number;
       fittedConnections: number;
       routingConnections: number;
+    };
+    textureSearch?: {
+      version: "fixed-plus-minus-one/1";
+      fitObjectiveEvaluations: number;
+      routingObjectiveEvaluations: number;
     };
     baselineMse: number;
     reconstructionMse: number;

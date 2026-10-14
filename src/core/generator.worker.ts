@@ -1,5 +1,6 @@
 import { refineHairCycles } from "./hair-cycles";
 import { DEFAULT_FEATURE_CONTRAST } from "./feature-contrast";
+import { DEFAULT_LOCAL_TEXTURE } from "./local-texture";
 import { assertContinuation } from "./continuation";
 import { hash } from "./engine";
 import { validatePinBasis } from "./pin-basis";
@@ -50,7 +51,9 @@ self.onmessage = async ({ data }) => {
     options.guarded =
       data.strategy === "guarded" ||
       data.strategy === "multiscale" ||
-      ["physical", "anatomy", "basis", "features"].includes(data.strategy);
+      ["physical", "anatomy", "basis", "features", "texture"].includes(
+        data.strategy,
+      );
     let baseline;
     if (
       ["global", "multiscale", "physical", "anatomy"].includes(data.strategy) &&
@@ -112,10 +115,11 @@ self.onmessage = async ({ data }) => {
               "anatomy",
               "basis",
               "features",
+              "texture",
             ].includes(data.strategy)
           ? await generateDensity(options, {
               resolved:
-                ["basis", "features"].includes(data.strategy) &&
+                ["basis", "features", "texture"].includes(data.strategy) &&
                 data.resolution === 320,
               ...(data.strategy === "features"
                 ? {
@@ -126,6 +130,14 @@ self.onmessage = async ({ data }) => {
                   }
                 : {}),
               head: data.headRefine ? undefined : data.head,
+              ...(data.strategy === "texture"
+                ? {
+                    texture:
+                      data.seed?.params.optimization?.texture ??
+                      data.texture ??
+                      DEFAULT_LOCAL_TEXTURE,
+                  }
+                : {}),
               edgeWeight:
                 data.seed?.params.optimization?.edgeWeight ??
                 ([
@@ -134,17 +146,17 @@ self.onmessage = async ({ data }) => {
                   "anatomy",
                   "basis",
                   "features",
+                  "texture",
                 ].includes(data.strategy)
                   ? 2
                   : 1),
-              sweeps:
-                data.strategy === "features"
-                  ? (data.totalSweeps ?? 8)
-                  : data.strategy === "basis"
-                    ? (data.totalSweeps ??
-                      data.seed?.params.optimization?.sweeps ??
-                      8)
-                    : (data.seed?.params.optimization?.sweeps ?? 8),
+              sweeps: ["features", "texture"].includes(data.strategy)
+                ? (data.totalSweeps ?? 8)
+                : data.strategy === "basis"
+                  ? (data.totalSweeps ??
+                    data.seed?.params.optimization?.sweeps ??
+                    8)
+                  : (data.seed?.params.optimization?.sweeps ?? 8),
               multiscale: data.strategy === "multiscale",
               ...(data.strategy === "anatomy"
                 ? { anatomy: data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE }
@@ -154,18 +166,26 @@ self.onmessage = async ({ data }) => {
                 : {}),
               ...(data.exchange ? { exchange: data.exchange, sweeps: 1 } : {}),
               ...(data.materializeOnly ? { materializeOnly: true } : {}),
-              ...(["physical", "anatomy", "basis", "features"].includes(
-                data.strategy,
-              )
+              ...([
+                "physical",
+                "anatomy",
+                "basis",
+                "features",
+                "texture",
+              ].includes(data.strategy)
                 ? {
                     physical:
                       data.seed?.params.optimization?.contrastPhysical ??
                       defaultPhysicalContrast(),
                   }
                 : {}),
-              ...(["physical", "anatomy", "basis", "features"].includes(
-                data.strategy,
-              )
+              ...([
+                "physical",
+                "anatomy",
+                "basis",
+                "features",
+                "texture",
+              ].includes(data.strategy)
                 ? {
                     resume: data.resume,
                     onCheckpoint: (checkpoint: unknown) =>
@@ -199,6 +219,12 @@ self.onmessage = async ({ data }) => {
                             ? (data.seed?.params.optimization?.features ??
                               data.features ??
                               DEFAULT_FEATURE_CONTRAST)
+                            : undefined,
+                        texture:
+                          data.strategy === "texture"
+                            ? (data.seed?.params.optimization?.texture ??
+                              data.texture ??
+                              DEFAULT_LOCAL_TEXTURE)
                             : undefined,
                       }),
                   }

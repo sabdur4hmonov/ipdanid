@@ -1,8 +1,8 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase 2 R4 diagnostic complete; new texture hypothesis is next.
-Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser workflows; `ec21ec3` — Phase 0 acceptance; `3d914c0` — Phase 1 research. R4 diagnosis is committed with this record; next milestone records its hash.
+Last update: 2026-10-14 — Phase 2 v17 prototype implemented/tested; frozen experiment is next.
+Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser workflows; `ec21ec3` — Phase 0 acceptance; `3d914c0` — Phase 1 research; `c8c72b9` — R4 diagnosis. v17 prototype is committed with this record; next milestone records its hash.
 
 ## Phase status
 
@@ -20,7 +20,9 @@ Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser wo
 
 ## Exact next step
 
-Phase 2: implement one new opt-in fixed-source local excess-gradient texture objective (new algorithm version) using the frozen R4 skin proxy, full root24 seed, no v16 feature term. Independently verify sparse vs full gains and strict recovery binding before fitting. Freeze strength/budget/guards, compare equal actual evaluations against the unmodified control, evaluate complete routed results under R4 masks and visual panels. Preserve all sealed prior experiments. Commit implementation/tests before lengthy fits. Only an accepted method can justify a new count-knee/simplification/default; otherwise keep existing guides and continue Phase 3.
+Phase 2: run `npx tsx scripts/local-texture-experiment.ts` after this implementation commit. It freezes protocol first, then strength0 control / strength1 candidate under v17 identical ±1 one-pass search and full root24 seed. Both exactly two objective evaluations per permitted chord; route objective calls separately counted (no equal total CPU-cost claim). Resume bound completed sweep checkpoints; do not tune strength/budget after results. Inspect output/local-texture-v17/report.html, same-size/enlarged full sequence and fixed R4 screen versus both root/control. Commit verdict and owner instructions. If rejected, no new accepted-reference count knee/simplification/default, then continue Phase3 generalized solver. Preserve all old fits/guide hashes.
+
+v17 implementation: independent exact excess-gradient hinge and sparse gains (fractional physical offsets tested64/320, support includes anchors outside changed pixels); source mask/settings in strict checkpoint binding and immutable guide version. Opt-in only; no default/UI creation choice. Worker/recovery/continuation preserve new strategy rather than silently dispatching old fitter; shared player/PDF uses exact optical sequence. Texture simplification explicitly refused until an exact objective checker exists. Full unit191/191 (58 files), targeted12/12; build1876 modules passes with existing warnings. Initial build caught test fixture TypeScript region typing; fixed explicit eyes/nose/mouth. No fit has run yet.
 
 R4 evidence: output/quality-r4/{manifest.json,diagnosis.json,report.html}. Script refuses overwrite. Zero new fit sweeps; exact replayed root24 segments, source/checkpoint hashes, old context crop excluded. Native320 root skin fine energy 3.9248× source and nose6.0361×, already present in fit; routing only .366% raw objective rise. v16 feature term .312% of fit loss; 69.282% genuine nose/lip gradient energy at taper<.25, only .860% unsupported. Visually weak nose/lips and crossing texture remain. docs/QUALITY_CHECKPOINT.md contains measured details and next isolated hypothesis. Relevant evaluation tests 2/2 passed; build passed1875 modules, unchanged product assets.
 

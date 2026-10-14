@@ -1,4 +1,9 @@
-import {validSubjectPlan} from "./subject-plan";
+import { validSubjectPlan } from "./subject-plan";
+import {
+  LocalTexture,
+  validLocalTexture,
+  type LocalTextureSettings,
+} from "./local-texture";
 import { headImportance, type HeadImportance } from "./head-importance";
 import {
   featureContrast,
@@ -62,6 +67,7 @@ export interface ChordExchangeSettings {
   selection: "initial-full-objective-gain/1" | "nose-lip-residual/1";
 }
 export interface DensityTuning {
+  texture?: LocalTextureSettings;
   initialObjective?: "consistent-undershoot/1";
   features?: FeatureContrastSettings;
   // Separately versioned direct-source grid; never an enlarged old target/seed.
@@ -107,11 +113,35 @@ export async function generateDensity(
     initialObjective !== "consistent-undershoot/1"
   )
     throw Error("Invalid initial objective version");
-  if(o.subject) validSubjectPlan(o.subject,portrait);
+  if (o.subject) validSubjectPlan(o.subject, portrait);
   if (!portrait?.enabled || !["dark", "light"].includes(o.mode))
     throw new Error("Density optimization requires a new monochrome portrait");
   if (o.seed) assertContinuation(o, await hash(o.pixels));
   validPortrait(portrait);
+  if (tuning.texture) {
+    validLocalTexture(tuning.texture);
+    if (
+      !o.seed ||
+      o.mode !== "dark" ||
+      !tuning.resolved ||
+      !tuning.physical ||
+      tuning.features ||
+      tuning.head ||
+      tuning.anatomy ||
+      tuning.extension ||
+      tuning.exchange ||
+      tuning.multiscale ||
+      portrait.people ||
+      portrait.regions?.placement !== "manual"
+    )
+      throw Error("Local texture requires a separate resolved objective");
+  }
+  if (
+    o.seed?.algorithm === "density-texture/17" &&
+    JSON.stringify(o.seed.params.optimization?.texture) !==
+      JSON.stringify(tuning.texture)
+  )
+    throw Error("Continuation requires the same local texture objective");
   if (tuning.features) {
     validFeatureContrast(tuning.features);
     if (
@@ -187,10 +217,11 @@ export async function generateDensity(
       tuning.exchange ||
       (o.seed &&
         !(
-          tuning.features &&
-          ["density-resolved/12", "density-feature/16"].includes(
-            o.seed.algorithm,
-          )
+          (tuning.features || tuning.texture) &&
+          [
+            "density-resolved/12",
+            tuning.texture ? "density-texture/17" : "density-feature/16",
+          ].includes(o.seed.algorithm)
         ) &&
         o.seed.algorithm !==
           (tuning.head ? "density-head/13" : "density-resolved/12")))
@@ -362,6 +393,9 @@ export async function generateDensity(
     ? featureContrast(n, p, portrait, target, mask, weight, tuning.features)
         .operator
     : undefined;
+  const texture = tuning.texture
+    ? new LocalTexture(n, p, portrait, target, mask, weight, tuning.texture)
+    : undefined;
   const fineObjective = () =>
     fine!.objective(Float64Array.from(density, (v, i) => v - target[i]));
   const contrastObjective = () =>
@@ -422,6 +456,7 @@ export async function generateDensity(
     }
   if (fractional) objective += contrastObjective();
   if (fine) objective += fineObjective();
+  if (texture) objective += texture.objective(density);
   const initial = objective,
     counts = new Int32Array(p.pins.length ** 2),
     pinDegree = new Int32Array(p.pins.length),
@@ -453,7 +488,8 @@ export async function generateDensity(
   const cache = new Map<number, Footprint>(),
     sparse = new Float64Array(size),
     marks = new Uint32Array(size);
-  let epoch = 0;
+  let epoch = 0,
+    textureGainCalls = 0;
   const key = (a: number, b: number) =>
     Math.min(a, b) * p.pins.length + Math.max(a, b);
   const footprint = (a: number, b: number) => {
@@ -487,6 +523,7 @@ export async function generateDensity(
     f: Pick<Footprint, "pixels"> & { density: Float32Array | Float64Array },
     delta: number,
   ) => {
+    if (texture) textureGainCalls++;
     epoch++;
     let value = 0;
     for (let k = 0; k < f.pixels.length; k++) {
@@ -515,10 +552,30 @@ export async function generateDensity(
       (fractional
         ? physical.gain(density, target, sparse, marks, epoch, f.pixels)
         : 0) +
-      (fine ? fine.gain(density, target, sparse, marks, epoch, f.pixels) : 0)
+      (fine ? fine.gain(density, target, sparse, marks, epoch, f.pixels) : 0) +
+      (texture ? texture.gain(density, sparse, marks, epoch, f.pixels) : 0)
     );
   };
   const candidate = (id: number, f: Footprint, a: number, b: number) => {
+    if (texture) {
+      let best = { delta: 0, gain: 0 };
+      // Two full sparse objective evaluations per chord, including unavailable moves.
+      // Thus control(strength=0) and candidate consume identical fitting evaluations.
+      for (const delta of [-1, 1]) {
+        const g = gain(f, delta);
+        const legal =
+          delta >= -counts[id] &&
+          delta <=
+            Math.min(
+              pairLimit - counts[id],
+              pinDegreeLimit - pinDegree[a],
+              pinDegreeLimit - pinDegree[b],
+              fitLimit - total,
+            );
+        if (legal && g > best.gain) best = { delta, gain: g };
+      }
+      return best;
+    }
     let num = 0,
       nn = 0;
     for (let k = 0; k < f.pixels.length; k++) {
@@ -611,6 +668,7 @@ export async function generateDensity(
       }
     if (fractional) objective += contrastObjective();
     if (fine) objective += fineObjective();
+    if (texture) objective += texture.objective(density);
     if (total > o.lines)
       throw new Error("Seed leaves insufficient routing capacity");
     if (
@@ -632,7 +690,7 @@ export async function generateDensity(
             resolution: n,
             profile: p,
             portrait,
-            ...(o.subject ? {subject:o.subject}:{}),
+            ...(o.subject ? { subject: o.subject } : {}),
             mode: o.mode,
             lines: o.lines,
             seed: o.seed?.sequenceHash,
@@ -647,6 +705,7 @@ export async function generateDensity(
             ...(tuning.anatomy ? { anatomy: tuning.anatomy } : {}),
             ...(tuning.head ? { head: tuning.head } : {}),
             ...(tuning.features ? { features: tuning.features } : {}),
+            ...(tuning.texture ? { texture: tuning.texture } : {}),
             ...(exchange ? { exchange } : {}),
             ...(extension
               ? {
@@ -737,6 +796,7 @@ export async function generateDensity(
       }
     if (fractional) actual += contrastObjective();
     if (fine) actual += fineObjective();
+    if (texture) actual += texture.objective(density);
     if (Math.abs(actual - s.objective) > 1e-6 * Math.max(1, actual))
       throw Error(
         !o.seed && !p.pinBasis && o.mode === "light" && !initialObjective
@@ -746,6 +806,7 @@ export async function generateDensity(
     objective = s.objective;
     sweeps = s.sweeps;
     evaluations = s.evaluations;
+    if (texture) textureGainCalls = evaluations;
     removedConnections = s.removedConnections;
     plateau = s.plateau;
     priorElapsed = s.elapsedMs;
@@ -763,10 +824,10 @@ export async function generateDensity(
       const [a, b] = pairs[sweep % 2 ? pairs.length - 1 - j : j],
         id = key(a, b),
         f = footprint(a, b);
-      evaluations++;
+      evaluations += texture ? 2 : 1;
       const best = candidate(id, f, a, b);
       if (best.delta && best.gain > 1e-7) {
-        apply(a, b, best.delta, f);
+        apply(a, b, best.delta, f, texture ? best.gain : undefined);
         changed++;
       }
       if (j % 128 === 0) {
@@ -1218,21 +1279,23 @@ export async function generateDensity(
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: tuning.features
-      ? "density-feature/16"
-      : tuning.head
-        ? "density-head/13"
-        : tuning.resolved
-          ? "density-resolved/12"
-          : p.pinBasis
-            ? "density-pin-basis/11"
-            : tuning.anatomy
-              ? "density-anatomy/10"
-              : tuning.physical
-                ? "density-physical/8"
-                : tuning.multiscale
-                  ? "density-multiscale/7"
-                  : "density-optical/5",
+    algorithm: tuning.texture
+      ? "density-texture/17"
+      : tuning.features
+        ? "density-feature/16"
+        : tuning.head
+          ? "density-head/13"
+          : tuning.resolved
+            ? "density-resolved/12"
+            : p.pinBasis
+              ? "density-pin-basis/11"
+              : tuning.anatomy
+                ? "density-anatomy/10"
+                : tuning.physical
+                  ? "density-physical/8"
+                  : tuning.multiscale
+                    ? "density-multiscale/7"
+                    : "density-optical/5",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -1245,7 +1308,7 @@ export async function generateDensity(
       mode: o.mode,
       stockPolicy: "estimate",
       portrait: structuredClone(portrait),
-      ...(o.subject ? {subject:structuredClone(o.subject)}:{}),
+      ...(o.subject ? { subject: structuredClone(o.subject) } : {}),
       ...(o.seed
         ? {
             parentSequenceHash: o.seed.sequenceHash,
@@ -1266,6 +1329,7 @@ export async function generateDensity(
         ...(tuning.features
           ? { features: structuredClone(tuning.features) }
           : {}),
+        ...(tuning.texture ? { texture: structuredClone(tuning.texture) } : {}),
         lookahead: 0,
         coarseScale: 1,
         minimumRelativeGain: 0.0001,
@@ -1338,6 +1402,15 @@ export async function generateDensity(
         removedConnections,
         ...(physical ? { routingPairs } : {}),
       },
+      ...(texture
+        ? {
+            textureSearch: {
+              version: "fixed-plus-minus-one/1" as const,
+              fitObjectiveEvaluations: evaluations,
+              routingObjectiveEvaluations: textureGainCalls - evaluations,
+            },
+          }
+        : {}),
     },
   };
   const baseline = Float32Array.from(

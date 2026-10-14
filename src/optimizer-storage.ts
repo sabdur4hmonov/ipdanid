@@ -18,12 +18,13 @@ export interface OptimizerRecovery {
   mode?: "dark" | "light" | "color";
   pixels: Uint8Array;
   lines: number;
-  strategy: "physical" | "anatomy" | "basis" | "features";
+  strategy: "physical" | "anatomy" | "basis" | "features" | "texture";
   headRefine?: boolean;
   hairSeed?: Instruction;
   head?: import("./core/head-importance").HeadImportance;
   anatomy?: import("./core/anatomical-importance").AnatomicalImportance;
   features?: import("./core/feature-contrast").FeatureContrastSettings;
+  texture?: import("./core/local-texture").LocalTextureSettings;
   edits: EditParams;
   name: string;
   extension?: DensityTuning["extension"];

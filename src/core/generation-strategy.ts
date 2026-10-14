@@ -8,6 +8,7 @@ export type GenerationStrategy =
   | "anatomy"
   | "basis"
   | "features"
+  | "texture"
   | "simplify";
 export function generationStrategy(i: Instruction): GenerationStrategy {
   const algorithm =
@@ -15,6 +16,7 @@ export function generationStrategy(i: Instruction): GenerationStrategy {
       ? i.params.simplification?.sourceAlgorithm
       : i.algorithm;
   if (algorithm === "density-feature/16") return "features";
+  if (algorithm === "density-texture/17") return "texture";
   if (
     i.params.portrait?.people ||
     algorithm === "group-optical/15" ||
@@ -38,7 +40,9 @@ export function generationStrategy(i: Instruction): GenerationStrategy {
 }
 // One source of truth for both Worker dispatch and the Continue button.
 export function continuationStrategy(i: Instruction): GenerationStrategy {
-  if(i.params.subject && i.params.subject.kind!=="people")return i.algorithm==="greedy-optical/4"?"continuous":"guarded";
+  if (i.algorithm === "density-texture/17") return "texture";
+  if (i.params.subject && i.params.subject.kind !== "people")
+    return i.algorithm === "greedy-optical/4" ? "continuous" : "guarded";
   if (i.algorithm === "density-feature/16") return "features";
   if (i.params.portrait?.people || i.algorithm === "group-optical/15")
     return "guarded";

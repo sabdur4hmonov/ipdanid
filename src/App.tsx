@@ -1292,6 +1292,7 @@ export default function App() {
           strategy: data.strategy ?? "physical",
           anatomy: data.anatomy,
           features: data.features,
+          texture: data.texture,
           head: data.head,
           headRefine: data.headRefine,
           edits: generationEdits,
@@ -1544,6 +1545,7 @@ export default function App() {
       hairResume: resume?.hairCheckpoint,
       anatomy: resume?.anatomy ?? seed?.params.optimization?.anatomy ?? anatomy,
       features: resume?.features ?? seed?.params.optimization?.features,
+      texture: resume?.texture ?? seed?.params.optimization?.texture,
       strategy: requestedStrategy,
     });
   }

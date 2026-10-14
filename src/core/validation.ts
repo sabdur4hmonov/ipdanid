@@ -1,6 +1,7 @@
-import {validSubjectPlan} from "./subject-plan";
+import { validSubjectPlan } from "./subject-plan";
 import { validHeadImportance } from "./head-importance";
 import { validFeatureContrast } from "./feature-contrast";
+import { validLocalTexture } from "./local-texture";
 import { validatePinBasis } from "./pin-basis";
 import { validAnatomicalImportance } from "./anatomical-importance";
 import { Distribution } from "./distribution";
@@ -35,13 +36,15 @@ export async function validateInstruction(
       "density-pin-basis/11",
       "density-resolved/12",
       "density-feature/16",
+      "density-texture/17",
       "density-head/13",
       "hair-cycles/14",
       "assembly-prune/9",
     ].includes(i.algorithm)
   )
     throw new Error("Unsupported instruction version");
-  if(i.params?.subject!==undefined) validSubjectPlan(i.params.subject,i.params.portrait);
+  if (i.params?.subject !== undefined)
+    validSubjectPlan(i.params.subject, i.params.portrait);
   const qualityFirst = [
       "greedy-optical/4",
       "density-optical/5",
@@ -53,6 +56,7 @@ export async function validateInstruction(
       "density-pin-basis/11",
       "density-resolved/12",
       "density-feature/16",
+      "density-texture/17",
       "density-head/13",
       "hair-cycles/14",
       "assembly-prune/9",
@@ -116,6 +120,7 @@ export async function validateInstruction(
       i.algorithm !== "density-pin-basis/11" &&
       i.algorithm !== "density-resolved/12" &&
       i.algorithm !== "density-feature/16" &&
+      i.algorithm !== "density-texture/17" &&
       i.algorithm !== "density-head/13" &&
       i.algorithm !== "hair-cycles/14" &&
       !(
@@ -124,6 +129,7 @@ export async function validateInstruction(
           "density-pin-basis/11",
           "density-resolved/12",
           "density-feature/16",
+          "density-texture/17",
           "density-head/13",
           "hair-cycles/14",
         ].includes(i.params?.simplification?.sourceAlgorithm ?? "")
@@ -199,6 +205,7 @@ export async function validateInstruction(
       ([
         "density-resolved/12",
         "density-feature/16",
+        "density-texture/17",
         "density-head/13",
         "hair-cycles/14",
       ].includes(i.algorithm) ||
@@ -206,6 +213,7 @@ export async function validateInstruction(
         [
           "density-resolved/12",
           "density-feature/16",
+          "density-texture/17",
           "density-head/13",
           "hair-cycles/14",
         ].includes(i.params.simplification?.sourceAlgorithm ?? ""))
@@ -226,6 +234,7 @@ export async function validateInstruction(
       "density-pin-basis/11",
       "density-resolved/12",
       "density-feature/16",
+      "density-texture/17",
       "density-head/13",
       "hair-cycles/14",
       "assembly-prune/9",
@@ -252,6 +261,7 @@ export async function validateInstruction(
         "density-pin-basis/11",
         "density-resolved/12",
         "density-feature/16",
+        "density-texture/17",
         "density-head/13",
       ].includes(i.algorithm)
     ) {
@@ -311,6 +321,38 @@ export async function validateInstruction(
   )
     throw Error("Invalid initial objective version");
   const features = i.params.optimization?.features;
+  const texture = i.params.optimization?.texture;
+  if (i.algorithm === "density-texture/17") {
+    validLocalTexture(texture!);
+    const search = i.metrics.textureSearch;
+    if (
+      !search ||
+      search.version !== "fixed-plus-minus-one/1" ||
+      search.fitObjectiveEvaluations !== i.metrics.densityFit?.evaluations ||
+      ![
+        search.fitObjectiveEvaluations,
+        search.routingObjectiveEvaluations,
+      ].every((v) => Number.isSafeInteger(v) && v >= 0)
+    )
+      throw Error("Invalid local texture evaluation accounting");
+    if (
+      !p.pinBasis ||
+      i.params.resolution !== 320 ||
+      i.params.portrait?.regions?.placement !== "manual" ||
+      i.params.portrait.people ||
+      features ||
+      i.params.optimization?.head ||
+      i.params.optimization?.anatomy ||
+      i.params.optimization?.convergence ||
+      i.params.optimization?.exchange ||
+      i.params.mode !== "dark" ||
+      !i.params.parentSequenceHash
+    )
+      throw Error("Invalid local texture provenance");
+  } else if (texture !== undefined || i.metrics.textureSearch !== undefined)
+    throw Error("Unbound local texture objective");
+  if (i.params.simplification?.sourceAlgorithm === "density-texture/17")
+    throw Error("Texture simplification requires its exact objective checker");
   if (
     i.algorithm === "density-feature/16" ||
     (i.algorithm === "assembly-prune/9" &&
@@ -334,6 +376,7 @@ export async function validateInstruction(
     [
       "density-resolved/12",
       "density-feature/16",
+      "density-texture/17",
       "density-head/13",
       "hair-cycles/14",
     ].includes(i.algorithm) ||
@@ -341,6 +384,7 @@ export async function validateInstruction(
       [
         "density-resolved/12",
         "density-feature/16",
+        "density-texture/17",
         "density-head/13",
         "hair-cycles/14",
       ].includes(i.params.simplification?.sourceAlgorithm ?? ""))
@@ -448,6 +492,7 @@ export async function validateInstruction(
           "density-pin-basis/11",
           "density-resolved/12",
           "density-feature/16",
+          "density-texture/17",
           "density-head/13",
           "hair-cycles/14",
           "continuous-guarded/6",
@@ -512,6 +557,7 @@ export async function validateInstruction(
         "density-pin-basis/11",
         "density-resolved/12",
         "density-feature/16",
+        "density-texture/17",
         "density-head/13",
       ].includes(i.algorithm)
     ) {
@@ -788,6 +834,7 @@ export function toTxt(i: Instruction): string {
     "density-pin-basis/11",
     "density-resolved/12",
     "density-feature/16",
+    "density-texture/17",
     "density-head/13",
     "hair-cycles/14",
     "assembly-prune/9",
