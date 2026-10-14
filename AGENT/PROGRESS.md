@@ -1,8 +1,8 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase 0 complete; Phase 1 is next.
-Session commits: `f7fab35` — isolated infrastructure/protocol; `44b9f74` — legacy browser workflow corrections. Phase 0 completion is committed with this record; later milestones record its hash.
+Last update: 2026-10-14 — Phase 1 complete; Phase 2 R4 diagnostic is next.
+Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser workflows; `ec21ec3` — Phase 0 acceptance. Phase 1 documents are committed with this record; later milestones record that hash.
 
 ## Phase status
 
@@ -10,7 +10,7 @@ Session commits: `f7fab35` — isolated infrastructure/protocol; `44b9f74` — l
 | --- | --- | --- |
 | R1/R2 subject input | DONE | Branch `feat/r1-r2-subjects`, see docs/SUBJECT_INPUT_CHECKPOINT.md |
 | 0 Test safety | DONE / TESTED | 186/186 unit tests (56 files), 154 unique executed browser outcomes, build, 37 customer HTTP + 67 staff HTTP + sandbox checks passed. Final full desktop 77/77; full mobile 76 passed/1 legacy desktop-only skip, then that missing case passed 1/1 on mobile with skip removed. |
-| 1 Research | TODO | |
+| 1 Research | DONE / DOCUMENTED | Public workflows, market SKU conflicts/unknowns, paper/repository/license survey and ranked new hypotheses. No competitor/code/assets copied; no comparative-quality claim. |
 | 2 String quality | TODO | |
 | 3 Generalized solver | TODO | |
 | 4 Thread products (text/Arabic/animals) | TODO | |
@@ -20,11 +20,13 @@ Session commits: `f7fab35` — isolated infrastructure/protocol; `44b9f74` — l
 
 ## Exact next step
 
-Phase 1 public research: inspect official public QBRIX, RingString, String Ring, Let's String and public product listings, without code-gate bypass/photo uploads/private API scraping. Read public papers/GitHub licenses; write docs/COMPETITOR_WORKFLOW.md and docs/ALGORITHM_SURVEY.md with verified specs, unknowns, licenses, a comparison against the actual current engine, and ranked new hypotheses. Do not rerun completed/rejected experiments. Then validate build/relevant checks, update PROGRESS/LOG/OWNER_TESTS and commit before Phase 2 R4 diagnostic.
+Phase 2 / R4: create a **new** frozen baseline manifest and diagnostic under ignored output/quality-r4, using output/resolved-convergence/final.json (root24 8d1f2dd8…3c8323), its exact fit-24.json and output/portrait-dispatch/target-320.bin (1d06c780…727fa). Verify every identity before measurement. Preserve old eeb26cf…c944 under its own crop as context only. Measure fit vs routed tone/physical contrast/dark excess in each eye/nose/mouth/jaw/skin/hair, objective shares, v16 taper coverage and skin crossing energy. No fitting before the diagnosis selects a new hypothesis; do not rerun old v12/v16/convergence/pruning/material experiments. Read the ranked survey before implementing one opt-in method with equal actual evaluations and fixed gates. Update/commit the diagnostic milestone before lengthy fitting.
 
 No test process is left running from this session. All final test services were on separate ports from the owner and terminated after their runs. Aggregate evidence is test-results/phase0-final/summary.json: it verifies exactly 154 unique project/file/title cases passed across the final complete project runs plus the explicit supplemental mobile case. The earlier diagnostic full-v3 completed at 134 pass /19 fail /1 skip while tests changed; its evidence remains and is not presented as final acceptance.
 
 Final build: npm run build passed, 1875 modules, existing warnings; same product asset names as before Phase 0. Final unit JSON: test-results/phase0-final-unit.json (186/186, 56 files). Final browser JSONs: phase0-final-desktop/report.json (77 passed, 14.6 min), phase0-final-mobile/report.json (76 passed +1 legacy skip, 13.1 min), phase0-mobile-worker/report.json (1 passed, 10.4 sec). Desktop-only skip was removed for future full runs. All reside beneath test-results.
+
+Phase 1 validation: production build passed, same 1875 modules/assets; safety tests 3/3 passed (test-results/phase1/safety.json). Phase 0 full product evidence remains applicable because Phase 1 only added docs. Two outputs: docs/COMPETITOR_WORKFLOW.md and docs/ALGORITHM_SURVEY.md. Amazon direct listing access and the 2022 author PDF retrieval failed; unknowns/follow-up are explicit. Birsak 2018 author PDF reviewed; Quoteme MIT verified; Roy Hachnochi AGPL excluded from reuse; other compatible licenses not established. No software adoption or external benchmarking performed.
 
 Reproduction: PowerShell env `IP_RASM_TEST_BROWSER_CHANNEL=chrome`, `IP_RASM_TEST_PORT=4289`, `IP_RASM_TEST_API_PORT=4429`, `IP_RASM_TEST_ARTIFACTS=test-results/phase0-full-v3`, `IP_RASM_TEST_REPORT=test-results/phase0-full-v3/report.json`, then `npm run test:e2e`. Choose fresh unused ports for a later run; existing owner services must not be reused/stopped.
 
