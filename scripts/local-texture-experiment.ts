@@ -135,7 +135,7 @@ for (const name of ["control", "candidate"] as const) {
         progress: progressFor(i),
       },
     };
-    await parseProjectFile(file);
+    await parseProjectFile(JSON.stringify(file));
     writeFileSync(`${out}/${name}.json`, JSON.stringify(file), { flag: "wx" });
     writeFileSync(`${out}/${name}.txt`, toTxt(i), { flag: "wx" });
   }

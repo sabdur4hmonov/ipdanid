@@ -735,7 +735,7 @@ export async function generateDensity(
       !Number.isSafeInteger(s.evaluations) ||
       (exchange
         ? s.evaluations > exchange.evaluationLimit
-        : s.evaluations !== s.sweeps * pairs.length) ||
+        : s.evaluations !== s.sweeps * pairs.length * (texture ? 2 : 1)) ||
       !Number.isSafeInteger(s.removedConnections) ||
       s.removedConnections < 0 ||
       typeof s.plateau !== "boolean" ||
