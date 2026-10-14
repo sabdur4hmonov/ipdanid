@@ -1,8 +1,8 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase3 implemented and mechanics verified; Phase4 next.
-Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7` — Phase3 core. UI milestone is committed with this record; next milestone records its hash.
+Last update: 2026-10-14 — Phase4 offline font/shaping foundation implemented/tested.
+Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
 
 ## Phase status
 
@@ -13,14 +13,16 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 | 1 Research | DONE / DOCUMENTED | Public workflows, market SKU conflicts/unknowns, paper/repository/license survey and ranked new hypotheses. No competitor/code/assets copied; no comparative-quality claim. |
 | 2 String quality | DONE / NEW HYPOTHESIS REJECTED | R4 diagnosed; one frozen v17/control pass55440 fitting evaluations each, full routing. Skin tone/coarse loss violates fixed gate despite less texture; no default promotion. Count-knee/simplification/set-promotion conditional on acceptance, therefore inapplicable. |
 | 3 Generalized solver | DONE / MECHANICS TESTED | Full209/209 unit61files, browser16/16+latest6/6+final display2/2, build. Opt-in18, exact reviewed subjects/target, groups320, localized errors, worst-subject continuation screen. Visual/physical acceptance waits real photos; no default promotion. |
-| 4 Thread products (text/Arabic/animals) | TODO | |
+| 4 Thread products (text/Arabic/animals) | IN PROGRESS / FONT CORE TESTED | Pinned OFL Noto Naskh Arabic2.021, OpenType joining/visual order, deterministic4× raster, glyph-contour physical pin placement,6/6 tests. Actual product sequence/template/UI next. |
 | 5 Kit login + credits | TODO | |
 | 6 QBRIX comparison | TODO | needs owner files in comparison/qbrix/ |
 | 7 Design, voice, APK | TODO | voice needs owner recordings |
 
 ## Exact next step
 
-Phase4: inspect existing offline Noto Sans/OFL assets and core physical-template validation, obtain/verify compatible Arabic font from primary source. Implement text rendered through generalized fitter plus a new exact glyph-outline pin template, RTL joining tests, offline PDF/player/export and four-language UI; optional name+portrait only with honest preparation/review. Animal/object presets reuse18. Keep all old guide hashes and no default promotion. Phase5–7 remain ordered afterward; do not end after partial work. No process from Phase3 is still running; owner4194/data remain untouched.
+Phase4 next milestone after the font foundation commit: bind text target metadata to generalized18 and implement a new versioned glyph-outline physical layout/sequence19 with actual coordinates, closed glyph loops and every visible bridge in one continuous path. Use separate glyphLayout metadata rather than weakening circle pinLayout assumptions. Validate pinned font/provenance/coordinate hash, counts/spacing/continuity/metres and actual raster; preserve old engine/hash branches. Reuse shared optical preview/player/PDF/JSON/TXT, add four-language text UI and exact template/offline tests. Optional name+portrait only as explicit prepared target with renewed manual review; animal/object presets reuse18. No default promotion. Ordered Phase5–7 remain; do not stop after partial work.
+
+Font foundation: public/fonts/NotoNaskhArabic-Regular.ttf unmodified official248220bytes Version2.021; OFL-NotoNaskhArabic.txt retains upstream copyright/license. SHA pins in SOURCE.md and core loader. Fontkit OpenType shaping used, no reverse-Unicode trick/system fallback. Latin/Cyrillic/Arabic6/6 mechanics tests(test-results/phase4-lettering-core-unit.json), including actual joined-vs-spaced Arabic raster connectivity, counters, circle/heart fit, all-pair physical spacing/refusals. New src/core/lettering.ts supplies physical glyph paths(.2mm flattening), actual deterministic4× target and24–240 contour pins. Mixed Arabic+Latin/Cyrillic single-line bidi explicitly unsupported; no missing-glyph fallback. Glyph loops include counters/joining contours; future bridges visible. Font/license/static CSS added to offline cache/content version. docs/LETTERING_CHECKPOINT.md records limits and primary sources. No product UI/guide19 yet. Font-stage build1882modules passed(existing warnings), SW/font assets included; offline regression checked before commit.
 
 Phase3 final evidence: full209/209 unit61files(test-results/phase3-final-full-unit.json); latest targeted18/18(phase3-final-guards-unit.json); production build1882modules passes existing warnings. Final new browser6/6 passed46.5s at4303/4443(phase3-ui-final-v2/report.json), plus final visible-human-toggle removal/input2/2 passed23.2s at4304/4444(phase3-final-ui-display/report.json). Prior new+legacy16/16 remains separate. Earlier final5pass1fail was an off-viewport desktop pointer test, corrected by scrolling actual target before same assertion. Tiny/clipped details now refused before fitting, not excluded from gates. Screenshot inspected; human portrait toggle/hint removed from generic animal input and actual-settings label names the selected new solver. All completion checks finished before commit.
 

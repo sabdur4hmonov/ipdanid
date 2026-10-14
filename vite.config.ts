@@ -15,6 +15,14 @@ const segmentationFiles = [
   "LICENSE.txt",
   "PROVENANCE.json",
 ].map((f) => "/vendor/portrait-segmentation/" + f);
+const fontFiles = [
+  "NotoSans-Regular.ttf",
+  "NotoNaskhArabic-Regular.ttf",
+  "OFL.txt",
+  "OFL-NotoNaskhArabic.txt",
+  "SOURCE.md",
+  "local.css",
+].map((f) => "/fonts/" + f);
 export default defineConfig({
   // Native build caches and private evidence are served on demand, never source watched.
   server: {
@@ -89,7 +97,7 @@ export default defineConfig({
           "/index.html",
           "/icon.svg",
           "/manifest.webmanifest",
-          "/fonts/NotoSans-Regular.ttf",
+          ...fontFiles,
           ...segmentationFiles,
           ...Object.keys(bundle)
             .filter((f) => !f.endsWith(".map"))
@@ -98,7 +106,7 @@ export default defineConfig({
         const version =
           Object.keys(bundle).sort().join("|") +
           "|" +
-          segmentationFiles
+          [...segmentationFiles, ...fontFiles]
             .map((f) =>
               createHash("sha256")
                 .update(readFileSync("public" + f))
