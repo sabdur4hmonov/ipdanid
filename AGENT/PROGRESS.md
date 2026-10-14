@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase4 lettering/presets UI and exact offline exports verified; Phase5 next.
+Last update: 2026-10-14 — Phase5 server kit/account/atomic unlock core tested; client gating next.
 Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
 
 ## Phase status
@@ -14,13 +14,15 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 | 2 String quality | DONE / NEW HYPOTHESIS REJECTED | R4 diagnosed; one frozen v17/control pass55440 fitting evaluations each, full routing. Skin tone/coarse loss violates fixed gate despite less texture; no default promotion. Count-knee/simplification/set-promotion conditional on acceptance, therefore inapplicable. |
 | 3 Generalized solver | DONE / MECHANICS TESTED | Full209/209 unit61files, browser16/16+latest6/6+final display2/2, build. Opt-in18, exact reviewed subjects/target, groups320, localized errors, worst-subject continuation screen. Visual/physical acceptance waits real photos; no default promotion. |
 | 4 Thread products (text/Arabic/animals) | DONE / MECHANICS TESTED | Filled18, outline19, four-language UI, physical coordinates/continuous bridges, offline fonts/player/PDF/JSON/TXT, explicit animal/object presets. Full220/220 and final browser4/4 pass. Optional photo-name composition deferred with contract reason; physical/readability acceptance owner pending. |
-| 5 Kit login + credits | TODO | |
+| 5 Kit login + credits | IN PROGRESS / SERVER CORE TESTED | Kit-code account login, default4/no-expiry, optional windows/account caps, atomic signed unlock/retries, additive schema and staff API. Unit/38 HTTP checks pass. Client lock/offline receipt and batch QR UI next. |
 | 6 QBRIX comparison | TODO | needs owner files in comparison/qbrix/ |
 | 7 Design, voice, APK | TODO | voice needs owner recordings |
 
 ## Exact next step
 
-Phase5: inspect existing CustomerStore/Store/API/CustomerHub accounts, codes, credits and instruction licenses; implement phone or kit-code account login, configurable default4/no-expiry kit batch+QR and account limits, atomic idempotent redeem/unlock bound to account+sequence, persistent signed offline access for new guides, UI step/player/export gating with legacy guides/progress preserved, isolated server/browser tests. Document client deterrent/optional server generation honestly. Commit milestone before Phase6 QBRIX missing-input documentation and Phase7 screens/voice/APK. Do not stop after partial work.
+Phase5 next milestone: implement device-bound offline Ed25519 receipt verification/trusted public-key pinning and UI gating for newly generated guides (free preview/metres/time; locked steps/player/PDF/TXT/JSON). Preserve existing imported/saved guides/progress via explicit grandfathering, not timestamps alone; do not alter sequence hashes. Add kit-code login/unlock screen, idempotent client request key and retry/recovery. Add admin batch policy/account-limit/printable QR UI (primary MIT node-qrcode inspected, no dependency adopted yet). Test tampered/wrong-account/device/sequence/signature/offline/retry and legacy paths with fresh DBs/ports. Commit before Phase6–7. No default promotion; do not stop after partial work.
+
+Phase5 server after9dc9a4e: new KitStore additive schema,32-char random bearer kit login→one account, explicit session attachment, separate expiring credit buckets, default4/no-expiry, code/credit windows, rolling build limits and account overrides. Atomic per-account/hash unlock consumes one, all retries and other-device reissue consume none; Ed25519 account/hash/device receipt forever, signer persisted DB/public-only JWK. Legacy jobs/gifts/credits remain unchanged; old credits usable for new unlock. Authorized codes staff API/admin usage, inherited write/auth rate limits. Build1888 passes; relevant unit phase5-kit-core-unit.json and38/38 HTTP test-results/kit-http-BvFMXv/report.json passed, signer restart verified. Initial rate-limit test counted pre-restart attempts; corrected/retested. No UI gating/QR exposed yet; no owned test service remains.
 
 Phase4 commits0c362e6(font),9df4f9a(exact core), UI milestone with this record. Build1888modules passes; final browser4/4 passed26.8s at4307/4447(test-results/phase4-ui-final/report.json) including all physical PDF nail centres, exact cover raster/JSON/TXT, shared player/save/reload and offline Arabic font preparation. Prior4/4 pass23.0s; first attempt interrupted after combobox locator mismatch. Full220/220 core regression plus final relevant unit report phase4-ui-unit.json passed. Mobile screenshot inspected; very thin single-pass outline remains honestly faint, no cosmetic thickening/readability claim. Text UI lazy; target review invalidates on every change; filled real Worker/checkpoint/private archive and explicit animal/object presets integrated. Optional composition deferred: no independently reviewed text/photo transform contract. No pending owned process or browser/build at this checkpoint.
 

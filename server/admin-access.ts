@@ -183,6 +183,17 @@ export function adminRoutePermission(
   method: string,
   path: string,
 ): AdminPermission | null {
+  if (
+    (method === "GET" && path === "/api/admin/kits") ||
+    (method === "POST" &&
+      [
+        "/api/admin/kits/policy",
+        "/api/admin/kits/limits",
+        "/api/admin/kits/batch",
+        "/api/admin/kits/revoke",
+      ].includes(path))
+  )
+    return "codes";
   if (path === "/api/admin/settings" && ["GET", "POST"].includes(method))
     return "settings";
   if (path === "/api/admin/announcements" && ["GET", "POST"].includes(method))

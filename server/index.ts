@@ -5,7 +5,7 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import "./local-config.ts";
 import { DomainError } from "./store.ts";
-import { CustomerStore } from "./customer-store.ts";
+import { KitStore } from "./kit-store.ts";
 import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 const adminToken =
@@ -21,7 +21,7 @@ if (process.env.DATABASE_PATH !== ":memory:")
   mkdirSync(dirname(process.env.DATABASE_PATH ?? "tmp/data/iprasm.sqlite"), {
     recursive: true,
   });
-const store = new CustomerStore(
+const store = new KitStore(
   process.env.DATABASE_PATH ?? "tmp/data/iprasm.sqlite",
   pepper,
   paymentKey,
@@ -44,9 +44,11 @@ const server = createServer(async (req, res) => {
     const origin = req.headers.origin;
     if (
       origin &&
-      !(process.env.IP_RASM_TEST_SERVER === "1" &&
+      !(
+        process.env.IP_RASM_TEST_SERVER === "1" &&
         origin === process.env.IP_RASM_TEST_ORIGIN &&
-        /^http:\/\/127\.0\.0\.1:\d+$/.test(origin)) &&
+        /^http:\/\/127\.0\.0\.1:\d+$/.test(origin)
+      ) &&
       ![
         "http://127.0.0.1:5173",
         "http://127.0.0.1:4173",
@@ -124,7 +126,7 @@ const server = createServer(async (req, res) => {
     const body = raw ? JSON.parse(raw) : {};
     if (
       req.method === "POST" &&
-      /^\/api\/account\/(login|recover|register)$/.test(path)
+      /^\/api\/account\/(login|recover|register|kit)$/.test(path)
     ) {
       const attempts = authBudgets.get(ip) ?? { start: Date.now(), count: 0 };
       if (Date.now() - attempts.start > 60000) {
@@ -138,6 +140,20 @@ const server = createServer(async (req, res) => {
     }
     if (path === "/api/account/login" && req.method === "POST") {
       send(200, store.login(body.email, body.password));
+      return;
+    }
+    if (path === "/api/account/kit" && req.method === "POST") {
+      send(
+        200,
+        store.loginKit(
+          body.code,
+          body.attach === true ? store.authenticate(token) : undefined,
+        ),
+      );
+      return;
+    }
+    if (path === "/api/builds/key" && req.method === "GET") {
+      send(200, store.buildKey());
       return;
     }
     if (path === "/api/account/recover" && req.method === "POST") {
@@ -168,6 +184,29 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (path === "/api/admin/kits" && req.method === "GET") {
+        send(200, store.kitAdmin());
+        return;
+      }
+      if (path === "/api/admin/kits/policy" && req.method === "POST") {
+        send(200, store.setKitPolicy(actor, body));
+        return;
+      }
+      if (path === "/api/admin/kits/limits" && req.method === "POST") {
+        send(200, store.setKitLimit(actor, body.accountId, body.limits));
+        return;
+      }
+      if (path === "/api/admin/kits/batch" && req.method === "POST") {
+        send(
+          201,
+          store.issueKitBatch(actor, body.profile, body.count, body.requestKey),
+        );
+        return;
+      }
+      if (path === "/api/admin/kits/revoke" && req.method === "POST") {
+        send(200, store.revokeKitBatch(actor, body.id));
+        return;
+      }
       if (path === "/api/admin/settings") {
         send(
           200,
@@ -274,6 +313,22 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/builds/account" && req.method === "GET") {
+      send(200, store.kitAccount(user));
+      return;
+    }
+    if (path === "/api/builds/unlock" && req.method === "POST") {
+      send(
+        200,
+        store.unlockBuild(
+          user,
+          body.sequenceHash,
+          body.deviceId,
+          body.requestKey,
+        ),
+      );
+      return;
+    }
     if (path === "/api/account" && req.method === "GET") {
       send(200, store.customer(user));
       return;
@@ -325,11 +380,16 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (path === "/api/credits" && req.method === "GET") {
-      send(200, { credits: store.balance(user) });
+      send(200, { credits: store.kitBalance(user) });
       return;
     }
     if (path === "/api/codes/redeem" && req.method === "POST") {
-      send(200, store.redeemCode(user, body.code));
+      send(
+        200,
+        store.isKitCode(body.code)
+          ? store.redeemKit(user, body.code)
+          : store.redeemCode(user, body.code),
+      );
       return;
     }
     if (path === "/api/orders" && req.method === "POST") {
