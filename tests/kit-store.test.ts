@@ -26,6 +26,7 @@ it("default4/no expiry, one kit account and atomic idempotent signed unlocks", (
   expect(a.credits).toBe(4);
   expect(s.authenticate(a.token)).toBe(a.id);
   expect(s.loginKit(code).id).toBe(a.id);
+  expect(() => s.loginKit(code, s.createGuest().id)).toThrow(/another account/);
   expect(s.redeemKit(a.id, code)).toMatchObject({
     duplicate: true,
     balance: 4,

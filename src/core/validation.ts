@@ -25,6 +25,11 @@ export async function validateInstruction(
   const i = value as Instruction,
     p = i.profile;
   if (
+    i.params?.accessPolicy !== undefined &&
+    i.params.accessPolicy !== "kit-build/1"
+  )
+    throw Error("Invalid build access policy");
+  if (
     i.schema !== "iprasm.instruction/1" ||
     ![
       "greedy-optical/1",

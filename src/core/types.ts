@@ -113,6 +113,7 @@ export interface Instruction {
   profile: MaterialProfile;
   segments: Segment[];
   params: {
+    accessPolicy?: "kit-build/1";
     resolution: number;
     requestedLines: number;
     mode: "dark" | "light" | "color";

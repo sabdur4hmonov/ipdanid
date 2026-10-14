@@ -1,4 +1,6 @@
 import { BusinessAdmin } from "./BusinessAdmin";
+import { KitAdmin } from "./KitAdmin";
+import { KitLogin } from "./KitLogin";
 import { PromotionPreference } from "./Announcements";
 import { useBusiness } from "./BusinessContext";
 import { businessText } from "./business-i18n";
@@ -355,6 +357,12 @@ export function CustomerHub({
         : "saved",
     );
   async function upload(p: Project) {
+    if (p.instruction.params.accessPolicy) {
+      await api.request("/builds/archive", { instruction: p.instruction });
+      await refresh();
+      setNotice(t("saved"));
+      return;
+    }
     const job = await api.request<{
       id: string;
       status: string;
@@ -450,6 +458,7 @@ export function CustomerHub({
         )}
         {pane === "account" && (
           <div className="customer-grid">
+            <KitLogin locale={locale} onLogin={refresh} />
             <section className="card">
               <h2>{t("account")}</h2>
               <label>
@@ -1122,6 +1131,9 @@ export function CustomerHub({
             </section>
             {unlocked && (
               <>
+                {can("codes") && (
+                  <KitAdmin locale={locale} token={adminToken} />
+                )}
                 <BusinessAdmin
                   locale={locale}
                   token={adminToken}

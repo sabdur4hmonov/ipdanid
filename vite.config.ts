@@ -22,7 +22,9 @@ const fontFiles = [
   "OFL-NotoNaskhArabic.txt",
   "SOURCE.md",
   "local.css",
-].map((f) => "/fonts/" + f);
+]
+  .map((f) => "/fonts/" + f)
+  .concat(["/licenses/qrcode.txt", "/licenses/dijkstrajs.txt"]);
 export default defineConfig({
   // Native build caches and private evidence are served on demand, never source watched.
   server: {

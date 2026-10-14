@@ -13,6 +13,7 @@ export interface LocalGenerationInput {
   version: "iprasm.local-input/1";
   recipeHash: string;
   recipe: {
+    accessPolicy?: "kit-build/1";
     targetHash: string;
     preparedRevision: string;
     edits: EditParams;
@@ -66,6 +67,7 @@ export async function validateLocalInput(
     (await hash(value.pixels)) !== value.recipe.targetHash ||
     value.recipe.targetHash !== i.imageHash ||
     value.recipe.resolution !== i.params.resolution ||
+    value.recipe.accessPolicy !== i.params.accessPolicy ||
     value.pixels.length !== i.params.resolution ** 2 * 3 ||
     JSON.stringify(value.recipe.profile) !== JSON.stringify(i.profile) ||
     JSON.stringify(value.recipe.portrait) !==

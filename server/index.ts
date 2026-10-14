@@ -313,6 +313,13 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/builds/archive" && req.method === "POST") {
+      send(
+        200,
+        store.archiveBuild(user, await validateInstruction(body.instruction)),
+      );
+      return;
+    }
     if (path === "/api/builds/account" && req.method === "GET") {
       send(200, store.kitAccount(user));
       return;
@@ -428,6 +435,11 @@ const server = createServer(async (req, res) => {
         instruction = body.instruction
           ? await validateInstruction(body.instruction)
           : null;
+        if (instruction?.params.accessPolicy)
+          throw new DomainError(
+            "Use build unlock and archive for this guide",
+            400,
+          );
       } catch (e) {
         store.finishGeneration(user, body.jobId, null);
         throw e;

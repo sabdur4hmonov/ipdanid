@@ -7,6 +7,7 @@ import type { EditParams, Instruction } from "./core/types";
 import { RecoveryOrder } from "./recovery-order";
 const operations = new RecoveryOrder();
 export interface OptimizerRecovery {
+  accessPolicy?: "kit-build/1";
   version: "iprasm.optimizer-recovery/1";
   checkpoint?: DensityCheckpoint;
   hairCheckpoint?: import("./core/hair-cycles").HairCycleCheckpoint;

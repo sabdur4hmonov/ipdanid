@@ -233,6 +233,7 @@ self.onmessage = async ({ data }) => {
                         profile: options.profile,
                         portrait: options.portrait,
                         product: options.product,
+                        accessPolicy: options.accessPolicy,
                         resolution: options.resolution,
                         mode: options.mode,
                         lines: data.lines,

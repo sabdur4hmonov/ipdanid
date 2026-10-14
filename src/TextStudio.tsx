@@ -147,6 +147,7 @@ export default function TextStudio({
     try {
       if (style === "outline") {
         const i = await generateGlyphOutline({
+          accessPolicy: "kit-build/1",
           text,
           fontBytes: prepared.bytes,
           widthMm: width,
@@ -197,6 +198,7 @@ export default function TextStudio({
             input = await sealGenerationInput(
               {
                 targetHash: i.imageHash,
+                accessPolicy: i.params.accessPolicy,
                 preparedRevision: target.subject.sourceRevision,
                 edits: DEFAULT_EDITS,
                 resolution: n,
@@ -235,6 +237,7 @@ export default function TextStudio({
         }
       };
       w.postMessage({
+        accessPolicy: "kit-build/1",
         ...target,
         profile,
         resolution: n,

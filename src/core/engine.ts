@@ -63,6 +63,7 @@ export function deepFreeze<T>(obj: T): T {
   return obj;
 }
 export interface GenerateOptions {
+  accessPolicy?: "kit-build/1";
   product?: import("./lettering-contract").LetteringProduct;
   pixels: Uint8Array;
   resolution: number;
@@ -518,6 +519,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
     profile: structuredClone(p),
     segments,
     params: {
+      ...(o.accessPolicy ? { accessPolicy: o.accessPolicy } : {}),
       resolution: n,
       requestedLines: o.lines,
       mode: o.mode,

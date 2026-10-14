@@ -755,6 +755,7 @@ export async function generateDensity(
             profile: p,
             portrait,
             ...(o.subject ? { subject: o.subject } : {}),
+            ...(o.accessPolicy ? { accessPolicy: o.accessPolicy } : {}),
             ...(o.product ? { product: o.product } : {}),
             mode: o.mode,
             lines: o.lines,
@@ -1371,6 +1372,7 @@ export async function generateDensity(
     profile: structuredClone(p),
     segments: [{ color: p.colors[0], path }],
     params: {
+      ...(o.accessPolicy ? { accessPolicy: o.accessPolicy } : {}),
       resolution: n,
       requestedLines: o.lines,
       mode: o.mode,

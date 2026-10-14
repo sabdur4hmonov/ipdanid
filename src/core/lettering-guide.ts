@@ -70,6 +70,7 @@ export async function prepareLetteringTarget(
   return { pixels, subject, product: letteringProduct(g, "target") };
 }
 export async function generateGlyphOutline(input: {
+  accessPolicy?: "kit-build/1";
   text: string;
   fontBytes: Uint8Array;
   widthMm: number;
@@ -126,6 +127,7 @@ export async function generateGlyphOutline(input: {
     profile: p,
     segments: [{ color: p.colors[0], path }],
     params: {
+      ...(input.accessPolicy ? { accessPolicy: input.accessPolicy } : {}),
       resolution: n,
       requestedLines: lines,
       mode: "dark",

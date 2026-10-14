@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { openMore, revealControl } from "./navigation";
+import { unlockKitGuide } from "./kit-access";
 import {
   PDFDocument,
   PDFName,
@@ -68,6 +69,7 @@ for (const style of ["outline", "target"] as const)
     await page
       .getByRole("button", { name: "Save and assemble", exact: true })
       .click();
+    await unlockKitGuide(page);
     await expect(page.getByTestId("confirmed-step")).toContainText("0/");
     const sequenceHash = await page.getByTestId("player-hash").textContent();
     let i: any;

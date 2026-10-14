@@ -1,4 +1,6 @@
 import { SubjectChooser } from "./SubjectChooser";
+import { BuildGate } from "./BuildGate";
+import { useBuildAccess } from "./useBuildAccess";
 import { SubjectMarksEditor } from "./SubjectMarksEditor";
 import { subjectFitText, subjectMetricLabel } from "./subject-fit-i18n";
 import { defaultSubjectMarks, subjectRecipeKey } from "./core/subject-edit";
@@ -507,12 +509,16 @@ export default function App() {
     },
     [],
   );
+  const canBuild = useBuildAccess([
+    ...projects.map((p) => p.instruction),
+    ...variants.map((v) => v.instruction),
+  ]);
   const result = variants.find(
       (v) => v.instruction.id === variantState.selectedId,
     )?.instruction,
     project = projects.find((p) => p.id === selected && !p.deletedAt),
     instruction = project?.instruction,
-    steps = instruction ? flatten(instruction) : [],
+    steps = instruction && canBuild(instruction) ? flatten(instruction) : [],
     active = steps[current - 1];
   const matchingVoices = voices.filter((v) =>
     v.lang.toLowerCase().startsWith(guideLocale),
@@ -1354,6 +1360,7 @@ export default function App() {
           portrait: data.portrait,
           subject: generationSubject,
           product: data.product,
+          accessPolicy: data.accessPolicy,
           resolution: data.resolution,
           mode: data.mode,
           pixels,
@@ -1477,6 +1484,7 @@ export default function App() {
           const input = await sealGenerationInput(
             {
               targetHash: i.imageHash,
+              accessPolicy: i.params.accessPolicy,
               preparedRevision:
                 archived?.input.recipe.preparedRevision ??
                 generationPhoto?.sourceRevision ??
@@ -1611,6 +1619,7 @@ export default function App() {
       portrait: generationPortrait,
       subject: generationSubject,
       product: resume?.product ?? seed?.params.product,
+      accessPolicy: resume ? resume.accessPolicy : "kit-build/1",
       seed,
       resume: resume?.checkpoint,
       extension: resume?.extension,
@@ -1685,7 +1694,7 @@ export default function App() {
     open(p);
   }
   function confirmCurrent() {
-    if (!project || !loaded) return;
+    if (!project || !loaded || !canBuild(project.instruction)) return;
     setConfirmedUndo(project.progress.confirmed);
     setProjects((ps) =>
       ps.map((p) =>
@@ -1701,7 +1710,7 @@ export default function App() {
     if (Number.isInteger(v) && v >= 1 && v <= steps.length) setCurrent(v);
   };
   async function pdf() {
-    if (!instruction) return;
+    if (!instruction || !canBuild(instruction)) return;
     setPdfBusy(true);
     setError("");
     try {
@@ -1952,7 +1961,7 @@ export default function App() {
           {view === "customer" && (
             <CustomerHub
               locale={locale}
-              projects={projects}
+              projects={projects.filter((p) => canBuild(p.instruction))}
               onImport={(i, p) => {
                 const next: Project = {
                   id: crypto.randomUUID(),
@@ -3727,6 +3736,13 @@ export default function App() {
                   {t("create")}
                 </button>
               </div>
+            ) : !canBuild(instruction) ? (
+              <BuildGate
+                instruction={instruction}
+                locale={locale}
+                preview={<Preview instruction={instruction} />}
+                onBuy={() => nav("customer")}
+              />
             ) : (
               <>
                 <section className="intro">

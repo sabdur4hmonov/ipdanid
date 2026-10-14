@@ -53,3 +53,13 @@ Hisoblangan haqiqiy ip ko‘rinishini tayyor nishondan alohida solishtiring. Kon
 ## 2026-10-14 — kit server yadrosi
 
 Yangi kit kodi bitta hisobga bog‘lanadi, odatda to‘rtta natijani ochadi va muddatsiz. Qayta bosish bir natija uchun yana kredit sarflamaydi. Ochilgan natija muddatsiz qoladi; ixtiyoriy muddat faqat ishlatilmagan kreditga taalluqli. Hozir server sinovlari tugadi; qulf, kod oynasi va chop etiladigan QR keyingi qadamda ulanadi. Egasi hozir hech narsa yuborishi shart emas; agent davom etadi.
+
+## 2026-10-14 — kit qulfini va QR ni tekshirish
+
+Yangi versiyada `npm run local` orqali yangi natija hisoblang va saqlang. Oldindan ko‘rish, PNG, ip uzunligi va vaqt bepul; qadamlar/PDF/TXT/JSON kit krediti ochilguncha ko‘rinmasin. Avvalgi saqlangan/import qilingan eski qo‘llanmalar va qadamlari saqlanadi.
+
+Hisob → Boshqaruvda kodlar huquqi bilan “Kit kodlari to‘plami” ni oching. Odatda 4 yig‘ish, muddatlar 0 bo‘lsin. Ixtiyoriy chegara va muddatni saqlang, to‘plam yarating, QR varaqalar va maxfiy CSV ni oling. Kodlar bir marta ko‘rsatiladi; haqiqiy kodlarni hech kimga yubormang. QR ni 100% chop etib telefon bilan o‘qing: matndagi aynan shu kod chiqishi kerak. Telefonda skaner/haqiqiy chop sifati hali avtomatik tasdiqlanmagan.
+
+Qulf oynasida kit kodi bilan kiring, “1 kredit sarflab ochish” ni bosing. Faqat bir kredit kamaysin. Sahifani yangilang va internetni o‘chiring: shu qurilmada ochilgan qo‘llanma, qadamlar va eksportlar ishlasin. O‘sha hisobda o‘sha natijani boshqa qurilmada ochish qayta kredit olmasin. Yangi boshqa ketma-ketlik yangi kredit sarflaydi. Eski hisobga kit qo‘shishda boshqa hisobga bog‘langan kod rad etilsin. Serverga saqlash ochilgan yangi natija uchun qo‘shimcha kredit olmasin.
+
+Qurilma ma’lumotini o‘chirsangiz kesh ruxsati yo‘qoladi; asl kit/hisob bilan o‘sha natijani qayta ochish uchun server kerak, qayta kredit olinmaydi. Server imzo kaliti o‘zgarsa eski qurilma ma’lumotlarini o‘chirmang. Jonli do‘kon/to‘lov yoki telefonga APK o‘rnatish bu sinovga kirmaydi; agent qolgan bosqichlarda davom etadi.

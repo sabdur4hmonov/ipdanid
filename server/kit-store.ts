@@ -1,5 +1,6 @@
 import { CustomerStore } from "./customer-store.ts";
 import { DomainError } from "./store.ts";
+import type { Instruction } from "../src/core/types";
 import {
   randomBytes,
   randomUUID,
@@ -257,6 +258,8 @@ export class KitStore extends CustomerStore {
         .prepare("SELECT account_id,revoked FROM kit_codes WHERE hash=?")
         .get(this.digest(code));
       if (!r || r.revoked) throw new DomainError("Kit code unavailable", 401);
+      if (r.account_id && currentAccount && r.account_id !== currentAccount)
+        throw new DomainError("Kit belongs to another account", 409);
       const account = r.account_id
         ? String(r.account_id)
         : (currentAccount ?? randomUUID());
@@ -315,9 +318,14 @@ export class KitStore extends CustomerStore {
         .all(),
       accounts: this.db
         .prepare(
-          "SELECT account_id,COUNT(*) AS builds,MAX(created_at) AS last_build FROM build_unlocks GROUP BY account_id ORDER BY last_build DESC LIMIT 200",
+          "SELECT u.id AS account_id,(SELECT COUNT(*) FROM build_unlocks b WHERE b.account_id=u.id) AS builds,(SELECT MAX(created_at) FROM build_unlocks b WHERE b.account_id=u.id) AS last_build FROM users u WHERE EXISTS(SELECT 1 FROM kit_grants g WHERE g.account_id=u.id) OR EXISTS(SELECT 1 FROM build_unlocks b WHERE b.account_id=u.id) ORDER BY last_build DESC LIMIT 200",
         )
-        .all(),
+        .all()
+        .map((a) => ({
+          ...a,
+          credits: this.kitBalance(String(a.account_id)),
+          limits: this.limit(String(a.account_id)),
+        })),
     };
   }
   revokeKitBatch(actor: string, id: string) {
@@ -336,6 +344,41 @@ export class KitStore extends CustomerStore {
           .public_jwk,
       ),
     );
+  }
+  archiveBuild(account: string, i: Instruction) {
+    return this.ktx(() => {
+      if (
+        i.params.accessPolicy !== "kit-build/1" ||
+        !this.db
+          .prepare(
+            "SELECT id FROM build_unlocks WHERE account_id=? AND sequence_hash=?",
+          )
+          .get(account, i.sequenceHash)
+      )
+        throw new DomainError("Unlock this build before archiving", 403);
+      const old = this.db
+        .prepare(
+          "SELECT i.id FROM instructions i JOIN projects p ON p.id=i.project_id WHERE p.user_id=? AND i.sequence_hash=? AND p.deleted_at IS NULL",
+        )
+        .get(account, i.sequenceHash);
+      if (old) return { instructionId: String(old.id), duplicate: true };
+      const projectId = randomUUID(),
+        instructionId = randomUUID();
+      this.db
+        .prepare("INSERT INTO projects VALUES(?,?,?,NULL)")
+        .run(projectId, account, "Unlocked kit build");
+      this.db
+        .prepare("INSERT INTO instructions VALUES(?,?,?,?,?)")
+        .run(
+          instructionId,
+          projectId,
+          i.sequenceHash,
+          JSON.stringify(i),
+          new Date().toISOString(),
+        );
+      this.klog(account, "build.archive", instructionId);
+      return { instructionId, duplicate: false };
+    });
   }
   unlockBuild(
     account: string,
@@ -416,7 +459,7 @@ export class KitStore extends CustomerStore {
         .prepare("INSERT OR IGNORE INTO build_requests VALUES(?,?,?)")
         .run(account, requestKey, sequenceHash);
       const payload = {
-          version: "iprasm.build-access/1",
+          version: "iprasm.build-access/1" as const,
           accountId: account,
           sequenceHash,
           deviceId,
