@@ -9,6 +9,37 @@
   --line: #dde4ef;
   --orange: #ce794e;
 }
+.build-gate canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 720px;
+}
+.text-studio fieldset,
+.kit-admin fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.text-studio label,
+.kit-admin label,
+.kit-login label,
+.build-gate label {
+  display: block;
+  margin: 12px 0;
+}
+.text-studio button,
+.kit-admin button,
+.kit-login button,
+.build-gate button {
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.kit-admin code {
+  overflow-wrap: anywhere;
+}
 * {
   box-sizing: border-box;
 }
@@ -1055,7 +1086,10 @@ footer > span:last-child {
     height: 100%;
     flex-direction: row;
     gap: 0;
-    padding-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(
+      --safe-area-inset-bottom,
+      env(safe-area-inset-bottom, 0px)
+    );
   }
   .nav {
     border-radius: 0;

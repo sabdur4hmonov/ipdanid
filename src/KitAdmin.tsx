@@ -49,11 +49,11 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
     ["periodDays", "periodDays"],
   ];
   return (
-    <section className="card" data-testid="kit-admin">
+    <section className="card kit-admin" data-testid="kit-admin">
       <h2>{t("batch")}</h2>
       <p>{t("note")}</p>
       {error && <p role="alert">{error}</p>}
-      <fieldset disabled={busy}>
+      <fieldset disabled={busy} aria-label={t("batch")}>
         {policy &&
           fields.map(([key, label]) => (
             <label key={key}>

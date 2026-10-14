@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -45,6 +46,7 @@ test("committed original illustration generates a real immutable guide with offl
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await expect(page.getByTestId("player-hash")).toHaveText(hash!);
   await page
     .getByRole("button", {

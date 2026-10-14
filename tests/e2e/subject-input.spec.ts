@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { test, expect, type Page } from "@playwright/test";
 import { readFileSync, readdirSync } from "node:fs";
 import { validateInstruction } from "../../src/core/validation";
@@ -168,6 +169,7 @@ test("car, dog and object keep their original pixels and never request person mo
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const file = await exportProject(page);
   const i = file.project.instruction;
   await validateInstruction(i);
@@ -323,6 +325,7 @@ test("third person added when two were detected; review gates each person; local
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await expect(page.getByTestId("player-hash")).toHaveText(hash!);
   await page.reload();
   await page.getByRole("button", { name: "My projects", exact: true }).click();

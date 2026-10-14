@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { withPinBasis } from "../../src/core/pin-basis";
 import { test, expect } from "@playwright/test";
@@ -137,6 +138,7 @@ for (const mode of ["dark", "light"] as const)
     await page
       .getByRole("button", { name: "Save & assemble", exact: true })
       .click();
+  await unlockIfNeeded(page);
     const event = page.waitForEvent("download");
     await page
       .getByRole("button", { name: "Project JSON", exact: true })

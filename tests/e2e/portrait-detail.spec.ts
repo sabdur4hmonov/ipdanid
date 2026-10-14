@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -75,6 +76,7 @@ test("contour target toggles exactly; real Worker, preset, progress and offline 
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await page
     .getByRole("button", {
       name: "Confirm completed through this step",

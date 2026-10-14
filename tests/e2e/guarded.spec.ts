@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { mkdirSync } from "node:fs";
 mkdirSync("output/guarded", { recursive: true });
@@ -58,6 +59,7 @@ for (const solver of ["guarded", "multiscale"] as const)
     await page
       .getByRole("button", { name: "Save & assemble", exact: true })
       .click();
+  await unlockIfNeeded(page);
     const d = page.waitForEvent("download");
     await page
       .getByRole("button", { name: "Project JSON", exact: true })

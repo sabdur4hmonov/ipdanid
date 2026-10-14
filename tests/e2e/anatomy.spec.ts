@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { DEFAULT_ANATOMICAL_IMPORTANCE } from "../../src/core/anatomical-importance";
 import { test, expect } from "@playwright/test";
@@ -116,6 +117,7 @@ test("manual anatomical objective survives reload and exact real Worker recovery
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const event = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const project = JSON.parse(
@@ -235,6 +237,7 @@ test("source-matched anatomy action creates a separate variant and preserves sav
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const event = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const fresh = JSON.parse(

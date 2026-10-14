@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -83,6 +84,7 @@ test("completed physical fit remains archived after recovery marker is cleared a
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await page.reload();
   expect(await read(hash)).toEqual(before);
 });
@@ -133,6 +135,7 @@ test("group Continue survives reload using frozen private pixels; deleting them 
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await expect(page.getByTestId("player-hash")).toHaveText(root!);
   await page.reload();
   await page.getByRole("button", { name: "My projects", exact: true }).click();
@@ -147,6 +150,7 @@ test("group Continue survives reload using frozen private pixels; deleting them 
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await expect(page.getByTestId("player-hash")).toHaveText(next!);
   const downloaded = page.waitForEvent("download");
   await page

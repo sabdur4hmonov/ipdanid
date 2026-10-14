@@ -51,7 +51,7 @@ export function BuildGate({
     }
   }
   return (
-    <section className="card" data-testid="build-gate">
+    <section className="card build-gate" data-testid="build-gate">
       <h1>{t("locked")}</h1>
       <p>{t("hint")}</p>
       <div aria-label={t("preview")}>{preview}</div>
@@ -89,6 +89,8 @@ export function BuildGate({
         <input
           data-testid="kit-code"
           autoComplete="off"
+          autoCapitalize="none"
+          spellCheck={false}
           maxLength={100}
           value={code}
           onChange={(e) => setCode(e.target.value)}

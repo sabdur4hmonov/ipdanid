@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 
@@ -133,6 +134,7 @@ test("matching voice fallback and cancellation keep playback distinct from confi
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const voice = page.getByRole("checkbox", {
     name: "Voice guidance",
     exact: true,

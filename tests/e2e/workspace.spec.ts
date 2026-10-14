@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -47,6 +48,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   await revealControl(page.getByLabel("Project name", { exact: true }));
   await page.getByLabel("Project name", { exact: true }).fill("Verified original sample");
   await page.getByRole("button", { name: "Save & assemble" }).click();
+  await unlockIfNeeded(page);
   await expect(page.getByTestId("player-hash")).toHaveText(previewHash!);
   await expect(page.getByTestId("confirmed-step")).toContainText("0/");
   await page.getByRole("button", { name: "Next", exact: true }).click();
@@ -206,6 +208,7 @@ test("rectangular material dimensions drive crop, worker, preview and multicolor
   const canvas = page.locator("canvas[data-sequence-hash]");
   expect(await canvas.getAttribute("height")).toBe("540");
   await page.getByRole("button", { name: "Save & assemble" }).click();
+  await unlockIfNeeded(page);
   const bounds = await page.locator(".craft-canvas").boundingBox();
   expect(bounds!.width / bounds!.height).toBeCloseTo(4 / 3, 1);
   const saved = await page.evaluate(() =>
@@ -287,6 +290,7 @@ test("photo candidates retain edits and reusable settings persist without storin
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const [download] = await Promise.all([
     page.waitForEvent("download"),
     page.getByRole("button", { name: "Preview PNG", exact: true }).click(),

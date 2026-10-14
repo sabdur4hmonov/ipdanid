@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -198,6 +199,7 @@ test("localized optional photo advice, reversible local brush and exact exported
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click({ timeout: 90000 });
+  await unlockIfNeeded(page);
   await page.evaluate(() => navigator.serviceWorker.ready);
   await context.setOffline(true);
   const download = page.waitForEvent("download");

@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -82,6 +83,7 @@ test("real physical Worker checkpoints survive reload; exact recovery, separate 
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const event = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const old = JSON.parse(
@@ -133,6 +135,7 @@ test("real physical Worker checkpoints survive reload; exact recovery, separate 
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const fresh = JSON.parse(

@@ -1,4 +1,12 @@
 import { expect, type Page } from "@playwright/test";
+export async function unlockIfNeeded(page: Page) {
+  await page
+    .locator('[data-testid="build-gate"],[data-testid="player-hash"]')
+    .first()
+    .waitFor({ state: "visible" });
+  if (await page.getByTestId("build-gate").isVisible())
+    await unlockKitGuide(page);
+}
 export async function unlockKitGuide(page: Page) {
   const gate = page.getByTestId("build-gate");
   await expect(gate).toBeVisible();

@@ -47,6 +47,8 @@ test("new guides lock steps and exports, signed unlock survives offline and tamp
   await importGuide(page, file);
   const gate = page.getByTestId("build-gate");
   await expect(gate).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  for(const box of await gate.getByRole("button").evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height)))expect(box).toBeGreaterThanOrEqual(44);
   for (const id of ["player-hash", "confirmed-step"])
     await expect(page.getByTestId(id)).toHaveCount(0);
   for (const name of ["PDF guide", "TXT sequence", "Project JSON"])

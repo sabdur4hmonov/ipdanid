@@ -14,12 +14,14 @@ export function KitLogin({
     [error, setError] = useState("");
   const t = (k: Parameters<typeof kitText>[1]) => kitText(locale, k);
   return (
-    <section className="card">
+    <section className="card kit-login">
       <h2>{t("login")}</h2>
       <label>
         {t("loginCode")}
         <input
           autoComplete="off"
+          autoCapitalize="none"
+          spellCheck={false}
           value={code}
           maxLength={100}
           onChange={(e) => setCode(e.target.value)}

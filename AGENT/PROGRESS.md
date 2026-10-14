@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase6 missing-input branch documented; Phase7 next.
+Last update: 2026-10-14 — Phase7 actual screen extraction tested; recorded voice/APK next.
 Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
 
 ## Phase status
@@ -16,11 +16,13 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 | 4 Thread products (text/Arabic/animals) | DONE / MECHANICS TESTED | Filled18, outline19, four-language UI, physical coordinates/continuous bridges, offline fonts/player/PDF/JSON/TXT, explicit animal/object presets. Full220/220 and final browser4/4 pass. Optional photo-name composition deferred with contract reason; physical/readability acceptance owner pending. |
 | 5 Kit login + credits | DONE / TESTED | New bound policy, free previews, hidden steps/player/exports until real signed unlock; legacy preserved. Kit login/default4/windows/caps/QR admin, offline/retry/key/account/device tests. Full226/226, final14/14, browser12/12, HTTP38/38, build passed. Local deterrent, no DRM/live deployment claim. |
 | 6 QBRIX comparison | DONE / WAITING FOR OWNER INPUTS | Folder had no owner source/results. Uzbek collection howto and ignored input folder added; no invented comparison/quality claim. Actual report waits owner files. |
-| 7 Design, voice, APK | TODO | voice needs owner recordings |
+| 7 Design, voice, APK | IN PROGRESS / SCREENS TESTED | Actual Create/Assemble/Library/More+menu split; App337lines, typed shared controller preserves jobs/state. Build1951, browser22/22 plus final gate geometry check. Recorded voice framework/list and APK still next; real clips owner missing. |
 
 ## Exact next step
 
-Phase7: split actual App JSX into Create/Assemble/Library/More screen modules with typed shared controller, preserving bright navy/accessibility/safe-area/advanced-details behavior and all existing state/worker/recovery flows. Commit tested screen milestone. Then recorded voice manifest/player/number concatenation + exact Uzbek recording list, honest existing TTS/text fallback (recordings absent); rebuild/inspect signer/assets in a new APK without replacing old APKs or phone install. Finish full appropriate regression including generation tests explicitly unlocking the newly gated flow. All feasible phases must finish before FINAL_REPORT.md.
+Phase7 next milestone after screen commit: implement two-slot offline recorded voice manifest/player with UZ/RU/EN number concatenation (pins/steps up to20000), cancellation/hash checking, exact ~60 phrase recording list and honest existing device TTS/text fallback. No recordings are present: show availability truthfully and record owner waiting; do not fabricate instructors. Commit tested voice support before APK. Then build a new uniquely archived APK, verify packaged dist/fonts/manifests/private-input exclusion and signer against old APK, no phone install/old replacement. Run final full appropriate browser/unit/HTTP regression and write FINAL_REPORT.md only once all feasible phases done.
+
+Screen milestone after7caa381: real JSX in src/screens/CreateScreen,AssembleScreen,LibraryScreen,MoreScreen,MoreMenu; shared GuidePreview, typed single useAppController (no duplicate job/source/progress ownership), App337lines. Existing DOM/nav/four locales/Details/status/safe area/focus/reduced-motion remain. New text/kit fieldsets labelled/clean,44px controls, kit capitalization off and locked mobile preview constrained. Browser22/22 pass2.4min(test-results/phase7-screens-e2e/report.json), build1951modules passes. Final2-case geometry/touch/offline check at4312/4452 collected in LOG before commit.30 save/assemble test flows now explicitly use real kit unlock UI; grandfathered legacy paths stay unchanged. TypeScript caught initial extraction type widening/relative type import and overly broad test-helper insertion; corrected before passing browser tests. No pending build/source issue.
 
 Phase6 aftere42b84f: comparison/qbrix absent/empty of owner inputs; added docs/QBRIX_COMPARE_HOWTO_UZ.md with exact original/crop/preview/guide/settings collection, no account/code sharing or automatic upload, unknowns and screenshot-vs-executable limits. Added README/input gitignore rule; no comparison run, source/photo download or superiority claim. Waiting owner QBRIX source/results; only that substep skipped. Other phases continue.
 

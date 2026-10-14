@@ -254,10 +254,10 @@ export default function TextStudio({
     }
   }
   return (
-    <section className="card" data-testid="text-studio">
+    <section className="card text-studio" data-testid="text-studio">
       <h2>{t("title")}</h2>
       <p>{t("hint")}</p>
-      <fieldset disabled={busy}>
+      <fieldset disabled={busy} aria-label={t("title")}>
         <label>
           {t("text")}
           <input

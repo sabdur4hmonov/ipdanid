@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { generate } from "../../src/core/engine";
@@ -84,6 +85,7 @@ test("explicit rotated board survives import, presets, reuse and actual Worker g
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click({ timeout: 120000 });
+  await unlockIfNeeded(page);
   const event = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const actual = JSON.parse(

@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -53,6 +54,7 @@ test("global Worker bootstrap preserves comparison, cancellation, legal exports 
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const d = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const project = JSON.parse(

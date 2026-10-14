@@ -67,3 +67,7 @@ Qurilma ma’lumotini o‘chirsangiz kesh ruxsati yo‘qoladi; asl kit/hisob bil
 ## 2026-10-14 — QBRIX uchun kutilayotgan fayllar
 
 `docs/QBRIX_COMPARE_HOWTO_UZ.md` bo‘yicha aynan bitta asl surat, QBRIX oldindan ko‘rinishi, ruxsat etilgan qo‘llanma va taxta/mix/kesish sozlamalarini `comparison/qbrix/` ga qo‘ying. Kit kodi/parol kerak emas. Hozir fayllar yo‘qligi sabab haqiqiy taqqoslash bajarilmadi. Agent kutmasdan dizayn, ovoz va APK bosqichiga o‘tadi.
+
+## 2026-10-14 — ekranlar va mobil qulaylik
+
+Yaratish → surat → hisoblash → kit bilan ochish → Yig‘ish → Loyihalarim → Yana bo‘ylab yuring. Avvalgi loyiha qadami, kesish va davom ettirish saqlansin. Batafsil sozlamalar yig‘ilgan bo‘lsin. Telefon kengligida yangi qulf ko‘rinishi yon tomonga chiqmasin, tugmalar oson bosilsin. Klaviaturada Tab/Enter va qaytish, internetsiz saqlangan qo‘llanma hamda xato bo‘lsa tuzatish oynasini tekshiring. Agent ovoz va APK bosqichlarini davom ettiradi.

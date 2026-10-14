@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
@@ -102,6 +103,7 @@ test("two-person manual regions, photo advice and guarded worker stay consistent
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await expect(page.getByTestId("player-hash")).toHaveText(hash!);
   mkdirSync("output/takeover",{recursive:true});
   const download = page.waitForEvent("download");

@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 
@@ -124,6 +125,7 @@ test("gallery still prepares locally, generates a real path and saves resumable 
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await expect(page.getByTestId("player-hash")).toHaveText(hash!);
   await page
     .getByRole("button", {

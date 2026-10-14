@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { test, expect, type Page } from "@playwright/test";
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 const root = JSON.parse(
@@ -122,6 +123,7 @@ test("exact hair search survives no-photo reload, touch/mouse cancellation and o
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await expect(page.getByTestId("player-hash")).toHaveText(
     expected.sequenceHash,
   );

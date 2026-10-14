@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { createProfile } from "../../src/core/geometry";
@@ -109,6 +110,7 @@ test("explicit extension controls survive local reload and real Worker recovery/
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const event = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const project = JSON.parse(

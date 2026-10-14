@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -53,6 +54,7 @@ test("continuing an older variant after changing the photo uses its recorded sou
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   await page.getByRole("button", { name: "Next", exact: true }).click();
   await page
     .getByRole("button", {
@@ -104,6 +106,7 @@ test("continuing an older variant after changing the photo uses its recorded sou
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click();
+  await unlockIfNeeded(page);
   const event = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const actual = JSON.parse(

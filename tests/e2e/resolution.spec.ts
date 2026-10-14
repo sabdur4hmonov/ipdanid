@@ -1,3 +1,4 @@
+import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -143,6 +144,7 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
   await page
     .getByRole("button", { name: "Save & assemble", exact: true })
     .click({ timeout: 120000 });
+  await unlockIfNeeded(page);
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Project JSON", exact: true }).click();
   const actual = JSON.parse(
