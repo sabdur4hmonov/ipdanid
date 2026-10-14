@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase5 access/QR/legacy verification complete; Phase6 next.
+Last update: 2026-10-14 — Phase6 missing-input branch documented; Phase7 next.
 Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
 
 ## Phase status
@@ -15,12 +15,14 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 | 3 Generalized solver | DONE / MECHANICS TESTED | Full209/209 unit61files, browser16/16+latest6/6+final display2/2, build. Opt-in18, exact reviewed subjects/target, groups320, localized errors, worst-subject continuation screen. Visual/physical acceptance waits real photos; no default promotion. |
 | 4 Thread products (text/Arabic/animals) | DONE / MECHANICS TESTED | Filled18, outline19, four-language UI, physical coordinates/continuous bridges, offline fonts/player/PDF/JSON/TXT, explicit animal/object presets. Full220/220 and final browser4/4 pass. Optional photo-name composition deferred with contract reason; physical/readability acceptance owner pending. |
 | 5 Kit login + credits | DONE / TESTED | New bound policy, free previews, hidden steps/player/exports until real signed unlock; legacy preserved. Kit login/default4/windows/caps/QR admin, offline/retry/key/account/device tests. Full226/226, final14/14, browser12/12, HTTP38/38, build passed. Local deterrent, no DRM/live deployment claim. |
-| 6 QBRIX comparison | TODO | needs owner files in comparison/qbrix/ |
+| 6 QBRIX comparison | DONE / WAITING FOR OWNER INPUTS | Folder had no owner source/results. Uzbek collection howto and ignored input folder added; no invented comparison/quality claim. Actual report waits owner files. |
 | 7 Design, voice, APK | TODO | voice needs owner recordings |
 
 ## Exact next step
 
-Phase6: comparison/qbrix is absent (read-only check now), so write Uzbek exact source/QBRIX-output collection instructions and owner waiting entry; do not fabricate a comparison. Commit that milestone then Phase7: split actual App screens/controller, preserve bright navy/accessibility/safe-area/advanced-details behavior; implement recorded voice manifest/player/number concatenation + exact Uzbek recording list and honest TTS/text fallback; rebuild/inspect signer/assets in a new APK without replacing old APKs or phone install. Finish full appropriate regression including old generation tests updated to explicitly unlock the newly gated flow. All feasible phases must finish before final report.
+Phase7: split actual App JSX into Create/Assemble/Library/More screen modules with typed shared controller, preserving bright navy/accessibility/safe-area/advanced-details behavior and all existing state/worker/recovery flows. Commit tested screen milestone. Then recorded voice manifest/player/number concatenation + exact Uzbek recording list, honest existing TTS/text fallback (recordings absent); rebuild/inspect signer/assets in a new APK without replacing old APKs or phone install. Finish full appropriate regression including generation tests explicitly unlocking the newly gated flow. All feasible phases must finish before FINAL_REPORT.md.
+
+Phase6 aftere42b84f: comparison/qbrix absent/empty of owner inputs; added docs/QBRIX_COMPARE_HOWTO_UZ.md with exact original/crop/preview/guide/settings collection, no account/code sharing or automatic upload, unknowns and screenshot-vs-executable limits. Added README/input gitignore rule; no comparison run, source/photo download or superiority claim. Waiting owner QBRIX source/results; only that substep skipped. Other phases continue.
 
 Phase5 UI final: full226/226 unit(phase5-full-unit.json), latest14/14(phase5-client-final-unit.json), build1944modules pass. Final12/12 browser1.2min at4309/4450(phase5-ui-final/report.json): actual new Arabic guides locked then paid, hidden player/steps/exports, freePNG, offline receipt, wrong-device denial/retry, second-device/account reissue, free archive, QR/CSV admin and all legacy customer flows. Initial8pass4fail due duplicate sign-in/redeem input label; distinct localized sign-in label fixed actual a11y, all12 rerun. HTTP38/38 rerun kit-http-gxxlal. Pinned MIT qrcode1.5.4/types1.5.5, notices/offline assets; code QR stays local. Access policy explicit only on new UI generation, old guides/recovery untouched; key pin/signature outside immutable guide, stable retry and receipt-write failure recovery. docs/KIT_ACCESS.md honest deterrent/compatibility and optional server generation. No owned process pending.
 
