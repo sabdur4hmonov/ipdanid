@@ -1,8 +1,8 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase 2 frozen experiment rejected/tested; Phase3 is next.
-Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser workflows; `ec21ec3` — Phase 0 acceptance; `3d914c0` — Phase 1 research; `c8c72b9` — R4 diagnosis; `3d1c433` — v17 implementation/protocol. Experiment verdict is committed with this record; next milestone records its hash.
+Last update: 2026-10-14 — Phase3 generalized core implemented/tested; manual UI integration next.
+Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2. Phase3 core is committed with this record; next milestone records its hash.
 
 ## Phase status
 
@@ -12,7 +12,7 @@ Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser wo
 | 0 Test safety | DONE / TESTED | 186/186 unit tests (56 files), 154 unique executed browser outcomes, build, 37 customer HTTP + 67 staff HTTP + sandbox checks passed. Final full desktop 77/77; full mobile 76 passed/1 legacy desktop-only skip, then that missing case passed 1/1 on mobile with skip removed. |
 | 1 Research | DONE / DOCUMENTED | Public workflows, market SKU conflicts/unknowns, paper/repository/license survey and ranked new hypotheses. No competitor/code/assets copied; no comparative-quality claim. |
 | 2 String quality | DONE / NEW HYPOTHESIS REJECTED | R4 diagnosed; one frozen v17/control pass55440 fitting evaluations each, full routing. Skin tone/coarse loss violates fixed gate despite less texture; no default promotion. Count-knee/simplification/set-promotion conditional on acceptance, therefore inapplicable. |
-| 3 Generalized solver | TODO | |
+| 3 Generalized solver | IN PROGRESS / CORE TESTED | New opt-in18 shares integer fitter/physical routing for1–3 subjects, equal mass/max overlap, all-subject screen, typed capability registry, strict recovery/metrics. Worker wired; manual UI/browser acceptance next. |
 | 4 Thread products (text/Arabic/animals) | TODO | |
 | 5 Kit login + credits | TODO | |
 | 6 QBRIX comparison | TODO | needs owner files in comparison/qbrix/ |
@@ -20,7 +20,9 @@ Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser wo
 
 ## Exact next step
 
-Phase3 / R3: extract subject-independent weighting/objective capability from the density fitter into a new versioned opt-in generalized path (retain legacy imports/hashes/defaults). One capability registry drives subject/mode/shape/resolution/continuation/render dispatch and localized unsupported errors. Supply exact SubjectPlan for1–3 reviewed people or generic animal/object/vehicle regions; per-subject normalized weights, overlap max rather than accidental multiplication, worst-subject regional gate. Animals never enter human preparation. Same strong fitter for groups/singles at up to320; no silent192 greedy downgrade. Implement/test core weights and registry first, then fitter/Worker/UI generic manual details and recovery; commit every milestone before the next big step.
+Phase3 integration: expose explicit experimental subject fitter choice (keep defaults unchanged); generic subject bounds/detail editor with eyes/muzzle labels for animals, measured source silhouette/detail emphasis for objects/vehicles. Bind marks to photo/category/crop/resolution; editing invalidates review and switching photos cannot leak marks. Allow reviewed1–3 people at320 on the same new path, no existing192 greedy group downgrade. Localize capability errors; persist subjectObjective in recovery. Test real Chrome Worker, manual UI, exact exports/recovery and legacy input on desktop/mobile, update docs/owner tests, commit. Then Phase4 text/outline products. Do not rerun rejected quality experiments.
+
+Phase3 core: density-subject/18 opt-in only. Shares strong fitter rather than duplicating engines; exact normalized SubjectPlan weights and measured source-gradient/detail emphasis. Same path1–3 people/all generic kinds dark/light/circle/rectangle/heart32–320. Capability registry drives render/generation/continuation with legacy conditional behavior retained. Every stable subject/detail metric required; omitted small-subject metrics rejected; screenSubjects exposes worst-subject gate. Strict checkpoint identity/replay/JSON/TXT. Full206/206 (60files, test-results/phase3-core-full-unit.json); latest16/16 including actual native320 known-feasible raster (phase3-fit-final-unit-v2.json). Build1879 modules passes, existing warnings. Earlier11 regional validation failures and flat320 target with no improving chord were diagnostic failures retained, fixed/test fixture replaced by physically known synthetic target. No likeness acceptance/default promotion.
 
 Phase2 result: output/local-texture-v17/{protocol.json,results.json,report.html}; candidate d8763f21…b0ae rejected: skin tone+.00031683/coarse+.00036712 vs root, above fixed allowances; excess texture−4.66% is not enough. Candidate1863 connections647.2598m249.07 estimated minutes vs root1852/643.1466m247.6min. Control1850/643.9969m. Both55440 fitting evals; routing separately3004/3679. Complete checkpoint replay hashes match; altered strength refused; guards6/78. Real Chrome desktop/mobile Worker+player+exact JSON/TXT/optical PDF4/4 pass(test-results/phase2-texture-e2e/report.json). Build1876 passes. Initial control parser/resume-count failures fixed; saved fit resumed without repeating its pass. Scripts separately typecheck. Docs verdict/Uzbek owner instructions updated. No process left running.
 
@@ -38,7 +40,7 @@ Reproduction: PowerShell env `IP_RASM_TEST_BROWSER_CHANNEL=chrome`, `IP_RASM_TES
 
 ## Waiting for owner
 
-- (none yet)
+- Phase3 visual acceptance later needs real two/three-person, animal and object photographs; mechanics work continues with procedural fixtures. Existing one-person owner photo remains private/local and is not a group/animal acceptance set.
 
 ## Known facts carried over
 

@@ -1,5 +1,12 @@
 import { validSubjectPlan } from "./subject-plan";
 import {
+  subjectWeightField,
+  measureSubjects,
+  validSubjectObjective,
+  type SubjectObjectiveSettings,
+} from "./subject-objective";
+import { capabilityProblem } from "./capabilities";
+import {
   LocalTexture,
   validLocalTexture,
   type LocalTextureSettings,
@@ -67,6 +74,7 @@ export interface ChordExchangeSettings {
   selection: "initial-full-objective-gain/1" | "nose-lip-residual/1";
 }
 export interface DensityTuning {
+  subjectObjective?: SubjectObjectiveSettings;
   texture?: LocalTextureSettings;
   initialObjective?: "consistent-undershoot/1";
   features?: FeatureContrastSettings;
@@ -99,7 +107,8 @@ export async function generateDensity(
 ): Promise<Instruction> {
   const started = performance.now(),
     { resolution: n, profile: p } = o,
-    portrait = o.portrait;
+    portrait = o.portrait!,
+    general = !!tuning.subjectObjective;
   const initialObjective =
     tuning.initialObjective ??
     tuning.resume?.initialObjective ??
@@ -114,10 +123,41 @@ export async function generateDensity(
   )
     throw Error("Invalid initial objective version");
   if (o.subject) validSubjectPlan(o.subject, portrait);
-  if (!portrait?.enabled || !["dark", "light"].includes(o.mode))
+  if ((!portrait?.enabled && !general) || !["dark", "light"].includes(o.mode))
     throw new Error("Density optimization requires a new monochrome portrait");
   if (o.seed) assertContinuation(o, await hash(o.pixels));
-  validPortrait(portrait);
+  if (portrait) validPortrait(portrait);
+  if (general) {
+    validSubjectObjective(tuning.subjectObjective!);
+    const problem = capabilityProblem("density-subject/18", {
+      subject: o.subject,
+      mode: o.mode,
+      resolution: n,
+      shape: p.shape,
+    });
+    if (problem) throw Error(`subject-fit/${problem}`);
+    if (
+      !tuning.physical ||
+      tuning.resolved ||
+      tuning.features ||
+      tuning.texture ||
+      tuning.anatomy ||
+      tuning.head ||
+      tuning.exchange ||
+      tuning.extension ||
+      tuning.multiscale ||
+      (o.seed && o.seed.algorithm !== "density-subject/18")
+    )
+      throw Error("subject-fit/combination");
+    if (
+      o.seed &&
+      JSON.stringify(o.seed.params.optimization?.subjectObjective) !==
+        JSON.stringify(tuning.subjectObjective)
+    )
+      throw Error("Continuation requires the same subject objective");
+  }
+  if (o.seed?.algorithm === "density-subject/18" && !general)
+    throw Error("Continuation requires the same subject objective");
   if (tuning.texture) {
     validLocalTexture(tuning.texture);
     if (
@@ -187,7 +227,9 @@ export async function generateDensity(
     (!tuning.physical || tuning.extension || tuning.exchange)
   )
     throw Error("Anatomical importance requires a separate physical fit");
-  const anatomical = anatomicalImportance(portrait, tuning.anatomy);
+  const anatomical = general
+    ? () => 1
+    : anatomicalImportance(portrait, tuning.anatomy);
   if (
     tuning.head &&
     (!tuning.resolved ||
@@ -303,7 +345,7 @@ export async function generateDensity(
   if (
     !Number.isInteger(n) ||
     n < 32 ||
-    n > (tuning.resolved ? 320 : 192) ||
+    n > (tuning.resolved || general ? 320 : 192) ||
     o.pixels.length !== n * n * 3 ||
     !Number.isInteger(o.lines) ||
     o.lines < 1 ||
@@ -358,13 +400,23 @@ export async function generateDensity(
     ink = rgb(p.colors[0]),
     bl = base.reduce((a, b) => a + b, 0) / 3,
     il = ink.reduce((a, b) => a + b, 0) / 3;
-  const regions = portraitRegions(portrait),
+  const regions = general ? {} : portraitRegions(portrait),
     size = n * n;
   const target = new Float64Array(size),
     density = new Float64Array(size).fill(bl),
     mask = new Uint8Array(size),
     weight = new Float64Array(size);
   let weightSum = 0;
+  const subjectField = general
+    ? subjectWeightField(
+        o.subject!,
+        n,
+        p,
+        o.pixels,
+        tuning.subjectObjective!,
+        portrait,
+      )
+    : undefined;
   for (let i = 0; i < size; i++) {
     const x = (i % n) / (n - 1),
       y = Math.floor(i / n) / (n - 1);
@@ -373,7 +425,9 @@ export async function generateDensity(
     const lum =
       (o.pixels[i * 3] + o.pixels[i * 3 + 1] + o.pixels[i * 3 + 2]) / 765;
     target[i] = lum;
-    const importance = importanceAt(x, y);
+    const importance = subjectField
+      ? subjectField.weights[i]
+      : importanceAt(x, y);
     // Manual anatomical bands prioritize genuine target contrast; no synthetic contours.
     weight[i] = importance;
     weightSum += weight[i];
@@ -706,6 +760,7 @@ export async function generateDensity(
             ...(tuning.head ? { head: tuning.head } : {}),
             ...(tuning.features ? { features: tuning.features } : {}),
             ...(tuning.texture ? { texture: tuning.texture } : {}),
+            ...(general ? { subjectObjective: tuning.subjectObjective } : {}),
             ...(exchange ? { exchange } : {}),
             ...(extension
               ? {
@@ -1279,23 +1334,25 @@ export async function generateDensity(
   }
   const result: Instruction = {
     schema: "iprasm.instruction/1",
-    algorithm: tuning.texture
-      ? "density-texture/17"
-      : tuning.features
-        ? "density-feature/16"
-        : tuning.head
-          ? "density-head/13"
-          : tuning.resolved
-            ? "density-resolved/12"
-            : p.pinBasis
-              ? "density-pin-basis/11"
-              : tuning.anatomy
-                ? "density-anatomy/10"
-                : tuning.physical
-                  ? "density-physical/8"
-                  : tuning.multiscale
-                    ? "density-multiscale/7"
-                    : "density-optical/5",
+    algorithm: general
+      ? "density-subject/18"
+      : tuning.texture
+        ? "density-texture/17"
+        : tuning.features
+          ? "density-feature/16"
+          : tuning.head
+            ? "density-head/13"
+            : tuning.resolved
+              ? "density-resolved/12"
+              : p.pinBasis
+                ? "density-pin-basis/11"
+                : tuning.anatomy
+                  ? "density-anatomy/10"
+                  : tuning.physical
+                    ? "density-physical/8"
+                    : tuning.multiscale
+                      ? "density-multiscale/7"
+                      : "density-optical/5",
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
@@ -1330,6 +1387,9 @@ export async function generateDensity(
           ? { features: structuredClone(tuning.features) }
           : {}),
         ...(tuning.texture ? { texture: structuredClone(tuning.texture) } : {}),
+        ...(general
+          ? { subjectObjective: structuredClone(tuning.subjectObjective) }
+          : {}),
         lookahead: 0,
         coarseScale: 1,
         minimumRelativeGain: 0.0001,
@@ -1430,10 +1490,42 @@ export async function generateDensity(
       }
   result.metrics.baselineMse = empty / num;
   result.metrics.reconstructionMse = error / num;
-  result.metrics.regions = {
-    baseline: regionMeasurements(o.pixels, baseline, n, p, portrait),
-    final: regionMeasurements(o.pixels, raster, n, p, portrait),
-  };
+  result.metrics.regions = general
+    ? (() => {
+        const target = Float64Array.from(
+            { length: size },
+            (_, k) =>
+              (o.pixels[k * 3] + o.pixels[k * 3 + 1] + o.pixels[k * 3 + 2]) /
+              765,
+          ),
+          reduce = (r: Float32Array) =>
+            Object.fromEntries(
+              Object.entries(
+                measureSubjects(
+                  o.subject!,
+                  target,
+                  Float64Array.from(
+                    { length: size },
+                    (_, k) => (r[k * 3] + r[k * 3 + 1] + r[k * 3 + 2]) / 3,
+                  ),
+                  n,
+                  p,
+                ),
+              ).map(([key, q]) => [
+                key,
+                {
+                  mse: q.toneError,
+                  edgeMse: q.physicalContrastResidual,
+                  pixels: q.pixels,
+                },
+              ]),
+            );
+        return { baseline: reduce(baseline), final: reduce(raster) };
+      })()
+    : {
+        baseline: regionMeasurements(o.pixels, baseline, n, p, portrait),
+        final: regionMeasurements(o.pixels, raster, n, p, portrait),
+      };
   result.sequenceHash = await hash(sequencePayload(result));
   result.metrics.durationMs = priorElapsed + performance.now() - started;
   o.onProgress?.(1);

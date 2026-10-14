@@ -1,4 +1,6 @@
 import { validSubjectPlan } from "./subject-plan";
+import { validSubjectObjective } from "./subject-objective";
+import { capabilityProblem } from "./capabilities";
 import { validHeadImportance } from "./head-importance";
 import { validFeatureContrast } from "./feature-contrast";
 import { validLocalTexture } from "./local-texture";
@@ -37,6 +39,7 @@ export async function validateInstruction(
       "density-resolved/12",
       "density-feature/16",
       "density-texture/17",
+      "density-subject/18",
       "density-head/13",
       "hair-cycles/14",
       "assembly-prune/9",
@@ -57,6 +60,7 @@ export async function validateInstruction(
       "density-resolved/12",
       "density-feature/16",
       "density-texture/17",
+      "density-subject/18",
       "density-head/13",
       "hair-cycles/14",
       "assembly-prune/9",
@@ -121,6 +125,7 @@ export async function validateInstruction(
       i.algorithm !== "density-resolved/12" &&
       i.algorithm !== "density-feature/16" &&
       i.algorithm !== "density-texture/17" &&
+      i.algorithm !== "density-subject/18" &&
       i.algorithm !== "density-head/13" &&
       i.algorithm !== "hair-cycles/14" &&
       !(
@@ -130,6 +135,7 @@ export async function validateInstruction(
           "density-resolved/12",
           "density-feature/16",
           "density-texture/17",
+          "density-subject/18",
           "density-head/13",
           "hair-cycles/14",
         ].includes(i.params?.simplification?.sourceAlgorithm ?? "")
@@ -206,6 +212,7 @@ export async function validateInstruction(
         "density-resolved/12",
         "density-feature/16",
         "density-texture/17",
+        "density-subject/18",
         "density-head/13",
         "hair-cycles/14",
       ].includes(i.algorithm) ||
@@ -214,6 +221,7 @@ export async function validateInstruction(
           "density-resolved/12",
           "density-feature/16",
           "density-texture/17",
+          "density-subject/18",
           "density-head/13",
           "hair-cycles/14",
         ].includes(i.params.simplification?.sourceAlgorithm ?? ""))
@@ -235,6 +243,7 @@ export async function validateInstruction(
       "density-resolved/12",
       "density-feature/16",
       "density-texture/17",
+      "density-subject/18",
       "density-head/13",
       "hair-cycles/14",
       "assembly-prune/9",
@@ -262,6 +271,7 @@ export async function validateInstruction(
         "density-resolved/12",
         "density-feature/16",
         "density-texture/17",
+        "density-subject/18",
         "density-head/13",
       ].includes(i.algorithm)
     ) {
@@ -313,6 +323,7 @@ export async function validateInstruction(
     (i.params.optimization.initialObjective !== "consistent-undershoot/1" ||
       ![
         "density-optical/5",
+        "density-subject/18",
         "density-multiscale/7",
         "density-physical/8",
         "density-anatomy/10",
@@ -321,6 +332,32 @@ export async function validateInstruction(
   )
     throw Error("Invalid initial objective version");
   const features = i.params.optimization?.features;
+  const subjectObjective = i.params.optimization?.subjectObjective;
+  if (i.algorithm === "density-subject/18") {
+    validSubjectObjective(subjectObjective!);
+    if (!i.metrics.regions) throw Error("Missing subject regional metrics");
+    if (
+      capabilityProblem(i.algorithm, {
+        subject: i.params.subject,
+        mode: i.params.mode,
+        resolution: i.params.resolution,
+        shape: p.shape,
+      }) ||
+      i.params.optimization?.sampling ||
+      i.params.optimization?.features ||
+      i.params.optimization?.texture ||
+      i.params.optimization?.head ||
+      i.params.optimization?.anatomy ||
+      i.params.optimization?.convergence ||
+      i.params.optimization?.exchange
+    )
+      throw Error("Invalid generalized subject provenance");
+  } else if (subjectObjective !== undefined)
+    throw Error("Unbound subject objective");
+  if (i.params.simplification?.sourceAlgorithm === "density-subject/18")
+    throw Error(
+      "Subject simplification requires worst-subject quality evaluation",
+    );
   const texture = i.params.optimization?.texture;
   if (i.algorithm === "density-texture/17") {
     validLocalTexture(texture!);
@@ -385,6 +422,7 @@ export async function validateInstruction(
         "density-resolved/12",
         "density-feature/16",
         "density-texture/17",
+        "density-subject/18",
         "density-head/13",
         "hair-cycles/14",
       ].includes(i.params.simplification?.sourceAlgorithm ?? ""))
@@ -493,6 +531,7 @@ export async function validateInstruction(
           "density-resolved/12",
           "density-feature/16",
           "density-texture/17",
+          "density-subject/18",
           "density-head/13",
           "hair-cycles/14",
           "continuous-guarded/6",
@@ -558,6 +597,7 @@ export async function validateInstruction(
         "density-resolved/12",
         "density-feature/16",
         "density-texture/17",
+        "density-subject/18",
         "density-head/13",
       ].includes(i.algorithm)
     ) {
@@ -656,7 +696,7 @@ export async function validateInstruction(
       )
         throw Error("Invalid convergence provenance");
       if (
-        !i.params.portrait?.enabled ||
+        (!i.params.portrait?.enabled && i.algorithm !== "density-subject/18") ||
         i.params.mode === "color" ||
         !fit ||
         ![
@@ -759,13 +799,23 @@ export async function validateInstruction(
     )
       throw new Error("Invalid optimization metrics");
     if (i.metrics.regions) {
+      const regionNames =
+        i.algorithm === "density-subject/18"
+          ? i.params.subject!.subjects.flatMap((s) => [
+              `${s.id}.whole`,
+              ...s.regions.map((r, j) => `${s.id}.${r.role}-${j + 1}`),
+            ])
+          : ["face", "eyes", "nose", "mouth", "outline"];
       for (const phase of [
         i.metrics.regions.baseline,
         i.metrics.regions.final,
       ]) {
         if (
           !phase ||
-          ["face", "eyes", "nose", "mouth", "outline"].some(
+          (i.algorithm === "density-subject/18" &&
+            Object.keys(phase).sort().join("|") !==
+              [...regionNames].sort().join("|")) ||
+          regionNames.some(
             (name) =>
               !phase[name] ||
               ![phase[name].mse, phase[name].edgeMse, phase[name].pixels].every(
@@ -835,6 +885,7 @@ export function toTxt(i: Instruction): string {
     "density-resolved/12",
     "density-feature/16",
     "density-texture/17",
+    "density-subject/18",
     "density-head/13",
     "hair-cycles/14",
     "assembly-prune/9",

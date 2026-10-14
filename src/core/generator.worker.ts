@@ -1,6 +1,8 @@
 import { refineHairCycles } from "./hair-cycles";
 import { DEFAULT_FEATURE_CONTRAST } from "./feature-contrast";
 import { DEFAULT_LOCAL_TEXTURE } from "./local-texture";
+import { DEFAULT_SUBJECT_OBJECTIVE } from "./subject-objective";
+import { capabilityProblem } from "./capabilities";
 import { assertContinuation } from "./continuation";
 import { hash } from "./engine";
 import { validatePinBasis } from "./pin-basis";
@@ -17,6 +19,15 @@ import { validSubjectPlan } from "./subject-plan";
 self.onmessage = async ({ data }) => {
   try {
     const started = performance.now();
+    if (data.strategy === "subjects") {
+      const problem = capabilityProblem("density-subject/18", {
+        subject: data.subject,
+        mode: data.mode,
+        resolution: data.resolution,
+        shape: data.profile?.shape,
+      });
+      if (problem) throw Error(`subject-fit/${problem}`);
+    }
     // Subject plans are checked before any strategy runs; general subjects can
     // never reach a person-anatomy objective or reuse a person-only mask.
     if (data.subject !== undefined)
@@ -24,7 +35,7 @@ self.onmessage = async ({ data }) => {
     if (
       data.portrait?.enabled &&
       data.portrait.people &&
-      !["continuous", "guarded", "simplify"].includes(data.strategy)
+      !["continuous", "guarded", "simplify", "subjects"].includes(data.strategy)
     )
       throw Error(
         "Multiple portraits currently require the guarded continuous solver; experimental objectives are separate",
@@ -51,9 +62,14 @@ self.onmessage = async ({ data }) => {
     options.guarded =
       data.strategy === "guarded" ||
       data.strategy === "multiscale" ||
-      ["physical", "anatomy", "basis", "features", "texture"].includes(
-        data.strategy,
-      );
+      [
+        "physical",
+        "anatomy",
+        "basis",
+        "features",
+        "texture",
+        "subjects",
+      ].includes(data.strategy);
     let baseline;
     if (
       ["global", "multiscale", "physical", "anatomy"].includes(data.strategy) &&
@@ -116,6 +132,7 @@ self.onmessage = async ({ data }) => {
               "basis",
               "features",
               "texture",
+              "subjects",
             ].includes(data.strategy)
           ? await generateDensity(options, {
               resolved:
@@ -130,6 +147,14 @@ self.onmessage = async ({ data }) => {
                   }
                 : {}),
               head: data.headRefine ? undefined : data.head,
+              ...(data.strategy === "subjects"
+                ? {
+                    subjectObjective:
+                      data.seed?.params.optimization?.subjectObjective ??
+                      data.subjectObjective ??
+                      DEFAULT_SUBJECT_OBJECTIVE,
+                  }
+                : {}),
               ...(data.strategy === "texture"
                 ? {
                     texture:
@@ -147,10 +172,13 @@ self.onmessage = async ({ data }) => {
                   "basis",
                   "features",
                   "texture",
+                  "subjects",
                 ].includes(data.strategy)
                   ? 2
                   : 1),
-              sweeps: ["features", "texture"].includes(data.strategy)
+              sweeps: ["features", "texture", "subjects"].includes(
+                data.strategy,
+              )
                 ? (data.totalSweeps ?? 8)
                 : data.strategy === "basis"
                   ? (data.totalSweeps ??
@@ -172,6 +200,7 @@ self.onmessage = async ({ data }) => {
                 "basis",
                 "features",
                 "texture",
+                "subjects",
               ].includes(data.strategy)
                 ? {
                     physical:
@@ -185,6 +214,7 @@ self.onmessage = async ({ data }) => {
                 "basis",
                 "features",
                 "texture",
+                "subjects",
               ].includes(data.strategy)
                 ? {
                     resume: data.resume,
@@ -225,6 +255,13 @@ self.onmessage = async ({ data }) => {
                             ? (data.seed?.params.optimization?.texture ??
                               data.texture ??
                               DEFAULT_LOCAL_TEXTURE)
+                            : undefined,
+                        subjectObjective:
+                          data.strategy === "subjects"
+                            ? (data.seed?.params.optimization
+                                ?.subjectObjective ??
+                              data.subjectObjective ??
+                              DEFAULT_SUBJECT_OBJECTIVE)
                             : undefined,
                       }),
                   }

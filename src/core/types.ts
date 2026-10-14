@@ -100,6 +100,7 @@ export interface Instruction {
     | "density-resolved/12"
     | "density-feature/16"
     | "density-texture/17"
+    | "density-subject/18"
     | "density-head/13"
     | "hair-cycles/14"
     | "group-optical/15";
@@ -126,6 +127,7 @@ export interface Instruction {
       sampling?: { version: "direct-source320/1"; grid: 320 };
       features?: import("./feature-contrast").FeatureContrastSettings;
       texture?: import("./local-texture").LocalTextureSettings;
+      subjectObjective?: import("./subject-objective").SubjectObjectiveSettings;
       kind?: "density-coordinate" | "optical-coordinate";
       order?: "dispersed-v1";
       overshoot?: "target-luminance-v1";

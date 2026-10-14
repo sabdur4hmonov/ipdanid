@@ -1293,6 +1293,7 @@ export default function App() {
           anatomy: data.anatomy,
           features: data.features,
           texture: data.texture,
+          subjectObjective:data.subjectObjective,
           head: data.head,
           headRefine: data.headRefine,
           edits: generationEdits,
@@ -1546,6 +1547,7 @@ export default function App() {
       anatomy: resume?.anatomy ?? seed?.params.optimization?.anatomy ?? anatomy,
       features: resume?.features ?? seed?.params.optimization?.features,
       texture: resume?.texture ?? seed?.params.optimization?.texture,
+      subjectObjective:resume?.subjectObjective??seed?.params.optimization?.subjectObjective,
       strategy: requestedStrategy,
     });
   }
