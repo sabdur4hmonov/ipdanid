@@ -1,8 +1,8 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase 1 complete; Phase 2 R4 diagnostic is next.
-Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser workflows; `ec21ec3` — Phase 0 acceptance. Phase 1 documents are committed with this record; later milestones record that hash.
+Last update: 2026-10-14 — Phase 2 R4 diagnostic complete; new texture hypothesis is next.
+Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser workflows; `ec21ec3` — Phase 0 acceptance; `3d914c0` — Phase 1 research. R4 diagnosis is committed with this record; next milestone records its hash.
 
 ## Phase status
 
@@ -11,7 +11,7 @@ Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser wo
 | R1/R2 subject input | DONE | Branch `feat/r1-r2-subjects`, see docs/SUBJECT_INPUT_CHECKPOINT.md |
 | 0 Test safety | DONE / TESTED | 186/186 unit tests (56 files), 154 unique executed browser outcomes, build, 37 customer HTTP + 67 staff HTTP + sandbox checks passed. Final full desktop 77/77; full mobile 76 passed/1 legacy desktop-only skip, then that missing case passed 1/1 on mobile with skip removed. |
 | 1 Research | DONE / DOCUMENTED | Public workflows, market SKU conflicts/unknowns, paper/repository/license survey and ranked new hypotheses. No competitor/code/assets copied; no comparative-quality claim. |
-| 2 String quality | TODO | |
+| 2 String quality | IN PROGRESS / R4 DIAGNOSED | Exact hashes/checksums/replayed segments, regional fit/routed/objective/taper/skin diagnosis sealed. No new fit or acceptance. |
 | 3 Generalized solver | TODO | |
 | 4 Thread products (text/Arabic/animals) | TODO | |
 | 5 Kit login + credits | TODO | |
@@ -20,7 +20,9 @@ Session commits: `f7fab35` — infrastructure/protocol; `44b9f74` — browser wo
 
 ## Exact next step
 
-Phase 2 / R4: create a **new** frozen baseline manifest and diagnostic under ignored output/quality-r4, using output/resolved-convergence/final.json (root24 8d1f2dd8…3c8323), its exact fit-24.json and output/portrait-dispatch/target-320.bin (1d06c780…727fa). Verify every identity before measurement. Preserve old eeb26cf…c944 under its own crop as context only. Measure fit vs routed tone/physical contrast/dark excess in each eye/nose/mouth/jaw/skin/hair, objective shares, v16 taper coverage and skin crossing energy. No fitting before the diagnosis selects a new hypothesis; do not rerun old v12/v16/convergence/pruning/material experiments. Read the ranked survey before implementing one opt-in method with equal actual evaluations and fixed gates. Update/commit the diagnostic milestone before lengthy fitting.
+Phase 2: implement one new opt-in fixed-source local excess-gradient texture objective (new algorithm version) using the frozen R4 skin proxy, full root24 seed, no v16 feature term. Independently verify sparse vs full gains and strict recovery binding before fitting. Freeze strength/budget/guards, compare equal actual evaluations against the unmodified control, evaluate complete routed results under R4 masks and visual panels. Preserve all sealed prior experiments. Commit implementation/tests before lengthy fits. Only an accepted method can justify a new count-knee/simplification/default; otherwise keep existing guides and continue Phase 3.
+
+R4 evidence: output/quality-r4/{manifest.json,diagnosis.json,report.html}. Script refuses overwrite. Zero new fit sweeps; exact replayed root24 segments, source/checkpoint hashes, old context crop excluded. Native320 root skin fine energy 3.9248× source and nose6.0361×, already present in fit; routing only .366% raw objective rise. v16 feature term .312% of fit loss; 69.282% genuine nose/lip gradient energy at taper<.25, only .860% unsupported. Visually weak nose/lips and crossing texture remain. docs/QUALITY_CHECKPOINT.md contains measured details and next isolated hypothesis. Relevant evaluation tests 2/2 passed; build passed1875 modules, unchanged product assets.
 
 No test process is left running from this session. All final test services were on separate ports from the owner and terminated after their runs. Aggregate evidence is test-results/phase0-final/summary.json: it verifies exactly 154 unique project/file/title cases passed across the final complete project runs plus the explicit supplemental mobile case. The earlier diagnostic full-v3 completed at 134 pass /19 fail /1 skip while tests changed; its evidence remains and is not presented as final acceptance.
 
