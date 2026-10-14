@@ -14,7 +14,10 @@ import { continuationStrategy } from "../src/core/generation-strategy";
 import { generateDensity, type DensityCheckpoint } from "../src/core/density";
 import { DEFAULT_SUBJECT_OBJECTIVE } from "../src/core/subject-objective";
 import { defaultPhysicalContrast } from "../src/core/physical-contrast";
-import { sealGenerationInput, validateLocalInput } from "../src/generation-inputs";
+import {
+  sealGenerationInput,
+  validateLocalInput,
+} from "../src/generation-inputs";
 import { DEFAULT_EDITS } from "../src/core/types";
 const bytes = (font: keyof typeof LETTERING_FONTS) =>
   new Uint8Array(readFileSync("public" + LETTERING_FONTS[font].path));
@@ -89,14 +92,67 @@ it("text target uses actual pinned shaped pixels and explicit review, with bound
   expect(t.product.style).toBe("target");
   expect(t.subject.sourceRevision).toBe(`lettering-${await hash(t.pixels)}`);
 });
-it("real generalized lettering fit binds text provenance in recovery and archived input",async()=>{
-  const p=createProfile("rectangle",24,"dark",{widthMm:600,heightMm:300}),g=await shapeLettering("O",bytes("sans"),p),t=await prepareLetteringTarget(g,p,32,true),options={...t,profile:p,resolution:32,lines:120,mode:"dark" as const},tuning={edgeWeight:2,sweeps:1,physical:defaultPhysicalContrast(),subjectObjective:DEFAULT_SUBJECT_OBJECTIVE};
-  let checkpoint:DensityCheckpoint|undefined;
-  const i=await generateDensity(options,{...tuning,onCheckpoint:c=>{checkpoint=structuredClone(c)}});
-  await validateInstruction(i);expect(i.algorithm).toBe("density-subject/18");expect(i.params.product).toEqual(t.product);
-  const recovered=await generateDensity(options,{...tuning,resume:checkpoint,materializeOnly:true});expect(recovered.sequenceHash).toBe(i.sequenceHash);
-  await expect(generateDensity({...options,product:{...t.product,text:"Q"}},{...tuning,resume:checkpoint})).rejects.toThrow();
-  const input=await sealGenerationInput({targetHash:i.imageHash,preparedRevision:t.subject.sourceRevision,edits:DEFAULT_EDITS,resolution:32,profile:p,subject:t.subject,product:t.product,mode:"dark",lines:120,strategy:"subjects",objective:i.params.optimization},t.pixels);
-  await validateLocalInput(input,i);
-  const altered=structuredClone(input);delete altered.recipe.product;altered.recipeHash=await hash(altered.recipe);await expect(validateLocalInput(altered,i)).rejects.toThrow("integrity");
+it("real generalized lettering fit binds text provenance in recovery and archived input", async () => {
+  const p = createProfile("rectangle", 24, "dark", {
+      widthMm: 600,
+      heightMm: 300,
+    }),
+    g = await shapeLettering("O", bytes("sans"), p),
+    t = await prepareLetteringTarget(g, p, 32, true),
+    options = {
+      ...t,
+      profile: p,
+      resolution: 32,
+      lines: 120,
+      mode: "dark" as const,
+    },
+    tuning = {
+      edgeWeight: 2,
+      sweeps: 1,
+      physical: defaultPhysicalContrast(),
+      subjectObjective: DEFAULT_SUBJECT_OBJECTIVE,
+    };
+  let checkpoint: DensityCheckpoint | undefined;
+  const i = await generateDensity(options, {
+    ...tuning,
+    onCheckpoint: (c) => {
+      checkpoint = structuredClone(c);
+    },
+  });
+  await validateInstruction(i);
+  expect(i.algorithm).toBe("density-subject/18");
+  expect(i.params.product).toEqual(t.product);
+  const recovered = await generateDensity(options, {
+    ...tuning,
+    resume: checkpoint,
+    materializeOnly: true,
+  });
+  expect(recovered.sequenceHash).toBe(i.sequenceHash);
+  await expect(
+    generateDensity(
+      { ...options, product: { ...t.product, text: "Q" } },
+      { ...tuning, resume: checkpoint },
+    ),
+  ).rejects.toThrow();
+  const input = await sealGenerationInput(
+    {
+      targetHash: i.imageHash,
+      preparedRevision: t.subject.sourceRevision,
+      edits: DEFAULT_EDITS,
+      resolution: 32,
+      profile: p,
+      subject: t.subject,
+      product: t.product,
+      mode: "dark",
+      lines: 120,
+      strategy: "subjects",
+      objective: i.params.optimization,
+    },
+    t.pixels,
+  );
+  await validateLocalInput(input, i);
+  const altered = structuredClone(input);
+  delete altered.recipe.product;
+  altered.recipeHash = await hash(altered.recipe);
+  await expect(validateLocalInput(altered, i)).rejects.toThrow("integrity");
 });

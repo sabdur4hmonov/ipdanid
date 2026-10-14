@@ -1,0 +1,107 @@
+import type { Locale } from "./core/types";
+import { baseLocale, scriptText } from "./uzbek-script";
+const en = {
+  title: "Thread lettering",
+  text: "Text",
+  style: "Style",
+  target: "Filled text target",
+  outline: "Glyph outline pins",
+  hint: "Experimental. Inspect the actual thread result before building. Outline loops include visible connecting strands; tiny dots may require a larger board or fewer pins.",
+  width: "Board width (mm)",
+  height: "Board height (mm)",
+  pins: "Number of pins",
+  lines: "Maximum connections",
+  resolution: "Computation resolution",
+  prepare: "Prepare text",
+  source: "Prepared target — not the thread result",
+  review: "I checked the text, joining and board size",
+  generate: "Calculate thread guide",
+  result: "Actual full thread sequence",
+  open: "Save and assemble",
+  cancel: "Cancel",
+  busy: "Calculating…",
+  details: "Details",
+  meters: "m of thread",
+  steps: "connections",
+  minutes: "estimated minutes",
+  error:
+    "Check the text and settings. Use one script per line, supported letters, a larger board or fewer pins. Review the prepared target again.",
+  waiting: "Prepare and review the text first.",
+  archive:
+    "Could not save the local recovery input. Keep this page open and retry.",
+  animal: "Animal preset",
+  object: "Object preset",
+  presetHint:
+    "Upload your photo in Create, select Animal or Object, enable the experimental subject fitter and review the silhouette and real details. The same strong fitter handles 1–3 subjects.",
+};
+const uz: typeof en = {
+  title: "Ip bilan yozuv",
+  text: "Matn",
+  style: "Uslub",
+  target: "To‘ldirilgan matn nishoni",
+  outline: "Harf konturida mixlar",
+  hint: "Tajriba. Yig‘ishdan oldin haqiqiy ip natijasini tekshiring. Konturlar orasidagi ulovchi iplar ham ko‘rinadi; mayda nuqtalar uchun kattaroq taxta yoki kamroq mix kerak bo‘lishi mumkin.",
+  width: "Taxta kengligi (mm)",
+  height: "Taxta balandligi (mm)",
+  pins: "Mixlar soni",
+  lines: "Eng ko‘p ulanish",
+  resolution: "Hisoblash aniqligi",
+  prepare: "Matnni tayyorlash",
+  source: "Tayyor nishon — ip natijasi emas",
+  review: "Matn, harflar qo‘shilishi va taxtani tekshirdim",
+  generate: "Ip yo‘riqnomasini hisoblash",
+  result: "Haqiqiy to‘liq ip ketma-ketligi",
+  open: "Saqlash va yig‘ish",
+  cancel: "Bekor qilish",
+  busy: "Hisoblanmoqda…",
+  details: "Batafsil",
+  meters: "m ip",
+  steps: "ulanish",
+  minutes: "taxminiy daqiqa",
+  error:
+    "Matn va sozlamalarni tekshiring. Bir qatorda bitta yozuv turini, mavjud harflarni, kattaroq taxta yoki kamroq mixni tanlang. Tayyor nishonni qayta tekshiring.",
+  waiting: "Avval matnni tayyorlang va tekshiring.",
+  archive:
+    "Mahalliy tiklash ma’lumoti saqlanmadi. Oynani ochiq qoldirib qayta urinib ko‘ring.",
+  animal: "Hayvon andozasi",
+  object: "Buyum andozasi",
+  presetHint:
+    "Yaratish oynasida surat yuklang, Hayvon yoki Buyum tanlang, tajriba obyekt usulini yoqing va tashqi chegara hamda haqiqiy qismlarni tekshiring. 1–3 obyekt bir xil kuchli usulda hisoblanadi.",
+};
+const ru: typeof en = {
+  title: "Надпись нитью",
+  text: "Текст",
+  style: "Стиль",
+  target: "Заполненный текст как цель",
+  outline: "Гвозди по контурам букв",
+  hint: "Эксперимент. Проверьте реальный результат до сборки. Между контурами видны соединительные нити; для мелких точек нужна большая доска или меньше гвоздей.",
+  width: "Ширина доски (мм)",
+  height: "Высота доски (мм)",
+  pins: "Число гвоздей",
+  lines: "Максимум соединений",
+  resolution: "Разрешение расчёта",
+  prepare: "Подготовить текст",
+  source: "Подготовленная цель — не результат из нитей",
+  review: "Я проверил текст, соединение букв и размер доски",
+  generate: "Рассчитать инструкцию",
+  result: "Реальная полная последовательность нитей",
+  open: "Сохранить и собрать",
+  cancel: "Отмена",
+  busy: "Расчёт…",
+  details: "Подробнее",
+  meters: "м нити",
+  steps: "соединений",
+  minutes: "примерно минут",
+  error:
+    "Проверьте текст и параметры. Используйте одну письменность, поддерживаемые буквы, большую доску или меньше гвоздей. Снова проверьте подготовленную цель.",
+  waiting: "Сначала подготовьте и проверьте текст.",
+  archive:
+    "Не удалось сохранить данные восстановления. Оставьте страницу открытой и повторите попытку.",
+  animal: "Пресет животного",
+  object: "Пресет предмета",
+  presetHint:
+    "В разделе создания загрузите фото, выберите животное или предмет, включите экспериментальный расчёт и проверьте силуэт и реальные детали. Для 1–3 объектов используется один сильный алгоритм.",
+};
+export function letteringText(locale: Locale, key: keyof typeof en) {
+  return scriptText({ en, uz, ru }[baseLocale(locale)][key], locale);
+}

@@ -1,12 +1,33 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { GridStudio } from "./GridStudio";
 import { PaintStudio } from "./PaintStudio";
 import { paintText } from "./paint-i18n";
-import type { Locale } from "./core/types";
-export function CraftStudio({ locale }: { locale: Locale }) {
-  const [mode, setMode] = useState<"grid" | "paint">("grid");
+import type { Instruction, Locale } from "./core/types";
+import { letteringText } from "./lettering-i18n";
+const TextStudio = lazy(() => import("./TextStudio"));
+export function CraftStudio({
+  locale,
+  onGuide,
+  onPreset,
+}: {
+  locale: Locale;
+  onGuide: (i: Instruction) => void;
+  onPreset: (kind: "animal" | "object") => void;
+}) {
+  const [mode, setMode] = useState<"grid" | "paint" | "text">("grid");
   return (
     <>
+      <div className="card">
+        <p>{letteringText(locale, "presetHint")}</p>
+        <div className="grid-actions">
+          <button onClick={() => onPreset("animal")}>
+            {letteringText(locale, "animal")}
+          </button>
+          <button onClick={() => onPreset("object")}>
+            {letteringText(locale, "object")}
+          </button>
+        </div>
+      </div>
       <div
         className="grid-actions"
         role="group"
@@ -21,8 +42,15 @@ export function CraftStudio({ locale }: { locale: Locale }) {
         >
           {paintText(locale, "paint")}
         </button>
+        <button aria-pressed={mode === "text"} onClick={() => setMode("text")}>
+          {letteringText(locale, "title")}
+        </button>
       </div>
-      {mode === "grid" ? (
+      {mode === "text" ? (
+        <Suspense fallback={<p role="status">…</p>}>
+          <TextStudio locale={locale} onGuide={onGuide} />
+        </Suspense>
+      ) : mode === "grid" ? (
         <GridStudio locale={locale} />
       ) : (
         <PaintStudio locale={locale} />

@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-14 — Phase4 exact lettering guide construction and provenance tested; UI next.
+Last update: 2026-10-14 — Phase4 lettering/presets UI and exact offline exports verified; Phase5 next.
 Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
 
 ## Phase status
@@ -13,14 +13,16 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 | 1 Research | DONE / DOCUMENTED | Public workflows, market SKU conflicts/unknowns, paper/repository/license survey and ranked new hypotheses. No competitor/code/assets copied; no comparative-quality claim. |
 | 2 String quality | DONE / NEW HYPOTHESIS REJECTED | R4 diagnosed; one frozen v17/control pass55440 fitting evaluations each, full routing. Skin tone/coarse loss violates fixed gate despite less texture; no default promotion. Count-knee/simplification/set-promotion conditional on acceptance, therefore inapplicable. |
 | 3 Generalized solver | DONE / MECHANICS TESTED | Full209/209 unit61files, browser16/16+latest6/6+final display2/2, build. Opt-in18, exact reviewed subjects/target, groups320, localized errors, worst-subject continuation screen. Visual/physical acceptance waits real photos; no default promotion. |
-| 4 Thread products (text/Arabic/animals) | IN PROGRESS / FONT CORE TESTED | Pinned OFL Noto Naskh Arabic2.021, OpenType joining/visual order, deterministic4× raster, glyph-contour physical pin placement,6/6 tests. Actual product sequence/template/UI next. |
+| 4 Thread products (text/Arabic/animals) | DONE / MECHANICS TESTED | Filled18, outline19, four-language UI, physical coordinates/continuous bridges, offline fonts/player/PDF/JSON/TXT, explicit animal/object presets. Full220/220 and final browser4/4 pass. Optional photo-name composition deferred with contract reason; physical/readability acceptance owner pending. |
 | 5 Kit login + credits | TODO | |
 | 6 QBRIX comparison | TODO | needs owner files in comparison/qbrix/ |
 | 7 Design, voice, APK | TODO | voice needs owner recordings |
 
 ## Exact next step
 
-Phase4 next milestone after exact-guide core commit: add four-language lettering UI in Crafts, explicit prepared-target review, real subjects Worker for filled text, outline19 generation, save/open in shared player/library and exact PDF/JSON/TXT browser checks. Preserve private prepared target/checkpoint for18 continuation. Then finish presets/feasibility documentation and continue Phase5–7. No default promotion; do not stop after partial work.
+Phase5: inspect existing CustomerStore/Store/API/CustomerHub accounts, codes, credits and instruction licenses; implement phone or kit-code account login, configurable default4/no-expiry kit batch+QR and account limits, atomic idempotent redeem/unlock bound to account+sequence, persistent signed offline access for new guides, UI step/player/export gating with legacy guides/progress preserved, isolated server/browser tests. Document client deterrent/optional server generation honestly. Commit milestone before Phase6 QBRIX missing-input documentation and Phase7 screens/voice/APK. Do not stop after partial work.
+
+Phase4 commits0c362e6(font),9df4f9a(exact core), UI milestone with this record. Build1888modules passes; final browser4/4 passed26.8s at4307/4447(test-results/phase4-ui-final/report.json) including all physical PDF nail centres, exact cover raster/JSON/TXT, shared player/save/reload and offline Arabic font preparation. Prior4/4 pass23.0s; first attempt interrupted after combobox locator mismatch. Full220/220 core regression plus final relevant unit report phase4-ui-unit.json passed. Mobile screenshot inspected; very thin single-pass outline remains honestly faint, no cosmetic thickening/readability claim. Text UI lazy; target review invalidates on every change; filled real Worker/checkpoint/private archive and explicit animal/object presets integrated. Optional composition deferred: no independently reviewed text/photo transform contract. No pending owned process or browser/build at this checkpoint.
 
 Core milestone after0c362e6: glyph-outline/19 deterministic closed glyph loops, every inter-loop bridge counted in one continuous path, separate glyphLayout coordinate hash, physical spacing, 32/160 guards, exact material accounting including .5m knots. True baseline/reconstruction MSE retained without fabricated fitting improvement or weighted objective. Product/font/shaping provenance bound to18/19, checkpoint identity, archived input and continuation;19 cannot be continued by a fitter. Shared optical renderer/normal exact-coordinate PDF template reused; existing circle metadata untouched. Relevant10/10 then final7/7 tests (including real filled-text18 fit/recovery and altered-text refusal) pass. Full unit report phase4-guide-full-unit.json and build1884modules completed; full counts recorded in LOG before commit. No text UI yet.
 

@@ -4450,7 +4450,28 @@ export default function App() {
               </button>
             </section>
           )}
-          {view === "crafts" && <CraftStudio locale={locale} />}
+          {view === "crafts" && (
+            <CraftStudio
+              locale={locale}
+              onPreset={(kind) => {
+                chooseSubject(kind);
+                setStrongSubjectFit(true);
+                nav("create");
+              }}
+              onGuide={(i) => {
+                if (!loaded) return;
+                const p: Project = {
+                  id: crypto.randomUUID(),
+                  name: i.params.product?.text ?? t("defaultName"),
+                  instruction: i,
+                  progress: progressFor(i),
+                  edits: { ...DEFAULT_EDITS },
+                };
+                setProjects((ps) => [p, ...ps]);
+                open(p);
+              }}
+            />
+          )}
         </main>
         <footer>
           <span>{storefront.brandName || PRODUCT_NAME}</span>
