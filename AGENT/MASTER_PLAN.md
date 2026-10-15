@@ -100,5 +100,27 @@ Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQL
 - Voice: two distinct offline instructors for UZ/RU/EN from recorded clips (numbers 0–19, tens, hundreds + ~60 phrases, concatenated, e.g. "ikki yuz o'ttiz besh"). Implement player + clip manifest + `docs/VOICE_RECORDING_UZ.md` (exact list of clips to record). Fallback to device TTS and text. Do not claim voices exist until real recordings are added.
 - Rebuild the APK; verify assets and signer; preserve old APKs. No phone install.
 
+### PHASE 8 — classic standard-kit prerequisites
+
+Added 2026-10-15 because no Phase8 implementation/plan existed when the owner requested Phase9. Complete these prerequisites before Phase9 integration; do not describe the old Phase0–7 outcome as acceptance of this new work.
+
+- Implement a separately versioned `classic-greedy/1` continuous legal-chord engine, actual physical optical reconstruction, deterministic recovery/limits and exact preview/player/export identity. Preserve every old engine/hash/import. A new explicitly selected standard kit may default to this engine without claiming visual superiority or promoting it over accepted legacy methods.
+- Add a standard white-base kit profile and explicit automatic white-background preparation using existing local segmentation; failures must be visible and preserve the source. Add a reviewed face-fill crop for one/two faces; never invent face detail or silently clip a face.
+- Freeze a reproducible A/B protocol: existing continuous engine versus classic on identical prepared targets/material/layout/line budgets; include actual owner target when locally available outside protected data and procedural synthetic faces. Report actual source/preparation differences separately. Keep old rejected probes untouched. No superiority claim without metric and visual acceptance.
+- Unit/browser checks and isolated production build; update PROGRESS/LOG/OWNER_TESTS and commit before Phase9's next milestone.
+
+### PHASE 9 — QBRIX-level standard kit
+
+Owner request 2026-10-15. Competitor facts supplied by owner are reference requirements, not copied assets or a claim of reproduced competitor quality: QBRIX/RingString white500mm square wooden base,460mm circle,240 nails, monofilament, circle/square choice, Heart up to2 people/optional red thread, sector stickers, voice/PDF,4–6h advertised assembly,3 instructions per single-base code. Record primary public verification/contradictions separately; never bypass gates or upload private photos.
+
+Kit inputs are owner-editable; provisional defaults:500×500mm white MDF base,460mm circle,240 nails, black0.12mm monofilament. Shaft/hole/edge clearances must be explicit and validated, not guessed into a collision-free claim.
+
+1. Admin-editable default standard profiles: Circle46 (240 nails/460mm circle), Square (240 perimeter nails on same base), Heart (legal continuous layout/max2 people/optional separately modelled second colour). Derive one collision-checked combined drilling plan; shared identical holes may be explicitly shared, near-collisions refused or deterministically resolved within declared layout tolerances. Exact final positions must drive fitting and all outputs. Produce original1:1 500×500mm and tiledA4 PDF with50mm calibration, no competitor assets.
+2. Versioned sector mapping default4×60 A1…D60, configurable e.g.8×30. Show B-17 in player/PDF/TXT and speak letter+number; preserve numeric indices in JSON/export. Exact matching sector ruler sticker PDFs; no scale approximation or hidden physical drift.
+3. Evaluate quality versus connection counts using classic/Phase8 winner on240-nail kit. Recommend a measured knee aiming at2000–3000; never fabricate a knee or force a failed budget. Show assembly-hour estimate before unlock and distinguish estimates from competitor4–6h advertising.
+4. New kit-code default3 full builds, admin-editable including4. Do not change existing granted credits/batches/receipts/old guides.
+5. Re-run the frozen Phase8 A/B protocol for Circle46/Square/Heart (Heart with2 faces), owner photo and procedural faces; write output/phase9/report.html and reproducible manifests/metrics/counts/metres/hours. Missing owner inputs must be explicit; continue independent work. These are new kit/material/framing comparisons, not repeats of rejected v12/v16 sweeps.
+6. Tests, isolated build, new verified APK preserving historical APKs/signer; no phone install. Uzbek OWNER_TESTS: print100%, measure50mm, mark/drill holes, apply exact sector rulers, generate, unlock, start first step. Physical drilling/adhesion/readability/likeness remain owner acceptance. Keep live4194 server and its served dist unchanged; build/test elsewhere.
+
 ### FINAL
 `AGENT/FINAL_REPORT.md` + chat, in Uzbek: every phase done / tested / pending (with reason), branch, commit list, report paths, and exactly what the owner should test (`npm run local` → http://127.0.0.1:4194).
