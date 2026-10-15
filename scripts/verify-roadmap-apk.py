@@ -32,7 +32,13 @@ parser.add_argument('--prepare', action='store_true')
 parser.add_argument('--java')
 parser.add_argument('--apksigner')
 parser.add_argument('--aapt')
+parser.add_argument('--dist', default='dist')
+parser.add_argument('--series', default='ip-rasm-full-roadmap-20261014')
+parser.add_argument('--snapshot', default='roadmap-20261014-old-apks.json')
+parser.add_argument('--standard-kit', action='store_true')
 args = parser.parse_args()
+assert re.fullmatch(r'[a-zA-Z0-9._-]+',args.series) and re.fullmatch(r'[a-zA-Z0-9._-]+\.json',args.snapshot), 'Unsafe archive name'
+SNAPSHOT = OUT / args.snapshot
 OUT.mkdir(parents=True, exist_ok=True)
 if args.prepare:
     if SNAPSHOT.exists():
@@ -47,7 +53,9 @@ if args.prepare:
     raise SystemExit(0)
 assert args.java and args.apksigner and args.aapt, 'Provide local Java/apksigner/aapt paths'
 old_count = verify_old()
-dist = ROOT / 'dist'
+dist = (ROOT / args.dist).resolve()
+assert dist == ROOT / 'dist' or dist.is_relative_to(ROOT / 'output') or dist.is_relative_to(ROOT / 'test-results'), 'Unsafe web directory'
+assert (dist / 'index.html').is_file(), 'Missing verified web build'
 assets = sorted(p for p in dist.rglob('*') if p.is_file())
 with zipfile.ZipFile(APP) as apk:
     for source in assets:
@@ -61,6 +69,9 @@ with zipfile.ZipFile(APP) as apk:
     code = '\n'.join(apk.read(n).decode('utf-8') for n in expected if n.endswith('.js'))
     for marker in ['density-texture/17', 'density-subject/18', 'glyph-outline/19', 'normalized-subject/1', 'glyph-coordinates/1', 'thread-lettering/1', 'kit-build/1', 'iprasm.build-access/1', 'recorded-instructors/1', 'density-fit-checkpoint/1', 'pairLimit', 'pinDegreeLimit', 'processed-target/sample-centers-v1']:
         assert marker in code, 'Required feature absent: ' + marker
+    if args.standard_kit:
+        for marker in ['classic-greedy/1','standard-accent/20','standard-kit/1','standard-profile/1','legal-heart-accent/1','standard-preparation/1','minHoleGapMm','sector-','50 mm calibration']:
+            assert marker in code, 'Required standard-kit feature absent: '+marker
     assert hashlib.sha256(apk.read('assets/public/fonts/NotoNaskhArabic-Regular.ttf')).hexdigest() == 'a87da9e7687b097af15f9dc217fe3e2dd80bcb3d50eccb394a4aece74b1ca4d9'
     voices = json.loads(apk.read('assets/public/voices/manifest.json'))
     assert len(voices['profiles']) == 2 and not any(p['clips'] for p in voices['profiles']), 'Unexpected fictional/undeclared voice assets'
@@ -71,7 +82,7 @@ with zipfile.ZipFile(APP) as apk:
 badging = subprocess.run([args.aapt, 'dump', 'badging', str(APP)], capture_output=True, text=True, check=True, timeout=60).stdout
 assert "package: name='uz.iprasm.app'" in badging
 app_hash = digest(APP)
-base = 'ip-rasm-full-roadmap-20261014-' + app_hash[:12]
+base = args.series + '-' + app_hash[:12]
 archives = []
 for source, suffix in [(APP, '-debug.apk'), (TEST, '-debug-androidTest.apk')]:
     target = OUT / (base + suffix)
@@ -85,6 +96,7 @@ for path in [OUT / 'ip-rasm-photo-quality-debug.apk', *archives]:
     signatures.append(dict(path=str(path.relative_to(ROOT)), sha256=digest(path), certificateSha256=CERTIFICATE))
 assert verify_old() == old_count
 evidence = dict(debug=True, nativeDeviceTested=False, phoneInstalled=False, productionActive=False,
+                webDirectory=str(dist.relative_to(ROOT)), standardKitVerified=args.standard_kit,
                 previousApksVerifiedUnchanged=old_count, webAssetsVerified=len(assets),
                 archivedApks=[str(p.relative_to(ROOT)) for p in archives], signatures=signatures,
                 applicationBadging=badging.splitlines()[:6], recordedVoicesInstalled=0,

@@ -11,11 +11,16 @@ import { download } from "./download";
 export function StandardKitAdmin({
   locale,
   token,
+  onSaved,
 }: {
   locale: Locale;
   token: string;
+  onSaved?: (config: StandardKitConfig) => void;
 }) {
   const [config, setConfig] = useState<StandardKitConfig>(
+      structuredClone(DEFAULT_STANDARD_KIT),
+    ),
+    [savedConfig, setSavedConfig] = useState<StandardKitConfig>(
       structuredClone(DEFAULT_STANDARD_KIT),
     ),
     [error, setError] = useState(false),
@@ -28,6 +33,8 @@ export function StandardKitAdmin({
       .then((c) => {
         standardProfiles(c);
         setConfig(c);
+        setSavedConfig(c);
+        onSaved?.(c);
       })
       .catch(() => setError(true));
   }, []);
@@ -93,13 +100,14 @@ export function StandardKitAdmin({
           onClick={() =>
             void run(async () => {
               standardProfiles(config);
-              setConfig(
-                await customerApi.request<StandardKitConfig>(
-                  "/admin/kits/profiles",
-                  config,
-                  token,
-                ),
+              const saved = await customerApi.request<StandardKitConfig>(
+                "/admin/kits/profiles",
+                config,
+                token,
               );
+              setConfig(saved);
+              setSavedConfig(saved);
+              onSaved?.(saved);
             })
           }
         >
@@ -108,9 +116,11 @@ export function StandardKitAdmin({
         <button
           onClick={() =>
             void run(async () => {
-              setConfig(
-                await customerApi.request<StandardKitConfig>("/kit-profiles"),
-              );
+              const saved =
+                await customerApi.request<StandardKitConfig>("/kit-profiles");
+              setConfig(saved);
+              setSavedConfig(saved);
+              onSaved?.(saved);
             })
           }
         >
@@ -119,6 +129,7 @@ export function StandardKitAdmin({
         {(["sheet", "tiles", "stickers"] as const).map((kind) => (
           <button
             key={kind}
+            disabled={JSON.stringify(config) !== JSON.stringify(savedConfig)}
             onClick={() =>
               void run(async () => {
                 const { standardKitPdf } =

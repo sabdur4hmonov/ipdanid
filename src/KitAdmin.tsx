@@ -11,7 +11,7 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
     [policy, setPolicy] = useState<KitPolicy>(),
     [data, setData] = useState<any>(),
     [count, setCount] = useState(10),
-    [profile, setProfile] = useState("dev-circle-120-dark"),
+    [profile, setProfile] = useState("standard-base-r1"),
     [batch, setBatch] = useState<KitBatch>(),
     [account, setAccount] = useState(""),
     [busy, setBusy] = useState(false),
@@ -52,7 +52,7 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
   return (
     <section className="card kit-admin" data-testid="kit-admin">
       <h2>{t("batch")}</h2>
-      <StandardKitAdmin locale={locale} token={token}/>
+      <StandardKitAdmin locale={locale} token={token} onSaved={c=>setProfile(`standard-base-r${c.revision}`)}/>
       <p>{t("note")}</p>
       {error && <p role="alert">{error}</p>}
       <fieldset disabled={busy} aria-label={t("batch")}>

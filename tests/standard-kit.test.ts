@@ -96,6 +96,9 @@ it("admin revisions reject lost updates/collisions, default3 and existing grants
     const old = standardProfiles(s.standardKit())[0],
       updated = s.setStandardKit("admin", { ...s.standardKit(), sectors: 8 });
     expect(updated.revision).toBe(2);
+    expect(s.standardKit(1)).toEqual(DEFAULT_STANDARD_KIT);
+    expect(s.standardKit(2)).toEqual(updated);
+    expect(()=>s.standardKit(999)).toThrow(/not found/);
     expect(() => s.setStandardKit("admin", DEFAULT_STANDARD_KIT)).toThrow(
       /reload/,
     );

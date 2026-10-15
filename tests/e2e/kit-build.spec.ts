@@ -171,6 +171,12 @@ test("admin configures default4/no expiry and downloads real local printable QR 
     .click();
   const admin = page.getByTestId("kit-admin");
   await expect(admin).toBeVisible();
+  const standard=page.getByTestId("standard-kit-admin");
+  await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeEnabled();
+  await standard.getByLabel("White MDF base (mm)",{exact:true}).fill("501");
+  await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeDisabled();
+  await standard.getByRole("button",{name:"Reload saved profiles",exact:true}).click();
+  await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeEnabled();
   await expect(admin.getByLabel("Builds per kit", { exact: true })).toHaveValue(
     "4",
   );

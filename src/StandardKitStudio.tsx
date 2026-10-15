@@ -7,7 +7,10 @@ import {
   standardProfiles,
   type StandardKitConfig,
 } from "./core/standard-kit";
-import { currentStandardKit } from "./standard-kit-settings";
+import {
+  currentStandardKit,
+  standardKitRevision,
+} from "./standard-kit-settings";
 import { hash } from "./core/engine";
 import { qualityCurve, measuredKnee } from "./core/line-budget";
 import { download } from "./download";
@@ -37,6 +40,7 @@ export function StandardKitStudio({
       structuredClone(DEFAULT_STANDARD_KIT),
     ),
     [shape, setShape] = useState<Shape>("circle"),
+    [printedRevision, setPrintedRevision] = useState(1),
     [redAccent, setRedAccent] = useState(false),
     [redColour, setRedColour] = useState("#b31e35"),
     [recommendation, setRecommendation] =
@@ -59,6 +63,7 @@ export function StandardKitStudio({
     [error, setError] = useState(""),
     [recovery, setRecovery] = useState<OptimizerRecovery>();
   const serial = useRef(0),
+    profileRequest = useRef(0),
     photoSerial = useRef(0),
     worker = useRef<Worker | null>(null),
     target = useRef<HTMLCanvasElement>(null),
@@ -69,11 +74,16 @@ export function StandardKitStudio({
   );
   useEffect(() => {
     let live = true;
+    const request = ++profileRequest.current;
     void currentStandardKit().then((c) => {
-      if (live) setConfig(c);
+      if (live && request === profileRequest.current) {
+        setConfig(c);
+        setPrintedRevision(c.revision);
+      }
     });
     return () => {
       live = false;
+      profileRequest.current++;
     };
   }, []);
   useEffect(() => {
@@ -303,6 +313,37 @@ export function StandardKitStudio({
   return (
     <section className="card" data-testid="standard-kit-studio">
       <h1>{t("title")}</h1>
+      <details>
+        <summary>{t("printedRevision")}</summary>
+        <label>
+          {t("printedRevision")}
+          <input
+            type="number"
+            min="1"
+            value={printedRevision}
+            onChange={(e) => setPrintedRevision(Number(e.target.value))}
+          />
+        </label>
+        <button
+          onClick={() =>
+            void (async () => {
+              const request = ++profileRequest.current;
+              try {
+                const c = await standardKitRevision(printedRevision);
+                if (request === profileRequest.current) {
+                  setConfig(c);
+                  setError("");
+                }
+              } catch {
+                if (request === profileRequest.current)
+                  setError(t("configError"));
+              }
+            })()
+          }
+        >
+          {t("loadRevision")}
+        </button>
+      </details>
       <p>{t("hint")}</p>
       <p>
         {config.baseMm}×{config.baseMm} mm · {config.nails} · {config.threadMm}{" "}
@@ -386,7 +427,8 @@ export function StandardKitStudio({
               onBusy={setBackgroundBusy}
               onChange={(next) => {
                 setBackground(next);
-                if (next.faces?.length) setFaces(next.faces.map((f) => f.face));
+                if (next.faces?.length && next.faces !== background?.faces)
+                  setFaces(next.faces.map((f) => f.face));
               }}
             />
             <p>{t("faceReview")}</p>
@@ -395,9 +437,9 @@ export function StandardKitStudio({
                 <legend>{j + 1}</legend>
                 {(["left", "top", "width", "height"] as const).map((key) => (
                   <label key={key}>
-                    {key}
+                    {t(key)}
                     <input
-                      aria-label={`Face ${j + 1} ${key}`}
+                      aria-label={`${t("face")} ${j + 1} ${t(key)}`}
                       type="number"
                       min="0"
                       max="1"

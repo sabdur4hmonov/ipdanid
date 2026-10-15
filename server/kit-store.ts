@@ -1,5 +1,9 @@
 import { CustomerStore } from "./customer-store.ts";
-import { DEFAULT_STANDARD_KIT,standardProfiles,type StandardKitConfig } from "../src/core/standard-kit";
+import {
+  DEFAULT_STANDARD_KIT,
+  standardProfiles,
+  type StandardKitConfig,
+} from "../src/core/standard-kit";
 import { DomainError } from "./store.ts";
 import type { Instruction } from "../src/core/types";
 import {
@@ -31,6 +35,7 @@ export class KitStore extends CustomerStore {
     this.db.exec(`
  CREATE TABLE IF NOT EXISTS kit_settings(id INTEGER PRIMARY KEY CHECK(id=1),data TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS standard_kit_profiles(id INTEGER PRIMARY KEY CHECK(id=1),data TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS standard_kit_history(revision INTEGER PRIMARY KEY,data TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS kit_signer(id INTEGER PRIMARY KEY CHECK(id=1),private_jwk TEXT NOT NULL,public_jwk TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS kit_batches(id TEXT PRIMARY KEY,profile TEXT NOT NULL,created_at INTEGER NOT NULL,actor TEXT NOT NULL,count INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS kit_codes(hash TEXT PRIMARY KEY,batch_id TEXT NOT NULL REFERENCES kit_batches(id),profile TEXT NOT NULL,quota INTEGER NOT NULL,credit_days INTEGER NOT NULL,expires_at INTEGER,revoked INTEGER NOT NULL DEFAULT 0,account_id TEXT REFERENCES users(id),redeemed_at INTEGER);
@@ -43,7 +48,13 @@ export class KitStore extends CustomerStore {
       this.db
         .prepare("INSERT OR IGNORE INTO kit_settings VALUES(1,?)")
         .run(JSON.stringify(defaults));
-      this.db.prepare("INSERT OR IGNORE INTO standard_kit_profiles VALUES(1,?)").run(JSON.stringify(DEFAULT_STANDARD_KIT));
+      this.db
+        .prepare("INSERT OR IGNORE INTO standard_kit_profiles VALUES(1,?)")
+        .run(JSON.stringify(DEFAULT_STANDARD_KIT));
+      const current = this.standardKit();
+      this.db
+        .prepare("INSERT OR IGNORE INTO standard_kit_history VALUES(?,?)")
+        .run(current.revision, JSON.stringify(current));
       if (!this.db.prepare("SELECT id FROM kit_signer WHERE id=1").get()) {
         const pair = generateKeyPairSync("ed25519");
         this.db
@@ -66,17 +77,43 @@ export class KitStore extends CustomerStore {
       throw e;
     }
   }
-  standardKit():StandardKitConfig {
-    return JSON.parse(String(this.db.prepare("SELECT data FROM standard_kit_profiles WHERE id=1").get()!.data));
+  standardKit(revision?: number): StandardKitConfig {
+    if (revision !== undefined) {
+      if (!Number.isSafeInteger(revision) || revision < 1)
+        throw new DomainError("Invalid kit revision", 400);
+      const old = this.db
+        .prepare("SELECT data FROM standard_kit_history WHERE revision=?")
+        .get(revision);
+      if (!old) throw new DomainError("Kit revision not found", 404);
+      return JSON.parse(String(old.data));
+    }
+    return JSON.parse(
+      String(
+        this.db
+          .prepare("SELECT data FROM standard_kit_profiles WHERE id=1")
+          .get()!.data,
+      ),
+    );
   }
-  setStandardKit(actor:string,input:StandardKitConfig) {
-    try {standardProfiles(input);}catch(e){throw new DomainError(String((e as Error).message),400);}
-    return this.ktx(()=>{
-      const current=this.standardKit();
-      if(input.revision!==current.revision)throw new DomainError("Kit profile changed; reload before saving",409);
-      const next={...input,revision:current.revision+1};
-      this.db.prepare("UPDATE standard_kit_profiles SET data=? WHERE id=1").run(JSON.stringify(next));
-      this.klog(actor,"kit.profile","standard");return next;
+  setStandardKit(actor: string, input: StandardKitConfig) {
+    try {
+      standardProfiles(input);
+    } catch (e) {
+      throw new DomainError(String((e as Error).message), 400);
+    }
+    return this.ktx(() => {
+      const current = this.standardKit();
+      if (input.revision !== current.revision)
+        throw new DomainError("Kit profile changed; reload before saving", 409);
+      const next = { ...input, revision: current.revision + 1 };
+      this.db
+        .prepare("UPDATE standard_kit_profiles SET data=? WHERE id=1")
+        .run(JSON.stringify(next));
+      this.db
+        .prepare("INSERT INTO standard_kit_history VALUES(?,?)")
+        .run(next.revision, JSON.stringify(next));
+      this.klog(actor, "kit.profile", "standard");
+      return next;
     });
   }
   private klog(actor: string, action: string, entity: string) {

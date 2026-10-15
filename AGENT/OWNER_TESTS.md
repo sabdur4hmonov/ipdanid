@@ -115,3 +115,9 @@ Yangi ilovada mixlar A-1…D-60 ko‘rinadi; masalan B-17ning raqamli indeksi76 
 Yurakda ixtiyoriy ikkinchi rangni hisoblashdan oldin tanlash mumkin. Qizil chegaraning hamma haqiqiy ulanishi, ichki ko‘prigi va tuguni sanaladi; ko‘rinish kosmetik chiziq emas. Ikkinchi ip ham ko‘rsatilgan diametr/shaffoflikka mos bo‘lsin. Haqiqiy natijani tekshiring. Ip soni/metr/soat qizil yo‘lni ham qo‘shsin; tizza tavsiyasi qora asos uchun. Saqlash → kit bilan bir marta ochish → birinchi qadamdan boshlash. Kalibrlash/teshik/yorliq sinovini oldingi bo‘limga ko‘ra bajaring.
 
 A/Bda egasi suratining uch shaklida ham ayrim yuz hududi chegaradan o‘tmadi.2000–3000 ulanish sifat g‘olibi yoki eng samarali son deb tasdiqlanmagan; o‘lchangan tizza1500. Haqiqiy ikki odamli yurak taqqoslashiga ikki odamli asl surat kerak. Agent yakuniy sinov/APKni davom ettiradi,4194 avvalgidek qoladi.
+
+## 2026-10-16 — chop etilgan kit versiyasini saqlash
+
+Admin o‘lchamlarni o‘zgartirsa ham eski kit versiyasi serverda qoladi. Yaratish → “Kitda chop etilgan versiya”da qog‘oz/kitdagi r1/r2 raqamini tanlab ishlating. Bir marta olingan shu versiya offline ham keshlanadi. Topilmagan versiya boshqa taxta bilan yashirincha almashtirilmasin. Admin o‘zgartirgan, ammo saqlamagan sozlamadan PDF yuklash o‘chiq; avval saqlang, keyin shu versiya/hashli andozani chiqaring.
+
+Yangi versiya uchun alohida `Start-Standard-Kit.cmd` tayyorlandi:4195, eski4194ga tegmaydi. Yakuniy sinovdan keyin agent ishga tushiradi. Alohida sinov kodi va admin kirishi `output/phase9/manual-testing.txt`da bo‘ladi; bu haqiqiy do‘kon/kredit bazangiz emas. Surat → kitdagi to‘g‘ri versiya/shakl → yuz/fon/kesishni tekshirish → hisoblash → bepul metr/soat → saqlash → sinov kodi bilan ochish → birinchi qadamdan boshlash. Qo‘lda sinov natijasini shu faylga yozing.

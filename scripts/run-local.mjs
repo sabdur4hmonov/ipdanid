@@ -1,6 +1,8 @@
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-if (!existsSync("dist/index.html")) throw new Error("Run npm run build first.");
+const webDir=process.env.IP_RASM_WEB_DIR || "dist";
+if(!/^[a-zA-Z0-9_./-]+$/.test(webDir)||webDir.includes(".."))throw Error("Invalid local web directory");
+if (!existsSync(`${webDir}/index.html`)) throw new Error("Run the selected web build first.");
 const port = Number(process.env.IP_RASM_LOCAL_PORT || 4183);
 const apiPort = Number(process.env.IP_RASM_API_PORT || 4311);
 if (!Number.isSafeInteger(apiPort) || apiPort < 1024 || apiPort > 65535)
@@ -67,7 +69,7 @@ try {
         signal: AbortSignal.timeout(3000),
       })
     ).text();
-    if (html.trim() !== readFileSync("dist/index.html", "utf8").trim())
+    if (html.trim() !== readFileSync(`${webDir}/index.html`, "utf8").trim())
       throw new Error(
         `Port ${port} serves an older build. It was preserved. Set IP_RASM_LOCAL_PORT to a free port, such as 4192.`,
       );
@@ -77,6 +79,7 @@ try {
       [
         "node_modules/vite/bin/vite.js",
         "preview",
+        "--outDir",webDir,
         "--host",
         "127.0.0.1",
         "--port",

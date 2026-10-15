@@ -2,6 +2,13 @@ import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 const messages = {
   en: {
+    face: "Face",
+    left: "left",
+    top: "top",
+    width: "width",
+    height: "height",
+    printedRevision: "Revision printed on your kit",
+    loadRevision: "Use this printed kit revision",
     redAccent: "Optional second-colour heart border",
     accentColour: "Second thread colour",
     accentNote:
@@ -63,6 +70,13 @@ const messages = {
       "A measured knee has not been accepted for this photo; line count is a starting budget.",
   },
   uz: {
+    face: "Yuz",
+    left: "chap",
+    top: "yuqori",
+    width: "eni",
+    height: "bo‘yi",
+    printedRevision: "Kitda chop etilgan versiya",
+    loadRevision: "Kitdagi shu versiyani ishlatish",
     redAccent: "Yurak uchun ixtiyoriy ikkinchi rangli chegara",
     accentColour: "Ikkinchi ip rangi",
     accentNote:
@@ -125,6 +139,13 @@ const messages = {
       "Bu surat uchun o‘lchangan eng samarali nuqta qabul qilinmagan; ip soni boshlang‘ich chegara.",
   },
   ru: {
+    face: "Лицо",
+    left: "слева",
+    top: "сверху",
+    width: "ширина",
+    height: "высота",
+    printedRevision: "Версия, напечатанная на наборе",
+    loadRevision: "Использовать эту версию набора",
     redAccent: "Дополнительная граница сердца вторым цветом",
     accentColour: "Цвет второй нити",
     accentNote:

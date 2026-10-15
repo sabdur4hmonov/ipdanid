@@ -74,6 +74,9 @@ try {
   await req("/admin/kits/profiles",409,profiles,admin);
   await req("/admin/kits/profiles",400,{...changed,squareSideMm:460},admin);
   assert.equal((await req("/kit-profiles",200)).sectors,8);
+  assert.equal((await req(`/kit-profiles/${profiles.revision}`,200)).sectors,4);
+  assert.equal((await req(`/kit-profiles/${changed.revision}`,200)).sectors,8);
+  await req("/kit-profiles/999999",404);
   await req("/admin/kits/policy",200,{...policy.policy,quota:4},admin);
   const batch = await req(
     "/admin/kits/batch",

@@ -228,6 +228,7 @@ export default function App() {
                 );
               }}
               onApplyProfile={(id) => {
+                if(/^standard-/.test(id)){setStandard(true);nav("create");return;}
                 const match = id.match(
                   /^dev-(circle|rectangle|heart)-(\d+)-(dark|light|color)$/,
                 );

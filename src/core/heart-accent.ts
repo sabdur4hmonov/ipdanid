@@ -140,14 +140,16 @@ export async function addHeartAccent(
 export async function validateHeartAccent(i: Instruction) {
   const a = i.params.accent,
     p = i.profile;
-  const route=i.segments[1]?.path;
-  let cursor=0,ordered=Boolean(route?.[0]===0);
-  if(route)for(let j=1;j<=p.pins.length && ordered;j++){
-    const expected=j%p.pins.length;
-    if(route[cursor+1]===expected)cursor++;
-    else if(route[cursor+2]===expected)cursor+=2;
-    else ordered=false;
-  }
+  const route = i.segments[1]?.path;
+  let cursor = 0,
+    ordered = Boolean(route?.[0] === 0);
+  if (route)
+    for (let j = 1; j <= p.pins.length && ordered; j++) {
+      const expected = j % p.pins.length;
+      if (route[cursor + 1] === expected) cursor++;
+      else if (route[cursor + 2] === expected) cursor += 2;
+      else ordered = false;
+    }
   if (
     !a ||
     a.version !== "legal-heart-accent/1" ||
@@ -158,14 +160,19 @@ export async function validateHeartAccent(i: Instruction) {
     i.segments[0].path.length - 1 !== a.bodyConnections ||
     i.segments[1].path.length - 1 !== a.redConnections ||
     i.segments[1].color !== p.standardKit.accessory.colour ||
-    !ordered || cursor!==(route?.length??0)-1
+    !ordered ||
+    cursor !== (route?.length ?? 0) - 1
   )
     throw Error("kit/accent-contract");
-  const originalProfile=structuredClone(p);
+  const originalProfile = structuredClone(p);
   delete originalProfile.standardKit!.accessory;
-  const standard=standardProfiles(p.standardKit.config).find(p=>p.shape==="heart")!;
-  originalProfile.id=standard.id;originalProfile.version=standard.version;
-  originalProfile.minPinGap=standard.minPinGap;originalProfile.colors=[p.colors[0]];
+  const standard = standardProfiles(p.standardKit.config).find(
+    (p) => p.shape === "heart",
+  )!;
+  originalProfile.id = standard.id;
+  originalProfile.version = standard.version;
+  originalProfile.minPinGap = standard.minPinGap;
+  originalProfile.colors = [p.colors[0]];
   const original = {
     ...i,
     algorithm: "classic-greedy/1" as const,

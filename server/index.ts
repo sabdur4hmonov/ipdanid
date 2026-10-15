@@ -117,6 +117,8 @@ const server = createServer(async (req, res) => {
     if (req.method === "GET" && path === "/api/kit-profiles") {
       send(200,store.standardKit());return;
     }
+    const kitRevision=path.match(/^\/api\/kit-profiles\/(\d+)$/);
+    if(req.method==="GET" && kitRevision){send(200,store.standardKit(Number(kitRevision[1])));return;}
     const chunks: Buffer[] = [];
     let receivedBytes = 0;
     for await (const chunk of req) {
