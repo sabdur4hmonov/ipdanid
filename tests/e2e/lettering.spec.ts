@@ -35,7 +35,12 @@ for (const style of ["outline", "target"] as const)
     await studio
       .getByLabel("Number of pins", { exact: true })
       .fill(style === "outline" ? "120" : "24");
-    await studio.getByLabel("Maximum connections", { exact: true }).fill("120");
+    if (style === "target")
+      await studio.getByLabel("Maximum connections", { exact: true }).fill("120");
+    else
+      await expect(
+        studio.getByLabel("Maximum connections", { exact: true }),
+      ).toHaveCount(0);
     await studio
       .getByRole("combobox", { name: "Computation resolution", exact: true })
       .selectOption("64");

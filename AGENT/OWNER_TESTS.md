@@ -77,3 +77,7 @@ Yaratish → surat → hisoblash → kit bilan ochish → Yig‘ish → Loyihala
 Hozir yozib olingan instruktor ovozi yo‘q; ilova buni aytishi va mavjud qurilma ovozi yoki matnni ishlatishi kerak. `docs/VOICE_RECORDING_UZ.md` va aniq `docs/VOICE_RECORDING_LIST.csv` bo‘yicha ikki alohida instruktorning rozilik berilgan WAV yozuvlari kerak. Har birida UZ97/RU101/EN97, jami ikkala instruktor uchun590 fayl. Sinovdagi qisqa tovushlar nutq emas va ilovaga qo‘shilmagan.
 
 Yozuvlar kelgach ro‘yxatdagi papkalarga qo‘yib indeks/build ko‘rsatmasini bajaring. Har ikki ovozda sonlar,0-mix,235-qadam va20000 kabi sonlarni tinglang. Keyingi qadam, til, pauza va fon holatida oldingi gap to‘xtasin; internet o‘chiq holatda ham tekshiring. Hozir agent yozuvlarni kutmay APK va yakuniy sinovlarni davom ettiradi.
+
+## 2026-10-15 — matn sozlamasidagi aniqlik
+
+“Yana” → “Mozaika” → “Ip bilan yozuv” oynasida “Harf konturida mixlar” tanlang. Bu rejimda ip ulanishlari soni harf konturlari va ularning orasidagi haqiqiy ulanishlardan keladi, shuning uchun ta’sir qilmaydigan “iplar soni” sozlamasi yashirildi. “To‘ldirilgan matn nishoni” rejimida iplar chegarasi qoladi. Kontur PDF/TXT/JSON dagi barcha haqiqiy ulanishlar va mix koordinatalari saqlanishi kerak.

@@ -23,3 +23,7 @@ Desktop/mobile Chrome4/4 passed23.0s(phase4-ui-e2e-v2/report.json). Final strong
 Animal/Object preset buttons explicitly select the reviewed experimental18 workflow; they do not promote it to a default. Existing mosaic/diamond and paint-by-numbers products remain available. Name+portrait composition is deferred: the current reviewed photo transform/mask contract owns the whole target and has no separately reviewed text/photo composition coordinates. Silently adding text after photo review would invalidate that contract; an independent composition editor/acceptance set is required. Other competitor physical kit variants were not cloned: board geometry/materials and compatible construction files are unverified. These optional products are documented omissions, not claims of implementation.
 
 Next phase is server-authoritative kit login/build credits. Real text/animal/object physical and visual acceptance remains in owner tests; no default promotion.
+
+## 2026-10-15 final UI correction
+
+The outline product derives its exact connection count from closed glyph contours plus every inter-contour bridge. It now hides the unused Maximum connections control; filled-target mode retains that real fitting budget. Neither the outline sequence nor its hash/material accounting changed. Final complete regression before this presentation correction passed176/176 browser tests and232/232 unit tests; the focused final lettering run separately verifies both desktop/mobile modes and their exact exports on the corrected build.

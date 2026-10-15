@@ -285,7 +285,9 @@ export default function TextStudio({
             [t("width"), width, setWidth, 50, 2000],
             [t("height"), height, setHeight, 50, 2000],
             [t("pins"), pins, setPins, 24, 240],
-            [t("lines"), lines, setLines, 24, 20000],
+            ...(style === "target"
+              ? [[t("lines"), lines, setLines, 24, 20000]]
+              : []),
           ].map(([label, value, set, min, max]) => (
             <label key={String(label)}>
               {String(label)}
