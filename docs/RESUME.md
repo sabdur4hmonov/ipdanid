@@ -1,9 +1,11 @@
-# Current resume — 2026-10-14
+# Current resume — 2026-10-15
 
-The repository is now driven by AGENTS.md and AGENT/MASTER_PLAN.md. Read AGENT/PROGRESS.md and the latest AGENT/LOG.md first; they contain the authoritative phase status and exact next step.
+The repository is driven by AGENTS.md and AGENT/MASTER_PLAN.md. Read AGENT/PROGRESS.md and the latest AGENT/LOG.md first; they are authoritative. The Uzbek final outcome, limitations, owner checks, commits and artifacts are in AGENT/FINAL_REPORT.md.
 
-Branch feat/full-roadmap was created from clean feat/r1-r2-subjects. Phase 0 is complete: 186 unit tests, build, 37 customer HTTP, 67 staff HTTP and sandbox checks pass. Final full desktop 77 passed; final full mobile 76 passed with one pre-existing desktop-only skip, then that missing case passed separately on mobile with skip removed. Exactly 154 unique browser outcomes are executed/passing (test-results/phase0-final/summary.json). No quality/default/legacy guide/progress changes; no owner DB/service mutation or push.
+Branch feat/full-roadmap. All independent roadmap implementation/build checks are complete. Full unit232/232, full browser176/176(88 desktop+88 mobile), customer/staff/kit HTTP37/67/38 passed. After the final outline-only ineffective-control removal, production build1955modules and focused lettering4/4 desktop/mobile exact-export tests passed. Full176/unit232 precede that presentation correction, not rerun afterward.
 
-Phase 1 public research is complete in COMPETITOR_WORKFLOW.md and ALGORITHM_SURVEY.md. Build and 3 safety checks passed; docs only, no product source adoption.
+Offline Android app/instrumentation assembly and verifier passed:40 exact dist assets, historical signer,67 old APK archives unchanged. App output/mobile/ip-rasm-full-roadmap-20261014-87d130777145-debug.apk, SHA87d13077714591e342ad63e371936934a1266c0caa7f960c4baefc1c5c6cf2f5; series startedOct14, app completedOct15. Matching test APK/evidence beside it. No phone execution/install, deployment or push. Native production API endpoint unconfigured.
 
-Exact next step: Phase 2 R4 frozen baseline and fit-vs-routed/regional/objective/taper/skin diagnostics, following AGENT/PROGRESS.md. Preserve failed test reports and all historical experiments. Do not repeat completed/rejected fits as new work.
+Quality v17 REJECTED; no default promotion or accepted likeness improvement. Generic18/text19 mechanics work, actual visual/physical acceptance pending. Zero real recorded voices:590 consented WAVs needed. QBRIX source/results absent. Optional name+portrait composition deferred with coordinate-contract reason.
+
+Exact next step: inspect newly supplied owner photos/QBRIX/WAVs/OWNER_TESTS results and follow AGENT/PROGRESS.md for dependent acceptance only. No independent build task remains. Do not repeat completed/rejected fits, touch owner tmp/data or stop owner4194. Owner browser: npm run local → http://127.0.0.1:4194; instructions in AGENT/OWNER_TESTS.md.
