@@ -2,6 +2,7 @@ import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 const messages = {
   en: {
+    base:"White MDF base (mm)",diameter:"Circle diameter (mm)",squareSide:"Square side (mm)",heartEnvelope:"Heart envelope (mm)",nails:"Nails per pattern",sectors:"Number of sectors",shaft:"Hole / shaft diameter (mm)",thread:"Thread diameter (mm)",opacity:"Measured opacity (provisional)",clearance:"Minimum hole centre gap (mm)",edge:"Minimum board edge gap (mm)",stock:"Thread stock (m)",seconds:"Estimated seconds per connection",threadColor:"Thread colour",saveConfig:"Save standard kit profiles",reload:"Reload saved profiles",configError:"Invalid/colliding kit settings or a stale revision. Reload and check actual hole/edge clearances before saving.",
     title: "Standard kit",
     legacy: "Custom / previous tools",
     standard: "Standard kit",
@@ -41,6 +42,7 @@ const messages = {
       "A measured knee has not been accepted for this photo; line count is a starting budget.",
   },
   uz: {
+    base:"Oq MDF taxta (mm)",diameter:"Doira diametri (mm)",squareSide:"Kvadrat tomoni (mm)",heartEnvelope:"Yurak chegaraviy o‘lchami (mm)",nails:"Har naqshdagi mixlar",sectors:"Sektorlar soni",shaft:"Teshik / mix diametri (mm)",thread:"Ip diametri (mm)",opacity:"O‘lchangan shaffoflik (hozircha taxmin)",clearance:"Teshik markazlari eng kam oralig‘i (mm)",edge:"Taxta chetidan eng kam masofa (mm)",stock:"Ip zaxirasi (m)",seconds:"Har ulanishga taxminiy soniya",threadColor:"Ip rangi",saveConfig:"Standart kitni saqlash",reload:"Saqlangan sozlamani qayta olish",configError:"Sozlama noto‘g‘ri, teshiklar yaqin yoki versiya eskirgan. Qayta olib, haqiqiy oraliqlarni tekshiring.",
     title: "Standart kit",
     legacy: "Maxsus / oldingi vositalar",
     standard: "Standart kit",
@@ -81,6 +83,7 @@ const messages = {
       "Bu surat uchun o‘lchangan eng samarali nuqta qabul qilinmagan; ip soni boshlang‘ich chegara.",
   },
   ru: {
+    base:"Белая основа MDF (мм)",diameter:"Диаметр круга (мм)",squareSide:"Сторона квадрата (мм)",heartEnvelope:"Габарит сердца (мм)",nails:"Гвоздей в рисунке",sectors:"Количество секторов",shaft:"Диаметр отверстия / гвоздя (мм)",thread:"Диаметр нити (мм)",opacity:"Измеренная непрозрачность (предварительно)",clearance:"Минимум между центрами отверстий (мм)",edge:"Минимум от края основы (мм)",stock:"Запас нити (м)",seconds:"Оценка секунд на соединение",threadColor:"Цвет нити",saveConfig:"Сохранить стандартный набор",reload:"Загрузить сохранённое",configError:"Недопустимые/пересекающиеся отверстия или устаревшая версия. Загрузите настройки и проверьте расстояния.",
     title: "Стандартный набор",
     legacy: "Другие / прежние инструменты",
     standard: "Стандартный набор",

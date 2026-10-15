@@ -1,5 +1,5 @@
 import type { Instruction } from "./types";
-import { inside } from "./geometry";
+import { insideProfile } from "./geometry";
 import { rasterSequence } from "./optical";
 export interface QualityPoint { connections:number; mse:number; meters:number; hours:number }
 export function qualityCurve(i:Instruction,target:Uint8Array,counts=[1000,1500,2000,2500,3000,3500]):QualityPoint[] {
@@ -7,7 +7,7 @@ export function qualityCurve(i:Instruction,target:Uint8Array,counts=[1000,1500,2
   if(target.length!==n*n*3)throw Error("Invalid curve target");
   return [...new Set(counts.map(v=>Math.min(i.metrics.lines,v)))].filter(v=>v>0).sort((a,b)=>a-b).map(connections=>{
     const raster=rasterSequence(i,connections);let loss=0,pixels=0,meters=.5,at=0;
-    for(let k=0;k<n*n;k++)if(inside(p.shape,k%n/(n-1),Math.floor(k/n)/(n-1)))for(let c=0;c<3;c++){loss+=(raster[k*3+c]-target[k*3+c]/255)**2;pixels++;}
+    for(let k=0;k<n*n;k++)if(insideProfile(p,k%n/(n-1),Math.floor(k/n)/(n-1)))for(let c=0;c<3;c++){loss+=(raster[k*3+c]-target[k*3+c]/255)**2;pixels++;}
     for(const s of i.segments)for(let j=1;j<s.path.length && at++<connections;j++){
       const a=p.pins[s.path[j-1]],b=p.pins[s.path[j]];
       meters+=(Math.hypot((b.x-a.x)*p.widthMm,(b.y-a.y)*p.heightMm)+p.wrapAllowanceMm)/1000*(1+p.wasteFraction);

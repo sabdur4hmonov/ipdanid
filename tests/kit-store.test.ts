@@ -13,9 +13,10 @@ function setup() {
 }
 const device = "device_0123456789abcdef",
   seq = (v: string) => v.repeat(64);
-it("default4/no expiry, one kit account and atomic idempotent signed unlocks", () => {
-  const s = setup(),
-    batch = s.issueKitBatch("admin", "board", 1, "batch-first"),
+it("explicit4/no expiry, one kit account and atomic idempotent signed unlocks", () => {
+  const s = setup();
+  s.setKitPolicy("admin",{...s.kitPolicy(),quota:4});
+  const batch = s.issueKitBatch("admin", "board", 1, "batch-first"),
     code = batch.codes[0].code;
   expect(batch.codes[0]).toMatchObject({
     quota: 4,
@@ -123,8 +124,8 @@ it("claimed guest ownership and legacy credits remain usable without mixing expi
   );
   const old = s.issueCode("board", 2, Date.now() + 100000, "admin");
   s.redeemCode(a.id, old.code);
-  expect(s.kitBalance(a.id)).toBe(6);
-  for (const v of ["a", "b", "c", "d", "e"])
+  expect(s.kitBalance(a.id)).toBe(5);
+  for (const v of ["a", "b", "c", "d"])
     s.unlockBuild(a.id, seq(v), device, `unlock-${v.repeat(8)}`);
   expect(s.balance(a.id)).toBe(1);
   expect(s.kitBalance(a.id)).toBe(1);

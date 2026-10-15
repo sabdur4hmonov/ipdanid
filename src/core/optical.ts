@@ -1,5 +1,5 @@
 import type { Instruction, MaterialProfile } from "./types";
-import { inside } from "./geometry";
+import { insideProfile } from "./geometry";
 
 export interface Footprint {
   pixels: Uint32Array;
@@ -121,8 +121,8 @@ export function rasterSequenceAtResolution(
     const mask = Uint8Array.from(
       { length: n * n },
       (_, pixel) =>
-        +inside(
-          i.profile.shape,
+        +insideProfile(
+          i.profile,
           (pixel % n) / (n - 1),
           Math.floor(pixel / n) / (n - 1),
         ),

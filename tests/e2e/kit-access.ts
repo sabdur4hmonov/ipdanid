@@ -27,7 +27,7 @@ export async function unlockKitGuide(page: Page) {
   await gate
     .getByRole("button", { name: "Sign in with kit code", exact: true })
     .click();
-  await expect(page.getByTestId("kit-credits")).toContainText("4");
+  await expect(page.getByTestId("kit-credits")).toContainText(String(batch.codes[0].quota));
   await page.getByTestId("unlock-build").click();
   await expect(gate).toHaveCount(0);
 }

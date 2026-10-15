@@ -12,7 +12,7 @@ import {
   validPortrait,
 } from "./portrait";
 import type { PortraitSettings } from "./types";
-import { connectionAllowed, inside, assertPinSpacing } from "./geometry";
+import { connectionAllowed, insideProfile, assertPinSpacing } from "./geometry";
 export const rgb = (hex: string) =>
   [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
 export async function hash(value: unknown): Promise<string> {
@@ -63,6 +63,7 @@ export function deepFreeze<T>(obj: T): T {
   return obj;
 }
 export interface GenerateOptions {
+  kitPreparation?: import("./standard-preparation").KitPreparation;
   accessPolicy?: "kit-build/1";
   product?: import("./lettering-contract").LetteringProduct;
   pixels: Uint8Array;
@@ -168,7 +169,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
         ny = y / (n - 1),
         cell = Math.floor(y / coarseScale) * cn + Math.floor(x / coarseScale);
       coarseOf[i] = cell;
-      mask[i] = +inside(p.shape, nx, ny);
+      mask[i] = +insideProfile(p, nx, ny);
       if (!mask[i]) continue;
       const edge =
         Math.abs(

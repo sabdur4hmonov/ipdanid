@@ -99,3 +99,11 @@ http://127.0.0.1:4194/ brauzerda ochildi, hozirgi build ishlayapti. Eski bazangi
 Yangi buildda Yaratish oynasi “Standart kit”dan boshlanadi; oldingi vositalarga alohida tugma bor. Surat yuklang: oq fon avtomatik tayyorlanadi, ishlamasa xato va asl surat ochiq qoladi. Haqiqiy yuzlarni tekshiring yoki chegarasini qo‘shing, yuzni to‘ldirib joylang va kesish/oq fonni tasdiqlang. Tayyor nishon va haqiqiy ip natijasi alohida. Saqlash odatdagi kit qulfini ochadi; qadam0 dan boshlanadi. Hozir ochiq4194 ilova eski buildda qoldirilgan; agent yangi buildni boshqa portlarda tekshiryapti.
 
 Classic A/B umumiy xatoni kamaytirdi, ammo eski egasi nishonida burun hududini yomonlashtirdi; sifat g‘olibi tasdiqlanmagan. O‘lchangan tizza1500 ulanish,2000–3000 hali qabul qilingan tavsiya emas. Haqiqiy yangi kesish va ikki odamli yurak uchun egasi qabul sinovi kerak.
+
+## 2026-10-15 — umumiy taxta va sektor andozalari
+
+`output/phase9/templates/` da uchta PDF bor: to‘liq500×500mm varaq,6ta A4 teshik andozasi va18ta A4 sektor yorliq sahifasi. Printerda100%/Actual size tanlang, Fit/Scale o‘chsin. Avval50mm belgini chizg‘ich bilan o‘lchang; mos kelmasa teshmang. A4 sahifalarni koordinata krestlari va10mm ustma-ust joy orqali ulang. C=doira, S=kvadrat, H=yurak; tanlangan naqshni adashtirmang. Har birida240 mix, jami720 alohida teshik nuqtasi bor. Kvadrat470mm, doira460mm, yurakning chegaraviy maydoni390mm; bir taxtada to‘qnashuvsiz joylash uchun o‘lchamlar farq qiladi.
+
+Haqiqiy mix/teshik diametrini o‘lchab admin sozlamasiga kiriting: hozir1.5mm teshik,3mm markaz oralig‘i va10mm chet masofasi taxmin. MDF mustahkamligi va teshish chuqurligi avtomatik tekshirilmagan. Oldin kichik sinov taxtasida tekshiring. Keyin nuqtalarni belgilang/teshing. Tanlangan naqshning sektor yorlig‘ini100% chop eting, egri kesish chiziqlari bo‘yicha kesib, har tickni aynan shu mix nuqtasiga tekislab yopishtiring; chizg‘ichni tekislab cho‘zmang. Andoza/profil versiyasi va hash mos bo‘lsin.
+
+Yangi kitlar odatda3 natija beradi; admin4 ham tanlaydi. Avvalgi sarflanmagan kredit va ochilgan qo‘llanma o‘zgarmaydi. Agent hali sektor/player/ovoz va yakuniy hisobot/APK ishini davom ettiryapti; joriy4194 server yangilanmagan.

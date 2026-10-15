@@ -34,6 +34,29 @@ function heartPolygon() {
   });
 }
 export const HEART_POLYGON = heartPolygon();
+export function insideProfile(p:MaterialProfile,x:number,y:number):boolean {
+  const scale=p.standardKit?.patternScale??1;
+  return inside(p.shape,.5+(x-.5)/scale,.5+(y-.5)/scale);
+}
+function exactHeartChord(p:MaterialProfile,a:number,b:number) {
+  const scale=p.standardKit!.patternScale,u=p.pins[a],v=p.pins[b];
+  const x=.5+(u.x-.5)/scale,y=.5+(u.y-.5)/scale,
+    dx=(v.x-u.x)/scale,dy=(v.y-u.y)/scale,cuts=[0,1];
+  for(let j=0;j<HEART_POLYGON.length;j++) {
+    const c=HEART_POLYGON[j],d=HEART_POLYGON[(j+1)%HEART_POLYGON.length],ex=d.x-c.x,ey=d.y-c.y,
+      cross=dx*ey-dy*ex;
+    if(Math.abs(cross)<1e-14)continue;
+    const t=((c.x-x)*ey-(c.y-y)*ex)/cross,s=((c.x-x)*dy-(c.y-y)*dx)/cross;
+    if(t>1e-10 && t<1-1e-10 && s>=-1e-10 && s<=1+1e-10)cuts.push(t);
+  }
+  cuts.sort((a,b)=>a-b);
+  for(let j=1;j<cuts.length;j++) {
+    if(cuts[j]-cuts[j-1]<1e-10)continue;
+    const t=(cuts[j]+cuts[j-1])/2;
+    if(!inside("heart",x+dx*t,y+dy*t))return false;
+  }
+  return true;
+}
 export function assertPinSpacing(p: MaterialProfile) {
   for (let i = 0; i < p.pins.length; i++)
     for (let j = i + 1; j < p.pins.length; j++) {
@@ -139,6 +162,7 @@ export function connectionAllowed(
   const u = p.pins[a],
     v = p.pins[b];
   if (!u || !v) return false;
+  if (p.shape === "heart" && p.standardKit) return exactHeartChord(p,a,b);
   if (p.shape === "heart")
     for (let t = 0.04; t < 0.99; t += 0.04)
       if (!inside(p.shape, u.x + (v.x - u.x) * t, u.y + (v.y - u.y) * t))

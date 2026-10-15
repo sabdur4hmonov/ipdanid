@@ -114,6 +114,9 @@ const server = createServer(async (req, res) => {
       });
       return;
     }
+    if (req.method === "GET" && path === "/api/kit-profiles") {
+      send(200,store.standardKit());return;
+    }
     const chunks: Buffer[] = [];
     let receivedBytes = 0;
     for await (const chunk of req) {
@@ -185,8 +188,11 @@ const server = createServer(async (req, res) => {
         );
       const actor = session.id;
       if (path === "/api/admin/kits" && req.method === "GET") {
-        send(200, store.kitAdmin());
+        send(200, {...store.kitAdmin(),standardKit:store.standardKit()});
         return;
+      }
+      if (path === "/api/admin/kits/profiles" && req.method === "POST") {
+        send(200,store.setStandardKit(actor,body));return;
       }
       if (path === "/api/admin/kits/policy" && req.method === "POST") {
         send(200, store.setKitPolicy(actor, body));

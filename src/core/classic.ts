@@ -1,10 +1,11 @@
 import type { GenerateOptions } from "./engine";
 import { deepFreeze, hash, sequencePayload } from "./engine";
 import type { Instruction } from "./types";
-import { assertPinSpacing, connectionAllowed, inside } from "./geometry";
+import { assertPinSpacing, connectionAllowed, insideProfile } from "./geometry";
 import { Distribution } from "./distribution";
 import { rasterSequence, strandFootprint, type Footprint } from "./optical";
 import { MAX_LINES } from "./limits";
+import { validateStandardProfile } from "./standard-kit";
 
 // Independent sequential greedy baseline. Each decision measures the exact optical
 // strand used by the shared renderer; no global rerouting or target overlay.
@@ -32,6 +33,7 @@ export async function generateClassic(
   )
     throw Error("classic/combination");
   assertPinSpacing(p);
+  validateStandardProfile(p);
   const imageHash = await hash(o.pixels);
   if (o.seed) {
     const { validateInstruction } = await import("./validation");
@@ -44,6 +46,7 @@ export async function generateClassic(
       JSON.stringify(o.seed.profile) !== JSON.stringify(p) ||
       JSON.stringify(o.seed.params.portrait) !== JSON.stringify(o.portrait) ||
       JSON.stringify(o.seed.params.subject) !== JSON.stringify(o.subject) ||
+      JSON.stringify(o.seed.params.kitPreparation) !== JSON.stringify(o.kitPreparation) ||
       o.seed.params.accessPolicy !== o.accessPolicy ||
       o.seed.metrics.lines > o.lines
     )
@@ -56,7 +59,7 @@ export async function generateClassic(
   const mask = Uint8Array.from(
     { length: n * n },
     (_, at) =>
-      +inside(p.shape, (at % n) / (n - 1), Math.floor(at / n) / (n - 1)),
+      +insideProfile(p, (at % n) / (n - 1), Math.floor(at / n) / (n - 1)),
   );
   let samples = 0,
     baseline = 0;
@@ -71,6 +74,12 @@ export async function generateClassic(
   const path = o.seed ? [...o.seed.segments[0].path] : [0];
   const distribution = new Distribution(p.pins.length, o.seed?.segments);
   const cache = new Map<number, Footprint>();
+  const legalCache = new Map<number,boolean>();
+  function legal(a:number,b:number) {
+    const key=Math.min(a,b)*p.pins.length+Math.max(a,b);
+    if(!legalCache.has(key))legalCache.set(key,connectionAllowed(p,a,b));
+    return legalCache.get(key)!;
+  }
   let cacheBytes = 0,
     peakCacheBytes = 0;
   function footprint(a: number, b: number) {
@@ -128,6 +137,7 @@ export async function generateClassic(
       profile: structuredClone(p),
       segments: [{ color: p.colors[0], path: [...path] }],
       params: {
+        ...(o.kitPreparation?{kitPreparation:structuredClone(o.kitPreparation)}:{}),
         resolution: n,
         requestedLines: o.lines,
         mode: "dark",
@@ -166,7 +176,7 @@ export async function generateClassic(
       bestGain = 1e-12;
     for (let to = 0; to < p.pins.length; to++) {
       if (
-        !connectionAllowed(p, from, to) ||
+        !legal(from, to) ||
         !distribution.canChange([[from, to]])
       )
         continue;

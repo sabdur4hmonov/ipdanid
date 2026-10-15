@@ -188,6 +188,7 @@ export function adminRoutePermission(
     (method === "POST" &&
       [
         "/api/admin/kits/policy",
+        "/api/admin/kits/profiles",
         "/api/admin/kits/limits",
         "/api/admin/kits/batch",
         "/api/admin/kits/revoke",

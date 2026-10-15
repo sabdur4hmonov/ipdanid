@@ -54,6 +54,7 @@ export interface MaterialProfile {
   pinLayout?: CircleLayout;
   pinBasis?: import("./pin-basis").PinBasis;
   glyphLayout?: import("./lettering-contract").GlyphLayout;
+  standardKit?: import("./standard-kit").StandardProfile;
   shaftMm: number;
   threadMm: number;
   opacity: number;
@@ -114,6 +115,7 @@ export interface Instruction {
   profile: MaterialProfile;
   segments: Segment[];
   params: {
+    kitPreparation?: import("./standard-preparation").KitPreparation;
     accessPolicy?: "kit-build/1";
     resolution: number;
     requestedLines: number;

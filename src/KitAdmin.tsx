@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { StandardKitAdmin } from "./StandardKitAdmin";
 import type { Locale } from "./core/types";
 import type { KitPolicy } from "../server/kit-store";
 import { customerApi as api } from "./customer-api";
@@ -51,6 +52,7 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
   return (
     <section className="card kit-admin" data-testid="kit-admin">
       <h2>{t("batch")}</h2>
+      <StandardKitAdmin locale={locale} token={token}/>
       <p>{t("note")}</p>
       {error && <p role="alert">{error}</p>}
       <fieldset disabled={busy} aria-label={t("batch")}>

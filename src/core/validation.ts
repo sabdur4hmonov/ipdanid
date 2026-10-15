@@ -1,4 +1,6 @@
 import { validSubjectPlan } from "./subject-plan";
+import { validateStandardProfile } from "./standard-kit";
+import { faceFill } from "./standard-preparation";
 import { validLetteringProduct } from "./lettering-contract";
 import { validateGlyphInstruction } from "./glyph-layout";
 import { validSubjectObjective } from "./subject-objective";
@@ -165,6 +167,15 @@ export async function validateInstruction(
   )
     throw Error("Missing multiple portrait regions");
   validateProfileLayout(p);
+  validateStandardProfile(p);
+  if(i.params.kitPreparation) {
+    const k=i.params.kitPreparation;
+    if(i.algorithm!=="classic-greedy/1" || !p.standardKit ||
+       k.version!=="standard-preparation/1" || !/^[a-f0-9]{64}$/.test(k.sourceHash) ||
+       !["automatic","manual","original"].includes(k.whiteBackground) ||
+       JSON.stringify(k.transform)!==JSON.stringify(faceFill(k.transform.faces,p.shape,k.sourceAspect,p.standardKit.patternScale)))
+      throw Error("Invalid reviewed kit preparation");
+  }
   if (i.algorithm === "classic-greedy/1" &&
       (p.baseColor.toLowerCase() !== "#ffffff" || p.colors.length !== 1 ||
        i.segments?.length !== 1 || i.params?.mode !== "dark" ||
