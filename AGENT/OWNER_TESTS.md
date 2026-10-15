@@ -81,3 +81,11 @@ Yozuvlar kelgach ro‘yxatdagi papkalarga qo‘yib indeks/build ko‘rsatmasini 
 ## 2026-10-15 — matn sozlamasidagi aniqlik
 
 “Yana” → “Mozaika” → “Ip bilan yozuv” oynasida “Harf konturida mixlar” tanlang. Bu rejimda ip ulanishlari soni harf konturlari va ularning orasidagi haqiqiy ulanishlardan keladi, shuning uchun ta’sir qilmaydigan “iplar soni” sozlamasi yashirildi. “To‘ldirilgan matn nishoni” rejimida iplar chegarasi qoladi. Kontur PDF/TXT/JSON dagi barcha haqiqiy ulanishlar va mix koordinatalari saqlanishi kerak.
+
+## 2026-10-15 — APK tayyor, jismoniy va telefon sinovlari hali kutiladi
+
+Yangi debug APK: `output/mobile/ip-rasm-full-roadmap-20261014-87d130777145-debug.apk`. Nomdagi sana arxiv turkumi boshlangan14-oktabr; yangi ilova15-oktabrda yig‘ildi. Avvalgi67 APK saqlangan, imzo bir xil, barcha40 veb fayl mos. Telefonga o‘rnatilmadi va unda sinov bajarilmadi. Android test APK ham arxivlangan, qurilmada ishga tushirilmagan.
+
+Brauzerda loyiha papkasidan `npm run local` → http://127.0.0.1:4194. Mavjud serverni to‘xtatmang. Avval saqlangan loyihani ochib qadami saqlanganini, yangi surat → bepul oldindan ko‘rish → kit bilan bir marta ochish → offline qadam/PDF/TXT/JSON ni tekshiring. Matnning ikki rejimini lotin/kirill/arabda, hayvon/buyum andozalarini va mobil tugmalarni tekshiring. PDFni100% hajmda chop etib50mm belgini o‘lchang; mixlar va QRni haqiqiy taxtada/telefon bilan tekshirish alohida qoladi. Natijalarni shu faylga yozing.
+
+APKda yangi pullik kitni ochish uchun ishlab chiqarish HTTPS serveri va ishonchli imzo sozlamasi hali ulanmagan. Mahalliy brauzer kit jarayoni tekshirilgan; APK tayyorligi jonli savdo yoki telefon sinovi o‘tdi degani emas. Haqiqiy yozib olingan ovozlar0; qurilma ovozi/matn ishlatiladi. QBRIX fayllari,2/3 odam/hayvon/buyum suratlari va590 rozilikli ovoz yozuvi oldingi ko‘rsatmalar bo‘yicha kutilmoqda. Hisob/parol yoki maxfiy kit kodini yubormang.
