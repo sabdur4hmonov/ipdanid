@@ -173,6 +173,17 @@ test("admin configures default4/no expiry and downloads real local printable QR 
   await expect(admin).toBeVisible();
   const standard=page.getByTestId("standard-kit-admin");
   await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeEnabled();
+  for (const [kind,label,count] of [["sheet","Full-size sheet",1],["tiles","A4 drilling tiles",6],["stickers","Sector ruler stickers",18]] as const) {
+    const pending=page.waitForEvent("download");
+    await standard.getByRole("button",{name:label,exact:true}).click();
+    const file=await pending;
+    const {PDFDocument}=await import("pdf-lib");
+    const pdf=await PDFDocument.load(readFileSync((await file.path())!));
+    expect(pdf.getPageCount()).toBe(count);
+    expect(pdf.getPage(0).getWidth()*25.4/72).toBeCloseTo(kind==="sheet"?500:210,7);
+    expect(pdf.getSubject()).toContain("standard-kit/1 revision");
+    await file.saveAs(info.outputPath(`manufacturer-${kind}.pdf`));
+  }
   await standard.getByLabel("White MDF base (mm)",{exact:true}).fill("501");
   await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeDisabled();
   await standard.getByRole("button",{name:"Reload saved profiles",exact:true}).click();
