@@ -41,7 +41,7 @@ test("photo-first start has exactly two source actions in all languages", async 
     ["en", "Take photo", "Upload from gallery"],
   ]) {
     await page.getByLabel("Language", { exact: true }).selectOption(locale);
-    await expect(page.locator("main button:visible")).toHaveCount(2);
+    await expect(page.getByTestId("photo-actions").locator("button:visible")).toHaveCount(2);
     await expect(page.getByTestId("photo-guidance")).toBeVisible();
     await expect(page.getByTestId("photo-guidance")).toContainText(
       locale === "uz"

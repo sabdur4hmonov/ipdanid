@@ -205,7 +205,7 @@ test("production worker rejects checkpoint/head and exact-target mismatches with
   page,
 }) => {
   await page.goto("/");
-  const worker = readdirSync("dist/assets").find((n) =>
+  const worker = readdirSync((process.env.IP_RASM_TEST_WEB_DIR || "dist") + "/assets").find((n) =>
     n.startsWith("generator.worker-"),
   )!;
   for (const mismatch of ["head", "target"]) {

@@ -13,7 +13,7 @@ test("public photo-first UI explains optional light backgrounds in all three lan
     ["en", "Existing photographs"],
   ]) {
     await page.getByLabel("Language", { exact: true }).selectOption(locale);
-    await expect(page.locator("main button:visible")).toHaveCount(2);
+    await expect(page.getByTestId("photo-actions").locator("button:visible")).toHaveCount(2);
     await expect(page.getByTestId("photo-guidance")).toContainText(guidance);
     expect(
       await page.evaluate(

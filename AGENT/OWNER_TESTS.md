@@ -121,3 +121,7 @@ A/Bda egasi suratining uch shaklida ham ayrim yuz hududi chegaradan o‘tmadi.20
 Admin o‘lchamlarni o‘zgartirsa ham eski kit versiyasi serverda qoladi. Yaratish → “Kitda chop etilgan versiya”da qog‘oz/kitdagi r1/r2 raqamini tanlab ishlating. Bir marta olingan shu versiya offline ham keshlanadi. Topilmagan versiya boshqa taxta bilan yashirincha almashtirilmasin. Admin o‘zgartirgan, ammo saqlamagan sozlamadan PDF yuklash o‘chiq; avval saqlang, keyin shu versiya/hashli andozani chiqaring.
 
 Yangi versiya uchun alohida `Start-Standard-Kit.cmd` tayyorlandi:4195, eski4194ga tegmaydi. Yakuniy sinovdan keyin agent ishga tushiradi. Alohida sinov kodi va admin kirishi `output/phase9/manual-testing.txt`da bo‘ladi; bu haqiqiy do‘kon/kredit bazangiz emas. Surat → kitdagi to‘g‘ri versiya/shakl → yuz/fon/kesishni tekshirish → hisoblash → bepul metr/soat → saqlash → sinov kodi bilan ochish → birinchi qadamdan boshlash. Qo‘lda sinov natijasini shu faylga yozing.
+
+## 2026-10-16 — yorliqlarning yakuniy kesilishi
+
+Faqat oxirgi qayta yaratilgan PDFlarni ishlating: kvadrat yorliqlari tashqariga, yurakning pastki yarmi tashqariga qaraydi; yuqori yarmi ichkarida. Sektorlar alohida kesiladi, ticklar avvalgi720 nuqtaga aynan mos. Qog'ozni joylashtirib50mmni qayta o'lchang; yorliqning qaysi tomonga qaraganidan qat'i nazar, doirachani aynan o'z mixiga tenglang. Boshqa naqsh yorlig'ini bir vaqtda yopishtirmang. Yakuniy sinov tugaguncha yangi4195 oynasi hali ishga tushirilmagan.

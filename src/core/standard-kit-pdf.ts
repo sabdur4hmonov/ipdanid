@@ -32,14 +32,24 @@ export function stickerMarks(p: MaterialProfile) {
       after = p.pins[(id + 1) % p.pins.length];
     const dx = (after.x - before.x) * p.widthMm,
       dy = (after.y - before.y) * p.heightMm,
-      length = Math.hypot(dx, dy);
+      length = Math.hypot(dx, dy),
+      // The two lower heart quarters need outward ribbons: inward offsets
+      // intersect at the pointed tip. Keep each ribbon section independent.
+      side =
+        p.shape === "rectangle" ||
+        (p.shape === "heart" &&
+          id >= p.pins.length / 4 &&
+          id < (3 * p.pins.length) / 4)
+          ? -1
+          : 1;
     return {
       id,
       label: pinLabel(p, id),
       xMm: pin.x * p.widthMm,
       yMm: pin.y * p.heightMm,
-      nx: -dy / length,
-      ny: dx / length,
+      nx: (side * -dy) / length,
+      ny: (side * dx) / length,
+      side,
     };
   });
 }
@@ -161,9 +171,14 @@ export async function standardKitPdf(
         else {
           const p = profiles[pattern],
             marks = stickerMarks(p);
+          const sameRibbon = (a: number, b: number) =>
+            Math.floor(a / (c.nails / c.sectors)) ===
+              Math.floor(b / (c.nails / c.sectors)) &&
+            marks[a].side === marks[b].side;
           for (let j = 0; j < marks.length; j++) {
             const m = marks[j],
-              next = marks[(j + 1) % marks.length],
+              nextId = (j + 1) % marks.length,
+              next = marks[nextId],
               a = point(m.xMm, m.yMm);
             stroke(
               m.xMm,
@@ -179,15 +194,16 @@ export async function standardKitPdf(
               borderWidth: 0.35,
               borderColor: colours[pattern],
             });
-            for (const distance of [1, 11])
-              stroke(
-                m.xMm + m.nx * distance,
-                m.yMm + m.ny * distance,
-                next.xMm + next.nx * distance,
-                next.yMm + next.ny * distance,
-                rgb(0.6, 0.6, 0.6),
-                0.2,
-              );
+            if (sameRibbon(j, nextId))
+              for (const distance of [1, 11])
+                stroke(
+                  m.xMm + m.nx * distance,
+                  m.yMm + m.ny * distance,
+                  next.xMm + next.nx * distance,
+                  next.yMm + next.ny * distance,
+                  rgb(0.6, 0.6, 0.6),
+                  0.2,
+                );
             const label = point(
               m.xMm + m.nx * (j % 2 ? 8.5 : 5),
               m.yMm + m.ny * (j % 2 ? 8.5 : 5),
@@ -199,15 +215,26 @@ export async function standardKitPdf(
               font,
               color: colours[pattern],
             });
-            if (j % (c.nails / c.sectors) === 0)
-              stroke(
-                m.xMm + m.nx,
-                m.yMm + m.ny,
-                next.xMm + next.nx * 11,
-                next.yMm + next.ny * 11,
-                colours[pattern],
-                0.6,
-              );
+            // Close a strip between ticks, never across its endpoint's label.
+            for (const [boundary, neighbour] of [
+              [
+                !sameRibbon(j, nextId),
+                marks[(j + marks.length - 1) % marks.length],
+              ],
+              [!sameRibbon((j + marks.length - 1) % marks.length, j), next],
+            ] as const)
+              if (boundary) {
+                const ex = m.xMm + (m.xMm - neighbour.xMm) / 2,
+                  ey = m.yMm + (m.yMm - neighbour.yMm) / 2;
+                stroke(m.xMm + m.nx, m.yMm + m.ny, ex + m.nx, ey + m.ny);
+                stroke(ex + m.nx, ey + m.ny, ex + m.nx * 11, ey + m.ny * 11);
+                stroke(
+                  ex + m.nx * 11,
+                  ey + m.ny * 11,
+                  m.xMm + m.nx * 11,
+                  m.yMm + m.ny * 11,
+                );
+              }
           }
         }
         // Same board-space registration crosses on every overlapping page.

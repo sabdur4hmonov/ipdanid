@@ -164,7 +164,7 @@ test("actual production worker reproduces the bound 320 completed checkpoint and
     i = file.project.instruction,
     checkpoint = JSON.parse(readFileSync(folder + "/fit.json", "utf8")),
     pixels = Array.from(readFileSync(folder + "/target-320.bin"));
-  const worker = readdirSync("dist/assets").find((n) =>
+  const worker = readdirSync((process.env.IP_RASM_TEST_WEB_DIR || "dist") + "/assets").find((n) =>
     n.startsWith("generator.worker-"),
   )!;
   await page.goto("/");

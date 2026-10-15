@@ -118,7 +118,7 @@ test("real generalized Worker emits bound state and refuses unreviewed and colou
   page,
 }) => {
   test.setTimeout(180000);
-  const name = readdirSync("dist/assets").find((n) =>
+  const name = readdirSync((process.env.IP_RASM_TEST_WEB_DIR || "dist") + "/assets").find((n) =>
       n.startsWith("generator.worker-"),
     )!,
     profile = createProfile("circle", 24),

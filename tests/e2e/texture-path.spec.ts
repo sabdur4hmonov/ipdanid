@@ -24,7 +24,7 @@ test("v17 Worker replays exact bound guide and refuses changed strength", async 
     pixels = Array.from(
       readFileSync("output/portrait-dispatch/target-320.bin"),
     ),
-    name = readdirSync("dist/assets").find((n) =>
+    name = readdirSync((process.env.IP_RASM_TEST_WEB_DIR || "dist") + "/assets").find((n) =>
       n.startsWith("generator.worker-"),
     )!;
   await page.goto("/");

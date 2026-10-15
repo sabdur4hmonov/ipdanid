@@ -375,7 +375,7 @@ test("the generator Worker validates subject plans before any strategy", async (
   page,
 }) => {
   test.setTimeout(120000);
-  const name = readdirSync("dist/assets").find((n) =>
+  const name = readdirSync((process.env.IP_RASM_TEST_WEB_DIR || "dist") + "/assets").find((n) =>
     n.startsWith("generator.worker-"),
   )!;
   const n = 48,

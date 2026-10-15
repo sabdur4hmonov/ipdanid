@@ -6,7 +6,7 @@ test('real feature Worker materializes bound checkpoint and rejects altered targ
  const expected=JSON.parse(readFileSync('output/feature-contrast/features.json','utf8')).project.instruction;
  const resume=JSON.parse(readFileSync('output/feature-contrast/features-fit.json','utf8'));
  const pixels=Array.from(readFileSync('output/portrait-dispatch/target-320.bin'));
- const name=readdirSync('dist/assets').find(n=>n.startsWith('generator.worker-'))!;
+ const name=readdirSync((process.env.IP_RASM_TEST_WEB_DIR || 'dist') + '/assets').find(n=>n.startsWith('generator.worker-'))!;
  await page.goto('/');
  const messages=await page.evaluate(async({seed,expected,resume,pixels,name})=>{
   const run=(bad:boolean)=>new Promise<any>((resolve,reject)=>{

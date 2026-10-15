@@ -5,6 +5,7 @@ import {
   PDFArray,
   PDFRawStream,
   decodePDFRawStream,
+  StandardFonts,
 } from "pdf-lib";
 import {
   DEFAULT_STANDARD_KIT,
@@ -81,6 +82,45 @@ it("sectors keep exact numeric IDs and original physical sticker tick locations"
   expect(pinLabel(p, 76)).toBe("B-17");
   expect(sectorPin(p, "D-61")).toBeUndefined();
 });
+it("printed ruler labels do not overlap at square corners or the heart tip", async () => {
+  const doc = await PDFDocument.create(),
+    font = await doc.embedFont(StandardFonts.Helvetica),
+    mm = 72 / 25.4;
+  for (const sectors of [4, 8])
+    for (const profile of standardProfiles({
+      ...DEFAULT_STANDARD_KIT,
+      sectors,
+    })) {
+      const boxes = stickerMarks(profile).map((m, j) => {
+        const distance = j % 2 ? 8.5 : 5,
+          width = font.widthOfTextAtSize(m.label, 5) / mm;
+        const x = m.xMm + m.nx * distance,
+          y = m.yMm + m.ny * distance;
+        return {
+          label: m.label,
+          x0: x - width / 2,
+          x1: x + width / 2,
+          y0: y - 0.9,
+          y1: y + 0.9,
+        };
+      });
+      for (let i = 0; i < boxes.length; i++) {
+        const a = boxes[i];
+        expect(a.x0).toBeGreaterThanOrEqual(0);
+        expect(a.x1).toBeLessThanOrEqual(500);
+        expect(a.y0).toBeGreaterThanOrEqual(0);
+        expect(a.y1).toBeLessThanOrEqual(500);
+        for (let j = 0; j < i; j++) {
+          const b = boxes[j];
+          expect(
+            Math.min(a.x1, b.x1) <= Math.max(a.x0, b.x0) ||
+              Math.min(a.y1, b.y1) <= Math.max(a.y0, b.y0),
+            `${profile.shape} ${a.label}/${b.label}`,
+          ).toBe(true);
+        }
+      }
+    }
+});
 it("admin revisions reject lost updates/collisions, default3 and existing grants stay unchanged", () => {
   const s = new KitStore(":memory:", "p".repeat(32), "k".repeat(32));
   try {
@@ -98,7 +138,7 @@ it("admin revisions reject lost updates/collisions, default3 and existing grants
     expect(updated.revision).toBe(2);
     expect(s.standardKit(1)).toEqual(DEFAULT_STANDARD_KIT);
     expect(s.standardKit(2)).toEqual(updated);
-    expect(()=>s.standardKit(999)).toThrow(/not found/);
+    expect(() => s.standardKit(999)).toThrow(/not found/);
     expect(() => s.setStandardKit("admin", DEFAULT_STANDARD_KIT)).toThrow(
       /reload/,
     );
