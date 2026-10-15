@@ -89,3 +89,7 @@ Yangi debug APK: `output/mobile/ip-rasm-full-roadmap-20261014-87d130777145-debug
 Brauzerda loyiha papkasidan `npm run local` → http://127.0.0.1:4194. Mavjud serverni to‘xtatmang. Avval saqlangan loyihani ochib qadami saqlanganini, yangi surat → bepul oldindan ko‘rish → kit bilan bir marta ochish → offline qadam/PDF/TXT/JSON ni tekshiring. Matnning ikki rejimini lotin/kirill/arabda, hayvon/buyum andozalarini va mobil tugmalarni tekshiring. PDFni100% hajmda chop etib50mm belgini o‘lchang; mixlar va QRni haqiqiy taxtada/telefon bilan tekshirish alohida qoladi. Natijalarni shu faylga yozing.
 
 APKda yangi pullik kitni ochish uchun ishlab chiqarish HTTPS serveri va ishonchli imzo sozlamasi hali ulanmagan. Mahalliy brauzer kit jarayoni tekshirilgan; APK tayyorligi jonli savdo yoki telefon sinovi o‘tdi degani emas. Haqiqiy yozib olingan ovozlar0; qurilma ovozi/matn ishlatiladi. QBRIX fayllari,2/3 odam/hayvon/buyum suratlari va590 rozilikli ovoz yozuvi oldingi ko‘rsatmalar bo‘yicha kutilmoqda. Hisob/parol yoki maxfiy kit kodini yubormang.
+
+## 2026-10-15 — sinash uchun ilova ochildi
+
+http://127.0.0.1:4194/ brauzerda ochildi, hozirgi build ishlayapti. Eski bazangizga tegmaslik uchun bu ishga tushirishda alohida sinov bazasi ishlatildi: serverdagi hisob va kit kreditlari oldingi bazangizdan olinmagan. Yaratish → surat yuklashdan boshlang. Kod bilan ochish uchun keyin shu sinov bazasiga tegishli kit kodi kerak bo‘ladi. Avvalgi qurilmaga saqlangan loyihalarni ko‘rish uchun o‘sha eski brauzer profilidan foydalaning.
