@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './legacy-test';
 import {readFileSync} from 'node:fs';
 import {PDFDocument,PDFName,PDFRawStream,decodePDFRawStream} from 'pdf-lib';
 import {rasterSequence} from '../../src/core/optical';

@@ -1,5 +1,5 @@
 import { unlockIfNeeded } from "./kit-access";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { mkdirSync, readFileSync } from "node:fs";
 
 test("failed preparation opens the correction controls and preserves usable photo", async ({

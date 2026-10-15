@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./legacy-test";
 import { writeFileSync, readFileSync } from "node:fs";
 import { generate } from "../../src/core/engine";
 import { createProfile } from "../../src/core/geometry";
@@ -60,8 +60,10 @@ test("new guides lock steps and exports, signed unlock survives offline and tamp
     .getByRole("button", { name: "Download preview PNG", exact: true })
     .click();
   expect((await download).suggestedFilename()).toMatch(/\.png$/);
-  const headers = { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN}` },
-    r = await page.request.post(
+  const headers = { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN}` };
+  const currentPolicy=await (await page.request.get(process.env.IP_RASM_TEST_API_URL+"/api/admin/kits",{headers})).json();
+  expect((await page.request.post(process.env.IP_RASM_TEST_API_URL+"/api/admin/kits/policy",{headers,data:{...currentPolicy.policy,quota:4}})).ok()).toBe(true);
+  const r = await page.request.post(
       process.env.IP_RASM_TEST_API_URL + "/api/admin/kits/batch",
       {
         headers,

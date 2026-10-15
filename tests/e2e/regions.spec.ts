@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 import { generate } from "../../src/core/engine";
 import { createProfile } from "../../src/core/geometry";

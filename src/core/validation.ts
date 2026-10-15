@@ -1,6 +1,7 @@
 import { validSubjectPlan } from "./subject-plan";
 import { validateStandardProfile } from "./standard-kit";
 import { faceFill } from "./standard-preparation";
+import { validateHeartAccent } from "./heart-accent";
 import { validLetteringProduct } from "./lettering-contract";
 import { validateGlyphInstruction } from "./glyph-layout";
 import { validSubjectObjective } from "./subject-objective";
@@ -35,6 +36,7 @@ export async function validateInstruction(
     i.schema !== "iprasm.instruction/1" ||
     ![
       "classic-greedy/1",
+      "standard-accent/20",
       "greedy-optical/1",
       "greedy-optical/2",
       "greedy-optical/3",
@@ -60,6 +62,7 @@ export async function validateInstruction(
   if (i.params?.subject !== undefined)
     validSubjectPlan(i.params.subject, i.params.portrait);
   const qualityFirst = [
+      "standard-accent/20",
       "classic-greedy/1",
       "greedy-optical/4",
       "density-optical/5",
@@ -168,19 +171,40 @@ export async function validateInstruction(
     throw Error("Missing multiple portrait regions");
   validateProfileLayout(p);
   validateStandardProfile(p);
-  if(i.params.kitPreparation) {
-    const k=i.params.kitPreparation;
-    if(i.algorithm!=="classic-greedy/1" || !p.standardKit ||
-       k.version!=="standard-preparation/1" || !/^[a-f0-9]{64}$/.test(k.sourceHash) ||
-       !["automatic","manual","original"].includes(k.whiteBackground) ||
-       JSON.stringify(k.transform)!==JSON.stringify(faceFill(k.transform.faces,p.shape,k.sourceAspect,p.standardKit.patternScale)))
+  if (i.params.kitPreparation) {
+    const k = i.params.kitPreparation;
+    if (
+      !["classic-greedy/1", "standard-accent/20"].includes(i.algorithm) ||
+      !p.standardKit ||
+      k.version !== "standard-preparation/1" ||
+      !/^[a-f0-9]{64}$/.test(k.sourceHash) ||
+      !["automatic", "manual", "original"].includes(k.whiteBackground) ||
+      JSON.stringify(k.transform) !==
+        JSON.stringify(
+          faceFill(
+            k.transform.faces,
+            p.shape,
+            k.sourceAspect,
+            p.standardKit.patternScale,
+          ),
+        )
+    )
       throw Error("Invalid reviewed kit preparation");
   }
-  if (i.algorithm === "classic-greedy/1" &&
-      (p.baseColor.toLowerCase() !== "#ffffff" || p.colors.length !== 1 ||
-       i.segments?.length !== 1 || i.params?.mode !== "dark" ||
-       i.params.optimization?.lookahead !== 0 || i.params.optimization.coarseScale !== 1 ||
-       i.params.optimization.minimumRelativeGain !== 0)) throw Error("Invalid classic contract");
+  if (i.algorithm === "standard-accent/20") await validateHeartAccent(i);
+  else if (i.params.accent || p.standardKit?.accessory)
+    throw Error("Unbound heart accessory");
+  if (
+    i.algorithm === "classic-greedy/1" &&
+    (p.baseColor.toLowerCase() !== "#ffffff" ||
+      p.colors.length !== 1 ||
+      i.segments?.length !== 1 ||
+      i.params?.mode !== "dark" ||
+      i.params.optimization?.lookahead !== 0 ||
+      i.params.optimization.coarseScale !== 1 ||
+      i.params.optimization.minimumRelativeGain !== 0)
+  )
+    throw Error("Invalid classic contract");
   if (p.glyphLayout || i.algorithm === "glyph-outline/19")
     await validateGlyphInstruction(i);
   if (i.params?.product) {
@@ -239,7 +263,7 @@ export async function validateInstruction(
     i.metrics.reconstructionMse < 0 ||
     !Number.isFinite(i.metrics.baselineMse) ||
     i.metrics.baselineMse < 0 ||
-    (i.algorithm !== "glyph-outline/19" &&
+    (!["glyph-outline/19", "standard-accent/20"].includes(i.algorithm) &&
       i.metrics.reconstructionMse > i.metrics.baselineMse + 1e-6)
   )
     throw new Error("Invalid sequence limits");
@@ -277,6 +301,7 @@ export async function validateInstruction(
   if (
     [
       "classic-greedy/1",
+      "standard-accent/20",
       "continuous-guarded/6",
       "group-optical/15",
       "density-multiscale/7",
@@ -785,27 +810,27 @@ export async function validateInstruction(
         ? i.params.optimization.lookahead !== 8 ||
           i.params.optimization.coarseScale !== 4 ||
           i.params.optimization.minimumRelativeGain !== 1e-7
-        : i.algorithm === "classic-greedy/1"
+        : ["classic-greedy/1", "standard-accent/20"].includes(i.algorithm)
           ? i.params.optimization.lookahead !== 0 ||
             i.params.optimization.coarseScale !== 1 ||
             i.params.optimization.minimumRelativeGain !== 0
-        : i.algorithm === "glyph-outline/19"
-          ? i.params.optimization.kind !== "glyph-outline" ||
-            i.params.optimization.lookahead !== 0 ||
-            i.params.optimization.coarseScale !== 1 ||
-            i.params.optimization.minimumRelativeGain !== 0
-          : !["density-coordinate", "optical-coordinate"].includes(
-              i.params.optimization.kind ?? "",
-            ) ||
-            i.params.optimization.lookahead !== 0 ||
-            i.params.optimization.coarseScale !== 1 ||
-            i.params.optimization.minimumRelativeGain !== 0.0001 ||
-            !Number.isFinite(i.params.optimization.edgeWeight) ||
-            i.params.optimization.edgeWeight! < 0 ||
-            i.params.optimization.edgeWeight! > 4 ||
-            !Number.isInteger(i.params.optimization.sweeps) ||
-            i.params.optimization.sweeps! < 1 ||
-            i.params.optimization.sweeps! > 24)
+          : i.algorithm === "glyph-outline/19"
+            ? i.params.optimization.kind !== "glyph-outline" ||
+              i.params.optimization.lookahead !== 0 ||
+              i.params.optimization.coarseScale !== 1 ||
+              i.params.optimization.minimumRelativeGain !== 0
+            : !["density-coordinate", "optical-coordinate"].includes(
+                i.params.optimization.kind ?? "",
+              ) ||
+              i.params.optimization.lookahead !== 0 ||
+              i.params.optimization.coarseScale !== 1 ||
+              i.params.optimization.minimumRelativeGain !== 0.0001 ||
+              !Number.isFinite(i.params.optimization.edgeWeight) ||
+              i.params.optimization.edgeWeight! < 0 ||
+              i.params.optimization.edgeWeight! > 4 ||
+              !Number.isInteger(i.params.optimization.sweeps) ||
+              i.params.optimization.sweeps! < 1 ||
+              i.params.optimization.sweeps! > 24)
     )
       throw new Error("Invalid generation parameters");
     if (i.params.portrait) validPortrait(i.params.portrait);
@@ -844,6 +869,7 @@ export async function validateInstruction(
     if (
       i.algorithm !== "assembly-prune/9" &&
       i.algorithm !== "glyph-outline/19" &&
+      i.algorithm !== "standard-accent/20" &&
       (!i.metrics.weightedError ||
         !Number.isFinite(i.metrics.weightedError.baseline) ||
         !Number.isFinite(i.metrics.weightedError.final) ||
@@ -927,7 +953,12 @@ export function mergeProgress(
   return { progress: local, conflict: true };
 }
 export function toTxt(i: Instruction): string {
+  const tag = (id: number) =>
+    i.profile.pins[id].sectorLabel
+      ? `${i.profile.pins[id].sectorLabel} [${id}]`
+      : String(id);
   const knots = [
+    "standard-accent/20",
     "classic-greedy/1",
     "glyph-outline/19",
     "density-optical/5",
@@ -948,14 +979,17 @@ export function toTxt(i: Instruction): string {
     ? i.segments
         .map(
           (s, j) =>
-            `# Segment ${j + 1}: tie ${s.color} to pin ${s.path[0]}; follow its ordered steps without cutting; secure a finishing knot at pin ${s.path.at(-1)}.`,
+            `# Segment ${j + 1}: tie ${s.color} to pin ${tag(s.path[0])}; follow its ordered steps without cutting; secure a finishing knot at pin ${tag(s.path.at(-1)!)}.`,
         )
         .join("\n") + "\n"
     : "";
   return `IP_RASM_TXT_V1\n${JSON.stringify(i)}\n\n${knots}# Ordered steps: step from to color\n${flatten(
     i,
   )
-    .map((s) => `${s.index} ${s.from} ${s.to} ${s.color}`)
+    .map(
+      (s) =>
+        `${s.index} ${s.from} ${s.to} ${s.color}${s.fromLabel ? ` ${s.fromLabel} ${s.toLabel}` : ""}`,
+    )
     .join("\n")}`;
 }
 export async function fromFile(text: string): Promise<Instruction> {

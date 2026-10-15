@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './legacy-test';
 import {readFileSync,readdirSync} from 'node:fs';
 test('real feature Worker materializes bound checkpoint and rejects altered target without losing job association',async({page})=>{
  test.setTimeout(180000);

@@ -1,7 +1,7 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { withPinBasis } from "../../src/core/pin-basis";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 import { createProfile } from "../../src/core/geometry";
 import {

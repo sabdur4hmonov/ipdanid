@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { cpus, platform, arch, totalmem } from "node:os";
 import { readFileSync } from "node:fs";

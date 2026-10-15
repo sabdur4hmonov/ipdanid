@@ -1,5 +1,5 @@
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 test("head fit requires correction; burst gestures accumulate and per-photo regions survive switching", async ({
   page,
 }) => {

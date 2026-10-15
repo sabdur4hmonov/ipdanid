@@ -1,5 +1,6 @@
 import { refineHairCycles } from "./hair-cycles";
 import { generateClassic } from "./classic";
+import { addHeartAccent } from "./heart-accent";
 import { DEFAULT_FEATURE_CONTRAST } from "./feature-contrast";
 import { DEFAULT_LOCAL_TEXTURE } from "./local-texture";
 import {
@@ -302,7 +303,8 @@ self.onmessage = async ({ data }) => {
     self.postMessage({
       type: "done",
       jobId: data.jobId,
-      instruction: finalInstruction,
+      instruction: data.strategy==="classic" && data.redAccentColor?await addHeartAccent(finalInstruction,options.pixels,data.redAccentColor):finalInstruction,
+      ...(data.strategy==="classic" && data.redAccentColor?{classicBody:finalInstruction}:{}),
       ...(data.strategy === "subjects" && data.seed
         ? {
             subjectScreen: await reviewSubjectCandidate(

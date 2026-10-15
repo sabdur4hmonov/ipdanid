@@ -336,6 +336,20 @@ export const VOICE_PHRASES: Record<
 );
 export function requiredVoiceClips(lang: VoiceLanguage) {
   const clips: Record<string, string> = {};
+  const letters: Record<VoiceLanguage, string[]> = {
+    uz: "a|be|se|de|e|ef|je|ash|i|jey|key|el|em|en|o|pe|kyu|er|es|te|yu|ve|dabl yu|iks|vay|zed".split(
+      "|",
+    ),
+    ru: "эй|би|си|ди|и|эф|джи|эйч|ай|джей|кей|эл|эм|эн|оу|пи|кью|ар|эс|ти|ю|ви|дабл-ю|экс|уай|зед".split(
+      "|",
+    ),
+    en: "ay|bee|see|dee|ee|ef|jee|aitch|eye|jay|kay|el|em|en|oh|pee|cue|ar|ess|tee|you|vee|double-you|ex|why|zed".split(
+      "|",
+    ),
+  };
+  letters[lang].forEach(
+    (text, id) => (clips[`sector-${String.fromCharCode(97 + id)}`] = text),
+  );
   small[lang].forEach((text, n) => (clips[`number-${n}`] = text));
   tens[lang].forEach((text, n) => (clips[`number-${(n + 2) * 10}`] = text));
   hundreds[lang].forEach(
@@ -400,14 +414,31 @@ export function stepVoiceClips(
   from: number,
   to: number,
   start: "first" | "color" | undefined,
+  sectors?: { pins: number; count: number },
 ) {
+  const pin = (id: number) => {
+    if (!sectors) return numberVoiceClips(lang, id);
+    const size = sectors.pins / sectors.count;
+    if (
+      !Number.isInteger(size) ||
+      sectors.count < 1 ||
+      sectors.count > 26 ||
+      id < 0 ||
+      id >= sectors.pins
+    )
+      throw Error("Invalid sector voice index");
+    return [
+      `sector-${String.fromCharCode(97 + Math.floor(id / size))}`,
+      ...numberVoiceClips(lang, (id % size) + 1),
+    ];
+  };
   return [
     "step",
     ...numberVoiceClips(lang, step),
     "from-pin",
-    ...numberVoiceClips(lang, from),
+    ...pin(from),
     "to-pin",
-    ...numberVoiceClips(lang, to),
+    ...pin(to),
     ...(start ? [start === "first" ? "start-knot" : "color-change"] : []),
   ];
 }

@@ -1,5 +1,5 @@
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync, readdirSync } from "node:fs";
 const folder = "output/portrait-resolved";
 test("resolved/pruned import uses the exact optical canvas, immutable offline export and bound settings", async ({

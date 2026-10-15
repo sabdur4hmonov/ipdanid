@@ -107,3 +107,11 @@ Classic A/B umumiy xatoni kamaytirdi, ammo eski egasi nishonida burun hududini y
 Haqiqiy mix/teshik diametrini o‘lchab admin sozlamasiga kiriting: hozir1.5mm teshik,3mm markaz oralig‘i va10mm chet masofasi taxmin. MDF mustahkamligi va teshish chuqurligi avtomatik tekshirilmagan. Oldin kichik sinov taxtasida tekshiring. Keyin nuqtalarni belgilang/teshing. Tanlangan naqshning sektor yorlig‘ini100% chop eting, egri kesish chiziqlari bo‘yicha kesib, har tickni aynan shu mix nuqtasiga tekislab yopishtiring; chizg‘ichni tekislab cho‘zmang. Andoza/profil versiyasi va hash mos bo‘lsin.
 
 Yangi kitlar odatda3 natija beradi; admin4 ham tanlaydi. Avvalgi sarflanmagan kredit va ochilgan qo‘llanma o‘zgarmaydi. Agent hali sektor/player/ovoz va yakuniy hisobot/APK ishini davom ettiryapti; joriy4194 server yangilanmagan.
+
+## 2026-10-15 — sektorlar, qizil ip va hisoblangan vaqt
+
+Yangi ilovada mixlar A-1…D-60 ko‘rinadi; masalan B-17ning raqamli indeksi76 JSONda ham qoladi. Admin8×30 tanlasa A…H bo‘ladi. Player, qidiruv, ovoz, PDF va TXT shu belgini ishlatsin. B-17 ovozda “B, o‘n yetti” deyiladi. A–Z yozuvlari qo‘shilgani uchun ikki haqiqiy instruktorning to‘liq ro‘yxati endi746 fayl; hozir yozuv0, qurilma ovozi yoki matn ishlaydi.
+
+Yurakda ixtiyoriy ikkinchi rangni hisoblashdan oldin tanlash mumkin. Qizil chegaraning hamma haqiqiy ulanishi, ichki ko‘prigi va tuguni sanaladi; ko‘rinish kosmetik chiziq emas. Ikkinchi ip ham ko‘rsatilgan diametr/shaffoflikka mos bo‘lsin. Haqiqiy natijani tekshiring. Ip soni/metr/soat qizil yo‘lni ham qo‘shsin; tizza tavsiyasi qora asos uchun. Saqlash → kit bilan bir marta ochish → birinchi qadamdan boshlash. Kalibrlash/teshik/yorliq sinovini oldingi bo‘limga ko‘ra bajaring.
+
+A/Bda egasi suratining uch shaklida ham ayrim yuz hududi chegaradan o‘tmadi.2000–3000 ulanish sifat g‘olibi yoki eng samarali son deb tasdiqlanmagan; o‘lchangan tizza1500. Haqiqiy ikki odamli yurak taqqoslashiga ikki odamli asl surat kerak. Agent yakuniy sinov/APKni davom ettiradi,4194 avvalgidek qoladi.

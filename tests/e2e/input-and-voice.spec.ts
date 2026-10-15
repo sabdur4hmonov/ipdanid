@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 
 test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inputs", async ({
   page,

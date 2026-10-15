@@ -64,8 +64,17 @@ try {
   await req("/builds/account", 401);
   await req("/admin/kits", 403);
   const policy = await req("/admin/kits", 200, undefined, admin);
-  assert.equal(policy.policy.quota, 4);
+  assert.equal(policy.policy.quota, 3);
   assert.equal(policy.policy.creditDays, 0);
+  const profiles=await req("/kit-profiles",200);
+  assert.equal(profiles.nails,240);assert.equal(profiles.circleDiameterMm,460);
+  await req("/admin/kits/profiles",403,{...profiles,sectors:8});
+  const changed=await req("/admin/kits/profiles",200,{...profiles,sectors:8},admin);
+  assert.equal(changed.revision,profiles.revision+1);
+  await req("/admin/kits/profiles",409,profiles,admin);
+  await req("/admin/kits/profiles",400,{...changed,squareSideMm:460},admin);
+  assert.equal((await req("/kit-profiles",200)).sectors,8);
+  await req("/admin/kits/policy",200,{...policy.policy,quota:4},admin);
   const batch = await req(
     "/admin/kits/batch",
     201,

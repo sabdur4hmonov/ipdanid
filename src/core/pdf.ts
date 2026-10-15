@@ -16,6 +16,7 @@ import { translate } from "../i18n";
 import { validateInstruction } from "./validation";
 import { previewPng } from "./preview-png";
 import { templateLabel } from "./pin-layout";
+import { pinLabel } from "./standard-kit";
 const MM = 72 / 25.4;
 export async function exportPdf(
   i: Instruction,
@@ -193,7 +194,7 @@ export async function exportPdf(
       if (pin.id % 30 === 0)
         text(
           p,
-          String(pin.id),
+          pinLabel(i.profile,pin.id),
           x + (pin.x > 0.5 ? -22 : 5),
           y + (pin.y > 0.5 ? 7 : -12),
           8,
@@ -251,9 +252,9 @@ export async function exportPdf(
         p,
         t("pdfAlign") +
           (heartLabels
-            ? ` | TOP y=0; IDs clockwise FRONT; pin0 notch filled; knot ${i.segments[0].path[0]}; heart-normal-leaders/1`
+            ? ` | TOP y=0; clockwise FRONT; ${pinLabel(i.profile,0)} notch; knot ${pinLabel(i.profile,i.segments[0].path[0])}; heart-normal-leaders/1`
             : canonicalNewCircle && !i.profile.pinLayout
-              ? ` | TOP y=0; IDs clockwise FRONT; pin0 filled; knot ${i.segments[0].path[0]}; radial-leaders/1`
+              ? ` | TOP y=0; clockwise FRONT; ${pinLabel(i.profile,0)} filled; knot ${pinLabel(i.profile,i.segments[0].path[0])}; radial-leaders/1`
               : i.profile.pinLayout
                 ? ` | TOP y=0; pin 0: +${i.profile.pinLayout.phaseDegreesClockwise}° clockwise`
                 : ""),
@@ -290,7 +291,7 @@ export async function exportPdf(
             borderColor: pdfRgb(0, 0, 0),
             ...(pin.id === 0 ? { color: pdfRgb(0, 0, 0) } : {}),
           });
-          const labelText = String(pin.id);
+          const labelText = pinLabel(i.profile,pin.id);
           text(
             p,
             labelText,
@@ -314,8 +315,8 @@ export async function exportPdf(
             borderWidth: 0.5,
             borderColor: pdfRgb(0, 0, 0),
           });
-          text(p, String(pin.id), px + 3, py + 3, 7);
-          if (pin.id === 0) text(p, `0 / ${t("pdfStart")}`, px + 3, py - 8, 5);
+          text(p, pinLabel(i.profile,pin.id), px + 3, py + 3, 7);
+          if (pin.id === 0) text(p, `${pinLabel(i.profile,0)} / ${t("pdfStart")}`, px + 3, py - 8, 5);
         }
       // Board-space 50 mm grid crosses match neighboring overlapping tiles.
       const xMarks = [
@@ -428,7 +429,7 @@ export async function exportPdf(
     }
     text(
       p,
-      `${s.index}.   ${s.from} -> ${s.to}     ${s.color}`,
+      `${s.index}.   ${s.fromLabel?`${s.fromLabel} [${s.from}]`:s.from} -> ${s.toLabel?`${s.toLabel} [${s.to}]`:s.to}     ${s.color}`,
       margin + 16,
       y,
       size,

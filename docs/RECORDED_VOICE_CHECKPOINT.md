@@ -11,3 +11,7 @@ RecordedClipPlayer checks byte hash/length/decoded mono duration before WebAudio
 Verification:18/18 unit including existing engine/spoken-pin regressions(test-results/phase7-voice-unit.json). Six new tests cover all guide numbers, exact97/101 inventory, empty/incomplete/remote-path manifests, PCM format/truncation, scheduling/cancel/hash/refusal/preload race. Browser8/8 pass31.1s at4313/4453 with fresh DB(test-results/phase7-voice-e2e/report.json): actual Chrome WebAudio with **synthetic test tones** verifies order/cancellation/cached replay and integrity fallback; existing orientation/PNG safety/device TTS/locale/cancel flow also passes. Synthetic tone names/manifest exist only in request interception and test artifacts, not the app. Build1955modules passes existing warnings and offline manifest inclusion verified. No real speaker identity/pronunciation, installed-phone audio or two real offline voices claimed.
 
 Next: new APK preserving all old files/signing identity; final full regression and honest owner report.
+
+## Phase9 sector addition
+
+The current recording inventory adds26 Latin sector letters to each language/instructor:123UZ/127RU/123EN each instructor,746 total,0 actual recordings. Numeric legacy guides still speak their original indices; standard guides speak letter plus1-based within-sector number. stepVoiceClips/recordedStepEntries accept the immutable profile mapping. Old Phase7 counts above are historical. CSV and Uzbek recording instructions contain the current exact list; no test audio is shipped.

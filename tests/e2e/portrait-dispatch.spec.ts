@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 test("face photo cannot silently use the general solver; reviewed choices preserve or explicitly replace materials", async ({
   page,
 }) => {

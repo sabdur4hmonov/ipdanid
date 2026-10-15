@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 import { openMore, revealControl } from "./navigation";
 import { unlockKitGuide } from "./kit-access";

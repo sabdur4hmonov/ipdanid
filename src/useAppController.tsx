@@ -139,6 +139,7 @@ import {
   type PortraitSettings,
 } from "./core/types";
 import { spokenPin, translate } from "./i18n";
+import { spokenKitPin } from "./sector-speech";
 import { readProjects, writeProjects, StorageConflictError } from "./storage";
 import { download } from "./download";
 import { PRODUCT_NAME } from "./config";
@@ -441,7 +442,7 @@ export function useAppController() {
     stopSpeech();
     if (view !== "assemble" || !active || !chosenVoice || !voiceEnabled) return;
     const guideT = translate(guideLocale);
-    const text = `${guideT("pdfStep")} ${spokenPin(guideLocale, current)}. ${spokenPin(guideLocale, active.from)} ${guideT("from")}, ${spokenPin(guideLocale, active.to)} ${guideT("to")}.${active.segmentStart ? " " + guideT(active.segment === 0 ? "startKnot" : "colorChange") : ""}`;
+    const text = `${guideT("pdfStep")} ${spokenPin(guideLocale, current)}. ${spokenKitPin(guideLocale, project!.instruction.profile, active.from)} ${guideT("from")}, ${spokenKitPin(guideLocale, project!.instruction.profile, active.to)} ${guideT("to")}.${active.segmentStart ? " " + guideT(active.segment === 0 ? "startKnot" : "colorChange") : ""}`;
     const fallback = (voice: GuideVoice) => {
       if (voice.native) {
         void nativeGuideSpeech(text, voice, guideLocale, speechRate).catch(
@@ -477,6 +478,7 @@ export function useAppController() {
                 ? "first"
                 : "color"
               : undefined,
+            project!.instruction.profile,
           ),
           speechRate,
         )

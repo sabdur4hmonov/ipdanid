@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 
 test("public photo-first UI explains optional light backgrounds in all three languages", async ({

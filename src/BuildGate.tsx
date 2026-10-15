@@ -5,6 +5,7 @@ import { buildAccess } from "./build-access";
 import { customerApi } from "./customer-api";
 import { renderInstruction } from "./core/render";
 import { download } from "./download";
+import { standardText } from "./standard-kit-i18n";
 export function BuildGate({
   instruction: i,
   locale,
@@ -77,8 +78,9 @@ export function BuildGate({
       </button>
       <p>
         {i.metrics.lines} {t("steps")} · {i.metrics.estimatedMeters.toFixed(1)}{" "}
-        m · {((i.metrics.lines * 8) / 60).toFixed(1)} {t("minutes")}
+        m · {((i.metrics.lines * (i.profile.standardKit?.config.secondsPerConnection??8)) / 60).toFixed(1)} {t("minutes")}
       </p>
+      {i.profile.standardKit && <p data-testid="assembly-hours">{standardText(locale,"hours")}: {(i.metrics.lines*i.profile.standardKit.config.secondsPerConnection/3600).toFixed(1)} h</p>}
       {credits !== undefined && (
         <p data-testid="kit-credits">
           {t("credits")}: {credits}

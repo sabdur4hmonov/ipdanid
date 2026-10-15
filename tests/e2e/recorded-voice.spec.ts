@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import {

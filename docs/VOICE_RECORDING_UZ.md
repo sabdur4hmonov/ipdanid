@@ -11,7 +11,7 @@ To‘liq matnlar `docs/VOICE_RECORDING_LIST.csv` da: `clip_id, uz, ru, en`. Bo�
 - Har tilda 0–19, 20/30/40/50/60/70/80/90 va 100/200/300/400/500/600/700/800/900 alohida yoziladi: 37 ta son bo‘lagi.
 - 60 ta qisqa ibora ham ro‘yxatda bor: qadam, boshlang‘ich/keyingi mix, tugun, rang almashtirish, tasdiq, pauza, ta’mirlash, shablon va boshqa ko‘rsatmalar. Hammasi aynan CSVdagi matn bilan yoziladi.
 - Rus tilida qo‘shimcha `number-1f` («одна»), `number-2f` («две»), `thousand-few` («тысячи»), `thousand-many` («тысяч») kerak.
-- Har bir instruktor uchun UZ97, RU101, EN97 fayl: 295 ta. Ikkala instruktor va uch til to‘liq bo‘lsa **590 ta fayl**.
+- Sektorlar uchun A–Z harflari qo‘shildi: har bir instruktor uchun UZ123, RU127, EN123 fayl,373 ta. Ikkala instruktor va uch til to‘liq bo‘lsa **746 ta fayl**. Hozir haqiqiy yozuvlar0. Aniq CSVdagi `sector-a`…`sector-z` talaffuzini yozing; masalan B-17 ovozda “B, o‘n yetti” bo‘ladi. Raqamli mix indeksi JSONda saqlanadi, ovozda sektordagi1 dan boshlanuvchi son o‘qiladi.
 
 Yo‘l: `public/voices/<til>/<instruktor>/<clip_id>.wav`.
 

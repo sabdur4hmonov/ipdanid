@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 test("shape framing uses mouse/touch, reversible fit and immutable saved crop", async ({
   page,

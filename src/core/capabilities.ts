@@ -54,6 +54,7 @@ const cap = (
 export const CAPABILITIES: Readonly<
   Record<Instruction["algorithm"], Capability>
 > = Object.freeze({
+  "standard-accent/20": cap("outline",{modes:["dark"],shapes:["heart"],maximumSubjects:2,canContinue:false,experimental:true}),
   "classic-greedy/1": cap("classic", { modes: ["dark"], maximumSubjects: 3 }),
   "greedy-optical/1": cap("global", { render: "legacy-lines" }),
   "greedy-optical/2": cap("global", { render: "legacy-lines" }),

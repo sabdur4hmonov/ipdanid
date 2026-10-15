@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 
 async function openBackgroundOptions(page: import("@playwright/test").Page) {

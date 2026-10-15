@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync, writeFileSync } from "node:fs";
 import { rasterSequence } from "../../src/core/optical";
 test("face-protected hair-cycle guide imports as its immutable sequence and exports a complete PDF", async ({

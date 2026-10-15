@@ -1,4 +1,5 @@
 import type { AppScreenContext } from "../useAppController";
+import { pinLabel,sectorPin } from "../core/standard-kit";
 import { recordedVoiceText } from "../recorded-voice-i18n";
 type ScreenContext = Pick<
   AppScreenContext,
@@ -271,12 +272,12 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
           <div className="pin-route">
             <span>
               <small>{t("from")}</small>
-              {active?.from}
+              {active?pinLabel(instruction.profile,active.from):""}
             </span>
             <ArrowRight size={27} />
             <span>
               <small>{t("to")}</small>
-              {active?.to}
+              {active?pinLabel(instruction.profile,active.to):""}
             </span>
           </div>
           <div className="thread-color">
@@ -493,7 +494,7 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
         <h2>{t("pinSearch")}</h2>
         <input
           aria-label={t("pinSearch")}
-          type="number"
+          type={instruction.profile.standardKit?"text":"number"}
           min="0"
           max={instruction.profile.pins.length - 1}
           value={pinQuery}
@@ -503,14 +504,14 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
         <div className="occurrences">
           {pinQuery !== "" &&
             steps
-              .filter((s) => s.from === +pinQuery || s.to === +pinQuery)
+              .filter((s) => s.from === sectorPin(instruction.profile,pinQuery) || s.to === sectorPin(instruction.profile,pinQuery))
               .map((s) => (
                 <button
                   className="chip"
                   key={s.index}
                   onClick={() => jump(s.index)}
                 >
-                  {s.index}: {s.from} → {s.to}
+                  {s.index}: {s.fromLabel??s.from} → {s.toLabel??s.to}
                 </button>
               ))}
         </div>

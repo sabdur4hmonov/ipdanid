@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { validateInstruction } from "../../src/core/validation";
 async function reviewEveryPerson(page: import("@playwright/test").Page) {

@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 import { validateInstruction } from "../../src/core/validation";
 test("real physical Worker checkpoints survive reload; exact recovery, separate simplification, preview/player/export and old progress agree", async ({

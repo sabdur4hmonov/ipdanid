@@ -1,5 +1,5 @@
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { targetToSource } from "../../src/core/coordinates";
 
 test("manual outline keeps source coordinates, independent anatomy and per-photo ownership", async ({

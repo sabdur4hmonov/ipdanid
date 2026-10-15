@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 import { validateInstruction, progressFor } from "../../src/core/validation";
 test("global Worker bootstrap preserves comparison, cancellation, legal exports and separate confirmed progress", async ({

@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 async function reviewEveryPerson(page: import("@playwright/test").Page) {
   // Each person is confirmed separately (R2); one click no longer confirms a group.

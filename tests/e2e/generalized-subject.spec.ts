@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readdirSync, writeFileSync, readFileSync } from "node:fs";
 import { rasterSequence } from "../../src/core/optical";
 import { generateDensity } from "../../src/core/density";

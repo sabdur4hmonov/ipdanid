@@ -1,5 +1,5 @@
 import { unlockIfNeeded } from "./kit-access";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 import { createProfile } from "../../src/core/geometry";
 import { generate } from "../../src/core/engine";

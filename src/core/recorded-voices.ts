@@ -94,8 +94,18 @@ export function recordedStepEntries(
   from: number,
   to: number,
   start: "first" | "color" | undefined,
+  profile?: import("./types").MaterialProfile,
 ) {
-  return stepVoiceClips(voice.lang, step, from, to, start).map((id) => {
+  return stepVoiceClips(
+    voice.lang,
+    step,
+    from,
+    to,
+    start,
+    profile?.standardKit
+      ? { pins: profile.pins.length, count: profile.standardKit.config.sectors }
+      : undefined,
+  ).map((id) => {
     const c = voice.clips[id];
     if (!c) throw Error("Recorded phrase unavailable");
     return c;

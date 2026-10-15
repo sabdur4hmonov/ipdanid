@@ -1,5 +1,5 @@
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 test("manual facial sampling exposes small/clipped windows without blocking generation", async ({
   page,
 }) => {

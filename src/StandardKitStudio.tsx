@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState,useMemo } from "react";
-import type { Instruction, Locale, RegionBox,Shape } from "./core/types";
+import { useEffect, useRef, useState, useMemo } from "react";
+import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
-import { faceFill,type KitPreparation } from "./core/standard-preparation";
-import { DEFAULT_STANDARD_KIT,standardProfiles,type StandardKitConfig } from "./core/standard-kit";
+import { faceFill, type KitPreparation } from "./core/standard-preparation";
+import {
+  DEFAULT_STANDARD_KIT,
+  standardProfiles,
+  type StandardKitConfig,
+} from "./core/standard-kit";
 import { currentStandardKit } from "./standard-kit-settings";
 import { hash } from "./core/engine";
-import { qualityCurve,measuredKnee } from "./core/line-budget";
+import { qualityCurve, measuredKnee } from "./core/line-budget";
 import { download } from "./download";
 import { standardText } from "./standard-kit-i18n";
 import { PhotoActions } from "./PhotoActions";
@@ -29,9 +33,14 @@ export function StandardKitStudio({
 }) {
   const t = (k: Parameters<typeof standardText>[1]) => standardText(locale, k);
   const [source, setSource] = useState<HTMLCanvasElement>(),
-    [config,setConfig]=useState<StandardKitConfig>(structuredClone(DEFAULT_STANDARD_KIT)),
-    [shape,setShape]=useState<Shape>("circle"),
-    [recommendation,setRecommendation]=useState<ReturnType<typeof measuredKnee>>(),
+    [config, setConfig] = useState<StandardKitConfig>(
+      structuredClone(DEFAULT_STANDARD_KIT),
+    ),
+    [shape, setShape] = useState<Shape>("circle"),
+    [redAccent, setRedAccent] = useState(false),
+    [redColour, setRedColour] = useState("#b31e35"),
+    [recommendation, setRecommendation] =
+      useState<ReturnType<typeof measuredKnee>>(),
     [sourceId, setSourceId] = useState(""),
     [background, setBackground] = useState<BackgroundState>(),
     [faces, setFaces] = useState<RegionBox[]>([]),
@@ -40,7 +49,7 @@ export function StandardKitStudio({
     [prepared, setPrepared] = useState<{
       pixels: Uint8Array;
       canvas: HTMLCanvasElement;
-      proof:KitPreparation;
+      proof: KitPreparation;
     }>(),
     [reviewed, setReviewed] = useState(false),
     [result, setResult] = useState<Instruction>(),
@@ -54,8 +63,19 @@ export function StandardKitStudio({
     worker = useRef<Worker | null>(null),
     target = useRef<HTMLCanvasElement>(null),
     actual = useRef<HTMLCanvasElement>(null);
-  const profile=useMemo(()=>standardProfiles(config).find(p=>p.shape===shape)!,[config,shape]);
-  useEffect(()=>{let live=true;void currentStandardKit().then(c=>{if(live)setConfig(c);});return()=>{live=false;};},[]);
+  const profile = useMemo(
+    () => standardProfiles(config).find((p) => p.shape === shape)!,
+    [config, shape],
+  );
+  useEffect(() => {
+    let live = true;
+    void currentStandardKit().then((c) => {
+      if (live) setConfig(c);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
   useEffect(() => {
     void readOptimizerRecovery().then((r) => {
       if (r?.strategy === "classic") setRecovery(r);
@@ -74,7 +94,17 @@ export function StandardKitStudio({
     setReviewed(false);
     setResult(undefined);
     setRecommendation(undefined);
-  }, [source, background, faces, n, lines,config,shape]);
+  }, [
+    source,
+    background,
+    faces,
+    n,
+    lines,
+    config,
+    shape,
+    redAccent,
+    redColour,
+  ]);
   useEffect(() => {
     if (prepared && target.current) {
       target.current.width = n;
@@ -116,7 +146,7 @@ export function StandardKitStudio({
     }
   }
   async function prepare() {
-    const request=serial.current;
+    const request = serial.current;
     try {
       if (!source) throw Error();
       const transform = faceFill(
@@ -150,10 +180,30 @@ export function StandardKitStudio({
           { length: n * n * 3 },
           (_, k) => rgba[Math.floor(k / 3) * 4 + (k % 3)],
         );
-      const sourceHash=await hash(new Uint8Array(source.getContext("2d")!.getImageData(0,0,source.width,source.height).data));
-      if(request!==serial.current)return;
-      setPrepared({ pixels, canvas: c,proof:{version:"standard-preparation/1",sourceHash,sourceAspect:source.width/source.height,
-        whiteBackground:background?.enabled && background.mask?(background.status==="manual"?"manual":"automatic"):"original",transform} });
+      const sourceHash = await hash(
+        new Uint8Array(
+          source
+            .getContext("2d")!
+            .getImageData(0, 0, source.width, source.height).data,
+        ),
+      );
+      if (request !== serial.current) return;
+      setPrepared({
+        pixels,
+        canvas: c,
+        proof: {
+          version: "standard-preparation/1",
+          sourceHash,
+          sourceAspect: source.width / source.height,
+          whiteBackground:
+            background?.enabled && background.mask
+              ? background.status === "manual"
+                ? "manual"
+                : "automatic"
+              : "original",
+          transform,
+        },
+      });
       setReviewed(false);
       setResult(undefined);
       setError("");
@@ -193,6 +243,9 @@ export function StandardKitStudio({
             lines: budget,
             seed,
             accessPolicy: "kit-build/1",
+            redAccentColor:
+              resume?.redAccentColor ??
+              (shape === "heart" && redAccent ? redColour : undefined),
             edits: { ...DEFAULT_EDITS },
             name: t("title"),
           };
@@ -206,7 +259,9 @@ export function StandardKitStudio({
           const i = await validateInstruction(data.instruction);
           if (request !== serial.current) return;
           setResult(i);
-          setRecommendation(measuredKnee(qualityCurve(i,pixels)));
+          setRecommendation(
+            measuredKnee(qualityCurve(data.classicBody ?? i, pixels)),
+          );
           await clearOptimizerRecovery();
           setRecovery(undefined);
         } catch {
@@ -238,7 +293,10 @@ export function StandardKitStudio({
       lines: budget,
       mode: "dark",
       accessPolicy: "kit-build/1",
-      kitPreparation:resume?.seed?.params.kitPreparation??prepared?.proof,
+      kitPreparation: resume?.seed?.params.kitPreparation ?? prepared?.proof,
+      redAccentColor:
+        resume?.redAccentColor ??
+        (shape === "heart" && redAccent ? redColour : undefined),
       ...(resume?.seed ? { seed: resume.seed } : {}),
     });
   }
@@ -246,9 +304,75 @@ export function StandardKitStudio({
     <section className="card" data-testid="standard-kit-studio">
       <h1>{t("title")}</h1>
       <p>{t("hint")}</p>
-      <p>{config.baseMm}×{config.baseMm} mm · {config.nails} · {config.threadMm} mm · r{config.revision}</p>
-      <label>{t("shape")}<select aria-label={t("shape")} value={shape} onChange={e=>setShape(e.target.value as Shape)}>{(["circle","rectangle","heart"] as const).map(s=><option key={s} value={s}>{t(s)}</option>)}</select></label>
-      <details><summary>{t("config")}</summary><p>{t("profileNote")}</p>{(["sheet","tiles","stickers"] as const).map(kind=><button key={kind} onClick={()=>void (async()=>{try{const {standardKitPdf}=await import("./core/standard-kit-pdf");await download(`ip-rasm-standard-${kind}-r${config.revision}.pdf`,new Blob([new Uint8Array(await standardKitPdf(config,kind))],{type:"application/pdf"}));}catch{setError(t("error"));}})()}>{t(kind)}</button>)}</details>
+      <p>
+        {config.baseMm}×{config.baseMm} mm · {config.nails} · {config.threadMm}{" "}
+        mm · r{config.revision}
+      </p>
+      <label>
+        {t("shape")}
+        <select
+          aria-label={t("shape")}
+          value={shape}
+          onChange={(e) => setShape(e.target.value as Shape)}
+        >
+          {(["circle", "rectangle", "heart"] as const).map((s) => (
+            <option key={s} value={s}>
+              {t(s)}
+            </option>
+          ))}
+        </select>
+      </label>
+      {shape === "heart" && (
+        <>
+          <label>
+            <input
+              type="checkbox"
+              checked={redAccent}
+              onChange={(e) => setRedAccent(e.target.checked)}
+            />
+            {t("redAccent")}
+          </label>
+          {redAccent && (
+            <label>
+              {t("accentColour")}
+              <input
+                type="color"
+                value={redColour}
+                onChange={(e) => setRedColour(e.target.value)}
+              />
+            </label>
+          )}
+          <p>{t("accentNote")}</p>
+        </>
+      )}
+      <details>
+        <summary>{t("config")}</summary>
+        <p>{t("profileNote")}</p>
+        {(["sheet", "tiles", "stickers"] as const).map((kind) => (
+          <button
+            key={kind}
+            onClick={() =>
+              void (async () => {
+                try {
+                  const { standardKitPdf } =
+                    await import("./core/standard-kit-pdf");
+                  await download(
+                    `ip-rasm-standard-${kind}-r${config.revision}.pdf`,
+                    new Blob(
+                      [new Uint8Array(await standardKitPdf(config, kind))],
+                      { type: "application/pdf" },
+                    ),
+                  );
+                } catch {
+                  setError(t("error"));
+                }
+              })()
+            }
+          >
+            {t(kind)}
+          </button>
+        ))}
+      </details>
       <PhotoActions locale={locale} onPhoto={photo} />
       {source && (
         <>
@@ -384,9 +508,19 @@ export function StandardKitStudio({
           <canvas ref={actual} style={{ width: "100%", maxWidth: 600 }} />
           <p>
             {result.metrics.lines} · {result.metrics.estimatedMeters.toFixed(1)}{" "}
-            m · {t("hours")}: {((result.metrics.lines * (result.profile.standardKit?.config.secondsPerConnection??8)) / 3600).toFixed(1)}
+            m · {t("hours")}:{" "}
+            {(
+              (result.metrics.lines *
+                (result.profile.standardKit?.config.secondsPerConnection ??
+                  8)) /
+              3600
+            ).toFixed(1)}
           </p>
-          <p>{recommendation?.status==="measured"?`${t("recommended")}: ${recommendation.connections} · ${recommendation.hours.toFixed(1)} h`:t("pendingKnee")}</p>
+          <p>
+            {recommendation?.status === "measured"
+              ? `${t("recommended")}: ${recommendation.connections} · ${recommendation.hours.toFixed(1)} h`
+              : t("pendingKnee")}
+          </p>
           <button onClick={() => onGuide(result)}>{t("save")}</button>
         </>
       )}

@@ -46,7 +46,8 @@ export async function generateClassic(
       JSON.stringify(o.seed.profile) !== JSON.stringify(p) ||
       JSON.stringify(o.seed.params.portrait) !== JSON.stringify(o.portrait) ||
       JSON.stringify(o.seed.params.subject) !== JSON.stringify(o.subject) ||
-      JSON.stringify(o.seed.params.kitPreparation) !== JSON.stringify(o.kitPreparation) ||
+      JSON.stringify(o.seed.params.kitPreparation) !==
+        JSON.stringify(o.kitPreparation) ||
       o.seed.params.accessPolicy !== o.accessPolicy ||
       o.seed.metrics.lines > o.lines
     )
@@ -74,10 +75,10 @@ export async function generateClassic(
   const path = o.seed ? [...o.seed.segments[0].path] : [0];
   const distribution = new Distribution(p.pins.length, o.seed?.segments);
   const cache = new Map<number, Footprint>();
-  const legalCache = new Map<number,boolean>();
-  function legal(a:number,b:number) {
-    const key=Math.min(a,b)*p.pins.length+Math.max(a,b);
-    if(!legalCache.has(key))legalCache.set(key,connectionAllowed(p,a,b));
+  const legalCache = new Map<number, boolean>();
+  function legal(a: number, b: number) {
+    const key = Math.min(a, b) * p.pins.length + Math.max(a, b);
+    if (!legalCache.has(key)) legalCache.set(key, connectionAllowed(p, a, b));
     return legalCache.get(key)!;
   }
   let cacheBytes = 0,
@@ -137,7 +138,9 @@ export async function generateClassic(
       profile: structuredClone(p),
       segments: [{ color: p.colors[0], path: [...path] }],
       params: {
-        ...(o.kitPreparation?{kitPreparation:structuredClone(o.kitPreparation)}:{}),
+        ...(o.kitPreparation
+          ? { kitPreparation: structuredClone(o.kitPreparation) }
+          : {}),
         resolution: n,
         requestedLines: o.lines,
         mode: "dark",
@@ -175,11 +178,7 @@ export async function generateClassic(
     let best = -1,
       bestGain = 1e-12;
     for (let to = 0; to < p.pins.length; to++) {
-      if (
-        !legal(from, to) ||
-        !distribution.canChange([[from, to]])
-      )
-        continue;
+      if (!legal(from, to) || !distribution.canChange([[from, to]])) continue;
       const f = footprint(from, to);
       let gain = 0;
       for (let k = 0; k < f.pixels.length; k++) {

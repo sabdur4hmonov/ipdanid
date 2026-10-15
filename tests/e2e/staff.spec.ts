@@ -1,5 +1,5 @@
 import { openMore } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 test("owner issues scoped staff access, staff sees only duties, revocation blocks further access", async ({
   page,

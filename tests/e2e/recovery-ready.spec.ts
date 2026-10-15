@@ -1,5 +1,5 @@
 import { unlockIfNeeded } from "./kit-access";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./legacy-test";
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 const root = JSON.parse(
   readFileSync("output/portrait-resolved/candidate.json", "utf8"),

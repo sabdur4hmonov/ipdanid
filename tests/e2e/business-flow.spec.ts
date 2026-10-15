@@ -1,4 +1,4 @@
-import { test,expect } from "@playwright/test";
+import { test,expect } from "./legacy-test";
 let originalSettings: any;
 let announcementTitle: string | undefined;
 test.afterEach(async ({ request }) => {

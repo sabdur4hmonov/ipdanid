@@ -91,11 +91,11 @@ it("client pins trusted key, retains offline access and retries lost storage wri
     memory.set(k, v);
   });
   await expect(buildAccess.unlock(i)).rejects.toThrow("QuotaExceededError");
-  expect(s.kitBalance(a.id)).toBe(3);
+  expect(s.kitBalance(a.id)).toBe(2);
   expect(await buildAccess.allowed(i)).toBe(false);
   setter.mockImplementation((k, v) => memory.set(k, v));
   await buildAccess.unlock(i);
-  expect(s.kitBalance(a.id)).toBe(3);
+  expect(s.kitBalance(a.id)).toBe(2);
   expect(await buildAccess.allowed(i)).toBe(true);
   vi.mocked(customerApi.request).mockRejectedValueOnce(Error("offline"));
   expect(await buildAccess.allowed(i)).toBe(true);
@@ -107,13 +107,13 @@ it("client pins trusted key, retains offline access and retries lost storage wri
   // An online same-account retry restores the signed receipt with no charge.
   await expect(buildAccess.unlock(i)).rejects.toThrow("offline");
   await buildAccess.unlock(i);
-  expect(s.kitBalance(a.id)).toBe(3);
+  expect(s.kitBalance(a.id)).toBe(2);
   expect(await buildAccess.allowed(i)).toBe(true);
   key = setup().s.buildKey();
   await expect(
     buildAccess.unlock({ ...i, sequenceHash: "b".repeat(64) }),
   ).rejects.toThrow("build-access/key");
-  expect(s.kitBalance(a.id)).toBe(3);
+  expect(s.kitBalance(a.id)).toBe(2);
   expect(await buildAccess.allowed(i)).toBe(true);
 });
 it("opt-in access policy changes only bound metadata; legacy exact guides remain valid", async () => {

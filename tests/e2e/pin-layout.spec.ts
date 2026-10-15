@@ -1,6 +1,6 @@
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { generate } from "../../src/core/engine";
 import { createProfile } from "../../src/core/geometry";
 import { circleLayout, withCircleLayout } from "../../src/core/pin-layout";

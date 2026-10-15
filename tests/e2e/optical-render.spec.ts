@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { generateDensity } from "../../src/core/density";
 import { createProfile } from "../../src/core/geometry";
 import { withPinBasis } from "../../src/core/pin-basis";

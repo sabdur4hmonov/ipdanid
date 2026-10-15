@@ -1,5 +1,5 @@
 import { unlockIfNeeded } from "./kit-access";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./legacy-test";
 import { readFileSync, readdirSync } from "node:fs";
 import { validateInstruction } from "../../src/core/validation";
 import { makeSubjectPlan } from "../../src/core/subject-plan";

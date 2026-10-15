@@ -52,7 +52,7 @@ it("exact UZ/RU/EN recordings cover every guide step0–20000 and Russian thousa
   expect(spoken("en", 20000)).toBe("twenty thousand");
   for (const lang of VOICE_LANGUAGES) {
     const clips = requiredVoiceClips(lang);
-    expect(Object.keys(clips)).toHaveLength(lang === "ru" ? 101 : 97);
+    expect(Object.keys(clips)).toHaveLength(lang === "ru" ? 127 : 123);
     for (let n = 0; n <= 20000; n++)
       expect(
         numberVoiceClips(lang, n).every((id) => typeof clips[id] === "string"),

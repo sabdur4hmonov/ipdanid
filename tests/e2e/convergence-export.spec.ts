@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './legacy-test';
 import {readFileSync} from 'node:fs';
 test('complete 24-sweep path has exact zero-progress player and JSON/TXT/PNG/PDF exports',async({page},info)=>{
  test.setTimeout(180000);const file=JSON.parse(readFileSync('output/resolved-convergence/final.json','utf8')),i=file.project.instruction;

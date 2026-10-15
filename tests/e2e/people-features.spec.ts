@@ -1,5 +1,5 @@
 import { revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { existsSync } from "node:fs";
 import { DEFAULT_EDITS } from "../../src/core/types";
 import { sourceToTarget } from "../../src/core/coordinates";

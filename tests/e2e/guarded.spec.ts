@@ -2,7 +2,7 @@ import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { mkdirSync } from "node:fs";
 mkdirSync("output/guarded", { recursive: true });
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync } from "node:fs";
 import { validateInstruction, progressFor } from "../../src/core/validation";
 for (const solver of ["guarded", "multiscale"] as const)

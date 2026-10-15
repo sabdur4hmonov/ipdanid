@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync, existsSync } from "node:fs";
 const fixture = "output/white-background/source.png";
 const upload = (page: import("@playwright/test").Page) =>

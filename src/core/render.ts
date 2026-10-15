@@ -78,11 +78,11 @@ export function renderInstruction(
       ctx.beginPath();
       ctx.arc(x, y, 24, 0, Math.PI * 2);
       ctx.fill();
-      ctx.font = "bold 24px sans-serif";
+      ctx.font = p.standardKit?"bold 17px sans-serif":"bold 24px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "white";
-      ctx.fillText(String(pin.id), x, y);
+      ctx.fillText(pin.sectorLabel??String(pin.id), x, y);
     });
   }
 }

@@ -39,6 +39,7 @@ export interface PortraitSettings {
 }
 export interface Pin {
   id: number;
+  sectorLabel?: string;
   x: number;
   y: number;
 }
@@ -88,6 +89,7 @@ export interface Segment {
 export interface Instruction {
   schema: "iprasm.instruction/1";
   algorithm:
+    | "standard-accent/20"
     | "classic-greedy/1"
     | "greedy-optical/1"
     | "greedy-optical/2"
@@ -115,6 +117,7 @@ export interface Instruction {
   profile: MaterialProfile;
   segments: Segment[];
   params: {
+    accent?:{version:"legal-heart-accent/1";bodySequenceHash:string;bodyParams:Instruction["params"];bodyConnections:number;redConnections:number};
     kitPreparation?: import("./standard-preparation").KitPreparation;
     accessPolicy?: "kit-build/1";
     resolution: number;
@@ -135,7 +138,7 @@ export interface Instruction {
       features?: import("./feature-contrast").FeatureContrastSettings;
       texture?: import("./local-texture").LocalTextureSettings;
       subjectObjective?: import("./subject-objective").SubjectObjectiveSettings;
-      kind?: "density-coordinate" | "optical-coordinate" | "glyph-outline";
+      kind?: "density-coordinate" | "optical-coordinate" | "glyph-outline" | "standard-accent";
       order?: "dispersed-v1";
       overshoot?: "target-luminance-v1";
       pairLimit?: 32;
@@ -230,6 +233,8 @@ export interface Instruction {
   };
 }
 export interface Step {
+  fromLabel?:string;
+  toLabel?:string;
   index: number;
   from: number;
   to: number;

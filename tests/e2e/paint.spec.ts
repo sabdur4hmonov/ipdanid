@@ -1,5 +1,5 @@
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync, mkdirSync } from "node:fs";
 import {
   validatePaintProject,

@@ -33,6 +33,12 @@ export function flatten(instruction: Instruction): Step[] {
         index: steps.length + 1,
         from: s.path[i],
         to,
+        ...(instruction.profile.standardKit
+          ? {
+              fromLabel: instruction.profile.pins[s.path[i]].sectorLabel,
+              toLabel: instruction.profile.pins[to].sectorLabel,
+            }
+          : {}),
         color: s.color,
         segment,
         segmentStart: i === 0,

@@ -80,7 +80,7 @@ export function AssemblyNavigator({
             onClick={() => onJump(step.index)}
           >
             <strong>{step.index}</strong>
-            <i style={{ background: step.color }} /> {step.from} → {step.to}
+            <i style={{ background: step.color }} /> {step.fromLabel??step.from} → {step.toLabel??step.to}
             {step.segmentStart ? " •" : ""}
           </button>
         ))}

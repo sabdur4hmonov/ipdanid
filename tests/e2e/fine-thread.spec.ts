@@ -1,5 +1,5 @@
 import { openMore, revealControl } from "./navigation";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./legacy-test";
 import { readFileSync, writeFileSync } from "node:fs";
 test("real fine-thread guide retains exact material, progress and reusable preset", async ({
   page,
