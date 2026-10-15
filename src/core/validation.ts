@@ -32,6 +32,7 @@ export async function validateInstruction(
   if (
     i.schema !== "iprasm.instruction/1" ||
     ![
+      "classic-greedy/1",
       "greedy-optical/1",
       "greedy-optical/2",
       "greedy-optical/3",
@@ -57,6 +58,7 @@ export async function validateInstruction(
   if (i.params?.subject !== undefined)
     validSubjectPlan(i.params.subject, i.params.portrait);
   const qualityFirst = [
+      "classic-greedy/1",
       "greedy-optical/4",
       "density-optical/5",
       "continuous-guarded/6",
@@ -163,6 +165,11 @@ export async function validateInstruction(
   )
     throw Error("Missing multiple portrait regions");
   validateProfileLayout(p);
+  if (i.algorithm === "classic-greedy/1" &&
+      (p.baseColor.toLowerCase() !== "#ffffff" || p.colors.length !== 1 ||
+       i.segments?.length !== 1 || i.params?.mode !== "dark" ||
+       i.params.optimization?.lookahead !== 0 || i.params.optimization.coarseScale !== 1 ||
+       i.params.optimization.minimumRelativeGain !== 0)) throw Error("Invalid classic contract");
   if (p.glyphLayout || i.algorithm === "glyph-outline/19")
     await validateGlyphInstruction(i);
   if (i.params?.product) {
@@ -258,6 +265,7 @@ export async function validateInstruction(
     throw new Error("Invalid generation parameters");
   if (
     [
+      "classic-greedy/1",
       "continuous-guarded/6",
       "group-optical/15",
       "density-multiscale/7",
@@ -766,6 +774,10 @@ export async function validateInstruction(
         ? i.params.optimization.lookahead !== 8 ||
           i.params.optimization.coarseScale !== 4 ||
           i.params.optimization.minimumRelativeGain !== 1e-7
+        : i.algorithm === "classic-greedy/1"
+          ? i.params.optimization.lookahead !== 0 ||
+            i.params.optimization.coarseScale !== 1 ||
+            i.params.optimization.minimumRelativeGain !== 0
         : i.algorithm === "glyph-outline/19"
           ? i.params.optimization.kind !== "glyph-outline" ||
             i.params.optimization.lookahead !== 0 ||
@@ -905,6 +917,7 @@ export function mergeProgress(
 }
 export function toTxt(i: Instruction): string {
   const knots = [
+    "classic-greedy/1",
     "glyph-outline/19",
     "density-optical/5",
     "continuous-guarded/6",

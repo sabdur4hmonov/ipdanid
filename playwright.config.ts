@@ -25,6 +25,10 @@ for (const name of ["LOCAL_ADMIN_TOKEN", "CODE_PEPPER", "SANDBOX_PAYMENT_KEY"]) 
 process.env.IP_RASM_TEST_API_URL = `http://127.0.0.1:${apiPort}`;
 process.env.IP_RASM_BUSINESS_TEST = "isolated";
 const channel = process.env.IP_RASM_TEST_BROWSER_CHANNEL;
+const previewDir = process.env.IP_RASM_TEST_WEB_DIR || "dist";
+if (!/^[a-zA-Z0-9_./-]+$/.test(previewDir) || previewDir.includes(".."))
+  throw Error("Invalid test web directory");
+assertTestDatabasePath(join(resolve(previewDir), "preview-safety.sqlite"));
 if (channel && !["chrome", "msedge"].includes(channel))
   throw Error("IP_RASM_TEST_BROWSER_CHANNEL must be chrome or msedge");
 export default defineConfig({
@@ -57,7 +61,7 @@ export default defineConfig({
       reuseExistingServer: false,
     },
     {
-      command: `npm run preview -- --port ${previewPort} --strictPort`,
+      command: `npm run preview -- --outDir ${previewDir} --port ${previewPort} --strictPort`,
       env: { IP_RASM_BACKEND_PROXY: `http://127.0.0.1:${apiPort}` },
       url: `http://127.0.0.1:${previewPort}`,
       reuseExistingServer: false,

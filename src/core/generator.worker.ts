@@ -1,4 +1,5 @@
 import { refineHairCycles } from "./hair-cycles";
+import { generateClassic } from "./classic";
 import { DEFAULT_FEATURE_CONTRAST } from "./feature-contrast";
 import { DEFAULT_LOCAL_TEXTURE } from "./local-texture";
 import {
@@ -39,7 +40,7 @@ self.onmessage = async ({ data }) => {
     if (
       data.portrait?.enabled &&
       data.portrait.people &&
-      !["continuous", "guarded", "simplify", "subjects"].includes(data.strategy)
+      !["continuous", "guarded", "simplify", "subjects", "classic"].includes(data.strategy)
     )
       throw Error(
         "Multiple portraits currently require the guarded continuous solver; experimental objectives are separate",
@@ -112,7 +113,9 @@ self.onmessage = async ({ data }) => {
         { ...options, seed: cycleSeed },
         await hash(options.pixels),
       );
-    const instruction = cycleSeed
+    const instruction = data.strategy === "classic"
+      ? await generateClassic({ ...options, onCheckpoint: (instruction) => self.postMessage({type:"checkpoint",jobId:data.jobId,instruction}) })
+      : cycleSeed
       ? cycleSeed
       : data.strategy === "simplify"
         ? await simplifySequence(data.seed, data.pixels, {

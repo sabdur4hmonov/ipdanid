@@ -93,3 +93,9 @@ APKda yangi pullik kitni ochish uchun ishlab chiqarish HTTPS serveri va ishonchl
 ## 2026-10-15 — sinash uchun ilova ochildi
 
 http://127.0.0.1:4194/ brauzerda ochildi, hozirgi build ishlayapti. Eski bazangizga tegmaslik uchun bu ishga tushirishda alohida sinov bazasi ishlatildi: serverdagi hisob va kit kreditlari oldingi bazangizdan olinmagan. Yaratish → surat yuklashdan boshlang. Kod bilan ochish uchun keyin shu sinov bazasiga tegishli kit kodi kerak bo‘ladi. Avvalgi qurilmaga saqlangan loyihalarni ko‘rish uchun o‘sha eski brauzer profilidan foydalaning.
+
+## 2026-10-15 — 8-bosqich standart kit
+
+Yangi buildda Yaratish oynasi “Standart kit”dan boshlanadi; oldingi vositalarga alohida tugma bor. Surat yuklang: oq fon avtomatik tayyorlanadi, ishlamasa xato va asl surat ochiq qoladi. Haqiqiy yuzlarni tekshiring yoki chegarasini qo‘shing, yuzni to‘ldirib joylang va kesish/oq fonni tasdiqlang. Tayyor nishon va haqiqiy ip natijasi alohida. Saqlash odatdagi kit qulfini ochadi; qadam0 dan boshlanadi. Hozir ochiq4194 ilova eski buildda qoldirilgan; agent yangi buildni boshqa portlarda tekshiryapti.
+
+Classic A/B umumiy xatoni kamaytirdi, ammo eski egasi nishonida burun hududini yomonlashtirdi; sifat g‘olibi tasdiqlanmagan. O‘lchangan tizza1500 ulanish,2000–3000 hali qabul qilingan tavsiya emas. Haqiqiy yangi kesish va ikki odamli yurak uchun egasi qabul sinovi kerak.

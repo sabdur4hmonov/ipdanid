@@ -2,6 +2,7 @@ import type { Instruction, Locale, Shape } from "./types";
 import type { SubjectKind, SubjectPlan } from "./subject-plan";
 import { baseLocale, scriptText } from "../uzbek-script";
 export type GenerationStrategy =
+  | "classic"
   | "continuous"
   | "guarded"
   | "global"
@@ -53,6 +54,7 @@ const cap = (
 export const CAPABILITIES: Readonly<
   Record<Instruction["algorithm"], Capability>
 > = Object.freeze({
+  "classic-greedy/1": cap("classic", { modes: ["dark"], maximumSubjects: 3 }),
   "greedy-optical/1": cap("global", { render: "legacy-lines" }),
   "greedy-optical/2": cap("global", { render: "legacy-lines" }),
   "greedy-optical/3": cap("global"),

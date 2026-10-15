@@ -1,4 +1,9 @@
 import type { Locale, Project, Shape } from "./core/types";
+import { lazy, Suspense, useState } from "react";
+import { standardText } from "./standard-kit-i18n";
+const StandardKitStudio = lazy(() =>
+  import("./StandardKitStudio").then((m) => ({ default: m.StandardKitStudio })),
+);
 
 import { useAppController } from "./useAppController";
 import { MoreMenu } from "./screens/MoreMenu";
@@ -7,6 +12,7 @@ import { AssembleScreen } from "./screens/AssembleScreen";
 import { LibraryScreen } from "./screens/LibraryScreen";
 import { MoreScreen } from "./screens/MoreScreen";
 export default function App() {
+  const [standard, setStandard] = useState(true);
   const context = useAppController();
   const {
     Announcements,
@@ -239,7 +245,38 @@ export default function App() {
               }}
             />
           )}
-          {view === "create" && <CreateScreen context={context} />}
+          {view === "create" && (
+            <>
+              <button
+                className="outline"
+                data-testid="create-mode"
+                onClick={() => setStandard((v) => !v)}
+              >
+                {standardText(locale, standard ? "legacy" : "standard")}
+              </button>
+              {standard ? (
+                <Suspense fallback={<p>…</p>}>
+                  <StandardKitStudio
+                    locale={locale}
+                    onGuide={(i) => {
+                      if (!loaded) return;
+                      const p: Project = {
+                        id: crypto.randomUUID(),
+                        name: standardText(locale, "title"),
+                        instruction: i,
+                        progress: progressFor(i),
+                        edits: { ...DEFAULT_EDITS },
+                      };
+                      setProjects((ps) => [p, ...ps]);
+                      open(p);
+                    }}
+                  />
+                </Suspense>
+              ) : (
+                <CreateScreen context={context} />
+              )}
+            </>
+          )}
           {view === "assemble" && <AssembleScreen context={context} />}
           {view === "library" && <LibraryScreen context={context} />}
           {view === "materials" && <MoreScreen context={context} />}

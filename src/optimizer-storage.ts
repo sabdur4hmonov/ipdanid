@@ -21,7 +21,7 @@ export interface OptimizerRecovery {
   pixels: Uint8Array;
   lines: number;
   strategy:
-    "physical" | "anatomy" | "basis" | "features" | "texture" | "subjects";
+    "physical" | "anatomy" | "basis" | "features" | "texture" | "subjects" | "classic";
   headRefine?: boolean;
   hairSeed?: Instruction;
   head?: import("./core/head-importance").HeadImportance;

@@ -87,6 +87,7 @@ export interface Segment {
 export interface Instruction {
   schema: "iprasm.instruction/1";
   algorithm:
+    | "classic-greedy/1"
     | "greedy-optical/1"
     | "greedy-optical/2"
     | "greedy-optical/3"
