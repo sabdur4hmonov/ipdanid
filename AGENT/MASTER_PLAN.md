@@ -26,6 +26,10 @@ Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQL
 6. When the owner writes only "continue" / "davom et": do step 1, then continue from the exact next step.
 7. When ALL phases are done or blocked only by owner inputs: write the final Uzbek summary into `AGENT/FINAL_REPORT.md` and in chat.
 
+## PHASE 10 — reference classic generation and ordinary-photo repair (2026-10-16)
+
+The owner's urgent request authorizes a new `classic-greedy/2` default, independently of the rejected Phase8/9 96px trials. Preserve `/1`, old material contracts, hashes and guides. First reproduce the real JPG gallery flow on isolated desktop/mobile servers. Port provided reference DDA/residual arithmetic, fixed2500 budget and defaults, exact kit pins/sectors, Worker progress/cancel/recovery. Port people-mask/grayscale/CLAHE2(8x8)/masked1–99 stretch/unsharp2/.6 and reviewed70% head framing to TS/canvas; show target before generation. Use versioned physical1000px/.12mm/.9 coverage consistently for preview/player/PDF, one immutable legal sequence for all exports. Verify three original synthetic portraits and existing private owner crop against the reference, actual UI timings and visual comparison in ignored output/phase10/report.html. Acceptance requires recognizable results and <15s generation; never report unexecuted checks as passed. Run tests, isolated build, preserved/signer-verified APK and fresh isolated preview with URL/code in ignored manual-testing.txt. Commit progress/log at each milestone. Never commit photos/output/secrets or touch tmp/data/4194/live assets.
+
 ## 2. Hard rules
 
 - Git: work on branch `feat/full-roadmap` (create it from `feat/r1-r2-subjects` if it does not exist). Commit per milestone. NO push, reset, rebase, `git clean`, force, or history rewrite. Never commit `tmp/`, `output/`, photos, secrets, DB files.
