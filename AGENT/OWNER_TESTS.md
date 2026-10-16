@@ -186,5 +186,17 @@ Yangi ilova: http://127.0.0.1:4197/ Kod: output/phase11/manual-testing.txt (3ta 
 Phase11 APK: `output/mobile/ip-rasm-phase11-20261016-46bc061bd5c2-debug.apk`.35.99MB, imzo va43fayl tekshirildi;79oldingi APK o‘z holida. Telefonga agent o‘rnatmagan. To‘liq kod/kredit sinovi uchun yangi http://127.0.0.1:4197/ manzilidan foydalaning.
 
 
-## Phase12 — sodda uch ekran (tayyorlanmoqda)
-Yangi manzil output/phase12/manual-testing.txt da bo‘ladi.1)Galereyadan tanlash yoki Rasmga olish, Doira/Kvadrat/Yurak.2)Suratni bevosita suring, ikki barmoq/g‘ildirak/slider bilan kattalashtiring; Burish90°, Qaytarish avtomatik joylashuvga. Oldin/Keyin, Yelkani ko‘rsatish, Yaratish.3)Haqiqiy natija, vaqt, Yig‘ishni boshlash/PDF/Qayta moslash. Oxirgisi joylashuvni saqlasin. Oddiy yo‘lda boshqa sozlama yo‘q; eski vositalar Menyu→Mutaxassis rejimi ichida.
+## Phase12 — sodda uch ekran
+
+Yangi manzil va uchta yig‘ish kodi: `output/phase12/manual-testing.txt` (yakuniy ishga tushirishdan keyin). Oldingi4194–4197 sahifalari o‘z holida qoladi.
+
+1. Bosh ekranda faqat **Galereyadan tanlash**, **Rasmga olish**, **Doira / Kvadrat / Yurak** bo‘lsin. Doira dastlab tanlangan. Kit o‘lchamlari yoki murakkab sozlamalarni ochish shart emas.
+2. Portret tanlang: **Moslash** o‘zi ochiladi. Surat darhol ko‘rinsin, keyin fon oqartirilsin. Sochdan iyakkacha bosh katta bo‘lsin. Yurakdagi ikki odam bittadan yuqori bo‘lakka joylashsin. Aniqlanmagan yuz uchun tiniqroq surat tanlang; ilova yuzni o‘zi to‘qimaydi.
+3. Surat ustida barmoq/sichqoncha bilan suring. Ikki barmoq, g‘ildirak yoki pastdagi kattalashtirish bilan o‘lchamini o‘zgartiring. **Burish**90° aylantirsin, **Qaytarish** avtomatik joylashuvni qaytarsin. Yurak juftligida kerakli boshni bosib alohida suring.
+4. **Oldin / Keyin** asl rangli surat va tayyor qora-oq nishonni shu joylashuvda ko‘rsatsin. **Yelkani ko‘rsatish** dastlab o‘chiq: iyak osti oq, eski katta qora uchburchaklar bo‘lmasin. Soch/iyak chegarasini tekshiring, kerak bo‘lsa joylashuvni moslang.
+5. **Yaratish**ni bosing. Hech narsa moslamasangiz, galereya tugmasi + fayl tanlash + yaratish bilan natijaga yeting. Natijada katta ip rasmi va **3000 ip · ~6.7 soat** ko‘rinsin. Bu8soniya/ulanish taxmini; haqiqiy yig‘ish tezligi farq qiladi.2500/3000 solishtirishda3000 aniqroq topildi. Faqat kerak bo‘lsa kichik **Batafsil**da2000/2500/3000ni tanlash mumkin.
+6. **Qayta moslash** oldingi surish/kattalashtirish/burishni saqlasin. O‘zgartirmay qayta yaratsangiz aynan o‘sha ip natijasi chiqsin. Tilni Menyuda UZ lotin / UZ kirill / RU / EN orasida almashtirib ko‘ring. Eski vositalar **Menyu → Mutaxassis rejimi**da.
+7. **PDF yuklab olish** yoki **Yig‘ishni boshlash**ni bosing. Yangi mahalliy kit kodi bilan kiring, bitta natijani oching. PDF va player bir xil mix/sektor/qadamni ko‘rsatsin (masalanB-17), birinchi qadamdan boshlang. Bitta natijani qayta ochish yana kredit sarflamasin. Ruxsat olingach player shu qurilmada oflayn ishlasin.
+8. Natijalarni `output/phase12/report.html`da teng o‘lchamda solishtiring; ekranlar `output/phase12/screens/`da. Egasi surati avvalgi lokal320px ishlov berilgan nusxa; haqiqiy telefon, yangi asl surat va taxtada o‘zingiz tekshiring. Chop etishda100%/Actual size va50mm belgini tekshirish, mix/sektor andozasi avvalgidek.3000ip uchun haqiqiy kerakli ip uzunligini PDFdan tekshiring; kit zaxirasi yetishini tasdiqlang.
+
+APK/manzil va yakuniy sinov natijalari ish tugagach shu yerga yoziladi. Native ishlab chiqarish serveri hali sozlanmagan; to‘liq kod/kredit tekshiruvi yangi brauzer manzilida. Agent telefonga o‘rnatmaydi.

@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase12 ACTIVE. All6customer browser cases passed; final30raw27pass/3fail, fixes ready. Bounded local-worker restart4/4unit, TypeScript and1974module final build pass. Next14isolated recovery browser checks, full261unit/PDF/APK/newpreview. Old4194–4197 untouched.
+Last update:2026-10-17 — Phase12 ACTIVE. Recovery14/14browser passed7.5min; 38unique latest cases including6A/B, old failures retained. Final TypeScript/build1974 and4retryunit pass. Next full261unit, refresh2PDF/report, then APK/newpreview. Protected4194–4197/data untouched.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -32,7 +32,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-PHASE12 ACTIVE: final30raw27pass/3fail10.6min; all6customer cases passed. Fixed rawsecondContext kit helper and actual localWorker startup resilience (only one bounded infrastructure retry, never semantic/aborted). New4retryunit pass (phase12-worker-retry-unit.json), TypeScript and1974module final build pass (32001). Commit this milestone before14fresh recovery cases:8customer incl actual injected Workercrash+4kit+2oldphoto on4345/API4489. Then full261unit, exact2PDF check, APK preservation/signer/package, fresh4198/API4480/code and finaldocs. No protectedports/assets/tmpdata touched.
+PHASE12 ACTIVE: fresh4345/API4489 recovery14/14passed7.5min (phase12-recovery-final/report.json):8customer incl actual injected localWorker crash recovery,4kit signed/offline/device/admin,2oldstandardrealJPG. Both3tapauto paths/4locales/actualgestures/exactreset/retainedregeneration/signedPDF pass. Latest customer generation desktop/mobile below15s (mobile11.780s). Raw prior30report27/3 retained; aggregate must combine latest distinct outcomes, not claim cleanfullhistory. Next full261unit without Chrome, refresh2PDF exactcover+allsteps/report, aggregate38latest, then preserve/signature/package APK and new4198/API4480/code/finaldocs. Build1974already final; no rebuildlive olddirs.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 
