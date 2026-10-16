@@ -40,8 +40,13 @@ else:
 for p in [Path(f'output/phase10/inputs/synthetic-{j}.png') for j in [1, 2, 3]] + [Path('output/portrait-dispatch/target-320.png')]:
     sources.append(dict(path=str(p), sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
 review = json.loads((root / 'visual-review.json').read_text()) if (root / 'visual-review.json').exists() else None
+supplemental = []
+for project in ['desktop', 'mobile-browser']:
+    case = root / project / 'synthetic-1-heart'
+    if (case/'result.json').exists():
+        supplemental.append(dict(**json.loads((case/'result.json').read_text()), directory=f'{project}/synthetic-1-heart'))
 (root / 'results.json').write_text(json.dumps(dict(rows=rows, sources=sources, frozenPhase10Controls=controls,
-    visualReview=review), indent=2))
+    visualReview=review, supplementalSingleHeart=supplemental), indent=2))
 html = ['<!doctype html><meta charset="utf-8"><title>Phase11 — portrait framing</title>',
         '<style>body{font:16px system-ui;margin:24px;color:#18334e}img{width:100%;max-width:1600px}article{margin:32px 0}code{overflow-wrap:anywhere}</style>',
         '<h1>Phase11 — real UI old/new framing</h1>',
@@ -61,6 +66,13 @@ for r in rows:
              f'<img src="{r["directory"]}/old-new.png" alt="Old target, new target, old thread, new thread at equal size">',
              f'<p><a href="{r["directory"]}/guide.json">JSON</a> · <a href="{r["directory"]}/guide.pdf">PDF</a> · '
              f'<a href="{r["directory"]}/screen.png">Actual UI</a></p></article>']
+for r in supplemental:
+    html += [f'<article><h2>Supplementary single Heart3000 / {escape(r["project"])}</h2>',
+             '<p>No Phase10 single-Heart UI capture exists. This is additional framing/physical sequence evidence, '
+             'not an old/new likeness comparison. Head height65%, centred in upper portion; the physical notch clips the centre of the hair. '
+             f'3000 real connections, UI generation {r.get("uiGenerationMs")}ms; passed {r.get("passed",False)}.</p>',
+             f'<img style="width:45%;max-width:500px" src="{r["directory"]}/target.png" alt="Single Heart prepared target">',
+             f'<img style="width:45%;max-width:500px" src="{r["directory"]}/app.png" alt="Single Heart actual3000 thread sequence"></article>']
 (root / 'report.html').write_text('\n'.join(html), encoding='utf-8')
 print(json.dumps(dict(cases=len(rows), passed=sum(r.get('passed', False) for r in rows),
                      maxUiMs=max((r.get('uiGenerationMs', 0) for r in rows), default=0))))

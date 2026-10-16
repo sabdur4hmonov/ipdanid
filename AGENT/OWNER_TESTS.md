@@ -171,3 +171,13 @@ Tuzatish4195ga qo'yildi va yangi fayllar tekshirildi. Sahifani yangilang, suratn
 
 ## Phase11 — kattaroq bosh joylashuvi (tayyorlanmoqda)
 Yangi manzil yakuniy sinovdan keyin output/phase11/manual-testing.txt da bo‘ladi. Surat yuklang: tayyor nishonda bosh kattaroq, iyak osti oq bo‘lishi kerak. “Yelkani qoldirish”ni yoqib/o‘chirib solishtiring; har bir yuzni kattalashtirish va chap/o‘ng, yuqori/past surish mumkin. Heart juftligida yuzlar ikki yuqori bo‘lakda bo‘lsin. “Ip soni”2000/2500/3000: taxmin4.4/5.6/6.7soat. Har o‘zgarishdan keyin nishonni qayta tasdiqlang.
+
+### Phase11 — egasi uchun tekshirish tartibi
+
+1. `output/phase11/manual-testing.txt` dagi **yangi** manzilni oching. Shu fayldagi3-yig‘ish kodi yangi alohida sinov hisobi uchun. Eski4194/4195/4196 sahifalarini yangilash shart emas.
+2. “Galereyadan yuklash” orqali yuz va soch to‘liq ko‘ringan portret tanlang. Yuklangan surat darhol ko‘rinsin. Oq fon tayyor bo‘lgach, tayyor nishonni tekshiring: Circle/Square’da bosh katta, markazdan sal yuqorida bo‘lsin. Asl suratdagi kesilgan soch qayta yaratilmaydi.
+3. “Yelkani qoldirish” dastlab o‘chiq: belgilangan iyak osti silliq oqarsin. Uni yoqib/o‘chirib solishtiring. Har yuzning “Kattalashtirish”, “Chap / o‘ng”, “Yuqori / past” boshqaruvi bor. Iyak noto‘g‘ri aniqlansa asl suratdagi yuz chegarasini ham tuzating; tayyor nishon tasdiqlashdan oldin ko‘rinadi.
+4. Heart’da ikki kishilik surat tanlang: har bosh bittadan yuqori bo‘lakda, iyaklar o‘rta chiziqqa yaqin bo‘lsin. Har yuzni alohida surish/kattalashtirish mumkin. Bitta odamda bosh yuqori2/3 qismini egallasin. Haqiqiy iplar shakl bo‘ylab tortilgani uchun nishondagi oq joyda ham ayrim uzun chiziqlar bo‘lishi mumkin.
+5. “Ip soni”:2000≈4.4soat,2500≈5.6soat,3000≈6.7soat (har ulanishga8soniya taxmin). Dastlab2500. Yuz/fon/kesishni tasdiqlang, hisoblang. Ko‘rsatilgan natija haqiqiy0.12mm ip ketma-ketligi; tayyor surat ustiga chizilgan bezak emas.
+6. Saqlash → yangi sinov kodi bilan kirish → bitta natijani ochish. Yo‘riqnoma ko‘rsatgan birinchi mixdan boshlang. Keyingi qadamni bosmaguncha progress0 bo‘lsin. Sektor belgisi, masalanB-17, player/PDF/TXT/JSON’da bir xil bo‘lsin. PDF muqovasi ilovadagi natijaga mos kelsin.
+7. `output/phase11/report.html` da eski/yangi nishon va ip natijasini teng o‘lchamda solishtiring. APK ham alohida beriladi; agent telefonga o‘rnatmagan. Native kit serveri sozlanmaguncha to‘liq kod/kredit sinovini yangi brauzer manzilida bajaring. Chop qilishda oldingi50mm o‘lchov/andaza/mix-sektor tekshiruvi o‘z kuchida.

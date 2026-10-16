@@ -3,6 +3,7 @@ const paths = [
   "test-results/phase11-acceptance-v1/report.json",
   "test-results/phase11-final-regression/report.json",
   "test-results/phase11-single-heart/report.json",
+  "test-results/phase11-circle-final/report.json",
 ];
 const latest = new Map(),
   runs = [];
@@ -41,9 +42,10 @@ const summary = {
   latestUniqueBrowserCases: rows.length,
   allLatestPassed: true,
   fullUnitPassed: unit.numPassedTests,
+  fullUnitFiles: unit.testResults.length,
   runs,
   rows,
-  note: "Three isolated runs:12 actual portrait comparisons,24 focused regressions,6 final supplemental cases (Circle/pair exact before-after cache parity plus single-Heart3000 on both devices).38unique latest outcomes because4 repeat. No full historical200-case suite claim.",
+  note: "Four isolated runs:12 actual comparisons,24 focused regressions,6 cache-parity/single-Heart3000 cases,2 final Circle reruns. The first supplemental desktop Circle timed29.588s while full units ran concurrently; pixel/path parity passed, but timing failed. Final Circle reruns run alone and must pass<15s.38unique latest outcomes; no uninterrupted/full historical200-case suite claim.",
 };
 writeFileSync(
   "test-results/phase11-final/summary.json",
