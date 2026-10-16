@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase12 ACTIVE. Recovery14/14browser passed7.5min; 38unique latest cases including6A/B, old failures retained. Final TypeScript/build1974 and4retryunit pass. Next full261unit, refresh2PDF/report, then APK/newpreview. Protected4194–4197/data untouched.
+Last update:2026-10-17 — Phase12 ACTIVE. Full261/261unit(73files/84suites,509.8s), aggregate38/38latest browser outcomes,2exact3000step PDFs, final1974build pass.82old APKs preserved, Capacitor synced. Next offline Android assembly/signature/package then fresh preview/finaldocs. Protected4194–4197/data untouched.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -32,7 +32,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-PHASE12 ACTIVE: fresh4345/API4489 recovery14/14passed7.5min (phase12-recovery-final/report.json):8customer incl actual injected localWorker crash recovery,4kit signed/offline/device/admin,2oldstandardrealJPG. Both3tapauto paths/4locales/actualgestures/exactreset/retainedregeneration/signedPDF pass. Latest customer generation desktop/mobile below15s (mobile11.780s). Raw prior30report27/3 retained; aggregate must combine latest distinct outcomes, not claim cleanfullhistory. Next full261unit without Chrome, refresh2PDF exactcover+allsteps/report, aggregate38latest, then preserve/signature/package APK and new4198/API4480/code/finaldocs. Build1974already final; no rebuildlive olddirs.
+PHASE12 ACTIVE: full261/261unit passed509.8s (73files/84suites, phase12-full-unit.json); aggregate script verifies38/38latest unique browser cases and3tap/retainedcrop/default3000/screens/PDF evidence (phase12-final/summary.json). Recovery14/14passed7.5min on4345/API4489, no skips; prior30raw27/3retained, no fullhistory claim.2PDF exact1000px covers/all3000numeric+sectorsteps verified, cover visually inspected. Sixcase actual2500/3000 A/B and old/new report complete.82old APKs preserved and Capacitor sync from final1974module phase12-dist passed; native backend presencefalse. Next offlineGradle assembleDebug+assembleDebugAndroidTest (no Chrome/fullunit concurrent), strict APK verifier --customer-flow/old82/samecert/assets; commit APK milestone BEFORE new4198/API4480 preview/code/assetproof and finaldocs. Never oldports/assets/tmpdata.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 
