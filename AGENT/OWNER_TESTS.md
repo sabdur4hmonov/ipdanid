@@ -167,3 +167,7 @@ Tuzatish4195ga qo'yildi va yangi fayllar tekshirildi. Sahifani yangilang, suratn
 `output/mobile/ip-rasm-photo-preview-20261016-f6cb7ddf0eea-debug.apk` — surat darhol ko'rinishini o'z ichiga olgan yangi APK.43 fayl/imzo/73 eski APK saqlangani tekshirildi, telefonga o'rnatilmadi. Native kit serveri hali sozlanmagan; to'liq kit sinovi4195da.
 
 4195ni yangilang, rasmingizni yana tanlang: “Yuklangan surat” darhol ko'rinsin, yopiq yuz/fon bo'limlarini ochish shart bo'lmasin. Boshqa rasmga almashtirish va to'rt til tekshirilgan. Fon tayyorlash holati ochiq; yuz/kesishni tasdiqlash va haqiqiy ip natijasi alohida. Kit hisobi/kreditlar, server va4194 qayta yaratilmagan. Avvalgi ko'rinish uchun “Maxsus / oldingi vositalar” mavjud.
+
+
+## Phase11 — kattaroq bosh joylashuvi (tayyorlanmoqda)
+Yangi manzil yakuniy sinovdan keyin output/phase11/manual-testing.txt da bo‘ladi. Surat yuklang: tayyor nishonda bosh kattaroq, iyak osti oq bo‘lishi kerak. “Yelkani qoldirish”ni yoqib/o‘chirib solishtiring; har bir yuzni kattalashtirish va chap/o‘ng, yuqori/past surish mumkin. Heart juftligida yuzlar ikki yuqori bo‘lakda bo‘lsin. “Ip soni”2000/2500/3000: taxmin4.4/5.6/6.7soat. Har o‘zgarishdan keyin nishonni qayta tasdiqlang.

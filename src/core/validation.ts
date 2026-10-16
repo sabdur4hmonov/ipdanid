@@ -2,6 +2,7 @@ import { validSubjectPlan } from "./subject-plan";
 import { validateStandardProfile } from "./standard-kit";
 import { faceFill } from "./standard-preparation";
 import { faceFillReference } from "./reference-preparation";
+import { framePortraitHeads } from "./portrait-framing";
 import { CLASSIC_REFERENCE_DEFAULTS } from "./classic-reference";
 import { validateHeartAccent } from "./heart-accent";
 import { validLetteringProduct } from "./lettering-contract";
@@ -187,22 +188,31 @@ export async function validateInstruction(
         "standard-accent/21",
       ].includes(i.algorithm) ||
       !p.standardKit ||
-      k.version !==
-        (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
-          ? "standard-preparation/2"
-          : "standard-preparation/1") ||
+      !(
+        ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+          ? ["standard-preparation/2", "standard-preparation/3"]
+          : ["standard-preparation/1"]
+      ).includes(k.version) ||
       !/^[a-f0-9]{64}$/.test(k.sourceHash) ||
       !["automatic", "manual", "original"].includes(k.whiteBackground) ||
       JSON.stringify(k.transform) !==
         JSON.stringify(
-          ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
-            ? faceFillReference(k.transform.faces, p.shape, k.sourceAspect)
-            : faceFill(
+          k.version === "standard-preparation/3"
+            ? framePortraitHeads(
                 k.transform.faces,
                 p.shape,
                 k.sourceAspect,
-                p.standardKit.patternScale,
-              ),
+                k.transform.framing?.keepShoulders,
+                k.transform.framing?.adjustments,
+              )
+            : ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+              ? faceFillReference(k.transform.faces, p.shape, k.sourceAspect)
+              : faceFill(
+                  k.transform.faces,
+                  p.shape,
+                  k.sourceAspect,
+                  p.standardKit.patternScale,
+                ),
         )
     )
       throw Error("Invalid reviewed kit preparation");

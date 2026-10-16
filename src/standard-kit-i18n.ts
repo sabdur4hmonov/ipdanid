@@ -2,6 +2,13 @@ import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 const messages = {
   en: {
+    framing: "Head framing",
+    keepShoulders: "Keep shoulders",
+    zoom: "Zoom",
+    panX: "Move horizontally",
+    panY: "Move vertically",
+    lineChoice: "Connections",
+    hoursShort: "h",
     extraThread: "Additional thread needed",
     details: "Details",
     engine: "Details — generation engine",
@@ -74,6 +81,13 @@ const messages = {
       "A measured knee has not been accepted for this photo; line count is a starting budget.",
   },
   uz: {
+    framing: "Boshni joylashtirish",
+    keepShoulders: "Yelkani qoldirish",
+    zoom: "Kattalashtirish",
+    panX: "Chap / o‘ng",
+    panY: "Yuqori / past",
+    lineChoice: "Ip soni",
+    hoursShort: "soat",
     extraThread: "Qo‘shimcha ip kerak",
     details: "Tafsilotlar",
     engine: "Tafsilotlar — hisoblash usuli",
@@ -147,6 +161,13 @@ const messages = {
       "Bu surat uchun o‘lchangan eng samarali nuqta qabul qilinmagan; ip soni boshlang‘ich chegara.",
   },
   ru: {
+    framing: "Размещение головы",
+    keepShoulders: "Оставить плечи",
+    zoom: "Масштаб",
+    panX: "Влево / вправо",
+    panY: "Вверх / вниз",
+    lineChoice: "Количество нитей",
+    hoursShort: "ч",
     extraThread: "Нужно дополнительной нити",
     details: "Подробности",
     engine: "Подробности — метод расчёта",

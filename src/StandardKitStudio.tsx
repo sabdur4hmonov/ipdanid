@@ -3,9 +3,11 @@ import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
 import { faceFill, type KitPreparation } from "./core/standard-preparation";
 import {
-  faceFillReference,
-  prepareReferenceCanvas,
-} from "./core/reference-preparation";
+  framePortraitHeads,
+  preparePortraitCanvas,
+  defaultHeadAdjustment,
+  type HeadAdjustment,
+} from "./core/portrait-framing";
 import { referenceProfile } from "./core/classic-reference";
 import {
   DEFAULT_STANDARD_KIT,
@@ -56,6 +58,8 @@ export function StandardKitStudio({
     [n, setN] = useState(500),
     [engine, setEngine] = useState<"classic2" | "classic">("classic2"),
     [lines, setLines] = useState(2500),
+    [keepShoulders, setKeepShoulders] = useState(false),
+    [headAdjustments, setHeadAdjustments] = useState<HeadAdjustment[]>([]),
     [prepared, setPrepared] = useState<{
       pixels: Uint8Array;
       canvas: HTMLCanvasElement;
@@ -123,6 +127,8 @@ export function StandardKitStudio({
     redAccent,
     redColour,
     engine,
+    keepShoulders,
+    headAdjustments,
   ]);
   useEffect(() => {
     if (!source || !photoPreview.current) return;
@@ -170,6 +176,8 @@ export function StandardKitStudio({
       c.getContext("2d")!.drawImage(image, 0, 0, c.width, c.height);
       image.close();
       setFaces([]);
+      setKeepShoulders(false);
+      setHeadAdjustments([]);
       setEngine("classic2");
       setN(500);
       setLines(2500);
@@ -186,7 +194,15 @@ export function StandardKitStudio({
       if (!source) throw Error();
       const transform =
         engine === "classic2"
-          ? faceFillReference(faces, shape, source.width / source.height)
+          ? framePortraitHeads(
+              faces,
+              shape,
+              source.width / source.height,
+              keepShoulders,
+              faces.map(
+                (_, j) => headAdjustments[j] ?? defaultHeadAdjustment(),
+              ),
+            )
           : faceFill(
               faces,
               shape,
@@ -219,10 +235,11 @@ export function StandardKitStudio({
         (_, k) => rgba[Math.floor(k / 3) * 4 + (k % 3)],
       );
       if (engine === "classic2") {
-        const prepared = prepareReferenceCanvas(
+        const prepared = preparePortraitCanvas(
           source,
           background?.enabled ? background.mask : undefined,
           transform,
+          shape,
           n,
         );
         c = prepared.canvas;
@@ -242,7 +259,7 @@ export function StandardKitStudio({
         proof: {
           version:
             engine === "classic2"
-              ? "standard-preparation/2"
+              ? "standard-preparation/3"
               : "standard-preparation/1",
           sourceHash,
           sourceAspect: source.width / source.height,
@@ -283,6 +300,8 @@ export function StandardKitStudio({
     engine,
     redAccent,
     redColour,
+    keepShoulders,
+    headAdjustments,
   ]);
   function calculate(resume?: OptimizerRecovery) {
     if (!resume && (!prepared || !reviewed)) return;
@@ -560,6 +579,74 @@ export function StandardKitStudio({
           {background?.status === "failed" || background?.enabled === false ? (
             <p role="status">{t("original")}</p>
           ) : null}
+          {engine === "classic2" && (
+            <fieldset data-testid="portrait-framing-controls">
+              <legend>{t("framing")}</legend>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={keepShoulders}
+                  onChange={(e) => setKeepShoulders(e.target.checked)}
+                />{" "}
+                {t("keepShoulders")}
+              </label>
+              {faces.map((_, j) => (
+                <fieldset key={j}>
+                  <legend>
+                    {t("face")} {j + 1}
+                  </legend>
+                  {(["zoom", "x", "y"] as const).map((key) => (
+                    <label key={key} style={{ display: "block" }}>
+                      {t(
+                        key === "zoom" ? "zoom" : key === "x" ? "panX" : "panY",
+                      )}
+                      <input
+                        type="range"
+                        aria-label={`${t(key === "zoom" ? "zoom" : key === "x" ? "panX" : "panY")} ${j + 1}`}
+                        min={key === "zoom" ? 0.65 : -0.3}
+                        max={key === "zoom" ? 1.5 : 0.3}
+                        step="0.01"
+                        value={
+                          (headAdjustments[j] ?? defaultHeadAdjustment())[key]
+                        }
+                        onChange={(e) =>
+                          setHeadAdjustments(
+                            faces.map((_, k) => ({
+                              ...(headAdjustments[k] ??
+                                defaultHeadAdjustment()),
+                              ...(k === j
+                                ? { [key]: Number(e.target.value) }
+                                : {}),
+                            })),
+                          )
+                        }
+                      />
+                    </label>
+                  ))}
+                </fieldset>
+              ))}
+            </fieldset>
+          )}
+          <label>
+            {t("lineChoice")}
+            <select
+              aria-label={t("lineChoice")}
+              value={lines}
+              onChange={(e) => setLines(Number(e.target.value))}
+            >
+              {[2000, 2500, 3000].map((v) => (
+                <option key={v} value={v}>
+                  {v} · {((v * 8) / 3600).toFixed(1)} {t("hoursShort")}
+                </option>
+              ))}
+              {![2000, 2500, 3000].includes(lines) && (
+                <option value={lines}>{lines}</option>
+              )}
+            </select>
+          </label>
+          <p data-testid="line-budget-hours">
+            {t("hours")}: {((lines * 8) / 3600).toFixed(1)}
+          </p>
           <details>
             <summary>{t("lines")}</summary>
             <label>

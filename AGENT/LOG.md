@@ -1,5 +1,7 @@
 # Work log — agent appends a dated entry after every milestone (newest at the bottom)
 
+<!-- Phase11 active; newest dated milestone will be appended below after verification. -->
+
 ## 2026-10-14 — setup
 - AGENT/ folder created: MASTER_PLAN.md (plan + rules), PROGRESS.md (state + next step), LOG.md (this file), OWNER_TESTS.md (things for the owner to test).
 - Starting point: branch `feat/r1-r2-subjects` (R1/R2 done: 183/183 unit tests, 24/24 targeted e2e desktop + mobile).
@@ -327,3 +329,8 @@ Final source d32f04b; full248unit/36unique latest browser evidence preserved. In
 Fresh hidden launcher5952/child18652 serves4196/API4478 from now-FROZEN output/phase10-dist, isolated test-results/owner-reference-l967T8/database.sqlite. Legitimate3-build code/admin instructions written only to ignored output/phase10/manual-testing.txt. Read-only handoff verifier confirms unusedcode/noaccounts before handoff, exactHTTP/runtime/APK43assets, original4194dist40 and4195current43+19retained hashes unchanged without contacting either protected server. Final proof output/phase10/final-verification.json. Source local-config confirms testing branch never accesses tmp/data; default-path text in server stdout is an unconditional log literal, not owner-file use. Browser open4196 queued in Codex (not falsely claimed displayed); no forced reload of owner4195photo.
 
 Updated MASTER live-directory freeze, PROGRESS/status/exactnext, Uzbek OWNER_TESTS/FINAL_REPORT, RESUME/STATUS/APK checkpoint. Owner next: new4196 gallery/review/code/first assembly step; no independent Phase10 step remains. Physical phone/board and original/real group/QBRIX/consented voice inputs remain owner-dependent. All photos/output/credentials ignored, no push/reset/install or owner DB change. Final documentation/helper commit follows this record.
+
+
+## 2026-10-16 — Phase11 framing foundation
+
+Owner explicitly corrected Phase10 subjective quality assessment: heads too small and shoulders waste strands; Heart pair needs independent upper lobes. Added separate preparation3/reviewed-head-framing3 deterministic proof, real-pixel per-head composition,87% single head,18px smooth chin fade/default shoulders off, per-head pan/zoom and visible2000/2500/3000 with8s estimates. Reused unchanged reference tone preparation/classic2 engine/physical renderer; old preparation2 validator retained.11/11 targeted unit tests pass (new5+reference6), TypeScript and clean1968module phase11-dist build pass.12 actual JPG UI cases launched fresh4336/API4476, report phase11-acceptance-v1, results pending. No visual acceptance claimed. Added reserved preview/API guards; all4194/4195/4196 assets and tmp/data untouched. Next inspect true equal-size old/new comparisons, fix failures before final validation/APK/handoff.
