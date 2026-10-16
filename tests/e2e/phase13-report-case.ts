@@ -170,16 +170,20 @@ export async function reportCase(
     ).toBe(true);
     expect(axes(i)).toEqual([]);
     if (!baseline) {
+      const controlProfile = referenceProfile(
+        standardProfiles(i.profile.standardKit!.config).find(
+          (p) => p.shape === c.shape,
+        )!,
+      );
+      // Use the actual saved browser doubles, not Node's few-ULP trig rebuild.
+      // This makes both physical paths use exactly the same pins and labels.
+      controlProfile.pins = structuredClone(i.profile.pins);
       baseline = await generateClassicReference({
         pixels,
         resolution: 500,
         lines: 3000,
         mode: "dark",
-        profile: referenceProfile(
-          standardProfiles(i.profile.standardKit!.config).find(
-            (p) => p.shape === c.shape,
-          )!,
-        ),
+        profile: controlProfile,
         kitPreparation: i.params.kitPreparation,
         accessPolicy: "kit-build/1",
       });
