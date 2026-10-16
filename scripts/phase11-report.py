@@ -31,6 +31,12 @@ for project in ['desktop', 'mobile-browser']:
                 controls.append(dict(path=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
         rows.append(dict(**result, directory=f'{project}/{name}'))
 sources = []
+control_manifest = root / 'phase10-controls.json'
+if control_manifest.exists():
+    for row in json.loads(control_manifest.read_text()):
+        assert hashlib.sha256(Path(row['path']).read_bytes()).hexdigest() == row['sha256'], 'Frozen Phase10 control changed'
+else:
+    control_manifest.write_text(json.dumps(controls, indent=2))
 for p in [Path(f'output/phase10/inputs/synthetic-{j}.png') for j in [1, 2, 3]] + [Path('output/portrait-dispatch/target-320.png')]:
     sources.append(dict(path=str(p), sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
 review = json.loads((root / 'visual-review.json').read_text()) if (root / 'visual-review.json').exists() else None

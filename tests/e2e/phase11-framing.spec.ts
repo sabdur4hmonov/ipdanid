@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { createHash } from "node:crypto";
 import {
   readFileSync,
   writeFileSync,
@@ -253,6 +254,15 @@ for (const c of cases)
       const after = i.params.kitPreparation!.transform.targetFaces!;
       evidence.framing = i.params.kitPreparation!.transform;
       evidence.newFaceHeights = after.map((f) => f.height);
+      const lastChin = Math.max(
+        ...i.params.kitPreparation!.transform.framing!.heads.map((h) => h.chin),
+      );
+      expect(
+        target.pixels
+          .slice(Math.ceil((lastChin + 18 / 500) * 500) * 500 * 3)
+          .every((v) => v === 255),
+      ).toBe(true);
+      evidence.targetWhiteBelowChinFade = true;
       const oldPath = `output/phase10/${info.project.name}/${c.name}/guide.json`;
       if (existsSync(oldPath)) {
         const before = JSON.parse(readFileSync(oldPath, "utf8")).params
@@ -270,6 +280,28 @@ for (const c of cases)
         ).toBeCloseTo(0.65);
       }
       evidence.sequenceHash = i.sequenceHash;
+      if (existsSync("output/phase11/framing-baseline.json")) {
+        const baseline = JSON.parse(
+          readFileSync("output/phase11/framing-baseline.json", "utf8"),
+        ).find(
+          (r: { project: string; name: string }) =>
+            r.project === info.project.name && r.name === c.name,
+        );
+        if (baseline) {
+          expect(
+            createHash("sha256")
+              .update(Buffer.from(target.png, "base64"))
+              .digest("hex"),
+          ).toBe(baseline.target);
+          expect(
+            createHash("sha256")
+              .update(Buffer.from(png, "base64"))
+              .digest("hex"),
+          ).toBe(baseline.app);
+          expect(i.sequenceHash).toBe(baseline.sequence);
+          evidence.exactBeforeAfterPreparationCache = true;
+        }
+      }
       evidence.workerMs = i.metrics.durationMs;
       evidence.metres = i.metrics.estimatedMeters;
       evidence.connections = i.metrics.lines;

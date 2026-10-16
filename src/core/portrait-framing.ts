@@ -1,7 +1,7 @@
 import type { RegionBox, Shape } from "./types";
 import type { FaceFill } from "./standard-preparation";
 import type { PersonMask } from "./person-mask";
-import { faceFillReference, referenceTones } from "./reference-preparation";
+import { referenceTones } from "./reference-preparation";
 import { inside } from "./geometry";
 
 export type HeadAdjustment = { zoom: number; x: number; y: number };
@@ -32,8 +32,26 @@ export function framePortraitHeads(
   keepShoulders = false,
   adjustments: HeadAdjustment[] = faces.map(defaultHeadAdjustment),
 ): FaceFill {
-  // Retain the same strict real-face/source bounds checks as preparation2.
-  faceFillReference(faces, shape, aspect);
+  // Same source checks as preparation2, without running its obsolete rectangle
+  // packing search on every slider movement and guide validation checkpoint.
+  if (
+    !Array.isArray(faces) ||
+    !faces.length ||
+    faces.length > (shape === "heart" ? 2 : 3) ||
+    !Number.isFinite(aspect) ||
+    aspect <= 0 ||
+    faces.some(
+      (b) =>
+        ![b.left, b.top, b.width, b.height].every(Number.isFinite) ||
+        b.left < 0 ||
+        b.top < 0 ||
+        b.width <= 0 ||
+        b.height <= 0 ||
+        b.left + b.width > 1 ||
+        b.top + b.height > 1,
+    )
+  )
+    throw Error("framing/face-count-or-bounds");
   if (
     typeof keepShoulders !== "boolean" ||
     adjustments.length !== faces.length ||
@@ -116,6 +134,20 @@ const toneCache = new WeakMap<
   HTMLCanvasElement,
   { mask?: PersonMask; full: HTMLCanvasElement }
 >();
+const shapeMasks = new Map<string, Uint8Array>();
+function patternMask(shape: Shape, n: number) {
+  const key = `${shape}/${n}`;
+  let mask = shapeMasks.get(key);
+  if (!mask) {
+    mask = Uint8Array.from({ length: n * n }, (_, k) =>
+      Number(inside(shape, ((k % n) + 0.5) / n, (Math.floor(k / n) + 0.5) / n)),
+    );
+    if (shapeMasks.size >= 6)
+      shapeMasks.delete(shapeMasks.keys().next().value!);
+    shapeMasks.set(key, mask);
+  }
+  return mask;
+}
 export function preparePortraitCanvas(
   source: HTMLCanvasElement,
   mask: PersonMask | undefined,
@@ -158,7 +190,8 @@ export function preparePortraitCanvas(
   const layer = document.createElement("canvas");
   layer.width = layer.height = n;
   const lc = layer.getContext("2d")!,
-    framing = transform.framing;
+    framing = transform.framing,
+    pattern = patternMask(shape, n);
   for (const head of framing.heads) {
     const s = head.source,
       t = head.target;
@@ -178,7 +211,7 @@ export function preparePortraitCanvas(
       for (let x = 0; x < n; x++) {
         const u = (x + 0.5) / n,
           v = (y + 0.5) / n;
-        if (!inside(shape, u, v)) continue;
+        if (!pattern[y * n + x]) continue;
         let alpha = chinOpacity(v, head.chin, framing.keepShoulders, 500);
         if (framing.heads.length > 1) {
           // Isolate real people before repositioning; feather source crop edges.
