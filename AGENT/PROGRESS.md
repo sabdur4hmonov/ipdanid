@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase13 FULL TESTED.268/268unit(75files/86suites,381.35s), aggregate41/41browser, quality/report/default/axis and1975build pass.85oldAPKs preserved/Cap synced. Next11exactPDF checks +offline Android assembly, strictAPK/handoff/new4199. Protected4194–4198 unchanged.
+Last update:2026-10-17 — Phase13 APK VERIFIED.268unit/41browser/11exactPDF/build1975 pass. OfflineGradle3m41s,43asset APK7b42969cd9ba/samecert/85oldarchives exact. Next fresh4199/API4481 preview/code/protected5treeproof/finaldocs. Old4194–4198 untouched, no push/install.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -44,7 +44,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-PHASE13 FULL TESTED:268/268unit passed381.35s (75files/86suites, phase13-full-unit.json); aggregateverifier41/41unique browser outcomes +9reportcases/27UIbudgets/3tap/retainedcrop/signedPDF evidence passes (phase13-final/summary.json).13targetedcore,32broadbrowser +9qualitycases,1975module build/tsc pass. OwnerSquareSSIM.511744→.574480,centreaxis2→0; 3000time-default,3500bettercasehonestlyreported.85oldAPK archives preserved(phase13-20261017-old-apks.json), Capacitor syncpassed. Nativeproductionbackendpresencefalse (no valuesprinted). Next read-onlyverify-phase13-pdfs.py11covers/all3000orderedsteps +renderownerSquarecover/firststeps; offlineGradle assembleDebug/assembleDebugAndroidTest (no unit/Chrome concurrent), strictAPK --classic-least-squares pluspriorflags and85old/samecert/assets; commitAPK milestone BEFORE fresh4199/API4481 preview/code/protected5treeproof and finaldocs. No more fits/buildsourcechanges needed; neverold4194–4198/APIs/assets/tmpdata, no push/install.
+PHASE13 APK VERIFIED: app output/mobile/ip-rasm-phase13-20261017-7b42969cd9ba-debug.apk SHA7b42969cd9ba8f79e7d563a72d0803fec6a9f0a2c2cf62f327583a9702ae2094. OfflineGradle20170 passed3m41s/176tasks(21executed); strictverifier52546 confirms43exact phase13-dist assets, all3/legacy/framing/customer/fonts/licenses/privacy markers, same8e43cfcertificate and85oldarchives unchanged.11PDFverifier98551 passes1000px exactcovers andall3000orderednumeric/sectorsteps perguide,79pages each; ownerSquarecover/first+laststeps visuallyinspected.268unit/41unique browser/27qualitybudgetrenders/report/screens allpass, source2/physics/kitpins/targetprepunchanged. Commit thismilestone BEFORE hidden start-sharper-preview.mjs free4199/API4481 ornextfree/freshDB/legitimateunused3-buildcode. Then verify-phase13-handoff.mjs withnew7b429...evidence, protectall5oldassetswithoutHTTPcontact, freezephase13-dist/newownerpreview, finalPROGRESS/LOG/master/reports/Uzbekownersteps commit. No furtherproductbuild afterpreview. Neverold4194–4198/APIs/assets/tmpdata; no push/install/phone/production claim.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 
