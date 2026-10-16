@@ -2,6 +2,19 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-16 — Phase10, yangi reference usuli
+
+Yangi sinov manzili va uchta yig‘ishga mo‘ljallangan kit kodi `output/phase10/manual-testing.txt` fayliga yoziladi. Eski4195 sahifasi oldingi talqin; yangi usulni fayldagi yangi manzilda sinang.
+
+1. “Standart kit”da Circle46, Square yoki Heart tanlang. “Galereyadan yuklash” orqali o‘z JPG suratingizni tanlang. Yuklangan surat darhol ko‘rinsin; oq fonli, qora-oq tayyor nishon avtomatik paydo bo‘lsin.
+2. Har bir yuz, soch va kesishni tekshiring. Yuz topilmasa, yuz chegaralari bo‘limini ochib haqiqiy yuzni qo‘lda belgilang. Heart uchun ko‘pi bilan ikki kishi. Nishon suratning o‘zi; ip natijasi alohida chiqadi.
+3. “Har bir yuz, oq fon va kesishni tekshirdim”ni belgilang, hisoblashni bosing. Standart hisob500px/240mix/2500ulanish; natija1000px bo‘lsin. Hisoblash15soniyadan kam bo‘lishi tekshiriladi; fon/yuz tayyorlash vaqti alohida.
+4. “Saqlash va yig‘ish”ni bosing, lokal sinov kodini kiriting va bitta yig‘ishni oching. Birinchi qadamdan boshlang. Player, ovoz, PDF va TXTda bir xil sektor belgisi chiqsin (masalan B-17); JSONda raqamli mix indekslari ham saqlansin.
+5. Shu kitning andozasini100%/Actual size holatida chop eting. “Fit to page”ni o‘chiring.50mm nazorat belgisini chizg‘ich bilan tekshiring; keyin teshiklarni belgilang/parmalang, mos sektor stikerlarini mix yoniga yopishtiring. To‘g‘ri naqshni tanlaganingizni tekshirib, birinchi qadamdan ipni torting.
+6. Bekor qilish tugmasini ham sinang. Eski yo‘riqnomangizni ochib avvalgi qadam saqlanganini tekshiring. Yangi surat tanlanganda yana classic-greedy/2 va2500ulanish tanlansin; oldingi usullar “Tafsilotlar” ichida.
+
+Natijani, vaqtni va yuz o‘xshashligini yozib qo‘ying. APK va yakuniy tekshiruv havolalari ish tugaganda shu faylda yangilanadi; hozircha yangi telefon/taxta sinovi o‘tkazilgan deb hisoblanmaydi.
+
 Saytni ochish: `Start-Ip-Rasm.cmd` → http://127.0.0.1:4194
 
 ---

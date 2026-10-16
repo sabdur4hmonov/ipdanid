@@ -8,6 +8,44 @@ export type SourceFace = {
   nose: RegionBox;
   mouth: RegionBox;
 };
+// Multi-orientation inference can report nested duplicates of one real face.
+// Compare distinct people before choosing the orientation with most faces.
+export function distinctSourceFaces(faces: SourceFace[]): SourceFace[] {
+  const selected: SourceFace[] = [];
+  for (const candidate of faces) {
+    const b = candidate.face;
+    const duplicate = selected.some(({ face: a }) => {
+      const overlap =
+          Math.max(
+            0,
+            Math.min(a.left + a.width, b.left + b.width) -
+              Math.max(a.left, b.left),
+          ) *
+          Math.max(
+            0,
+            Math.min(a.top + a.height, b.top + b.height) -
+              Math.max(a.top, b.top),
+          ),
+        aa = a.width * a.height,
+        bb = b.width * b.height,
+        small = Math.min(aa, bb),
+        distance = Math.hypot(
+          a.left + a.width / 2 - b.left - b.width / 2,
+          a.top + a.height / 2 - b.top - b.height / 2,
+        ),
+        diagonal = Math.min(
+          Math.hypot(a.width, a.height),
+          Math.hypot(b.width, b.height),
+        );
+      return (
+        overlap / (aa + bb - overlap) > 0.55 ||
+        (overlap / small > 0.9 && distance < 0.45 * diagonal)
+      );
+    });
+    if (!duplicate) selected.push(candidate);
+  }
+  return selected;
+}
 const EYES = [
   33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246,
   263, 249, 390, 373, 374, 380, 381, 382, 362, 398, 384, 385, 386, 387, 388,
@@ -141,7 +179,11 @@ export function reviewedPeoplePortrait(
     people: {
       version: "multiple-portraits/1",
       reference: "processed-target/sample-centers-v1",
-      faces: mapped.map((p) => ({ id:crypto.randomUUID(), face: p.face, regions: p.regions! })),
+      faces: mapped.map((p) => ({
+        id: crypto.randomUUID(),
+        face: p.face,
+        regions: p.regions!,
+      })),
     },
   };
 }
@@ -158,7 +200,7 @@ export function estimatedPairPortrait(
       height: h * face.height,
     });
     return {
-      id:crypto.randomUUID(),
+      id: crypto.randomUUID(),
       face,
       regions: {
         reference: "processed-target/sample-centers-v1" as const,

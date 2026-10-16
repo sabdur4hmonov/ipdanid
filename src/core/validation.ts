@@ -183,7 +183,6 @@ export async function validateInstruction(
       ![
         "classic-greedy/1",
         "classic-greedy/2",
-        "standard-accent/21",
         "standard-accent/20",
         "standard-accent/21",
       ].includes(i.algorithm) ||
@@ -313,9 +312,12 @@ export async function validateInstruction(
     i.metrics.reconstructionMse < 0 ||
     !Number.isFinite(i.metrics.baselineMse) ||
     i.metrics.baselineMse < 0 ||
-    (!["glyph-outline/19", "standard-accent/20", "classic-greedy/2"].includes(
-      i.algorithm,
-    ) &&
+    (![
+      "glyph-outline/19",
+      "standard-accent/20",
+      "standard-accent/21",
+      "classic-greedy/2",
+    ].includes(i.algorithm) &&
       i.metrics.reconstructionMse > i.metrics.baselineMse + 1e-6)
   )
     throw new Error("Invalid sequence limits");
@@ -869,7 +871,6 @@ export async function validateInstruction(
         : [
               "classic-greedy/1",
               "classic-greedy/2",
-              "standard-accent/21",
               "standard-accent/20",
               "standard-accent/21",
             ].includes(i.algorithm)

@@ -1,4 +1,8 @@
-import { faceFeatures, type SourceFace } from "./core/face-features";
+import {
+  faceFeatures,
+  distinctSourceFaces,
+  type SourceFace,
+} from "./core/face-features";
 import { unturnFaces, type QuarterTurn } from "./core/photo-orientation";
 const ROOT = "/vendor/portrait-segmentation";
 const MODEL_SHA256 =
@@ -103,9 +107,9 @@ export async function detectSourceFaces(
     ctx.translate(rotated.width / 2, rotated.height / 2);
     ctx.rotate((turn * Math.PI) / 2);
     ctx.drawImage(c, -c.width / 2, -c.height / 2);
-    const faces: SourceFace[] = model
-      .detect(rotated)
-      .faceLandmarks.map(faceFeatures);
+    const faces: SourceFace[] = distinctSourceFaces(
+      model.detect(rotated).faceLandmarks.map(faceFeatures),
+    );
     if (faces.length > best.length) {
       best = unturnFaces(faces, turn);
       selected = turn;

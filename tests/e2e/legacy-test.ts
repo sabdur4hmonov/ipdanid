@@ -8,6 +8,8 @@ export const test = base.extend({
       if (new URL(page.url()).pathname !== "/") return;
       await page.locator(".app").waitFor();
       const mode = page.getByTestId("create-mode");
+      if ((await mode.count()) && !(await mode.isVisible()))
+        await page.getByTestId("expert-tools").locator("summary").click();
       if (
         (await mode.isVisible()) &&
         /Custom|Maxsus|Махсус|Другие/.test(await mode.innerText())

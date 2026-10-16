@@ -17,6 +17,11 @@ import {
 import { validateInstruction } from "../src/core/validation";
 import { hash, sequencePayload } from "../src/core/engine";
 import {
+  distinctSourceFaces,
+  type SourceFace,
+} from "../src/core/face-features";
+import { addHeartAccent } from "../src/core/heart-accent";
+import {
   faceFillReference,
   referenceClahe,
   referenceTones,
@@ -25,6 +30,17 @@ import {
 const p = referenceProfile(
   standardProfiles(structuredClone(DEFAULT_STANDARD_KIT))[0],
 );
+test("orientation scoring counts distinct faces without dropping two adjacent people", () => {
+  const make = (left: number, top: number, width: number, height: number) =>
+      ({ face: { left, top, width, height } }) as SourceFace,
+    first = make(0.29, 0.26, 0.42, 0.48),
+    duplicate = make(0.33, 0.37, 0.27, 0.35),
+    second = make(0.72, 0.25, 0.2, 0.3);
+  expect(distinctSourceFaces([first, duplicate, second])).toEqual([
+    first,
+    second,
+  ]);
+});
 test("reference2 exactly reproduces supplied DDA residual decisions and fixed negative-score budget", async () => {
   const n = 64,
     gray = Float32Array.from(
@@ -97,6 +113,8 @@ test("typed physical renderer equals the supplied multiplicative coverage at eve
     );
   for (let k = 0; k < reference.length; k++)
     expect(actual[k * 3]).toBe(reference[k]);
+  const building=structuredClone(i),prefix=referenceRaster(building,96,30),incremental=referenceRaster(building,96,80,{pixels:prefix,completed:30});
+  expect(incremental).toEqual(actual);
 });
 test("CLAHE, masked percentiles and reference head framing preserve real pixels and face provenance", () => {
   const n = 64,
@@ -161,3 +179,27 @@ test("500px/2500 continuous kit connections remain full-budget, legal, cancellab
     }),
   ).rejects.toThrow("Cancelled");
 }, 60000);
+test("new Heart body and optional real red thread retain old accessory compatibility and exact imports", async () => {
+  const profile = referenceProfile(
+      standardProfiles(structuredClone(DEFAULT_STANDARD_KIT))[2],
+    ),
+    n = 64,
+    pixels = new Uint8Array(n * n * 3).fill(180),
+    body = await generateClassicReference({
+      pixels,
+      profile,
+      resolution: n,
+      lines: 120,
+      mode: "dark",
+    }),
+    accented = await addHeartAccent(body, pixels, "#b31e35");
+  expect(accented.algorithm).toBe("standard-accent/21");
+  expect(accented.segments[0]).toEqual(body.segments[0]);
+  expect(accented.params.accent!.bodySequenceHash).toBe(body.sequenceHash);
+  expect(accented.metrics.lines).toBeGreaterThan(120);
+  await validateInstruction(accented);
+  const altered = structuredClone(accented);
+  altered.segments[0].path[1] = altered.segments[0].path[0];
+  altered.sequenceHash = await hash(sequencePayload(altered));
+  await expect(validateInstruction(altered)).rejects.toThrow();
+}, 30000);

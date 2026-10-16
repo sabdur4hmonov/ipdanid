@@ -229,7 +229,7 @@ for (const shape of ["circle", "rectangle", "heart"] as const)
     writeFileSync(info.outputPath("standard-guide.json"), JSON.stringify(i));
     await validateInstruction(i);
     expect(i.algorithm).toBe(
-      shape === "heart" ? "standard-accent/20" : "classic-greedy/1",
+      shape === "heart" ? "standard-accent/21" : "classic-greedy/2",
     );
     expect(i.profile.pins).toHaveLength(240);
     if (shape === "circle")

@@ -103,6 +103,8 @@ export function rasterSequenceAtResolution(
   n: number,
   completed = i.metrics.lines,
 ): Float32Array {
+  if (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm))
+    return referenceRaster(i, n, completed);
   if (!Number.isInteger(n) || n < 32 || n > 512)
     throw new Error("Invalid bounded evaluation resolution");
   completed = Math.max(0, Math.min(i.metrics.lines, Math.floor(completed)));

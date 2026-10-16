@@ -210,12 +210,23 @@ export function combinedHoles(profiles: MaterialProfile[]) {
   }
   return holes;
 }
+// Canonical profiles are expensive (combined hole collision/Heart clearance).
+// Cache only private validation templates; callers always compare a fresh clone.
+const validationProfiles = new Map<string, MaterialProfile[]>();
 export function validateStandardProfile(p: MaterialProfile) {
   if (!p.standardKit) return;
   const config = p.standardKit.config;
   validateStandardConfig(config);
-  const profiles = standardProfiles(config),
-    expected = profiles.find((v) => v.shape === p.shape);
+  const key = JSON.stringify(config);
+  let profiles = validationProfiles.get(key);
+  if (!profiles) {
+    profiles = standardProfiles(config);
+    if (validationProfiles.size >= 8)
+      validationProfiles.delete(validationProfiles.keys().next().value!);
+    validationProfiles.set(key, profiles);
+  }
+  const stored = profiles.find((v) => v.shape === p.shape),
+    expected = stored ? structuredClone(stored) : undefined;
   if (expected && p.standardKit.referenceRender === "classic-coverage/2") {
     expected.id += "-classic2";
     expected.version = 11;

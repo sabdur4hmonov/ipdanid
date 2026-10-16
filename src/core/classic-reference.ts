@@ -88,6 +88,7 @@ export function referenceRaster(
   i: RasterInput,
   outSize = 1000,
   completed = i.metrics.lines,
+  incremental?: { pixels: Float32Array; completed: number },
 ): Float32Array {
   if (
     !Number.isInteger(outSize) ||
@@ -97,6 +98,7 @@ export function referenceRaster(
   )
     throw Error("classic2/render-bounds");
   completed = Math.max(0, Math.min(i.metrics.lines, Math.floor(completed)));
+  if(incremental && (incremental.pixels.length!==outSize*outSize*3 || !Number.isInteger(incremental.completed) || incremental.completed<0 || incremental.completed>completed))throw Error('classic2/incremental-render-bounds');
   const previous = rasterCache.get(i)?.get(outSize);
   if (previous?.completed === completed) return previous.pixels;
   const p = i.profile,
@@ -107,7 +109,8 @@ export function referenceRaster(
       1,
       (p.threadMm / (classicFrame(p).mm / outSize)) * p.opacity,
     ),
-    out = new Float32Array(outSize * outSize * 3).fill(1),
+    out =
+      incremental?.pixels ?? new Float32Array(outSize * outSize * 3).fill(1),
     weights = new Float64Array(outSize * outSize),
     marks = new Uint32Array(outSize * outSize),
     touched = new Uint32Array(outSize * outSize);
@@ -118,6 +121,7 @@ export function referenceRaster(
       (k) => parseInt(segment.color.slice(k, k + 2), 16) / 255,
     );
     for (let s = 1; s < segment.path.length && at < completed; s++, at++) {
+      if (at < (incremental?.completed ?? 0)) continue;
       const a = pins[segment.path[s - 1]],
         b = pins[segment.path[s]],
         ax = a.x * scale,
@@ -239,6 +243,7 @@ export async function generateClassicReference(
       o.seed.imageHash !== imageHash ||
       JSON.stringify(o.seed.profile) !== JSON.stringify(p) ||
       o.seed.params.resolution !== n ||
+      o.seed.params.accessPolicy !== o.accessPolicy ||
       JSON.stringify(o.seed.params.kitPreparation) !==
         JSON.stringify(o.kitPreparation) ||
       JSON.stringify(o.seed.params.classic) !== JSON.stringify(settings) ||
@@ -246,6 +251,7 @@ export async function generateClassicReference(
     )
       throw Error("classic2/seed-identity");
   }
+  let measuredRaster: { pixels: Float32Array; completed: number } | undefined;
   const snapshot = async (): Promise<Instruction> => {
     const segments = [{ color: p.colors[0], path: [...path] }],
       raster = referenceRaster(
@@ -256,12 +262,15 @@ export async function generateClassicReference(
           metrics: { lines: path.length - 1 } as Instruction["metrics"],
         },
         n,
+        path.length - 1,
+        measuredRaster,
       );
+    measuredRaster = { pixels: raster, completed: path.length - 1 };
     let baseline = 0,
       loss = 0;
     for (let k = 0; k < target.length; k++) {
       baseline += (1 - target[k]) ** 2;
-      loss += (raster[k * 3] - target[k]) ** 2;
+      for (let c = 0; c < 3; c++) loss += (raster[k * 3 + c] - target[k]) ** 2;
     }
     const i: Instruction = {
       schema: "iprasm.instruction/1",
@@ -292,7 +301,7 @@ export async function generateClassicReference(
       },
       metrics: {
         baselineMse: baseline / target.length,
-        reconstructionMse: loss / target.length,
+        reconstructionMse: loss / (target.length * 3),
         estimatedMeters: meters,
         perColorMeters: { [p.colors[0]]: meters },
         lines: path.length - 1,
@@ -318,7 +327,8 @@ export async function generateClassicReference(
         gap < 25 ||
         b === prev ||
         used.has(k) ||
-        !distribution.canChange([[cur, b]])
+        distribution.degree[cur] >= 160 ||
+        distribution.degree[b] >= 160
       )
         continue;
       // Keep an exit available after arrival when the incident guard is near full.

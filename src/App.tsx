@@ -228,7 +228,11 @@ export default function App() {
                 );
               }}
               onApplyProfile={(id) => {
-                if(/^standard-/.test(id)){setStandard(true);nav("create");return;}
+                if (/^standard-/.test(id)) {
+                  setStandard(true);
+                  nav("create");
+                  return;
+                }
                 const match = id.match(
                   /^dev-(circle|rectangle|heart)-(\d+)-(dark|light|color)$/,
                 );
@@ -248,13 +252,16 @@ export default function App() {
           )}
           {view === "create" && (
             <>
-              <button
-                className="outline"
-                data-testid="create-mode"
-                onClick={() => setStandard((v) => !v)}
-              >
-                {standardText(locale, standard ? "legacy" : "standard")}
-              </button>
+              <details open={!standard} data-testid="expert-tools">
+                <summary>{standardText(locale, "details")}</summary>
+                <button
+                  className="outline"
+                  data-testid="create-mode"
+                  onClick={() => setStandard((v) => !v)}
+                >
+                  {standardText(locale, standard ? "legacy" : "standard")}
+                </button>
+              </details>
               {standard ? (
                 <Suspense fallback={<p>…</p>}>
                   <StandardKitStudio
