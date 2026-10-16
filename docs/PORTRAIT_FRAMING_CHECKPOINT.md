@@ -1,0 +1,13 @@
+# Phase11 — reviewed head composition
+
+Owner review corrected the Phase10 likeness assessment:70% of the padded crop left heads too small, shirt consumed connections and Heart pairs were low/central. This change introduces only `standard-preparation/3` / `reviewed-head-framing/3`. The `classic-greedy/2` fixed-budget solver, exact physical kit coordinates, sector labels,1000px0.12mm/.9 strand coverage and all preparation2 guide contracts remain intact.
+
+The reviewed face box estimates hair top (32% face-height above its top) and chin (4% below its bottom), clamped to actual source boundaries. A single Circle/Square head occupies87% pattern height, chin at90.5%, centre slightly high; unusually wide heads cap at88% width without stretching. Heart single uses65% height ending at73%; Heart pair sorts by source horizontal position, centres at27%/73%, targets42% width (52% height safety cap), chin56%. No clipped source pixels are invented. Very wide heads or very long hair need manual pan/zoom and source-box review.
+
+Local people segmentation and unchanged reference grayscale/CLAHE2(8x8)/masked1–99 stretch/unsharp2/.6 produce actual source tones. Composition clips to the exact analytic kit shape and separately isolates group head crops. Default18px smoothstep below-chin fade whitens neck/shirt; keep-shoulders disables this fade. The inferred chin can differ from an anatomical chin, so reviewed source boxes and the visible prepared target remain necessary. Pan/zoom (per face) preserves aspect and invalidates review/results, as do shoulder/line/profile changes. Immutable source/mask tone caching accelerates adjustments; no source overlays or invented facial details enter the physical preview.
+
+Visible2000/2500(default)/3000 budgets show8seconds/connection:4.4/5.6/6.7h before generating/unlocking. Expert engine/resolution/custom budget controls stay in details. A new photo restores default framing/2500/classic2 while retaining an explicitly chosen optional red Heart thread.
+
+Evidence and exact next step are maintained in AGENT/PROGRESS.md. Private actual-gallery desktop/mobile captures live in output/phase11, compared with read-only Phase10 files at equal size in report.html. Owner source remains the same existing processed320px crop, not the missing original. Synthetic sources were generated in Phase10 and are reused locally. Real phone/printed board/owner visual acceptance remains separate from automated mechanics and agent comparison.
+
+Never rebuild/change/contact previews4194/4195/4196 or their live asset directories. Phase11 uses a new build directory and will receive a new isolated preview/API/database/code. No photos, credentials, generated outputs or databases belong in Git.

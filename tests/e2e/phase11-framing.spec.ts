@@ -53,10 +53,17 @@ const cases = [
     shape: "heart",
     pair: true,
   },
+  {
+    name: "synthetic-1-heart",
+    source: "output/phase10/inputs/synthetic-1.png",
+    shape: "heart",
+    lines: 3000,
+  },
 ] as const;
 for (const c of cases)
   test(`ordinary JPG acceptance ${c.name}`, async ({ page, context }, info) => {
     test.setTimeout(240000);
+    const budget = "lines" in c ? c.lines : 2500;
     test.skip(
       !existsSync(c.source) ||
         ("pair" in c && !existsSync("output/phase10/inputs/synthetic-2.png")),
@@ -169,6 +176,14 @@ for (const c of cases)
           .poll(() => image.evaluate((c: HTMLCanvasElement) => c.toDataURL()))
           .toBe(original);
       }
+      if (budget !== 2500) {
+        await studio
+          .getByLabel("Connections", { exact: true })
+          .selectOption(String(budget));
+        await expect(
+          studio.getByTestId("standard-prepared-target"),
+        ).toBeVisible();
+      }
       evidence.detectedFaceCount = await studio
         .getByLabel(/^Face \d+ left$/)
         .count();
@@ -229,26 +244,31 @@ for (const c of cases)
       writeFileSync(out + "/guide.json", JSON.stringify(i, null, 2));
       expect(i.algorithm).toBe("classic-greedy/2");
       expect(i.params.resolution).toBe(500);
-      expect(i.metrics.lines).toBe(2500);
+      expect(i.metrics.lines).toBe(budget);
       expect(i.profile.pins.length).toBe(240);
       expect(i.profile.threadMm).toBe(0.12);
       expect(i.profile.opacity).toBe(0.9);
       expect(i.profile.pins[76].sectorLabel).toBe("B-17");
       expect(i.params.kitPreparation!.version).toBe("standard-preparation/3");
-      const old = JSON.parse(
-        readFileSync(
-          `output/phase10/${info.project.name}/${c.name}/guide.json`,
-          "utf8",
-        ),
-      );
-      const before = old.params.kitPreparation.transform.targetFaces;
       const after = i.params.kitPreparation!.transform.targetFaces!;
       evidence.framing = i.params.kitPreparation!.transform;
-      evidence.oldFaceHeights = before.map((f: { height: number }) => f.height);
       evidence.newFaceHeights = after.map((f) => f.height);
-      after.forEach((f, j) =>
-        expect(f.height / before[j].height).toBeGreaterThan(1.3),
-      );
+      const oldPath = `output/phase10/${info.project.name}/${c.name}/guide.json`;
+      if (existsSync(oldPath)) {
+        const before = JSON.parse(readFileSync(oldPath, "utf8")).params
+          .kitPreparation.transform.targetFaces;
+        evidence.oldFaceHeights = before.map(
+          (f: { height: number }) => f.height,
+        );
+        after.forEach((f, j) =>
+          expect(f.height / before[j].height).toBeGreaterThan(1.3),
+        );
+      } else {
+        expect(c.name).toBe("synthetic-1-heart");
+        expect(
+          i.params.kitPreparation!.transform.framing!.heads[0].target.height,
+        ).toBeCloseTo(0.65);
+      }
       evidence.sequenceHash = i.sequenceHash;
       evidence.workerMs = i.metrics.durationMs;
       evidence.metres = i.metrics.estimatedMeters;
@@ -263,7 +283,7 @@ for (const c of cases)
         const reference = classicGreedy(gray, {
           size: 500,
           pins,
-          lines: 2500,
+          lines: budget,
           minGap: 25,
           lineDarkness: 0.15,
           maxChordRepeat: 1,
