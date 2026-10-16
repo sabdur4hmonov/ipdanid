@@ -188,7 +188,7 @@ Phase11 APK: `output/mobile/ip-rasm-phase11-20261016-46bc061bd5c2-debug.apk`.35.
 
 ## Phase12 — sodda uch ekran
 
-Yangi manzil va uchta yig‘ish kodi: `output/phase12/manual-testing.txt` (yakuniy ishga tushirishdan keyin). Oldingi4194–4197 sahifalari o‘z holida qoladi.
+Yangi ilova: **http://127.0.0.1:4198/**. Uchta yig‘ish kodi: `output/phase12/manual-testing.txt`. Oldingi4194–4197 sahifalari o‘z holida qoladi.
 
 1. Bosh ekranda faqat **Galereyadan tanlash**, **Rasmga olish**, **Doira / Kvadrat / Yurak** bo‘lsin. Doira dastlab tanlangan. Kit o‘lchamlari yoki murakkab sozlamalarni ochish shart emas.
 2. Portret tanlang: **Moslash** o‘zi ochiladi. Surat darhol ko‘rinsin, keyin fon oqartirilsin. Sochdan iyakkacha bosh katta bo‘lsin. Yurakdagi ikki odam bittadan yuqori bo‘lakka joylashsin. Aniqlanmagan yuz uchun tiniqroq surat tanlang; ilova yuzni o‘zi to‘qimaydi.
@@ -199,4 +199,4 @@ Yangi manzil va uchta yig‘ish kodi: `output/phase12/manual-testing.txt` (yakun
 7. **PDF yuklab olish** yoki **Yig‘ishni boshlash**ni bosing. Yangi mahalliy kit kodi bilan kiring, bitta natijani oching. PDF va player bir xil mix/sektor/qadamni ko‘rsatsin (masalanB-17), birinchi qadamdan boshlang. Bitta natijani qayta ochish yana kredit sarflamasin. Ruxsat olingach player shu qurilmada oflayn ishlasin.
 8. Natijalarni `output/phase12/report.html`da teng o‘lchamda solishtiring; ekranlar `output/phase12/screens/`da. Egasi surati avvalgi lokal320px ishlov berilgan nusxa; haqiqiy telefon, yangi asl surat va taxtada o‘zingiz tekshiring. Chop etishda100%/Actual size va50mm belgini tekshirish, mix/sektor andozasi avvalgidek.3000ip uchun haqiqiy kerakli ip uzunligini PDFdan tekshiring; kit zaxirasi yetishini tasdiqlang.
 
-APK/manzil va yakuniy sinov natijalari ish tugagach shu yerga yoziladi. Native ishlab chiqarish serveri hali sozlanmagan; to‘liq kod/kredit tekshiruvi yangi brauzer manzilida. Agent telefonga o‘rnatmaydi.
+APK: `output/mobile/ip-rasm-phase12-20261017-29f469aec06e-debug.apk`.261unit va38ta oxirgi brauzer holati o‘tdi;2PDFning1000px rasmi va barcha3000qadami tekshirildi.43fayl/imzo va82oldingi APK saqlangani tasdiqlandi. Kompyuterda10.08s, mobil brauzerda11.78s hisoblash qayd etildi. Telefonga agent o‘rnatmagan va haqiqiy telefonda hali sinamagan. Native ishlab chiqarish serveri hali sozlanmagan; to‘liq kod/kredit sinovini yangi brauzer manzilida bajaring. Eski4194–4197ga tegilmagan; endi4198ham alohida saqlanadi, push qilinmagan.

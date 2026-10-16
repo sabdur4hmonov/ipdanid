@@ -1,3 +1,17 @@
+# Phase12 — uch ekran tayyor, 2026-10-17
+
+Yangi ilova: **http://127.0.0.1:4198/**. Uchta yig‘ish kodi: `output/phase12/manual-testing.txt`. Endi: surat tanlash → Moslash → Natija. Suratni bevosita surish, ikki barmoq/g‘ildirak/slider bilan kattalashtirish,90°burish, qaytarish va Oldin/Keyin bor. Iyak osti oq; yelkani ko‘rsatish ixtiyoriy. Qayta moslash joylashuvni saqlaydi. Murakkab vositalar Menyu → Mutaxassis rejimida. To‘rt til bor.
+
+Egasi lokal nusxasi,3sun’iy portret, Kvadrat va Yurak juftligida2500/3000 teng o‘lchamda solishtirildi;3000 aniqroq topilib yagona standart bo‘ldi, taxmin6.7soat. Oddiy yo‘l3bosish: galereya + surat tanlash + yaratish. Hisobot va3ekranning kompyuter/mobil rasmlari: `output/phase12/report.html`, `output/phase12/screens/`. Egasi surati avvalgi320px ishlov berilgan nusxa; asl surat emas. Katta qora yelka uchburchaklari olib tashlandi; haqiqiy ipda ayrim uzun chiziqlar qolishi mumkin.
+
+261unit testi,38ta brauzer holatining oxirgi natijalari va1974modulli build o‘tdi.2PDFning rasmi ilovaga pikselma-piksel, barcha3000qadami JSON/sektorlarga mos. Kompyuter/mobil asosiy hisob10.084/11.780soniya,15dan kam. Haqiqiy kit bilan ochish, PDF, player/oflayn va eski yo‘riqnomalar tekshirildi; avvalgi diagnostik xatolar yashirilmagan.
+
+APK: `output/mobile/ip-rasm-phase12-20261017-29f469aec06e-debug.apk`. Offline yig‘ish5m21s,43fayl/imzo va82eski APK saqlangani tekshirildi. Telefonga o‘rnatilmadi; native kit serveri hali sozlanmagan, kod/kreditni yangi brauzerda sinang.4194–4197 serverlari va tmp/data tegilmadi; yangi4198 alohida bazada. Barcha commitlar mahalliy, push yo‘q. Telefon/taxta/ip zaxirasi sinovi `AGENT/OWNER_TESTS.md` da.
+
+---
+
+Quyidagi hisobotlar tarixiy; joriy yo‘l yuqoridagi Phase12.
+
 # Phase11 — kattaroq yuzlar tayyor, 2026-10-16
 
 Yangi ilova: **http://127.0.0.1:4197/**.3-yig‘ish kodi: `output/phase11/manual-testing.txt`. Circle/Square’da bosh87% atrofida kattalashtirildi; iyak osti18px silliq oqartiriladi. “Yelkani qoldirish”, har yuzni siljitish/kattalashtirish bor. Heart juftligida yuzlar yuqori ikki bo‘lakka joylandi; bitta bosh yuqori qismda. “Ip soni”2000/2500/3000, taxmin4.4/5.6/6.7soat. Classic2 va eski yo‘riqnomalar saqlangan.
