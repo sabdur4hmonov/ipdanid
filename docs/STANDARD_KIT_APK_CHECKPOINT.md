@@ -1,4 +1,12 @@
-# Standard kit Android checkpoint — 2026-10-16
+# Latest Android checkpoint — uploaded photo visibility, 2026-10-16
+
+App `output/mobile/ip-rasm-photo-preview-20261016-f6cb7ddf0eea-debug.apk`; SHA256 `f6cb7ddf0eeadc86767b987c71fc6f13f7c45fb323e27280eee20dd1f399ffa7`. Test APK uses same prefix/-debug-androidTest.apk, SHA d52eaffc3d9cd161326c736b9a44eef93f47273ca5e0f51748ebc5e287e49fe9. Public signer unchanged `8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90`. Evidence `output/mobile/ip-rasm-photo-preview-20261016-f6cb7ddf0eea-evidence.json`.
+
+Clean web directory output/photo-preview-fix-dist,1965modules/43assets. Direct local Cap sync0.9sec, offline app/test assembly3m59s/176tasks. Dedicated verifier standard markers/all43 bytes/font/license/private exclusion/signers/73 previous archive hashes passed; extra actual-APK photo preview marker and19 retained live hashes/40 protected old dist files passed in output/photo-preview-fix/final-verification.json. No phone install/execution; native endpoint unconfigured.
+
+Visible uploaded source/composited pixels are explicitly separate from target/thread result. Ten focused desktop/mobile cases passed3.9min, including new exact pixels/collapsed tools/replacement/4locales, existing generation/unlock/exports/history. Prior184 aggregate/full241/HTTP152 are earlier evidence, no full186 rerun claim. Live4195 publication is additive, same API/customer state: output/phase9-dist must never be used as a fresh build/APK source because it retains old hashed assets. Use clean photo-preview-fix-dist. No4194 contact/restart/tmp/data read, no push.
+
+## Previous standard-kit build before photo visibility correction — 2026-10-16
 
 Debug app: `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`
 

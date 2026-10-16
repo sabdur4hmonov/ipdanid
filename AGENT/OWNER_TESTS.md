@@ -148,3 +148,9 @@ Standart kitda surat yopiq yuz/fon bo'limlari ichida yashiringan edi. Tuzatishda
 Agent4195dagi tuzatishni tekshirib qo'ygach sahifani yangilang va suratni yana bir marta tanlang. Eski sahifadagi tanlangan surat faqat xotirada bo'lgani uchun yangilashda qayta tanlash kerak. Kit hisobi/kredit/server qayta yaratilmaydi,4194 o'z holida. Oldingi interfeys kerak bo'lsa “Maxsus / oldingi vositalar” tugmasi bor.
 
 Tuzatish4195ga qo'yildi va yangi fayllar tekshirildi. Sahifani yangilang, suratni yana bir marta tanlang: “Yuklangan surat” yopiq bo'limlarsiz ko'rinsin; boshqa suratni tanlash ham ishlasin. Fon yuklanishi/xatosi rasm yonida ochiq ko'rinadi. Server, hisob va kreditlar qayta yaratilmagan.4194 o'z holida. APKning tuzatilgan nusxasi alohida yig'ilmoqda.
+
+## 2026-10-16 — surat ko'rinishi tuzatilgan APK ham tayyor
+
+`output/mobile/ip-rasm-photo-preview-20261016-f6cb7ddf0eea-debug.apk` — surat darhol ko'rinishini o'z ichiga olgan yangi APK.43 fayl/imzo/73 eski APK saqlangani tekshirildi, telefonga o'rnatilmadi. Native kit serveri hali sozlanmagan; to'liq kit sinovi4195da.
+
+4195ni yangilang, rasmingizni yana tanlang: “Yuklangan surat” darhol ko'rinsin, yopiq yuz/fon bo'limlarini ochish shart bo'lmasin. Boshqa rasmga almashtirish va to'rt til tekshirilgan. Fon tayyorlash holati ochiq; yuz/kesishni tasdiqlash va haqiqiy ip natijasi alohida. Kit hisobi/kreditlar, server va4194 qayta yaratilmagan. Avvalgi ko'rinish uchun “Maxsus / oldingi vositalar” mavjud.

@@ -1,5 +1,14 @@
 # Ip Rasm — yakuniy hisobot, 2026-10-16
 
+## So'nggi tuzatish — yuklangan surat, 2026-10-16
+
+Egasi surat tanlagan, ammo yangi Standart kit uni yopiq bo'limda yashirgan edi. Tuzatildi: “Yuklangan surat” asl/tayyorlangan rasmni darhol ko'rsatadi, fon holati ham ochiq.4195ni yangilab suratni bir marta qayta tanlang; eski sahifadagi surat faqat xotirada edi. Server/API/hisob/kreditlar o'zgarmadi, eski19 hashed fayl saqlandi. Oldingi vositalar alohida tugmada mavjud.
+
+Yangi APK: `output/mobile/ip-rasm-photo-preview-20261016-f6cb7ddf0eea-debug.apk`. SHA256: `f6cb7ddf0eeadc86767b987c71fc6f13f7c45fb323e27280eee20dd1f399ffa7`. CLEAN output/photo-preview-fix-dist43 fayli va surat markeri APKda tasdiqlandi, imzo o'sha,73 eski APK saqlangan. Offline assembly3m59s; telefon/native production endpoint hali tekshirilmagan/ulanmagan.
+
+Tuzatishdan keyin10/10 desktop/mobile holat3.9min o'tdi: haqiqiyRGB/o'lcham/yopiq bo'limlar/rasm almashtirish/to'rt til hamda eski8 kit oqimi. `test-results/photo-preview-fix-e2e/report.json`. Quyidagi184/unit/HTTP natijalari oldingi bosqich dalili; yangi186 to'liq qayta ishga tushirilgan deyilmaydi. Dalil: `output/photo-preview-fix/final-verification.json`.4194ning40 fayli aynan eski, serveriga so'rov/restart yo'q. Bu ko'rinish tuzatishi; oldingi sifat hukmi o'zgarishsiz.
+
+
 Branch: `feat/full-roadmap`.8-bosqich talablari va9-bosqich standart kit mexanizmlari tayyor, tekshirildi va APK yig'ildi. Sinash: **http://127.0.0.1:4195/**. Kod/admin kirishi faqat mahalliy `output/phase9/manual-testing.txt` faylida; bitta hali ishlatilmagan3-kreditli kod bor. Bu yangi alohida sinov hisobi.4194-server, uning40 veb fayli va asl ma'lumotlar o'z holida qoldi. Push yo'q.
 
 **QBRIX darajasidagi sifat tasdiqlanmadi.** Egasi suratining uch shaklida burun/lab hududlari mezondan o'tmadi. O'lchangan tizza1500 ulanish;2000–3000 qabul qilingan tavsiya emas. Umumiy MSE kamaygani hududiy sifat yo'qolishini oqlamaydi. Haqiqiy ikki kishilik Heart manbasi hali yo'q; bir kishilik surat ko'paytirilmadi.
@@ -40,7 +49,7 @@ Barcha sahifada50mm belgi.100%/Actual size, Fit o'chiq: avval belgini o'lchang, 
 | Brauzer |184 noyob yakuniy holat,92desktop+92mobile: `test-results/phase9-final/summary.json`. To'liq168o'tdi/16xato(54.66min), tuzatilgan26dan24o'tdi/2admin-tartib xatosi, keyin alohida admin2/2(31.5s). Asl hisobotlar saqlangan; bu bitta toza to'liq184 run emas. |
 | Sabab/tuzatish | Ikki test barcha main tugmalarni sanagan; oltita Worker testi eski distdan fayl nomini olgan; admin testi oldingi test4 saqlashiga bog'langan. Aniq yo'l/scoped assertion va adminning o'zi4ni saqlashi bilan tekshirildi; mahsulot cheklovlari yumshatilmadi. |
 | HTTP | Mijoz37/37, xodim67/67, kit48/48; yangi alohida DBlar. `output/product-evidence/customer-http.json`, `output/completion/staff-http.json`, `test-results/kit-http-R4NJ0F/report.json`. |
-| Build |1965 modul, faqat `output/phase9-dist`; oldingi chunk/dynamic-import ogohlantirishlari bor. |
+| Build |1965 modul, hozirgi toza build `output/photo-preview-fix-dist`;4195dagi phase9-dist qo'shimcha eski fayllarni ham saqlaydi. Oldingi chunk/dynamic-import ogohlantirishlari bor. |
 | Fizik PDF |25 sahifa/50mm/o'lchamlar/720 ko'rinadigan to'qnashmaydigan yorliq tekshirildi. Haqiqiy browser ikki sheet720nuqtasi xatosi≤1.28e-13mm; ikkala sticker720yorliq/to'qnashuv0. `test-results/phase9-final/manufacturer-pdf-verification.json`. Bu haqiqiy chop/teshish qabuli emas. |
 | Android | Offline app/test assembly3m56s o'tdi;43 veb fayl, markerlar/shrift/litsenziyalar/maxfiy fayl yo'qligi/imzo/min24/target36 tekshirildi.70 eski APK byte bir xil. `docs/STANDARD_KIT_APK_CHECKPOINT.md`. |
 | Jonli eski ilova | Distdagi40 fayl avvalgi dalil SHA bilan aynan bir xil;4194ga so'rov/restart qilinmadi. |
@@ -51,7 +60,7 @@ Barcha sahifada50mm belgi.100%/Actual size, Fit o'chiq: avval belgini o'lchang, 
 
 Egasi ishlatilgan manba avvalgi mahalliy tayyorlangan bir kishilik crop; yangi avtomatik fon/kesish qabuli yoki haqiqiy ikki kishilik yurak o'rnini bosmaydi. Raqib rasmi/kodi/qo'llanmasi ko'chirilmagan, surat tashqi saytga yuborilmagan.
 
-## APK va ishlayotgan sinov
+## Oldingi Phase9 APK va dastlabki sinov ishga tushishi (tarixiy)
 
 APK: `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`
 
@@ -91,3 +100,5 @@ Qolgan kiritmalar: haqiqiy2kishilik Heart va boshqa qabul suratlari; ruxsat etil
 ## 8–9-bosqich mahalliy commitlar
 
 `f002552` reja; `b02d516` classic/fon/kesish; `c6d409a` fizik profil/admin/PDF; `2a2afa1` sektor/qizil/ovoz/A-B; `6f6abe5` kit versiyalari; `4ac6460` yorliq burchak/uch tuzatishi; `84f3291` haqiqiy PDF download/sinov protokoli; `c5f5bdf` to'liq run checkpoint; `30cf924`184 yakuniy holat; `e01ac6e` APK dalillari. Yakuniy handoff commitining aniq hashi `git log -1 --oneline`da. Push/reset/force yo'q; surat/DB/output/maxfiy fayllar Gitga kirmagan.
+
+Surat ko'rinishi tuzatishi: `345c0cd` kod/10 sinov; `d6f5fe7`4195ga xavfsiz yangilash; oxirgi APK/handoff commitini `git log -1 --oneline`dan ko'ring.
