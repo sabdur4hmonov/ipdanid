@@ -1,3 +1,7 @@
+# Current customer flow — Phase13
+
+The same3customer screens now use classic-greedy/3 andfixed3000 as default. Details2500/3000/3500 includes8s/connection hours. Preparation4/gestures/kitpins/physicalrender are unchanged; newLS3/profile13/axisrule improvesfeatures. See docs/SHARPER_PORTRAITS_CHECKPOINT.md for actualSSIM/quality/time/oldguide compatibility and current4199/APK. The Phase12 record below is historical.
+
 # Phase12 — three-screen customer creation
 
 START contains only the two source actions and Circle/Square/Heart chips, with a small Menu for language/account/projects/expert entry. No material/engine/profile metadata or advanced sections. MOSLASH opens immediately after file/camera selection, showing local preparation status and a real shape/pin outline. After local people segmentation, actual head pixels are composed at87%/Heart lobes. Drag selects the nearest real head; mouse wheel/slider and two-pointer pinch zoom,90degree turn, exact auto reset, Before/After and shoulders. Generate is the visible crop approval; no extra checkbox. NATIJA renders the genuine1000px physical path, one effort line and assembly/PDF/readjust actions. Adjustment state survives result, player/account navigation and regeneration. Budget overrides live only in resultDetails; all legacy craft/sample/generation tools require Menu→Expert, including on noncreation pages.

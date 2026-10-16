@@ -203,7 +203,7 @@ APK: `output/mobile/ip-rasm-phase12-20261017-29f469aec06e-debug.apk`.261unit va3
 
 ## Phase13 — tiniqroq portret
 
-Yangi manzil va uchta natija uchun kod `output/phase13/manual-testing.txt`da (ishga tushirilgach). Eski4194–4198 o‘z holida qoladi.
+Yangi ilova: **http://127.0.0.1:4199/**. Uchta natija uchun kod `output/phase13/manual-testing.txt`da. Eski4194–4198 o‘z holida qoladi.
 
 1. Yangi manzilda Doira/Kvadrat/Yurak tanlang, galereyadan portret yuklang. Uch ekranli yo‘l avvalgidek: surat → Moslash → Natija. Suratni surish, ikki barmoq/g‘ildirak/slider, Burish/Qaytarish, Oldin/Keyin va yelka tugmasi ishlasin.
 2. Joylashuv ma’qul bo‘lsa **Yaratish**ni bosing. Yangi usul avtomatik ishlaydi; biror murakkab parametr kiritmang. Ko‘z, burun, lab va sochni avvalgi natija bilan teng o‘lchamda solishtiring. Bu haqiqiy0.12mm ip ketma-ketligi; tayyor surat ustiga bezak qo‘yilmaydi.
@@ -213,4 +213,4 @@ Yangi manzil va uchta natija uchun kod `output/phase13/manual-testing.txt`da (is
 6. `output/phase13/report.html`da bir xil tayyor nishon, v2 va v3 natijalarini ko‘ring. Egasi Kvadratida yuz ko‘rsatkichi0.512→0.574, Doirada0.545→0.612 bo‘ldi. Bular avvalgi320px ishlov berilgan lokal nusxa; yangi asl surat va haqiqiy telefon/taxtada o‘zingiz ham sinang. Hech qanday surat Gitga yoki tashqi saytga yuborilmagan.
 7. Eski saqlangan yo‘riqnomani ham oching: oldingi usuli, natijasi va progressi saqlansin. Chop etishda100%/Actual size,50mm belgini tekshirish va mix/sektor andozasi avvalgidek. Kerakli ip uzunligi va zaxira yetishini PDFdan tekshiring.
 
-APK, yangi manzil va yakuniy tekshiruvlar ish tugagach shu yerga yoziladi. Native kit serveri hali sozlanmagan; kod/kreditni yangi brauzer manzilida sinang. Agent telefonga o‘rnatmaydi.
+APK: `output/mobile/ip-rasm-phase13-20261017-7b42969cd9ba-debug.apk`.268unit va41ta brauzer holati o‘tdi;11PDFning rasmlari va barcha3000qadami bir xil.43fayl/imzo/85eski APK saqlangani tekshirildi. Eng sekin sifat hisob9.22soniya; haqiqiy telefon emas, mobil brauzer emulyatsiyasi ham sinalgan. Kvadratdagi3000ip sinovi taxmin1546m ip talab qildi, vaqtinchalik1200m zaxira yetmaydi; haqiqiy kitdagi ip uzunligini tekshiring. Native kit serveri hali sozlanmagan; kod/kreditni yangi brauzerda sinang. Agent telefonga o‘rnatmagan. Eski4194–4198 va tmp/data saqlangan, push qilinmagan.

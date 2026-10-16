@@ -1,3 +1,17 @@
+# Phase13 — tiniqroq portret tayyor, 2026-10-17
+
+Yangi ilova: **http://127.0.0.1:4199/**. Uchta natija uchun kod: `output/phase13/manual-testing.txt`. Doira/Kvadrat/Yurakda yangi v3 avtomatik ishlaydi; uch ekran va suratni bevosita moslash saqlangan. Standart3000ip≈6.7soat, Batafsil2500/3000/3500 va vaqtni ko‘rsatadi. Eski v2 yo‘riqnomalari o‘zgarmagan.
+
+Egasi Kvadratida yuz SSIM0.512→0.574, Doirada0.545→0.612. Kvadratda “+”ni hosil qilgan ikkita tekis ip v3da yo‘q, mixlar/andoza siljimagan.3sun’iy portret va Yurakdagi har ikki yuzda ko‘rsatkich yaxshilandi. Hisobot: `output/phase13/report.html` — teng o‘lchamda nishon/v2/v3 va2500/3000/3500 raqamlari. Bir sun’iy portretda3500 aniqroq(.587→.606), Yurak juftligida3000 yaxshiroq; vaqt uchun3000 standart qoladi. Egasi manbasi avvalgi320px ishlov berilgan nusxa, asl surat emas. Namuna SSIM porti ham Python bilan0.539→0.622 mos tushdi; turli kesishlar raqamlarini bir-biriga tenglashtirmaymiz.
+
+268unit testi va41brauzer holati o‘tdi.9sifat holatida27haqiqiy hisob, eng sekin9.22soniya;32oddiy/eski oqim sinovi ham o‘tdi.11PDFning rasmi ilovaga pikselma-piksel,3000qadami JSON/sektorlarga mos. APK: `output/mobile/ip-rasm-phase13-20261017-7b42969cd9ba-debug.apk` — offline yig‘ish3m41s,43fayl/imzo va85eski APK saqlangani tekshirildi. Native kit serveri hali sozlanmagan; kodni yangi brauzerda sinang. Telefon/taxtada hali sinov qilinmadi; Kvadrat sinovida1546m ip kerak bo‘ldi, kit zaxirasini tekshiring.
+
+4194–4198 serverlari/tmp/data tegilmagan, yangi4199 alohida bazada. Kit kodlari va suratlar Gitga kirmagan, push/o‘rnatish yo‘q. Sinov tartibi `AGENT/OWNER_TESTS.md`da.
+
+---
+
+Quyidagi hisobotlar tarixiy; joriy yo‘l yuqoridagi Phase13.
+
 # Phase12 — uch ekran tayyor, 2026-10-17
 
 Yangi ilova: **http://127.0.0.1:4198/**. Uchta yig‘ish kodi: `output/phase12/manual-testing.txt`. Endi: surat tanlash → Moslash → Natija. Suratni bevosita surish, ikki barmoq/g‘ildirak/slider bilan kattalashtirish,90°burish, qaytarish va Oldin/Keyin bor. Iyak osti oq; yelkani ko‘rsatish ixtiyoriy. Qayta moslash joylashuvni saqlaydi. Murakkab vositalar Menyu → Mutaxassis rejimida. To‘rt til bor.

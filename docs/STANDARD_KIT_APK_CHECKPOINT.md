@@ -1,3 +1,21 @@
+# Latest — Phase13 sharper portraits3 verified, 2026-10-17
+
+Phase13 COMPLETE/TESTED,2026-10-17. Ordinary3-screen flow defaults classic-greedy/3 for all3shapes: exact supplied LS mean(dd*(2*err-dd)), dd=.08*importance, gamma1.6,1+max faceGaussian,500px/240exactpins/fixed3000/minGap25/no chordrepeat/oldlegality+incidentguards; no penalty/earlystop. New strict reference3/profile13 provenance, unchanged classic-coverage/2 physics/pins/sectors/preparation4. Old2 guides/algorithm/arithmetic remain unchanged and importable. Worker/progress/cancel/checkpoint/replay/recovery/export dispatch supports3.
+
+PureTS viewing-ssim/1 matches OpenCV Gaussian/area160/local7x7sigma1.5/f32oval arithmetic; no fake tone normalization. Golden procedural numeric test plus providedPNG parity .538801743→.621812519 (Python .539→.622). Threeanalytic synthetic500px/3000physical regression cases and allreal local synthetic/person report faces improve3>=2. Actualsame-target ownerCircle .545221→.612201; ownerSquare .511744→.574480. OwnerSquare2actual centre-axis plus chords→0in3, no hole/phase movement; physicalfan/near-axis strands honestlyremain. All7unique equal400px panels visuallyreviewed clearer. Owner source existingprocessed320crop, not original.
+
+7desktop+2mobile-browser reportcases,27actual UIbudgetrenders2500/3000/3500 withsame-target2controls/signedPDF/player/JSON/exact1000px physicalpreview, allper-person3kSSIM>=2, max9.217s<15s.3500rawSSIMbest6/7desktop, clearlybetter synthetic2(.586680→.606299); Heart3000best(.630376 vs3500.627149).3000retained requestedtime-default~6.7h, not claimedmetricmaximum;3500~7.8h,2500~5.6h. Private report/results/screens/visualreview in output/phase13.
+
+268/268fullunit(75files/86suites,381.35s),41/41unique current browser checks (9quality+32customer/legacy,0skip), finalTypeScript/build1975 pass. Actualdirectgestures/reset/readjust/exactregenerate/4locales/3taps/signedunlock/offline/workerstartupretry andold2/1/red21/admin/camera/nativeinput regressions pass. Earliertrigcontrol3fail/1interruption corrected bycopyingactualsavedbrowserpins into2control, not relaxingcomparison; diagnosticsretained.11exact PDF1000px covers/all3000orderednumeric+sectorsteps,79pages each; cover/first+laststeps renderedandinspected. ActualownerSquare~1546.2m vsprovisional1200mstock, shortfall~346.2m remains explicitPDF/Admin; physicalstockmustbechecked.
+
+OfflineAndroid3m41s/176tasks(21executed),43exactpackagedassets/allnew3+legacymarkers/privacy/fonts/licenses/same8e43cfcertificate/85oldarchivesunchanged. App `output/mobile/ip-rasm-phase13-20261017-7b42969cd9ba-debug.apk` SHA256 `7b42969cd9ba8f79e7d563a72d0803fec6a9f0a2c2cf62f327583a9702ae2094`; matchingtestAPK SHAd52eaffc...unchanged. No install/realphone/instrumentation/production claim; nativeHTTPSkit backend unconfigured, kit testing in newbrowser.
+
+New http://127.0.0.1:4199/ API4481, unused3-buildcode in ignored output/phase13/manual-testing.txt, fresh owner-sharper-cyUQrV DB, launcher26348/child14908. ExactHTML/runtime3/43assets equalAPK. All5oldtrees4194–4198(40/43/43/43/43files)+19retained4195assets hash-verified unchanged WITHOUT contactingoldservers/APIs; tmp/data unused. FREEZE phase13-dist and4199/API4481 too; futurework uses newdirectory/port (e.g.phase14-dist/4200/4482). No photos/output/credentials/DB committed, no push/install. Remaining realphone/physical/originalphotos/QBRIX/realvoices/production inputs are separateowneracceptance.
+
+---
+
+Historical records below are superseded by the current Phase13 checkpoint.
+
 # Latest — Phase12 customer flow verified, 2026-10-17
 
 Phase12 COMPLETE/TESTED,2026-10-17. Exactly3customer creation screens: source/shape → direct photo adjustment → genuine thread result. Fixed classic2/500/240/standardkit/physical1000px render, new preparation4/chin-jaw crop,3000default (~6.7h) selected from real owner-local/3synthetic/Square/Heartpair2500/3000 A/B. Actualdrag/pinch/wheel/slider/90rotate/reset/before-after/shoulders, retained adjustment/exact regeneration,4locales,3taps including native picker, signedPDF/player/offline; experts behind Menu. Oldguides/classic2/physics unchanged.
