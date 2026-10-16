@@ -4,10 +4,18 @@ import { rasterSequence } from "./optical";
 import { referenceRaster } from "./classic-reference";
 
 export function previewPng(i: Instruction): Uint8Array {
-  const n = ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+  const n = [
+      "classic-greedy/2",
+      "classic-greedy/3",
+      "standard-accent/21",
+    ].includes(i.algorithm)
       ? 1000
       : i.params.resolution,
-    raster = ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+    raster = [
+      "classic-greedy/2",
+      "classic-greedy/3",
+      "standard-accent/21",
+    ].includes(i.algorithm)
       ? referenceRaster(i, n)
       : rasterSequence(i);
   const rgba = new Uint8Array(n * n * 4);

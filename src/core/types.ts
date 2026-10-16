@@ -93,6 +93,7 @@ export interface Instruction {
     | "standard-accent/21"
     | "classic-greedy/1"
     | "classic-greedy/2"
+    | "classic-greedy/3"
     | "greedy-optical/1"
     | "greedy-optical/2"
     | "greedy-optical/3"
@@ -119,7 +120,9 @@ export interface Instruction {
   profile: MaterialProfile;
   segments: Segment[];
   params: {
-    classic?: import("./classic-reference").ClassicReferenceSettings;
+    classic?:
+      | import("./classic-reference").ClassicReferenceSettings
+      | import("./classic-least-squares").ClassicLeastSquaresSettings;
     accent?: {
       version: "legal-heart-accent/1";
       bodySequenceHash: string;

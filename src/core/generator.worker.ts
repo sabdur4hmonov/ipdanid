@@ -1,3 +1,4 @@
+import { generateClassicLeastSquares } from "./classic-least-squares";
 import { refineHairCycles } from "./hair-cycles";
 import { generateClassic } from "./classic";
 import { generateClassicReference } from "./classic-reference";
@@ -25,6 +26,8 @@ import { validSubjectPlan } from "./subject-plan";
 self.onmessage = async ({ data }) => {
   try {
     const started = performance.now();
+    if (data.strategy === "classic3" && data.redAccentColor)
+      throw Error("classic3/red-accent-unsupported");
     if (data.strategy === "outline") throw Error("lettering/rebuild");
     if (data.strategy === "subjects") {
       const problem = capabilityProblem("density-subject/18", {
@@ -117,9 +120,13 @@ self.onmessage = async ({ data }) => {
         { ...options, seed: cycleSeed },
         await hash(options.pixels),
       );
+    const classicGenerator =
+      data.strategy === "classic3"
+        ? generateClassicLeastSquares
+        : generateClassicReference;
     const instruction =
-      data.strategy === "classic2"
-        ? await generateClassicReference({
+      data.strategy === "classic2" || data.strategy === "classic3"
+        ? await classicGenerator({
             ...options,
             onCheckpoint: (instruction) =>
               self.postMessage({

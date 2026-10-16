@@ -29,7 +29,8 @@ export interface OptimizerRecovery {
     | "texture"
     | "subjects"
     | "classic"
-    | "classic2";
+    | "classic2"
+    | "classic3";
   headRefine?: boolean;
   hairSeed?: Instruction;
   head?: import("./core/head-importance").HeadImportance;

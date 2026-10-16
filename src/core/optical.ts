@@ -91,7 +91,11 @@ export function rasterSequence(
   i: Instruction,
   completed = i.metrics.lines,
 ): Float32Array {
-  if (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm))
+  if (
+    ["classic-greedy/2", "classic-greedy/3", "standard-accent/21"].includes(
+      i.algorithm,
+    )
+  )
     return referenceRaster(i, i.params.resolution, completed);
   return rasterSequenceAtResolution(i, i.params.resolution, completed);
 }
@@ -103,7 +107,11 @@ export function rasterSequenceAtResolution(
   n: number,
   completed = i.metrics.lines,
 ): Float32Array {
-  if (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm))
+  if (
+    ["classic-greedy/2", "classic-greedy/3", "standard-accent/21"].includes(
+      i.algorithm,
+    )
+  )
     return referenceRaster(i, n, completed);
   if (!Number.isInteger(n) || n < 32 || n > 512)
     throw new Error("Invalid bounded evaluation resolution");

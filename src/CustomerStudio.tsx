@@ -1,3 +1,4 @@
+import { leastSquaresProfile } from "./core/classic-least-squares";
 import { useState, useEffect, useMemo, useRef, type PointerEvent } from "react";
 import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
@@ -19,7 +20,7 @@ import {
 import { loadPhoto } from "./core/image";
 import { hash } from "./core/engine";
 import { preparePersonPhoto, type PhotoAnalysis } from "./photo-prepare";
-import { classicPins, referenceProfile } from "./core/classic-reference";
+import { classicPins } from "./core/classic-reference";
 import { DEFAULT_STANDARD_KIT, standardProfiles } from "./core/standard-kit";
 import { currentStandardKit } from "./standard-kit-settings";
 import { renderInstruction } from "./core/render";
@@ -90,7 +91,7 @@ export function CustomerStudio({
     );
   const profile = useMemo(
     () =>
-      referenceProfile(
+      leastSquaresProfile(
         standardProfiles(config).find((p) => p.shape === shape)!,
       ),
     [config, shape],
@@ -429,7 +430,7 @@ export function CustomerStudio({
           if (id === generation.current)
             await saveOptimizerRecovery({
               version: "iprasm.optimizer-recovery/1",
-              strategy: "classic2",
+              strategy: "classic3",
               pixels: prepared.pixels,
               profile,
               resolution: 500,
@@ -468,7 +469,7 @@ export function CustomerStudio({
       }
     };
     w.postMessage({
-      strategy: "classic2",
+      strategy: "classic3",
       jobId: id,
       pixels: prepared.pixels,
       profile,
@@ -734,14 +735,14 @@ export function CustomerStudio({
           <details className="customer-details">
             <summary>{t("details")}</summary>
             <div className="budget-chips">
-              {[2000, 2500, 3000].map((v) => (
+              {[2500, 3000, 3500].map((v) => (
                 <button
                   key={v}
                   aria-pressed={lines === v}
                   disabled={busy}
                   onClick={() => void generate(v)}
                 >
-                  {v}
+                  {v} · ~{((v * 8) / 3600).toFixed(1)} {t("hours")}
                 </button>
               ))}
             </div>

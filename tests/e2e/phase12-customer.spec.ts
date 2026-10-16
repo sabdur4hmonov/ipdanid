@@ -11,6 +11,8 @@ import { customerFlowText } from "../../src/customer-flow-i18n";
 import { DEFAULT_CUSTOMER_LINES } from "../../src/customer-defaults";
 import { unlockKitGuide } from "./kit-access";
 import { validateInstruction } from "../../src/core/validation";
+const evidenceRoot =
+  process.env.IP_RASM_CUSTOMER_EVIDENCE || "output/current-customer/screens";
 test.use({ serviceWorkers: "block" });
 test("three customer screens preserve real mouse/touch crop through regeneration and signed PDF", async ({
   page,
@@ -21,7 +23,7 @@ test("three customer screens preserve real mouse/touch crop through regeneration
     !existsSync(photoCases[0].source),
     "Local synthetic acceptance portrait is not committed.",
   );
-  const out = `output/phase12/screens/${info.project.name}`;
+  const out = `${evidenceRoot}/${info.project.name}`;
   mkdirSync(out, { recursive: true });
   await page.goto("/");
   const flow = page.getByTestId("customer-flow");
@@ -173,6 +175,7 @@ test("three customer screens preserve real mouse/touch crop through regeneration
     JSON.parse(readFileSync((await (await json).path())!, "utf8")).project
       .instruction,
   );
+  expect(i.algorithm).toBe("classic-greedy/3");
   writeFileSync(out + "/guide.json", JSON.stringify(i, null, 2));
   expect(i.params.kitPreparation!.transform).toEqual(JSON.parse(position!));
   await context.setOffline(true);
@@ -231,9 +234,9 @@ test("auto-fit reaches the result in three taps including the native file select
     () => (window as unknown as { taps: string[] }).taps,
   );
   expect(clicks).toEqual(["Galereyadan tanlash", "Yaratish"]);
-  mkdirSync(`output/phase12/screens/${info.project.name}`, { recursive: true });
+  mkdirSync(`${evidenceRoot}/${info.project.name}`, { recursive: true });
   writeFileSync(
-    `output/phase12/screens/${info.project.name}/three-taps.json`,
+    `${evidenceRoot}/${info.project.name}/three-taps.json`,
     JSON.stringify(
       {
         inAppButtons: clicks,
@@ -330,9 +333,9 @@ test("one crashed local photo worker recovers automatically before Create", asyn
   await expect(page.getByTestId("customer-result")).toBeVisible({
     timeout: 60000,
   });
-  mkdirSync(`output/phase12/screens/${info.project.name}`, { recursive: true });
+  mkdirSync(`${evidenceRoot}/${info.project.name}`, { recursive: true });
   writeFileSync(
-    `output/phase12/screens/${info.project.name}/worker-recovery.json`,
+    `${evidenceRoot}/${info.project.name}/worker-recovery.json`,
     JSON.stringify(
       { actualFirstWorkerCrashed: true, attempts: 2, realPortraitResult: true },
       null,

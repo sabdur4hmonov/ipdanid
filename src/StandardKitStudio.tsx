@@ -99,7 +99,11 @@ export function StandardKitStudio({
   }, []);
   useEffect(() => {
     void readOptimizerRecovery().then((r) => {
-      if (r?.strategy === "classic" || r?.strategy === "classic2")
+      if (
+        r?.strategy === "classic" ||
+        r?.strategy === "classic2" ||
+        r?.strategy === "classic3"
+      )
         setRecovery(r);
     });
     return () => {
@@ -351,7 +355,13 @@ export function StandardKitStudio({
           const i = await validateInstruction(data.instruction);
           if (request !== serial.current) return;
           setResult(i);
-          if (!["classic-greedy/2", "standard-accent/21"].includes(i.algorithm))
+          if (
+            ![
+              "classic-greedy/2",
+              "classic-greedy/3",
+              "standard-accent/21",
+            ].includes(i.algorithm)
+          )
             setRecommendation(
               measuredKnee(qualityCurve(data.classicBody ?? i, pixels)),
             );

@@ -1,3 +1,7 @@
+import {
+  CLASSIC_LS_DEFAULTS,
+  isSquareCentreAxis,
+} from "./classic-least-squares";
 import { frameCustomerHeads } from "./customer-framing";
 import { validSubjectPlan } from "./subject-plan";
 import { validateStandardProfile } from "./standard-kit";
@@ -41,6 +45,7 @@ export async function validateInstruction(
     ![
       "classic-greedy/1",
       "classic-greedy/2",
+      "classic-greedy/3",
       "standard-accent/21",
       "standard-accent/20",
       "greedy-optical/1",
@@ -71,6 +76,7 @@ export async function validateInstruction(
       "standard-accent/20",
       "classic-greedy/1",
       "classic-greedy/2",
+      "classic-greedy/3",
       "standard-accent/21",
       "greedy-optical/4",
       "density-optical/5",
@@ -185,12 +191,15 @@ export async function validateInstruction(
       ![
         "classic-greedy/1",
         "classic-greedy/2",
+        "classic-greedy/3",
         "standard-accent/20",
         "standard-accent/21",
       ].includes(i.algorithm) ||
       !p.standardKit ||
       !(
-        ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+        ["classic-greedy/2", "classic-greedy/3", "standard-accent/21"].includes(
+          i.algorithm,
+        )
           ? [
               "standard-preparation/2",
               "standard-preparation/3",
@@ -219,7 +228,11 @@ export async function validateInstruction(
                   k.transform.framing?.keepShoulders,
                   k.transform.framing?.adjustments,
                 )
-              : ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+              : [
+                    "classic-greedy/2",
+                    "classic-greedy/3",
+                    "standard-accent/21",
+                  ].includes(i.algorithm)
                 ? faceFillReference(k.transform.faces, p.shape, k.sourceAspect)
                 : faceFill(
                     k.transform.faces,
@@ -235,17 +248,25 @@ export async function validateInstruction(
     await validateHeartAccent(i);
   else if (i.params.accent || p.standardKit?.accessory)
     throw Error("Unbound heart accessory");
-  if (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)) {
+  if (
+    ["classic-greedy/2", "classic-greedy/3", "standard-accent/21"].includes(
+      i.algorithm,
+    )
+  ) {
     const c = i.params.classic;
     const colours = i.algorithm === "standard-accent/21" ? 2 : 1;
     if (
       !c ||
       JSON.stringify(c) !==
         JSON.stringify({
-          ...CLASSIC_REFERENCE_DEFAULTS,
+          ...(i.algorithm === "classic-greedy/3"
+            ? CLASSIC_LS_DEFAULTS
+            : CLASSIC_REFERENCE_DEFAULTS),
           faces: i.params.kitPreparation?.transform.targetFaces ?? [],
         }) ||
       p.standardKit?.referenceRender !== "classic-coverage/2" ||
+      (i.algorithm === "classic-greedy/3") !==
+        (p.standardKit.referenceEngine === "classic-greedy/3") ||
       p.colors.length !== colours ||
       i.segments?.length !== colours ||
       i.params.mode !== "dark" ||
@@ -261,7 +282,11 @@ export async function validateInstruction(
         b = path[j],
         d = Math.abs(a - b),
         key = Math.min(a, b) * p.pins.length + Math.max(a, b);
-      if (Math.min(d, p.pins.length - d) < 25 || seen.has(key))
+      if (
+        Math.min(d, p.pins.length - d) < 25 ||
+        seen.has(key) ||
+        (i.algorithm === "classic-greedy/3" && isSquareCentreAxis(p, a, b))
+      )
         throw Error("classic2/chord-contract");
       seen.add(key);
     }
@@ -341,6 +366,7 @@ export async function validateInstruction(
       "standard-accent/20",
       "standard-accent/21",
       "classic-greedy/2",
+      "classic-greedy/3",
     ].includes(i.algorithm) &&
       i.metrics.reconstructionMse > i.metrics.baselineMse + 1e-6)
   )
@@ -351,7 +377,9 @@ export async function validateInstruction(
     !Number.isInteger(i.params.resolution) ||
     i.params.resolution < 32 ||
     i.params.resolution >
-      (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+      (["classic-greedy/2", "classic-greedy/3", "standard-accent/21"].includes(
+        i.algorithm,
+      )
         ? 500
         : [
               "density-resolved/12",
@@ -382,6 +410,7 @@ export async function validateInstruction(
     [
       "classic-greedy/1",
       "classic-greedy/2",
+      "classic-greedy/3",
       "standard-accent/21",
       "standard-accent/20",
       "continuous-guarded/6",
@@ -895,6 +924,7 @@ export async function validateInstruction(
         : [
               "classic-greedy/1",
               "classic-greedy/2",
+              "classic-greedy/3",
               "standard-accent/20",
               "standard-accent/21",
             ].includes(i.algorithm)
@@ -958,6 +988,7 @@ export async function validateInstruction(
       i.algorithm !== "glyph-outline/19" &&
       i.algorithm !== "standard-accent/20" &&
       i.algorithm !== "classic-greedy/2" &&
+      i.algorithm !== "classic-greedy/3" &&
       i.algorithm !== "standard-accent/21" &&
       (!i.metrics.weightedError ||
         !Number.isFinite(i.metrics.weightedError.baseline) ||
@@ -1048,6 +1079,7 @@ export function toTxt(i: Instruction): string {
       : String(id);
   const knots = [
     "classic-greedy/2",
+    "classic-greedy/3",
     "standard-accent/21",
     "standard-accent/20",
     "classic-greedy/1",

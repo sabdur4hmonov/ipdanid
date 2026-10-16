@@ -13,9 +13,11 @@ export function renderInstruction(
   ctx.clearRect(0, 0, w, h);
   ctx.fillStyle = p.baseColor;
   ctx.fillRect(0, 0, w, h);
-  const reference = ["classic-greedy/2", "standard-accent/21"].includes(
-      i.algorithm,
-    ),
+  const reference = [
+      "classic-greedy/2",
+      "classic-greedy/3",
+      "standard-accent/21",
+    ].includes(i.algorithm),
     viewPins = reference
       ? classicPins(p, i.params.resolution).map((a) => ({
           ...a,

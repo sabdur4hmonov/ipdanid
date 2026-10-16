@@ -4,6 +4,7 @@ import { baseLocale, scriptText } from "../uzbek-script";
 export type GenerationStrategy =
   | "classic"
   | "classic2"
+  | "classic3"
   | "continuous"
   | "guarded"
   | "global"
@@ -72,6 +73,11 @@ export const CAPABILITIES: Readonly<
   }),
   "classic-greedy/1": cap("classic", { modes: ["dark"], maximumSubjects: 3 }),
   "classic-greedy/2": cap("classic2", {
+    modes: ["dark"],
+    maximumSubjects: 3,
+    maximumResolution: 500,
+  }),
+  "classic-greedy/3": cap("classic3", {
     modes: ["dark"],
     maximumSubjects: 3,
     maximumResolution: 500,

@@ -1,0 +1,8 @@
+{
+  "source": "OpenCV 5.0.0 float32 GaussianBlur/INTER_AREA; executed reference arithmetic, no tone normalization",
+  "faceSsim": 0.9738401770591736,
+  "allSsim": 0.9735671281814575,
+  "correlation": 0.9893650075614949,
+  "facePixels": 5355,
+  "allPixels": 19116
+}
