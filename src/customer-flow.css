@@ -297,12 +297,12 @@
 }
 
 .customer-photo {
-  width: min(100%, calc(100dvh - 370px));
+  width: min(100%, calc(100dvh - 420px));
   min-width: 240px;
   margin-inline: auto;
 }
 .customer-flow [data-testid="customer-thread-result"] {
-  max-height: calc(100dvh - 330px);
+  max-height: calc(100dvh - 370px);
   width: auto;
   max-width: 100%;
   margin-inline: auto;

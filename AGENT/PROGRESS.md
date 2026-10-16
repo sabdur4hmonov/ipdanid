@@ -32,7 +32,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-PHASE12 ACTIVE: finalA/Bv3 six actual UI cases/12generations passed1.5min at4342/API4486. Equal-size owner/3synthetic/Square/Heartpanels reviewed,3000 more recognizable; single customer default3000 selected (~6.7h), user budget override only resultDetails. Stronger default jaw/neck crop removes old large triangles; old3unchanged. Visualreview/private report saved.15unit, TypeScript and1974module finalbuild pass; loading photo clipped to realshape, localized errors, legacy tools hidden in all ordinary menus. Next phase12-customer.spec.ts desktop/mobile on4343/API4487: actual gestures/3tap/4locales/screens/PDF/state/regeneration. Then focused24regressions/full257unit/APK/new4198+4480preview. Never run heavy jobs during timed UI or rebuild testdir whileactive. Protect4194–4197/tmp/data.
+PHASE12 ACTIVE: selected3000 from final6/6 A/Bv3/12actualgenerations. First desktop/mobile usability run:4pass/2three-tap-instrumentation failures (document bubbling saw already-mutated Cancel label). Actual result reached in2appclicks; changed listener to capture phase. Real mouse/wheel AND CDPtwo-finger pinch/rotation/reset/before-after/shoulders/readjustment/regeneration/signedPDF/offline/4locales allpassed; all3screens saved/visually inspected. Photo/result height refined so primary actions fit viewport, new explicit in-viewport assertion. Final TypeScript and1974module build passed. Next final30browser cases on4344/API4488 (customer6+legacy24), then full257unit and independent2PDFs, APK/fresh4198/API4480/code/finaldocs. No heavy parallel jobs during timedChrome, no rebuildwhiletestsactive.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

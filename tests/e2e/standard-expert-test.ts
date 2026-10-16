@@ -1,3 +1,4 @@
+// Historical standard controls require Menu → Expert; the new customer flow has separate acceptance tests.
 import { test as base } from "@playwright/test";
 export * from "@playwright/test";
 export async function enterStandardExpert(

@@ -1,5 +1,11 @@
 import { test, expect } from "@playwright/test";
-import { mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync } from "node:fs";
+import {
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  copyFileSync,
+  existsSync,
+} from "node:fs";
 import { photoCases, gallery, english, png } from "./phase12-cases";
 import { customerFlowText } from "../../src/customer-flow-i18n";
 import { DEFAULT_CUSTOMER_LINES } from "../../src/customer-defaults";
@@ -49,6 +55,14 @@ test("three customer screens preserve real mouse/touch crop through regeneration
   const image = page.getByTestId("customer-photo"),
     surface = page.getByTestId("customer-gesture-surface"),
     slider = page.getByRole("slider", { name: "Zoom", exact: true });
+  await expect(
+    page.getByRole("button", { name: "Create", exact: true }),
+  ).toBeInViewport({ ratio: 1 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
   const baseline = await png(page, "customer-photo"),
     baselineFrame = await image.getAttribute("data-framing");
   await page.screenshot({ path: out + "/2-adjust.png", fullPage: true });
@@ -196,13 +210,17 @@ test("auto-fit reaches the result in three taps including the native file select
   ).toHaveAttribute("aria-pressed", "true");
   await page.evaluate(() => {
     (window as unknown as { taps: string[] }).taps = [];
-    document.addEventListener("click", (e) => {
-      const b = (e.target as Element).closest("button");
-      if (b)
-        (window as unknown as { taps: string[] }).taps.push(
-          b.textContent!.trim(),
-        );
-    });
+    document.addEventListener(
+      "click",
+      (e) => {
+        const b = (e.target as Element).closest("button");
+        if (b)
+          (window as unknown as { taps: string[] }).taps.push(
+            b.textContent!.trim(),
+          );
+      },
+      true,
+    );
   });
   await gallery(page, photoCases[0]);
   await page.getByRole("button", { name: "Yaratish", exact: true }).click();

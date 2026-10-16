@@ -383,3 +383,10 @@ InitialA/Bv1 all6failed a test assertion comparing0..1floats directly against0..
 ## 2026-10-17 — Phase12 final default selected from actual UI A/B
 
 Finalv3 A/B6/6cases/12generations pass1.5min on4342/API4486, genuine same-target2500/3000, sourceowner-local/3synthetic/Square/Heartpair; every actual1000px render exactly reference bytes, signedJSON/legalcontinuous path and<15s. Equal400px actual panels reviewed:3000stronger eyes/lips/hair including owner/Heart, selected as singledefault (~6.7h). No cosmetic preview change. Tight jawcut removes previous large collar/shoulder triangles; small inferred-boundary remnants/long legal background chords disclosed, not garment semantic segmentation. Frozen old11 images and diagnosticv2 remainlocal. Current output/phase12/report.html/visual-review.json. App now has loading-shape clip, plain localized error keys, customer menus hide alllegacycraft/sample/tools except Expertentry.15targetedunit and finalTypeScript/build1974passed. Next six actual desktop/mobile usability/error/3tap checks with screenshots, then24focused/full257unit/PDF/APK/newpreview.
+
+
+## 2026-10-17 — Phase12 direct usability validated, tap instrument corrected
+
+Usabilityv1 sixactual desktop/mobile tests:4pass/2instrumentationfailures. Main gesture/4locale/signedPDF/offline test passed on bothdevices: realmouse drag/wheel, CDPtwofinger pinch,slider,90rotate,exactreset,beforeafter,shoulderstoggle,retainedcrop/exactregeneration. All3screens saved and inspected; no kit/mm/engine/settings onStart, simpleMoslash/Result. Auto-fit reached result in2appbuttons +OSpicker but bubbling documentlistener recordedCancel afterReact changed button text. Corrected capturephase; original failure traces retained, no product shortcut. Refined photo/result viewport height to keep primary actions visible and added strict viewport assertion. Newplain localized failure state passed4languages bothdevices. Next final30customer+legacy cases, fullunit/PDF/APK/newpreview; no protectedserver/data modifications.
+
+Final TypeScript48088 and1974module viewport build98073 passed before starting final regressions.
