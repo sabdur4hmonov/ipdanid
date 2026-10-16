@@ -89,7 +89,7 @@ export function customerHeadAlpha(
   const fade = 1 - smooth((v - (chin - 18 / 500)) / (18 / 500));
   const jawStart = face.top + 0.7 * face.height,
     t = smooth((v - jawStart) / Math.max(0.001, chin - jawStart));
-  const half = face.width * (0.6 - 0.23 * t),
+  const half = face.width * (0.6 - 0.4 * t),
     cx = face.left + face.width / 2;
   // Geometric crop of real pixels removes high shirt corners as well as neck.
   const jaw = 1 - smooth((Math.abs(u - cx) - half) / 0.018);

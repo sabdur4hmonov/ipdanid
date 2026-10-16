@@ -150,6 +150,7 @@ export function CustomerStudio({
     worker.current?.terminate();
     setBusy(false);
     setResult(undefined);
+    setStep((s) => (s === "result" ? "adjust" : s));
   }, [framing, profile]);
   useEffect(() => {
     const c = canvas.current;

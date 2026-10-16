@@ -25,6 +25,9 @@ test("customer chin cut removes high shoulder corners and all neck pixels, keeps
   );
   expect(customerHeadAlpha(0.02, h.chin - 0.025, b, h.chin, false)).toBe(0);
   expect(customerHeadAlpha(0.5, h.chin, b, h.chin, false)).toBe(0);
+  expect(
+    customerHeadAlpha(b.left + b.width * 0.8, h.chin - 0.01, b, h.chin, false),
+  ).toBe(0);
   expect(customerHeadAlpha(0.02, h.chin + 0.05, b, h.chin, true)).toBe(1);
   expect(framePortraitHeads(faces, "circle", 1).version).toBe(
     "reviewed-head-framing/3",

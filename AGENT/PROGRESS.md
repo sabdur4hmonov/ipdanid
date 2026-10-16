@@ -32,7 +32,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-PHASE12 ACTIVE: three-screen customer component and versioned preparation4 implemented. Direct drag/pinch/wheel/slider/rotation/reset/before-after, stronger chin/jaw crop removes shirt corners; fixed classic2/500px/kit, result gate/PDF and persistent readjustment, menu-only expert.15/15foundation unit tests and TypeScript/build1974 pass. Next run phase12-ab.spec.ts desktop at4340/API4484 (6cases×2500/3000), inspect actual old11/new12 results and select default; final gesture/3tap/4locale/screens/PDF tests, fullunit/finalbuild/APK/newpreview. No A/B/default selection or UI acceptance yet. Protect4194–4197/APIs/live dirs, tmp/data; output/phase12-dist newonly.
+PHASE12 ACTIVE: source foundation38ec922.15/15unit and1974module build pass; actual A/Bv2 six UI cases (12generations) passed2.7min, genuine signed JSON/continuous paths/physical pixels and<15s. Diagnosticv1 incorrectly compared float raster0..1 against bytes;6test failures retained, fixed test conversion. Visualv2 prefers3000 for feature contrast but owner shirt corners still slightly visible, so jaw taper tightened pre-release4; new15/15unit pass, rebuilt1974. v2 images preserved output/phase12/diagnostic-ab-v2. Next run final6caseA/Bv3 at4342/API4486, inspect tighter crop/choose default, then actual desktop/mobile gestures/3taps/4locales/PDF/screens (phase12-customer.spec), fullunit/regression/APK/freshpreview. All4194–4197/tmp/data untouched.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

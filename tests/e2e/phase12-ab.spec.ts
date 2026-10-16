@@ -84,7 +84,7 @@ for (const c of photoCases)
         raster = referenceRaster(i, 1000);
       expect(
         Buffer.from(actual.filter((_, k) => k % 4 !== 3)).equals(
-          Buffer.from(raster),
+          Buffer.from(Uint8Array.from(raster, (v) => Math.round(v * 255))),
         ),
       ).toBe(true);
       results.push({

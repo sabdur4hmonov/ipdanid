@@ -295,3 +295,19 @@
 .customer-entry[hidden] {
   display: none !important;
 }
+
+.customer-photo {
+  width: min(100%, calc(100dvh - 370px));
+  min-width: 240px;
+  margin-inline: auto;
+}
+.customer-flow [data-testid="customer-thread-result"] {
+  max-height: calc(100dvh - 330px);
+  width: auto;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.customer-app .announcement-list {
+  display: none !important;
+}
