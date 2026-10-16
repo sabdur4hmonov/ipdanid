@@ -1,5 +1,11 @@
 import { test, expect } from "@playwright/test";
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from "node:fs";
+import {
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  copyFileSync,
+  existsSync,
+} from "node:fs";
 import { unlockKitGuide } from "./kit-access";
 import { validateInstruction } from "../../src/core/validation";
 import {
@@ -51,6 +57,11 @@ const cases = [
 for (const c of cases)
   test(`ordinary JPG acceptance ${c.name}`, async ({ page, context }, info) => {
     test.setTimeout(240000);
+    test.skip(
+      !existsSync(c.source) ||
+        ("pair" in c && !existsSync("output/phase10/inputs/synthetic-2.png")),
+      "Local synthetic/owner acceptance files are required; photos are deliberately excluded from Git.",
+    );
     const out = `output/phase10/${info.project.name}/${c.name}`;
     mkdirSync(out, { recursive: true });
     const evidence: Record<string, unknown> = {

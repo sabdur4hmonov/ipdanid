@@ -36,6 +36,7 @@ parser.add_argument('--dist', default='dist')
 parser.add_argument('--series', default='ip-rasm-full-roadmap-20261014')
 parser.add_argument('--snapshot', default='roadmap-20261014-old-apks.json')
 parser.add_argument('--standard-kit', action='store_true')
+parser.add_argument('--classic-reference', action='store_true')
 args = parser.parse_args()
 assert re.fullmatch(r'[a-zA-Z0-9._-]+',args.series) and re.fullmatch(r'[a-zA-Z0-9._-]+\.json',args.snapshot), 'Unsafe archive name'
 SNAPSHOT = OUT / args.snapshot
@@ -72,6 +73,9 @@ with zipfile.ZipFile(APP) as apk:
     if args.standard_kit:
         for marker in ['classic-greedy/1','standard-accent/20','standard-kit/1','standard-profile/1','legal-heart-accent/1','standard-preparation/1','minHoleGapMm','sector-','50 mm calibration']:
             assert marker in code, 'Required standard-kit feature absent: '+marker
+    if args.classic_reference:
+        for marker in ['classic-greedy/2', 'classic-reference/2', 'classic-coverage/2', 'standard-preparation/2', 'reviewed-face-fill/2', 'standard-accent/21', 'standard-photo-preview', 'standard-prepared-target', 'standard-thread-result']:
+            assert marker in code, 'Required Phase10 reference feature absent: '+marker
     assert hashlib.sha256(apk.read('assets/public/fonts/NotoNaskhArabic-Regular.ttf')).hexdigest() == 'a87da9e7687b097af15f9dc217fe3e2dd80bcb3d50eccb394a4aece74b1ca4d9'
     voices = json.loads(apk.read('assets/public/voices/manifest.json'))
     assert len(voices['profiles']) == 2 and not any(p['clips'] for p in voices['profiles']), 'Unexpected fictional/undeclared voice assets'
@@ -97,6 +101,7 @@ for path in [OUT / 'ip-rasm-photo-quality-debug.apk', *archives]:
 assert verify_old() == old_count
 evidence = dict(debug=True, nativeDeviceTested=False, phoneInstalled=False, productionActive=False,
                 webDirectory=str(dist.relative_to(ROOT)), standardKitVerified=args.standard_kit,
+                classicReferenceVerified=args.classic_reference,
                 previousApksVerifiedUnchanged=old_count, webAssetsVerified=len(assets),
                 archivedApks=[str(p.relative_to(ROOT)) for p in archives], signatures=signatures,
                 applicationBadging=badging.splitlines()[:6], recordedVoicesInstalled=0,

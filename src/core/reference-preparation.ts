@@ -8,6 +8,24 @@ export function faceFillReference(
   shape: Shape,
   aspect: number,
 ): FaceFill {
+  if (
+    !Array.isArray(faces) ||
+    !faces.length ||
+    faces.length > (shape === "heart" ? 2 : 3) ||
+    !Number.isFinite(aspect) ||
+    aspect <= 0 ||
+    faces.some(
+      (b) =>
+        ![b.left, b.top, b.width, b.height].every(Number.isFinite) ||
+        b.left < 0 ||
+        b.top < 0 ||
+        b.width <= 0 ||
+        b.height <= 0 ||
+        b.left + b.width > 1 ||
+        b.top + b.height > 1,
+    )
+  )
+    throw Error("classic2/face-count-or-bounds");
   // Detector boxes enclose facial skin, not hair. Expand actual reviewed boxes
   // before fitting the complete head. This changes framing, never facial pixels.
   const heads = faces.map((b) => {

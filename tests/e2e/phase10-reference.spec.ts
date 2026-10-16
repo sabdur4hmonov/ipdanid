@@ -1,11 +1,17 @@
 import { test, expect } from "@playwright/test";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 test.use({ serviceWorkers: "block" });
 test("real portrait JPG gallery upload prepares and generates the default standard kit", async ({
   page,
 }, info) => {
   test.setTimeout(180000);
+  test.skip(
+    !existsSync(
+      process.env.IP_RASM_PORTRAIT ?? "output/phase10/inputs/synthetic-1.png",
+    ),
+    "Provide the local synthetic/licensed portrait fixture; photographs must never be committed.",
+  );
   const evidence: Record<string, unknown> = { project: info.project.name };
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));

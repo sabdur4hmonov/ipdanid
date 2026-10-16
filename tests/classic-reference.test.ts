@@ -113,7 +113,12 @@ test("typed physical renderer equals the supplied multiplicative coverage at eve
     );
   for (let k = 0; k < reference.length; k++)
     expect(actual[k * 3]).toBe(reference[k]);
-  const building=structuredClone(i),prefix=referenceRaster(building,96,30),incremental=referenceRaster(building,96,80,{pixels:prefix,completed:30});
+  const building = structuredClone(i),
+    prefix = referenceRaster(building, 96, 30),
+    incremental = referenceRaster(building, 96, 80, {
+      pixels: prefix,
+      completed: 30,
+    });
   expect(incremental).toEqual(actual);
 });
 test("CLAHE, masked percentiles and reference head framing preserve real pixels and face provenance", () => {
@@ -147,6 +152,13 @@ test("CLAHE, masked percentiles and reference head framing preserve real pixels 
   );
   expect(f.targetFaces).toHaveLength(1);
   expect(() => faceFillReference([], "circle", 1)).toThrow();
+  expect(() =>
+    faceFillReference(
+      [{ left: -0.1, top: 0.2, width: 0.4, height: 0.5 }],
+      "circle",
+      1,
+    ),
+  ).toThrow();
 });
 test("500px/2500 continuous kit connections remain full-budget, legal, cancellable and checkpointed", async () => {
   const n = 500,

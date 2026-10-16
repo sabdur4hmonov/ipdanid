@@ -173,7 +173,6 @@ export function StandardKitStudio({
       setEngine("classic2");
       setN(500);
       setLines(2500);
-      setRedAccent(false);
       setBackground(undefined);
       setSourceId(crypto.randomUUID());
       setSource(c);
@@ -605,7 +604,11 @@ export function StandardKitStudio({
               </select>
             </label>
           </details>
-          <button disabled={backgroundBusy || busy} onClick={prepare}>
+          <button
+            className="outline"
+            disabled={backgroundBusy || busy}
+            onClick={prepare}
+          >
             {t("prepare")}
           </button>
         </>
@@ -618,9 +621,16 @@ export function StandardKitStudio({
             role="img"
             aria-label={t("target")}
             data-testid="standard-prepared-target"
-            style={{ width: "100%", maxWidth: 600 }}
+            style={{ display: "block", width: "100%", maxWidth: 600 }}
           />
-          <label>
+          <label
+            style={{
+              display: "flex",
+              gap: 12,
+              alignItems: "center",
+              margin: "16px 0",
+            }}
+          >
             <input
               type="checkbox"
               checked={reviewed}
@@ -628,7 +638,11 @@ export function StandardKitStudio({
             />
             {t("review")}
           </label>
-          <button disabled={!reviewed || busy} onClick={() => calculate()}>
+          <button
+            className="primary"
+            disabled={!reviewed || busy}
+            onClick={() => calculate()}
+          >
             {t("generate")}
           </button>
         </>
@@ -659,7 +673,7 @@ export function StandardKitStudio({
             role="img"
             aria-label={t("actual")}
             data-testid="standard-thread-result"
-            style={{ width: "100%", maxWidth: 600 }}
+            style={{ display: "block", width: "100%", maxWidth: 600 }}
           />
           <p>
             {result.metrics.lines} · {result.metrics.estimatedMeters.toFixed(1)}{" "}
@@ -676,7 +690,15 @@ export function StandardKitStudio({
               ? `${t("recommended")}: ${recommendation.connections} · ${recommendation.hours.toFixed(1)} h`
               : t("pendingKnee")}
           </p>
-          <button onClick={() => onGuide(result)}>{t("save")}</button>
+          {result.metrics.stockShortfallMeters! > 0 && (
+            <p role="status">
+              {t("extraThread")}:{" "}
+              {result.metrics.stockShortfallMeters!.toFixed(1)} m
+            </p>
+          )}
+          <button className="primary" onClick={() => onGuide(result)}>
+            {t("save")}
+          </button>
         </>
       )}
     </section>
