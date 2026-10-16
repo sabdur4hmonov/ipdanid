@@ -1,72 +1,75 @@
-# Ip Rasm — yakuniy hisobot, 2026-10-15
+# Ip Rasm — yakuniy hisobot, 2026-10-16
 
-Branch: `feat/full-roadmap`, boshlang‘ich branch `feat/r1-r2-subjects`. Rejadagi mustaqil dasturlash, sinov va APK ishlari bajarildi. Surat sifati bo‘yicha v17 tajribasi rad etildi: o‘xshashlik yaxshilandi deb aytilmaydi, asosiy algoritm almashtirilmadi. Haqiqiy surat/taxta, QBRIX, ovoz yozuvlari va ishlab chiqarish serveriga bog‘liq ishlar quyida ochiq ko‘rsatilgan.
+Branch: `feat/full-roadmap`.8-bosqich talablari va9-bosqich standart kit mexanizmlari tayyor, tekshirildi va APK yig'ildi. Sinash: **http://127.0.0.1:4195/**. Kod/admin kirishi faqat mahalliy `output/phase9/manual-testing.txt` faylida; bitta hali ishlatilmagan3-kreditli kod bor. Bu yangi alohida sinov hisobi.4194-server, uning40 veb fayli va asl ma'lumotlar o'z holida qoldi. Push yo'q.
 
-## Bosqichlar holati
+**QBRIX darajasidagi sifat tasdiqlanmadi.** Egasi suratining uch shaklida burun/lab hududlari mezondan o'tmadi. O'lchangan tizza1500 ulanish;2000–3000 qabul qilingan tavsiya emas. Umumiy MSE kamaygani hududiy sifat yo'qolishini oqlamaydi. Haqiqiy ikki kishilik Heart manbasi hali yo'q; bir kishilik surat ko'paytirilmadi.
 
-| Bosqich | Bajarilgan va tekshirilgan | Qolgan yoki rad etilgan |
+## Bosqichlar
+
+| Bosqich | Natija | Ochiq qolgan qabul |
 | --- | --- | --- |
-| 0. Sinov xavfsizligi | Yangi alohida DB/portlar, himoyalangan yo‘llar, “Yana” navigatsiyasi testlari. Yakuniy to‘liq brauzer 176/176 va unit 232/232 o‘tdi. | Mustaqil ish qolmadi. Egasining `tmp/data`, DB va 4194-serveriga tegilmadi. |
-| 1. Ochiq tadqiqot | `docs/COMPETITOR_WORKFLOW.md`, `docs/ALGORITHM_SURVEY.md`: ochiq kit jarayonlari, noma’lum/qarama-qarshi SKU ma’lumotlari, maqola/usul/litsenziya va gipotezalar. | Raqib kodi/rasmi ko‘chirilmadi, yopiq kit chetlab o‘tilmadi. Sifat ustunligi haqida dalilsiz xulosa yo‘q. |
-| 2. Ip sifati | Muzlatilgan R 4 tashxis, hududiy xato, fit/routing, teri teksturasi; v17 va nazorat bir xil 55,440 fitting baholash bilan tekshirildi. Recovery va aniq eksport ishlaydi. | **v17 rad etildi**: teri tusi/coarse xatosi yomonlashgan. Yangi asosiy usul yo‘q. Qabul qilingan usul bo‘lmagani sabab unga bog‘liq samarali ip soni egri chizig‘i/soddalashtirish bajarilmadi. Burun/lab/o‘xshashlikning yangi yaxshilanishi tasdiqlanmagan. |
-| 3. Umumiy yadro | Alohida yoqiladigan 18:1–3 odam, hayvon, buyum; tekshirilgan qismlar, har bir obyekt vazni, eng yomon obyekt tekshiruvi,320 aniqlik, haqiqiy Worker/checkpoint/player/eksport. Noto‘g‘ri holat ochiq rad etiladi. | Haqiqiy 2/3 odam, hayvon va buyum suratlaridagi o‘xshashlik hamda taxta qabulini egasi tekshiradi. Asosiy usul o‘zgarmagan. |
-| 4. Matn va andozalar | Lotin/kirill/arab, offline OFL shrift va haqiqiy arab qo‘shilishi. To‘ldirilgan matn 18 va kontur mixlari 19, barcha ulovchi iplar, fizik koordinata, player/PDF/TXT/JSON, to‘rt til va hayvon/buyum andozalari tekshirildi. | Bir o‘tishli ingichka kontur xira bo‘lishi mumkin; o‘qilish/taxta hali qabul qilinmagan. Arab+lotin/kirill aralash bitta qator qo‘llanmaydi. Ism+portret ixtiyoriy kompozitsiyasi alohida tekshiriladigan koordinata tahrirchisi bo‘lmagani uchun qo‘shilmadi. Boshqa noma’lum material/taxta kitlari ko‘chirilmadi. |
-| 5. Kit va kredit | Bitta hisobga kod, odatda 4 yig‘ish/muddatsiz; ixtiyoriy muddat/chegara, audit/huquq/rate limit, mahalliy QR/CSV. Bepul ko‘rinish; qadam/player/eksport bir kreditga. Imzolangan hisob+hash+qurilma ruxsati offline muddatsiz, qayta urinish/qayta berish ortiqcha olmaydi. HTTP 38/38 va UI o‘tdi. | Bu mijoz tarafidagi to‘siq, buzib bo‘lmas DRM emas. Keyingi server-generatsiya yo‘li hujjatlangan, hozir ishlamaydi. “30 kun” sarflanmagan kredit muddati, avtomatik oylik to‘ldirish emas. Jonli server/to‘lov yoqilmagan. |
-| 6. QBRIX | Maxfiy input papkasi va `docs/QBRIX_COMPARE_HOWTO_UZ.md` tayyor. | **Egasi fayllari kutilmoqda**: asl surat/QBRIX natijasi yo‘q. `output/qbrix-compare/report.html` yaratilmagan; raqibdan yaxshiroq degan xulosa yo‘q. |
-| 7. Ekran, ovoz, APK | `App.tsx` 337 qatorga ajratildi, haqiqiy ekranlar va bitta controller. Mobil qulf/tugmalar, offline va eski oqimlar tekshirildi. Ikki instruktor sloti, WAV/hash/ro‘yxat, audio/rate/cancel/kesh, TTS/matn fallback ishlaydi. APK/40 fayl/imzo tekshirildi,67 eski APK saqlandi. | **Haqiqiy ovozlar 0**,590 yozuv kerak. Sun’iy test tovushlari nutq emas, APKda yo‘q. Telefon/jismoniy chop sinovi bajarilmagan. Yangi pullik native kit uchun HTTPS backend/ishonch sozlanmagan. |
+|0. Xavfsiz sinov | Alohida DB/portlar, himoyalangan yo'llar, haqiqiy browser regressiyasi. | Mustaqil ish qolmadi. |
+|1. Tadqiqot | Ochiq kit jarayonlari/usullar/litsenziyalar hujjatlangan. | Raqib aktivlari/kodi/yopiq kit ko'chirilmagan. |
+|2. Sifat | Muzlatilgan tashxis va v17/nazorat; v17 rad etilgan, o'z-o'zidan asosiyga o'tkazilmagan. | O'xshashlik yaxshilanishi tasdiqlanmagan; rad etilgan tajribalar takrorlanmaydi. |
+|3. Umumiy yadro | Alohida18:1–3 odam/hayvon/buyum, haqiqiy Worker/recovery/aniq eksport. | Haqiqiy guruh/hayvon/buyum suratlari va taxta qabuli kerak. |
+|4. Matn/andoza | Lotin/kirill/arab, OFL shrift/qo'shilish, to'ldirish18 va kontur19, fizik ulanishlar. | Taxtada o'qilish; aralash arab+lotin/kirill bitta qator qo'llanmaydi. Ism+portret kompozitsiyasi alohida koordinata shartnomasi yo'qligi sabab keyinga qolgan. |
+|5. Kit/kredit | Bitta hisobga kod, imzolangan offline ruxsat, qayta urinish ortiqcha sarflamaydi, admin QR/CSV. Yangi standart3, admin4ni ham saqlaydi; eski berilgan kreditlar o'zgarmadi. | Jonli savdo/ishlab chiqarish serveri yoqilmagan. |
+|6. QBRIX taqqoslash | Ochiq faktlar va mahalliy to'plash yo'riqnomasi tayyor. | Bir xil asl surat/kesish va ruxsat etilgan QBRIX natijasi kerak; raqibdan yaxshiroq degan xulosa yo'q. |
+|7. Ekran/ovoz/Android | Bitta controller/ekranlar, offline mexanizm, ikki instruktor sloti, TTS/matn, APK tekshirildi. | Haqiqiy yozuv0/746, telefon sinovi bajarilmagan. |
+|8. Classic/fon/kesish | Alohida classic-greedy/1, avtomatik oq fon/xatoni ko'rsatish, haqiqiy yuzlarni ko'rib tasdiqlash, face-fill va qat'iy recovery. Oldingi vositalar saqlangan. | Yangi haqiqiy crop/fonning egasi qabuli; sifat g'olibi yo'q. |
+|9. Standart kit | Uch profil, bitta720 nuqtali asos, tarixli admin sozlamalari, haqiqiy PDF/sektorlar, haqiqiy qizil qo'shimcha yo'l20,3-kredit, vaqt/tizza va9-case A/B, build/APK. | Sifat talabi qabul qilinmagan; haqiqiy2-kishilik Heart, fizik chop/teshish/yopish va telefon qabuli kerak. |
 
-## Yakuniy tekshiruv dalillari
+## Kit va chop
 
-| Tekshiruv | Haqiqiy natija | Hisobot |
-| --- | --- | --- |
-| To‘liq unit |232/232 o‘tdi | `test-results/final-full-unit.json` |
-| To‘liq Chrome desktop+mobile |176/176:88+88,26.6 daqiqa;0 skip/flaky/xato | `test-results/final-full-e2e/report.json` |
-| Oxirgi matn tuzatishidan keyin |4/4 desktop+mobile,39.2 soniya; haqiqiy arab outline/target, review/player/offline, optik PDF, barcha mix nuqtalari, JSON/TXT | `test-results/final-lettering-controls/report.json` |
-| Customer HTTP |37/37, restart/egalik | `output/product-evidence/customer-http.json`; alohida DB `test-results/customer-http-cEqyvP/` |
-| Staff HTTP |67/67,6 rol/huquq/bekor qilish | `output/completion/staff-http.json`; alohida DB `test-results/staff-http-q0sj67/` |
-| Kit HTTP |38/38, retry/kredit/imzo/restart | `test-results/kit-http-Fy4z00/report.json` |
-| Production veb build | TypeScript+Vite 1955 modul o‘tdi; avvalgi chunk/dynamic-import ogohlantirishlari qolgan | `npm run build`; `dist/` |
-| Android sync/offline assembly |2 daqiqa 8 soniyada muvaffaqiyatli;176 task:21 bajarildi,155 up-to-date | `docs/MOBILE_ROADMAP_CHECKPOINT.md` |
-| APK tekshiruvi |40/40 dist fayl, aniq kompilyatsiya tarkibi, shrift/litsenziya, yangi usullar/manifest, eski imzo va 67 eski APK hash o‘tdi | `output/mobile/ip-rasm-full-roadmap-20261014-87d130777145-evidence.json` |
+Vaqtinchalik egasi standartlari: oq500×500mm MDF, doira460mm/240mix, kvadrat470mm/240mix, yurak390mm chegaraviy maydon/240mix, qora0.12mm monofilament. Yurakda ko'pi bilan2 odam va ixtiyoriy haqiqiy ikkinchi rangli chegara bor; ko'priklar ham ulanish/metr/vaqtga qo'shiladi. Bitta asosda720 alohida nuqta, eng yaqin markazlar3.004948mm.1.5mm teshik/3mm markaz oralig'i/10mm chet va material shaffofligi taxmin; haqiqiy MDF/mix mustahkamligi avtomatik qabul qilinmagan.
 
-To‘liq 176 va 232 sinov oxirgi kichik interfeys tuzatishidan **oldin** o‘tdi. Keyin konturda ta’sir qilmaydigan iplar chegarasi yashirildi, to‘ldirilgan matnda qoldi. Algoritm/ketma-ketlik/hash o‘zgarmadi. Shu yakuniy buildda tegishli 4 brauzer holati alohida o‘tdi; ularni 180 noyob test yoki oxirgi kodda qayta bajarilgan to‘liq 176 deb ko‘rsatmaymiz. Mobil skrinshotda ortiqcha sozlama yo‘qligi, haqiqiy xira ip yo‘li nishondan alohidaligi va ko‘rinish sig‘ishi tekshirildi.
+`output/phase9/templates/`:
 
-## Sifat tajribasi
+- `standard-kit-sheet.pdf`:1:1,500×500mm.
+- `standard-kit-tiles.pdf`:6 A4,10mm ustma-ust tekislash.
+- `standard-kit-stickers.pdf`:18 A4, tanlangan shaklning6 sahifasi. Kvadrat/pastki yurak tashqariga, yuqori yurak ichkariga qaraydi; alohida sektor tasmalarini kesing.
+- `coordinates.json`: aynan shu720 nuqta/tick, r1/config SHA `5c9bc84d400210a1dfa791a5f26d00ff027f47d540d7cce3f7973701b7418041`.
 
-`output/quality-r4/report.html` — tashxis. Muzlatilgan root24:1,852 ulanish,643.1466 m,247.6 taxminiy daqiqa. `output/local-texture-v17/report.html` — nazorat va nomzod; nomzod 1,863 ulanish/647.2598 m/249.07 daqiqa, nazorat 1,850/643.9969 m. Routing baholashlari alohida, barcha ulovchi iplar ko‘rinishda va hisobda bor.
+Barcha sahifada50mm belgi.100%/Actual size, Fit o'chiq: avval belgini o'lchang, keyin nuqtalarni belgilang/teshing va faqat tanlangan naqsh yorliqlarini tickdan mixga tekislang. Qog'ozdagi versiyani ilovada tanlang; admin yangi sozlama saqlasa eski versiya ham qoladi. Saqlanmagan admin o'zgarishidan PDF chiqmaydi. Yorliq/player/PDF/TXT/JSON A-1…D-60 yoki8×30; raqamli nail ID ham saqlanadi. B-17 ovozda harf va o'n yetti; hozir qurilma ovozi/matn, yozib olingan instruktor yo'q.
 
-Nomzod ortiqcha teksturani 4.66% kamaytirgan, ammo teri tusi 5.96% va coarse xatoni 8.92% yomonlashtirgan. Hududiy chegaradan o‘tmadi. Ko‘proq ip sarfi sifat yutug‘i deb ko‘rsatilmadi. Natija **REJECTED**, asosiy usulga o‘tmagan. Qabul mezonlari va shartli keyingi ish nega bajarilmagani `docs/QUALITY_CHECKPOINT.md` da. Eski rad etilgan tajribalar takrorlanmadi.
+## Tekshiruv dalillari
 
-## APK
+| Tekshiruv | Yakuniy natija / dalil |
+| --- | --- |
+| Unit | To'liq241/241: `test-results/phase9-final-full-unit.json`; keyingi PDF tuzatishi5/5: `phase9-ruler-layout-final-unit.json`,4×60/8×30 burchak/uch yorliqlari ham.242 to'liq qayta ishga tushirilgan deb aytilmaydi. |
+| Brauzer |184 noyob yakuniy holat,92desktop+92mobile: `test-results/phase9-final/summary.json`. To'liq168o'tdi/16xato(54.66min), tuzatilgan26dan24o'tdi/2admin-tartib xatosi, keyin alohida admin2/2(31.5s). Asl hisobotlar saqlangan; bu bitta toza to'liq184 run emas. |
+| Sabab/tuzatish | Ikki test barcha main tugmalarni sanagan; oltita Worker testi eski distdan fayl nomini olgan; admin testi oldingi test4 saqlashiga bog'langan. Aniq yo'l/scoped assertion va adminning o'zi4ni saqlashi bilan tekshirildi; mahsulot cheklovlari yumshatilmadi. |
+| HTTP | Mijoz37/37, xodim67/67, kit48/48; yangi alohida DBlar. `output/product-evidence/customer-http.json`, `output/completion/staff-http.json`, `test-results/kit-http-R4NJ0F/report.json`. |
+| Build |1965 modul, faqat `output/phase9-dist`; oldingi chunk/dynamic-import ogohlantirishlari bor. |
+| Fizik PDF |25 sahifa/50mm/o'lchamlar/720 ko'rinadigan to'qnashmaydigan yorliq tekshirildi. Haqiqiy browser ikki sheet720nuqtasi xatosi≤1.28e-13mm; ikkala sticker720yorliq/to'qnashuv0. `test-results/phase9-final/manufacturer-pdf-verification.json`. Bu haqiqiy chop/teshish qabuli emas. |
+| Android | Offline app/test assembly3m56s o'tdi;43 veb fayl, markerlar/shrift/litsenziyalar/maxfiy fayl yo'qligi/imzo/min24/target36 tekshirildi.70 eski APK byte bir xil. `docs/STANDARD_KIT_APK_CHECKPOINT.md`. |
+| Jonli eski ilova | Distdagi40 fayl avvalgi dalil SHA bilan aynan bir xil;4194ga so'rov/restart qilinmadi. |
 
-- App: `output/mobile/ip-rasm-full-roadmap-20261014-87d130777145-debug.apk`,35,976,072 bayt.
-- SHA-256: `87d13077714591e342ad63e371936934a1266c0caa7f960c4baefc1c5c6cf2f5`.
-- Instrumentation: `output/mobile/ip-rasm-full-roadmap-20261014-87d130777145-debug-androidTest.apk`; native kodi o‘zgarmagani sabab up-to-date chiqish, qurilmada bajarilmagan.
-- Eski/yangi app/test sertifikati: `8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90`.
--67 tarixiy APK `output/mobile/roadmap-20261014-old-apks.json` bo‘yicha o‘zgarmagan; avvalgi Gradle APKlari oldindan arxivlangan. Nomdagi 14-oktabr turkum boshlangan sana, yakuniy app 15-oktabrda yig‘ilgan.
+## A/B va cheklovlar
 
-Bu debug APK. Telefonga o‘rnatilmadi, instrumentation ishga tushirilmadi, release/push/to‘lov/jonli savdo bajarilmadi. Public build konfiguratsiyasida `VITE_NATIVE_API_BASE` ulanmagan. Yangi pullik native unlock uchun HTTPS backend, doimiy imzo boshqaruvi va oldindan ishonilgan public key kerak; APKda jonli savdo tayyor deb aytilmaydi. Mahalliy brauzer kit oqimi tekshirilgan; bepul lokal generatsiya va eski qo‘llanmalar alohida ishlaydi.
+`output/phase8/report.html` va `output/phase9/report.html`: muzlatilgan protokol,96 aniqlik, bir xil nishon/material/koordinata, A eski greedy-optical/4, B classic/1. B2500 hamda3500 chegaralaridan haqiqiy sifat–ulanish egri chizig'i.9 yangi kit holatidan5 sonli hududiy mezondan o'tgan; bu vizual qabul emas. Egasi doira/kvadratda burun, yurakda og'iz mezoni o'tmagan; ikki sintetik yuzli yurak ham barcha hududiy mezondan o'tmagan. Egasi uch shaklida tizza1500, haqiqiy yakuniy qora ip1695–1741 atrofida, taxmin3.77–3.87soat(8soniya/ulanish).2000–3000 majburan tavsiya qilinmadi. Boshlang'ich2500 limit o'lchangan qabul qilingan tavsiya degani emas.
 
-## Egasi tekshiradigan qadamlar
+Egasi ishlatilgan manba avvalgi mahalliy tayyorlangan bir kishilik crop; yangi avtomatik fon/kesish qabuli yoki haqiqiy ikki kishilik yurak o'rnini bosmaydi. Raqib rasmi/kodi/qo'llanmasi ko'chirilmagan, surat tashqi saytga yuborilmagan.
 
-Loyiha papkasida `npm run local` → http://127.0.0.1:4194. Mavjud serverni agent to‘xtatmagan; ishlayotgan bo‘lsa shu manzilni oching. Batafsil `AGENT/OWNER_TESTS.md` da.
+## APK va ishlayotgan sinov
 
-1. Avvalgi loyihani oching: ketma-ketlik va yig‘ish qadami saqlansin.
-2. Yangi suratni hisoblang: PNG/ko‘rinish/ip uzunligi/vaqt bepul. Qadam/player/PDF/TXT/JSON kit bilan ochilguncha yashirilsin. Bir natijani ochish bir kredit olsin, yangilash/offline/retry qayta olmasin. Maxfiy kod/parolni yubormang.
-3. “Yana” → “Mozaika” → “Ip bilan yozuv”: `SALOM`, `МИР`, `سلام`; ikkala rejimda tekshirib tasdiqlang. Nishon va haqiqiy ipni alohida ko‘ring. Saqlash → Yig‘ish/eksport bir ketma-ketlikni saqlasin. Konturdagi ulovchi iplar ham yig‘iladi.
-4. Hayvon/buyum andozasida haqiqiy chegara/ko‘z/tumshuqni belgilang; o‘zgarish tasdiqni bekor qilsin.2/3 odamning har birini tekshiring. Oddiy/kattalashtirilgan o‘xshashlik inson qabulini talab qiladi.
-5. PDFni 100% hajmda chop etib 50 mm belgini o‘lchang, mixlarni taxtada tekshiring. QRni telefon bilan o‘qing. Bular jismoniy qabul, avtomatik brauzer testi emas.
-6. Ovozda real instruktorlar yo‘qligi ochiq ko‘rinsin; qurilma ovozi yoki matn ishlasin. Yozuvlar kelgach haqiqiy offline/telefon ovozi tekshiriladi.
+APK: `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`
 
-## Kutilayotgan materiallar va qarorlar
+SHA256: `5f6c68918c503de0e4a94ecde0af85d9ac8fb3040a52ffd5bd326d10d9b8b319`
 
-- Haqiqiy 2/3 odam, hayvon va buyum suratlari hamda taxta qabul natijalari. Suratlar tashqi saytga avtomatik yuborilmaydi.
-- QBRIX: bir xil asl surat/kesish, ruxsat etilgan preview/guide va taxta/mix/material sozlamalari `comparison/qbrix/` ga. `docs/QBRIX_COMPARE_HOWTO_UZ.md` bo‘yicha; hisob yoki kit kodi kerak emas.
-- Ikki alohida instruktorning rozilikli WAV yozuvlari: har biridaUZ 97/RU 101/EN 97, jami 590 PCM 16 mono 24 kHz. Hozir 0. Aniq matn/path `docs/VOICE_RECORDING_LIST.csv`, yo‘riqnoma `docs/VOICE_RECORDING_UZ.md`.
-- Haqiqiy 1:1 chop, matn o‘qilishi, mix/QR va keyingi telefon qabul natijalari.
-- Ishlab chiqarish HTTPS endpoint/domain, imzoga ishonch/backup/rotation va release/savdo qarorlari. Hozir credential yoki joylashtirish ishlatilmagan.
+Dalil/test APK: `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-evidence.json` va shu nomdagi `-debug-androidTest.apk`. Turkum15-oktabrda boshlangan; haqiqiy yig'ilish16-oktabr. Agent telefonga o'rnatmadi va instrumentationni qurilmada bajarmadi. Native ishlab chiqarish HTTPS serveri sozlanmagan; kit-kreditning to'liq sinovi hozir4195 brauzerda. Jonli savdo/release yoqilmagan.
 
-Qolgan mustaqil build/test ishlari tugagan. Aniq keyingi ish kelgan materialga bog‘liq; yo‘q ovoz/QBRIX/o‘xshashlik natijasini to‘qib bo‘lmaydi.
+4195/API4465 launcher30700/child25136 ishlaydi; alohida `test-results/owner-standard-k5cJII/database.sqlite`, asl baza emas. HTML va asosiy JS yakuniy buildga aynan mos; r1/240mix/500mm, yangi3 kredit, bitta ishlatilmagan kod va0hisob tekshirildi. Dalil `output/phase9/manual-preview-verification.json`. Kodlar/tokens faqat mahalliy `manual-testing.txt`da; chat/Gitga chiqarilmagan. Codex oynasi so'rovi queued, standart brauzerga ham4195ni ochish yuborildi.
+
+## Egasi bajaradigan ish
+
+1.4195ni oching, `manual-testing.txt`dan sinov kodini oling. Bu alohida sinov hisobi.
+2. Kerakli PDFni100% chop eting,50mmni o'lchang. Sinov taxtasida nuqtalarni belgilab/teshib, tanlangan sektor yorlig'ini aniq tekislang; versiyani mos tanlang.
+3. Surat → shakl/haqiqiy yuzlar(max2 Heart)/oq fon/kesishni tasdiqlash → hisoblash. Bepul metr/soatni ko'ring; sifatni o'zingiz tekshiring.
+4. Saqlash → kod →1 kredit bilan ochish → ko'rsatilgan birinchi mixdan boshlash. Tasdiqlamaguncha progress0; qayta yuklash/offline saqlansin. Bir natijani qayta ochish ortiqcha kredit olmasin.
+5. B-17ning qog'oz/player/PDF/raqamli ID/ovozi mosligini, qizil tanlansa haqiqiy ikkinchi segment va jami metr/soatni tekshiring. Natijani `AGENT/OWNER_TESTS.md`ga yozing.
+
+Qolgan kiritmalar: haqiqiy2kishilik Heart va boshqa qabul suratlari; ruxsat etilgan QBRIX bir xil manba/natijasi; ikki instruktor uchun jami746 rozilikli WAV(0 mavjud); fizik/telefon qabul natijalari va keyinchalik ishlab chiqarish endpoint/release qarori. Hisob/parol/kit kodini chatga yuborish kerak emas. Mustaqil kod/build/APK ishlari tugagan; yuqoridagi sifat va qabul natijalari bajarildi deb yozilmaydi.
 
 ## Mahalliy commitlar
 
@@ -84,4 +87,7 @@ Qolgan mustaqil build/test ishlari tugagan. Aniq keyingi ish kelgan materialga b
 | Oxirgi matn tuzatishi | `a385978` |
 | APK dalillari | `b1dd7ea` |
 
-Hisobot, oxirgi PROGRESS/LOG va RESUME alohida yakuniy mahalliy commitda saqlanadi; haqiqiy hashi `git log -1 --oneline` da. Push/tarixni qayta yozish yo‘q. `tmp/`, `output/`, suratlar, maxfiy kalitlar va DB fayllari commitga kirmagan.
+
+## 8–9-bosqich mahalliy commitlar
+
+`f002552` reja; `b02d516` classic/fon/kesish; `c6d409a` fizik profil/admin/PDF; `2a2afa1` sektor/qizil/ovoz/A-B; `6f6abe5` kit versiyalari; `4ac6460` yorliq burchak/uch tuzatishi; `84f3291` haqiqiy PDF download/sinov protokoli; `c5f5bdf` to'liq run checkpoint; `30cf924`184 yakuniy holat; `e01ac6e` APK dalillari. Yakuniy handoff commitining aniq hashi `git log -1 --oneline`da. Push/reset/force yo'q; surat/DB/output/maxfiy fayllar Gitga kirmagan.

@@ -48,7 +48,7 @@ Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQL
 2. Thread count must be the most efficient: best quality for the fewest connections.
 3. Works for 1, 2, 3 people, animals (dogs etc.), vehicles, objects, and text (Latin, Cyrillic, Arabic).
 4. Very simple, bright, iPhone-like UI; camera/gallery first; advanced settings hidden.
-5. Kit business model: one login per delivered kit; free unlimited previews; steps locked until a kit credit is used; 4 full builds per kit.
+5. Kit business model: one login per delivered kit; free unlimited previews; steps locked until a kit credit is used; 3 full builds per new kit by Phase9 default (admin may set4; existing grants stay unchanged).
 6. Compare our quality with QBRIX (qbrix.me) honestly.
 7. Two distinct offline instructor voices (UZ/RU/EN), Android APK, later physical and phone tests, then real shop services.
 
@@ -123,4 +123,4 @@ Kit inputs are owner-editable; provisional defaults:500×500mm white MDF base,46
 6. Tests, isolated build, new verified APK preserving historical APKs/signer; no phone install. Uzbek OWNER_TESTS: print100%, measure50mm, mark/drill holes, apply exact sector rulers, generate, unlock, start first step. Physical drilling/adhesion/readability/likeness remain owner acceptance. Keep live4194 server and its served dist unchanged; build/test elsewhere.
 
 ### FINAL
-`AGENT/FINAL_REPORT.md` + chat, in Uzbek: every phase done / tested / pending (with reason), branch, commit list, report paths, and exactly what the owner should test (`npm run local` → http://127.0.0.1:4194).
+`AGENT/FINAL_REPORT.md` + chat, in Uzbek: every phase done / tested / pending (with reason), branch, commit list, report paths, and exactly what the owner should test. For Phase8/9 use `Start-Standard-Kit.cmd` → http://127.0.0.1:4195 (fresh isolated test data/local code file); keep existing4194/API4331/live dist untouched. Historical Phase0–7 `npm run local` instructions are not authorization to restart4194.

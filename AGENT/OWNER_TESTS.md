@@ -129,3 +129,14 @@ Faqat oxirgi qayta yaratilgan PDFlarni ishlating: kvadrat yorliqlari tashqariga,
 ## 2026-10-16 — standart kit APK tayyor
 
 Yangi APK: `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`.43 veb fayl/imzo tekshirildi,70 eski APK saqlangan. Telefonga agent o'rnatmadi; Android test paketi faqat yig'ildi. APKda jonli kit serveri hali sozlanmagan; to'liq kit-kredit sinovini keyin ochiladigan4195 brauzer oynasida bajaring.4194 o'z holida qoldi. Chop/qadam/ovoz va haqiqiy telefon sinovi egasi tomonidan alohida tekshiriladi.
+
+## 2026-10-16 — yangi standart kit oynasi ochishga yuborildi
+
+**http://127.0.0.1:4195/** hozir ishlaydi. Brauzerga ochish yuborildi;4194ga tegilmadi. Ishga tushgan serverni yana qayta ochmang. Bir mahalliy ishlatilmagan3-kreditli sinov kodi va admin kirishi `output/phase9/manual-testing.txt`da; kod/tokensni chatga yubormang. Bu alohida hisob/baza, eski4194 loyihalari u yerda qolgan.
+
+1.500mm varaq yoki6 A4 andozani100%/Actual size chop eting. Fit o'chiq bo'lsin,50mmni o'lchang; keyin nuqtalarni belgilang/teshing. Tanlangan shaklning6 sektor sahifasini chop etib/kesib, ticklarni mixlarga tekislab yopishtiring. Avval sinov taxtasida haqiqiy mix/MDFni tekshiring.
+2.Ilovada qog'ozdagi r1/shaklni tanlang. Surat/yuzlar/oq fon/kesishni tekshirib tasdiqlang(max2 Heart), hisoblang. Bepul metr/soatni ko'ring.2500 boshlang'ich limit sifat tavsiyasi qabul qilingan degani emas.
+3.Saqlash → sinov kodi bilan kirish →1 kredit sarflab ochish → ko'rsatilgan birinchi mixdan boshlash. Tasdiqlamaguncha progress0. Qayta kirish/offline qadam saqlansin; bir natijani qayta ochish kredit olmaydi.
+4.B-17 va uning76raqamli IDsi, PDF/TXT/JSON/ovozdagi mosligini ko'ring. Qizil tanlansa haqiqiy ikkinchi segment/jami vaqt/metrni tekshiring. Qurilma ovozi yoki matn ishlaydi;746 haqiqiy yozuv hali yo'q.
+
+APK `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`; agent telefonga o'rnatmadi. Native kit uchun ishlab chiqarish serveri hali sozlanmagan, shu sabab to'liq kod-kredit sinovini4195da bajaring. O'xshashlik/QBRIX sifati o'tdi deb belgilanmagan: hozir burun/lab hududlari o'tmadi, tizza1500. Haqiqiy ikki kishilik asl surat va chop/yig'ish natijangiz keyingi qabul uchun kerak.
