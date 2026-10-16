@@ -1,5 +1,6 @@
+import { DEFAULT_CUSTOMER_LINES } from "../../src/customer-defaults";
 import { test, expect } from "@playwright/test";
-import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { photoCases, gallery, english, png } from "./phase12-cases";
 import { unlockKitGuide } from "./kit-access";
 import { validateInstruction } from "../../src/core/validation";
@@ -12,6 +13,10 @@ test.use({ serviceWorkers: "block" });
 for (const c of photoCases)
   test(`customer A/B ${c.name}`, async ({ page }) => {
     test.setTimeout(240000);
+    test.skip(
+      !existsSync(c.source),
+      "Local photo acceptance fixtures deliberately excluded from Git.",
+    );
     const out = `output/phase12/ab/${c.name}`;
     mkdirSync(out, { recursive: true });
     const results = [];
@@ -38,9 +43,26 @@ for (const c of photoCases)
       timeout: 60000,
     });
     let elapsed = Date.now() - start;
+    if (Number(DEFAULT_CUSTOMER_LINES) !== 2500) {
+      await page.locator(".customer-details summary").click();
+      const began = Date.now();
+      await page
+        .locator(".budget-chips")
+        .getByRole("button", { name: "2500", exact: true })
+        .click();
+      await expect(page.locator(".customer-effort")).toContainText("2500", {
+        timeout: 60000,
+      });
+      elapsed = Date.now() - began;
+    }
+
     for (const budget of [2500, 3000]) {
       if (budget === 3000) {
-        await page.locator(".customer-details summary").click();
+        if (
+          (await page.locator(".customer-details").getAttribute("open")) ===
+          null
+        )
+          await page.locator(".customer-details summary").click();
         const started = Date.now();
         await page
           .locator(".budget-chips")

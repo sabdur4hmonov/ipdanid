@@ -71,7 +71,7 @@ export function CustomerStudio({
     [preparing, setPreparing] = useState(false),
     [busy, setBusy] = useState(false),
     [fraction, setFraction] = useState(0),
-    [error, setError] = useState(""),
+    [error, setError] = useState<"" | "error" | "noFace">(""),
     [result, setResult] = useState<Instruction>(),
     [lines, setLines] = useState<number>(DEFAULT_CUSTOMER_LINES),
     [gate, setGate] = useState<"pdf" | "start">(),
@@ -161,6 +161,19 @@ export function CustomerStudio({
     ctx.fillRect(0, 0, 500, 500);
     if (prepared) ctx.drawImage(original?.canvas ?? prepared.canvas, 0, 0);
     else {
+      ctx.save();
+      ctx.beginPath();
+      if (shape === "circle") ctx.arc(250, 250, 250, 0, Math.PI * 2);
+      else if (shape === "rectangle") ctx.rect(0, 0, 500, 500);
+      else {
+        HEART_POLYGON.forEach((p, j) =>
+          j
+            ? ctx.lineTo(p.x * 500, p.y * 500)
+            : ctx.moveTo(p.x * 500, p.y * 500),
+        );
+        ctx.closePath();
+      }
+      ctx.clip();
       const size = Math.min(500 / source.width, 500 / source.height);
       ctx.drawImage(
         source,
@@ -169,8 +182,9 @@ export function CustomerStudio({
         source.width * size,
         source.height * size,
       );
+      ctx.restore();
     }
-  }, [source, prepared, original, step]);
+  }, [source, prepared, original, step, shape]);
   useEffect(() => {
     if (result && actual.current) {
       actual.current.width = actual.current.height = 1000;
@@ -200,7 +214,7 @@ export function CustomerStudio({
         }),
       );
     } catch {
-      setError(t("error"));
+      setError("error");
     } finally {
       setPdfBusy(false);
     }
@@ -271,12 +285,12 @@ export function CustomerStudio({
       setSource(c);
       setSourceHash(digest);
       if (!a.faces.length || a.faces.length > (shape === "heart" ? 2 : 3)) {
-        setError(t("noFace"));
+        setError("noFace");
         return;
       }
       setAnalysis(a);
     } catch {
-      if (id === upload.current) setError(t("error"));
+      if (id === upload.current) setError("error");
     } finally {
       if (id === upload.current) setPreparing(false);
     }
@@ -436,20 +450,20 @@ export function CustomerStudio({
           setStep("result");
           await clearOptimizerRecovery();
         } catch {
-          setError(t("error"));
+          setError("error");
         } finally {
           if (id === generation.current) setBusy(false);
           w.terminate();
         }
       } else if (data.type === "error") {
-        setError(t("error"));
+        setError("error");
         setBusy(false);
         w.terminate();
       }
     };
     w.onerror = () => {
       if (id === generation.current) {
-        setError(t("error"));
+        setError("error");
         setBusy(false);
       }
     };
@@ -742,7 +756,7 @@ export function CustomerStudio({
       )}
       {error && (
         <div role="alert">
-          {error}
+          {t(error)}
           <button onClick={() => setStep("start")}>{t("another")}</button>
         </div>
       )}

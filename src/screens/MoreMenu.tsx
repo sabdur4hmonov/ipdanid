@@ -15,10 +15,12 @@ type ScreenContext = Pick<
 >;
 export function MoreMenu({
   context,
+  customerMode = false,
   onCustomer,
   onExpert,
 }: {
   context: ScreenContext;
+  customerMode?: boolean;
   onCustomer?: () => void;
   onExpert?: () => void;
 }) {
@@ -40,7 +42,9 @@ export function MoreMenu({
       open={moreOpen}
       onToggle={(e) => setMoreOpen(e.currentTarget.open)}
     >
-      <summary>{simple("more")}</summary>
+      <summary>
+        {customerMode ? customerFlowText(locale, "menu") : simple("more")}
+      </summary>
       <div className="more-menu-items">
         {onCustomer && (
           <button onClick={onCustomer}>
@@ -52,11 +56,15 @@ export function MoreMenu({
             {customerFlowText(locale, "expert")}
           </button>
         )}
-        <button onClick={() => nav("materials")}>{t("materials")}</button>
+        {!customerMode && (
+          <button onClick={() => nav("materials")}>{t("materials")}</button>
+        )}
         <button onClick={() => nav("customer")}>
           {customerText(locale, "customer")}
         </button>
-        <button onClick={() => nav("crafts")}>{t("crafts")}</button>
+        {!customerMode && (
+          <button onClick={() => nav("crafts")}>{t("crafts")}</button>
+        )}
         <button
           onClick={() => {
             setShowPrivacy(true);
@@ -65,14 +73,16 @@ export function MoreMenu({
         >
           {t("privacy")}
         </button>
-        <button
-          onClick={() => {
-            addPhoto(sampleCanvas(), t("sample"), true);
-            nav("create");
-          }}
-        >
-          {t("sample")}
-        </button>
+        {!customerMode && (
+          <button
+            onClick={() => {
+              addPhoto(sampleCanvas(), t("sample"), true);
+              nav("create");
+            }}
+          >
+            {t("sample")}
+          </button>
+        )}
       </div>
     </details>
   );

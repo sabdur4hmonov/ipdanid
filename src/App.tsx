@@ -133,6 +133,7 @@ export default function App() {
           </div>
           <div className="header-right">
             <MoreMenu
+              customerMode={customerFlow}
               context={context}
               onCustomer={() => {
                 setCustomerFlow(true);

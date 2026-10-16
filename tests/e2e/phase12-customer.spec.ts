@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { mkdirSync, writeFileSync, readFileSync, copyFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync } from "node:fs";
 import { photoCases, gallery, english, png } from "./phase12-cases";
 import { customerFlowText } from "../../src/customer-flow-i18n";
 import { DEFAULT_CUSTOMER_LINES } from "../../src/customer-defaults";
@@ -11,6 +11,10 @@ test("three customer screens preserve real mouse/touch crop through regeneration
   context,
 }, info) => {
   test.setTimeout(240000);
+  test.skip(
+    !existsSync(photoCases[0].source),
+    "Local synthetic acceptance portrait is not committed.",
+  );
   const out = `output/phase12/screens/${info.project.name}`;
   mkdirSync(out, { recursive: true });
   await page.goto("/");
@@ -182,6 +186,10 @@ test("auto-fit reaches the result in three taps including the native file select
   page,
 }, info) => {
   test.setTimeout(180000);
+  test.skip(
+    !existsSync(photoCases[0].source),
+    "Local synthetic acceptance portrait is not committed.",
+  );
   await page.goto("/");
   await expect(
     page.getByRole("button", { name: "Doira", exact: true }),
@@ -219,4 +227,36 @@ test("auto-fit reaches the result in three taps including the native file select
       2,
     ),
   );
+});
+
+test("photo failure keeps all four customer languages plain and generation unavailable", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const file = page.waitForEvent("filechooser");
+  await page
+    .getByRole("button", { name: "Galereyadan tanlash", exact: true })
+    .click();
+  await (
+    await file
+  ).setFiles({
+    name: "broken.jpg",
+    mimeType: "image/jpeg",
+    buffer: Buffer.from("invalid JPEG"),
+  });
+  await expect(page.getByRole("alert")).toBeVisible();
+  for (const locale of ["uz", "uz-Cyrl", "ru", "en"] as const) {
+    await page.getByTestId("customer-menu").locator("summary").click();
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.getByTestId("customer-menu").locator("summary").click();
+    await expect(page.getByRole("alert")).toContainText(
+      customerFlowText(locale, "error"),
+    );
+    await expect(
+      page.getByRole("button", {
+        name: customerFlowText(locale, "generate"),
+        exact: true,
+      }),
+    ).toBeDisabled();
+  }
 });

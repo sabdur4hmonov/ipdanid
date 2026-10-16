@@ -32,7 +32,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-PHASE12 ACTIVE: source foundation38ec922.15/15unit and1974module build pass; actual A/Bv2 six UI cases (12generations) passed2.7min, genuine signed JSON/continuous paths/physical pixels and<15s. Diagnosticv1 incorrectly compared float raster0..1 against bytes;6test failures retained, fixed test conversion. Visualv2 prefers3000 for feature contrast but owner shirt corners still slightly visible, so jaw taper tightened pre-release4; new15/15unit pass, rebuilt1974. v2 images preserved output/phase12/diagnostic-ab-v2. Next run final6caseA/Bv3 at4342/API4486, inspect tighter crop/choose default, then actual desktop/mobile gestures/3taps/4locales/PDF/screens (phase12-customer.spec), fullunit/regression/APK/freshpreview. All4194–4197/tmp/data untouched.
+PHASE12 ACTIVE: finalA/Bv3 six actual UI cases/12generations passed1.5min at4342/API4486. Equal-size owner/3synthetic/Square/Heartpanels reviewed,3000 more recognizable; single customer default3000 selected (~6.7h), user budget override only resultDetails. Stronger default jaw/neck crop removes old large triangles; old3unchanged. Visualreview/private report saved.15unit, TypeScript and1974module finalbuild pass; loading photo clipped to realshape, localized errors, legacy tools hidden in all ordinary menus. Next phase12-customer.spec.ts desktop/mobile on4343/API4487: actual gestures/3tap/4locales/screens/PDF/state/regeneration. Then focused24regressions/full257unit/APK/new4198+4480preview. Never run heavy jobs during timed UI or rebuild testdir whileactive. Protect4194–4197/tmp/data.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 
