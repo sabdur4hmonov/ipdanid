@@ -1,3 +1,15 @@
+# Phase11 — kattaroq yuzlar tayyor, 2026-10-16
+
+Yangi ilova: **http://127.0.0.1:4197/**.3-yig‘ish kodi: `output/phase11/manual-testing.txt`. Circle/Square’da bosh87% atrofida kattalashtirildi; iyak osti18px silliq oqartiriladi. “Yelkani qoldirish”, har yuzni siljitish/kattalashtirish bor. Heart juftligida yuzlar yuqori ikki bo‘lakka joylandi; bitta bosh yuqori qismda. “Ip soni”2000/2500/3000, taxmin4.4/5.6/6.7soat. Classic2 va eski yo‘riqnomalar saqlangan.
+
+253unit testi va38ta brauzer holatining oxirgi natijalari o‘tdi; oxirgi hisoblar eng ko‘pi9.64soniya. Bir yuklama ostidagi sinov29.59s bo‘lgan: to‘liqunit bilan parallel ishga tushirilgan, diagnostika yashirilmagan. Keyin alohida Circle qayta sinovlari5.06/6.58s o‘tdi. Egasi lokal surati/3sun’iy portret/Square/Heart juftligi eski-yangi teng o‘lchamda solishtirildi; yuzlar kattaroq va aniqroq. Hisobot: `output/phase11/report.html`. Egasi manbasi avvalgi ishlov berilgan320px nusxa, asl surat emas.14PDF muqovasi ilovaga pikselma-piksel, barcha2500/3000qadam JSON/sektorlarga aynan mos.
+
+APK: `output/mobile/ip-rasm-phase11-20261016-46bc061bd5c2-debug.apk`. Offline yig‘ish,43fayl, imzo va79eski APK saqlangani tekshirildi. Telefonga o‘rnatilmadi; native ishlab chiqarish serveri hali sozlanmagan. Kod/kreditni yangi brauzerda sinang.4194/4195/4196 serverlari va tmp/data tegilmadi; yangi4197 alohida bazada. Commitlar mahalliy, push yo‘q. Sinov tartibi `AGENT/OWNER_TESTS.md` da; chop/yig‘ish/telefon qabul sinovi sizda qoladi.
+
+---
+
+Quyidagi Phase10 hisobot tarixiy; joriy yo‘l yuqoridagi Phase11.
+
 # Ip Rasm — yakuniy hisobot, 2026-10-16
 
 ## Phase10 — reference usuli va oddiy surat oqimi tayyor

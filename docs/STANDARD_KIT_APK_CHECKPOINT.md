@@ -1,3 +1,9 @@
+# Latest — Phase11 verified debug APK, 2026-10-16
+
+App `output/mobile/ip-rasm-phase11-20261016-46bc061bd5c2-debug.apk`, SHA256 `46bc061bd5c2d5dad8bc21ec1b5a5a39d92334b94dfaa5ec71cdafeed94edc78`. Test archive matching46bc061bd5c2 prefix, SHAd52eaffc3d9cd161326c736b9a44eef93f47273ca5e0f51748ebc5e287e49fe9. Offline Gradle6m22s/176tasks(21executed).43exact final phase11-dist assets, allframing3/reference2/legacy markers/fonts/licenses/privacy/same8e43cf...certificate and79old APK hashes verified. No install/instrumentation/production acceptance; native backend unconfigured.
+
+253unit/38latest unique browser cases,14exact PDF covers and all2500/3000ordered steps, max latest9.643s. One timing failure under competing full units retained, final isolated reruns passed. Fresh http://127.0.0.1:4197/ API4479/code output/phase11/manual-testing.txt. All3old live directories hash-verified without contacting servers; new phase11-dist now frozen/exactAPK. Physical/phone acceptance separate. Historical checkpoints below superseded.
+
 # Latest Android checkpoint — reference classic2, 2026-10-16
 
 App output/mobile/ip-rasm-phase10-20261016-a3f7b2d756f7-debug.apk, SHA256 a3f7b2d756f7bf244b3821c4e81622667c570d010bf840cbafe7f0252d37ec67. Test APK sameprefix/-debug-androidTest.apk, SHA d52eaffc3d9cd161326c736b9a44eef93f47273ca5e0f51748ebc5e287e49fe9. Public signer8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90 unchanged. Evidence matchingprefix-evidence.json has standardKitVerified=true/classicReferenceVerified=true,43exact assets/font/licenses/no private source/no fictional audio,76prior archives byte-identical.

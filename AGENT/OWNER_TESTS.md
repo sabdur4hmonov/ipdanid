@@ -169,8 +169,8 @@ Tuzatish4195ga qo'yildi va yangi fayllar tekshirildi. Sahifani yangilang, suratn
 4195ni yangilang, rasmingizni yana tanlang: “Yuklangan surat” darhol ko'rinsin, yopiq yuz/fon bo'limlarini ochish shart bo'lmasin. Boshqa rasmga almashtirish va to'rt til tekshirilgan. Fon tayyorlash holati ochiq; yuz/kesishni tasdiqlash va haqiqiy ip natijasi alohida. Kit hisobi/kreditlar, server va4194 qayta yaratilmagan. Avvalgi ko'rinish uchun “Maxsus / oldingi vositalar” mavjud.
 
 
-## Phase11 — kattaroq bosh joylashuvi (tayyorlanmoqda)
-Yangi manzil yakuniy sinovdan keyin output/phase11/manual-testing.txt da bo‘ladi. Surat yuklang: tayyor nishonda bosh kattaroq, iyak osti oq bo‘lishi kerak. “Yelkani qoldirish”ni yoqib/o‘chirib solishtiring; har bir yuzni kattalashtirish va chap/o‘ng, yuqori/past surish mumkin. Heart juftligida yuzlar ikki yuqori bo‘lakda bo‘lsin. “Ip soni”2000/2500/3000: taxmin4.4/5.6/6.7soat. Har o‘zgarishdan keyin nishonni qayta tasdiqlang.
+## Phase11 — kattaroq bosh joylashuvi tayyor
+Yangi ilova: http://127.0.0.1:4197/ Kod: output/phase11/manual-testing.txt (3ta natija). Surat yuklang: tayyor nishonda bosh kattaroq, iyak osti oq bo‘lishi kerak. “Yelkani qoldirish”ni yoqib/o‘chirib solishtiring; har bir yuzni kattalashtirish va chap/o‘ng, yuqori/past surish mumkin. Heart juftligida yuzlar ikki yuqori bo‘lakda bo‘lsin. “Ip soni”2000/2500/3000: taxmin4.4/5.6/6.7soat. Har o‘zgarishdan keyin nishonni qayta tasdiqlang.
 
 ### Phase11 — egasi uchun tekshirish tartibi
 
@@ -181,3 +181,6 @@ Yangi manzil yakuniy sinovdan keyin output/phase11/manual-testing.txt da bo‘la
 5. “Ip soni”:2000≈4.4soat,2500≈5.6soat,3000≈6.7soat (har ulanishga8soniya taxmin). Dastlab2500. Yuz/fon/kesishni tasdiqlang, hisoblang. Ko‘rsatilgan natija haqiqiy0.12mm ip ketma-ketligi; tayyor surat ustiga chizilgan bezak emas.
 6. Saqlash → yangi sinov kodi bilan kirish → bitta natijani ochish. Yo‘riqnoma ko‘rsatgan birinchi mixdan boshlang. Keyingi qadamni bosmaguncha progress0 bo‘lsin. Sektor belgisi, masalanB-17, player/PDF/TXT/JSON’da bir xil bo‘lsin. PDF muqovasi ilovadagi natijaga mos kelsin.
 7. `output/phase11/report.html` da eski/yangi nishon va ip natijasini teng o‘lchamda solishtiring. APK ham alohida beriladi; agent telefonga o‘rnatmagan. Native kit serveri sozlanmaguncha to‘liq kod/kredit sinovini yangi brauzer manzilida bajaring. Chop qilishda oldingi50mm o‘lchov/andaza/mix-sektor tekshiruvi o‘z kuchida.
+
+
+Phase11 APK: `output/mobile/ip-rasm-phase11-20261016-46bc061bd5c2-debug.apk`.35.99MB, imzo va43fayl tekshirildi;79oldingi APK o‘z holida. Telefonga agent o‘rnatmagan. To‘liq kod/kredit sinovi uchun yangi http://127.0.0.1:4197/ manzilidan foydalaning.
