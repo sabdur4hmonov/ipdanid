@@ -278,3 +278,65 @@ test("photo failure keeps all four customer languages plain and generation unava
     ).toBeDisabled();
   }
 });
+
+test("one crashed local photo worker recovers automatically before Create", async ({
+  page,
+}, info) => {
+  test.setTimeout(180000);
+  test.skip(
+    !existsSync(photoCases[0].source),
+    "Local synthetic portrait intentionally excluded from Git.",
+  );
+  await page.addInitScript(() => {
+    const Real = window.Worker;
+    let attempts = 0;
+    (window as unknown as { photoWorkerAttempts: number }).photoWorkerAttempts =
+      0;
+    window.Worker = class extends Real {
+      constructor(url: string | URL, opts?: WorkerOptions) {
+        const photo = String(url).includes("photo-prepare");
+        if (photo) {
+          attempts++;
+          (
+            window as unknown as { photoWorkerAttempts: number }
+          ).photoWorkerAttempts = attempts;
+        }
+        super(
+          photo && attempts === 1
+            ? URL.createObjectURL(
+                new Blob(
+                  [
+                    'throw Error("Simulated local photo worker startup failure")',
+                  ],
+                  { type: "application/javascript" },
+                ),
+              )
+            : url,
+          opts,
+        );
+      }
+    };
+  });
+  await page.goto("/");
+  await gallery(page, photoCases[0]);
+  expect(
+    await page.evaluate(
+      () =>
+        (window as unknown as { photoWorkerAttempts: number })
+          .photoWorkerAttempts,
+    ),
+  ).toBe(2);
+  await page.getByRole("button", { name: "Yaratish", exact: true }).click();
+  await expect(page.getByTestId("customer-result")).toBeVisible({
+    timeout: 60000,
+  });
+  mkdirSync(`output/phase12/screens/${info.project.name}`, { recursive: true });
+  writeFileSync(
+    `output/phase12/screens/${info.project.name}/worker-recovery.json`,
+    JSON.stringify(
+      { actualFirstWorkerCrashed: true, attempts: 2, realPortraitResult: true },
+      null,
+      2,
+    ),
+  );
+});

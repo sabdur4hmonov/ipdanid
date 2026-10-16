@@ -1,8 +1,8 @@
 import { enterStandardExpert } from "./standard-expert-test";
 import { test as base } from "@playwright/test";
 export * from "@playwright/test";
-// Existing product regression deliberately selects the visible Custom/previous
-// tools entry. Standard-kit.spec tests the actual new default without this fixture.
+// Historical regressions explicitly select Menu → Expert → Custom.
+// Standard-kit tests retained expert controls; phase12-customer tests the ordinary default.
 export const test = base.extend({
   page: async ({ page }, use) => {
     async function selectPreviousTools() {

@@ -53,7 +53,7 @@ if (typeof window !== "undefined")
   window.addEventListener("pagehide", (e) => {
     if (!e.persisted) disposePhotoAnalysis();
   });
-export async function preparePersonPhoto(
+async function preparePersonPhotoOnce(
   source: HTMLCanvasElement,
   signal: AbortSignal,
 ): Promise<PhotoAnalysis> {
@@ -93,4 +93,24 @@ export async function preparePersonPhoto(
       reject(error);
     }
   });
+}
+
+// A worker may fail during local WASM startup (observed on mobile Chromium).
+// Retry only that infrastructure failure once; never invent a face/mask or
+// restart an aborted/superseded photo. Semantic/model errors remain explicit.
+export async function preparePersonPhoto(
+  source: HTMLCanvasElement,
+  signal: AbortSignal,
+): Promise<PhotoAnalysis> {
+  try {
+    return await preparePersonPhotoOnce(source, signal);
+  } catch (error) {
+    if (
+      signal.aborted ||
+      !(error instanceof Error) ||
+      error.message !== "Local photo worker unavailable"
+    )
+      throw error;
+    return preparePersonPhotoOnce(source, signal);
+  }
 }

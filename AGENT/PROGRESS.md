@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update: 2026-10-16 — Phase11 COMPLETE/TESTED.253unit/38unique latest browser cases/14exact PDFs; max latest9.643s. Verified43asset APK46bc061bd5c2,79old APKs unchanged. Fresh http://127.0.0.1:4197/ API4479/3-build code ready; protected4194/4195/4196 untouched. No push/install/production claim.
+Last update:2026-10-17 — Phase12 ACTIVE. All6customer browser cases passed; final30raw27pass/3fail, fixes ready. Bounded local-worker restart4/4unit, TypeScript and1974module final build pass. Next14isolated recovery browser checks, full261unit/PDF/APK/newpreview. Old4194–4197 untouched.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -32,7 +32,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-PHASE12 ACTIVE: selected3000 from final6/6 A/Bv3/12actualgenerations. First desktop/mobile usability run:4pass/2three-tap-instrumentation failures (document bubbling saw already-mutated Cancel label). Actual result reached in2appclicks; changed listener to capture phase. Real mouse/wheel AND CDPtwo-finger pinch/rotation/reset/before-after/shoulders/readjustment/regeneration/signedPDF/offline/4locales allpassed; all3screens saved/visually inspected. Photo/result height refined so primary actions fit viewport, new explicit in-viewport assertion. Final TypeScript and1974module build passed. Next final30browser cases on4344/API4488 (customer6+legacy24), then full257unit and independent2PDFs, APK/fresh4198/API4480/code/finaldocs. No heavy parallel jobs during timedChrome, no rebuildwhiletestsactive.
+PHASE12 ACTIVE: final30raw27pass/3fail10.6min; all6customer cases passed. Fixed rawsecondContext kit helper and actual localWorker startup resilience (only one bounded infrastructure retry, never semantic/aborted). New4retryunit pass (phase12-worker-retry-unit.json), TypeScript and1974module final build pass (32001). Commit this milestone before14fresh recovery cases:8customer incl actual injected Workercrash+4kit+2oldphoto on4345/API4489. Then full261unit, exact2PDF check, APK preservation/signer/package, fresh4198/API4480/code and finaldocs. No protectedports/assets/tmpdata touched.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

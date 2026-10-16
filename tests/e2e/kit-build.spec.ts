@@ -7,6 +7,10 @@ import { progressFor } from "../../src/core/validation";
 import { openMore } from "./navigation";
 async function importGuide(page: Page, file: string) {
   await page.goto("/");
+  await page.locator(".app").waitFor();
+  const customerMenu = page.getByTestId("customer-menu");
+  if (await customerMenu.isVisible())
+    await customerMenu.locator("summary").click();
   await page.getByLabel("Language", { exact: true }).selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.locator('input[accept=".json,.txt"]').setInputFiles(file);
@@ -47,8 +51,15 @@ test("new guides lock steps and exports, signed unlock survives offline and tamp
   await importGuide(page, file);
   const gate = page.getByTestId("build-gate");
   await expect(gate).toBeVisible();
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  for(const box of await gate.getByRole("button").evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height)))expect(box).toBeGreaterThanOrEqual(44);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  for (const box of await gate
+    .getByRole("button")
+    .evaluateAll((nodes) => nodes.map((n) => n.getBoundingClientRect().height)))
+    expect(box).toBeGreaterThanOrEqual(44);
   for (const id of ["player-hash", "confirmed-step"])
     await expect(page.getByTestId(id)).toHaveCount(0);
   for (const name of ["PDF guide", "TXT sequence", "Project JSON"])
@@ -61,15 +72,27 @@ test("new guides lock steps and exports, signed unlock survives offline and tamp
     .click();
   expect((await download).suggestedFilename()).toMatch(/\.png$/);
   const headers = { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN}` };
-  const currentPolicy=await (await page.request.get(process.env.IP_RASM_TEST_API_URL+"/api/admin/kits",{headers})).json();
-  expect((await page.request.post(process.env.IP_RASM_TEST_API_URL+"/api/admin/kits/policy",{headers,data:{...currentPolicy.policy,quota:4}})).ok()).toBe(true);
+  const currentPolicy = await (
+    await page.request.get(
+      process.env.IP_RASM_TEST_API_URL + "/api/admin/kits",
+      { headers },
+    )
+  ).json();
+  expect(
+    (
+      await page.request.post(
+        process.env.IP_RASM_TEST_API_URL + "/api/admin/kits/policy",
+        { headers, data: { ...currentPolicy.policy, quota: 4 } },
+      )
+    ).ok(),
+  ).toBe(true);
   const r = await page.request.post(
-      process.env.IP_RASM_TEST_API_URL + "/api/admin/kits/batch",
-      {
-        headers,
-        data: { profile: "test", count: 1, requestKey: crypto.randomUUID() },
-      },
-    );
+    process.env.IP_RASM_TEST_API_URL + "/api/admin/kits/batch",
+    {
+      headers,
+      data: { profile: "test", count: 1, requestKey: crypto.randomUUID() },
+    },
+  );
   expect(r.ok()).toBe(true);
   const code = (await r.json()).codes[0].code;
   await page.getByTestId("kit-code").fill(code);
@@ -171,27 +194,46 @@ test("admin configures default4/no expiry and downloads real local printable QR 
     .click();
   const admin = page.getByTestId("kit-admin");
   await expect(admin).toBeVisible();
-  const standard=page.getByTestId("standard-kit-admin");
-  await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeEnabled();
-  for (const [kind,label,count] of [["sheet","Full-size sheet",1],["tiles","A4 drilling tiles",6],["stickers","Sector ruler stickers",18]] as const) {
-    const pending=page.waitForEvent("download");
-    await standard.getByRole("button",{name:label,exact:true}).click();
-    const file=await pending;
-    const {PDFDocument}=await import("pdf-lib");
-    const pdf=await PDFDocument.load(readFileSync((await file.path())!));
+  const standard = page.getByTestId("standard-kit-admin");
+  await expect(
+    standard.getByRole("button", { name: "Full-size sheet", exact: true }),
+  ).toBeEnabled();
+  for (const [kind, label, count] of [
+    ["sheet", "Full-size sheet", 1],
+    ["tiles", "A4 drilling tiles", 6],
+    ["stickers", "Sector ruler stickers", 18],
+  ] as const) {
+    const pending = page.waitForEvent("download");
+    await standard.getByRole("button", { name: label, exact: true }).click();
+    const file = await pending;
+    const { PDFDocument } = await import("pdf-lib");
+    const pdf = await PDFDocument.load(readFileSync((await file.path())!));
     expect(pdf.getPageCount()).toBe(count);
-    expect(pdf.getPage(0).getWidth()*25.4/72).toBeCloseTo(kind==="sheet"?500:210,7);
+    expect((pdf.getPage(0).getWidth() * 25.4) / 72).toBeCloseTo(
+      kind === "sheet" ? 500 : 210,
+      7,
+    );
     expect(pdf.getSubject()).toContain("standard-kit/1 revision");
     await file.saveAs(info.outputPath(`manufacturer-${kind}.pdf`));
   }
-  await standard.getByLabel("White MDF base (mm)",{exact:true}).fill("501");
-  await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeDisabled();
-  await standard.getByRole("button",{name:"Reload saved profiles",exact:true}).click();
-  await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeEnabled();
+  await standard.getByLabel("White MDF base (mm)", { exact: true }).fill("501");
+  await expect(
+    standard.getByRole("button", { name: "Full-size sheet", exact: true }),
+  ).toBeDisabled();
+  await standard
+    .getByRole("button", { name: "Reload saved profiles", exact: true })
+    .click();
+  await expect(
+    standard.getByRole("button", { name: "Full-size sheet", exact: true }),
+  ).toBeEnabled();
   // This test must configure4 itself, independent of another test's unlock.
-  await admin.getByLabel("Builds per kit",{exact:true}).fill("4");
-  const savedPolicy=page.waitForResponse(r=>r.url().endsWith("/api/admin/kits/policy")&&r.request().method()==="POST");
-  await admin.getByRole("button",{name:"Save policy",exact:true}).click();
+  await admin.getByLabel("Builds per kit", { exact: true }).fill("4");
+  const savedPolicy = page.waitForResponse(
+    (r) =>
+      r.url().endsWith("/api/admin/kits/policy") &&
+      r.request().method() === "POST",
+  );
+  await admin.getByRole("button", { name: "Save policy", exact: true }).click();
   expect((await savedPolicy).ok()).toBe(true);
   await expect(admin.getByLabel("Builds per kit", { exact: true })).toHaveValue(
     "4",
