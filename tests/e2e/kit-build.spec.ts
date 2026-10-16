@@ -188,6 +188,11 @@ test("admin configures default4/no expiry and downloads real local printable QR 
   await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeDisabled();
   await standard.getByRole("button",{name:"Reload saved profiles",exact:true}).click();
   await expect(standard.getByRole("button",{name:"Full-size sheet",exact:true})).toBeEnabled();
+  // This test must configure4 itself, independent of another test's unlock.
+  await admin.getByLabel("Builds per kit",{exact:true}).fill("4");
+  const savedPolicy=page.waitForResponse(r=>r.url().endsWith("/api/admin/kits/policy")&&r.request().method()==="POST");
+  await admin.getByRole("button",{name:"Save policy",exact:true}).click();
+  expect((await savedPolicy).ok()).toBe(true);
   await expect(admin.getByLabel("Builds per kit", { exact: true })).toHaveValue(
     "4",
   );

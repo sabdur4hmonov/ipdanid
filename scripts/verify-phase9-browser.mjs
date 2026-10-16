@@ -28,14 +28,16 @@ if(process.argv.includes('--rerun')){
  const child=spawn(process.execPath,['node_modules/@playwright/test/cli.js','test','--grep',pattern],{stdio:'inherit',env:process.env,windowsHide:true});
  child.on('exit',code=>{process.exitCode=code??1;});
 }else{
- const next=read(supplemental),updated=cases(next),latest=new Map(original.map(r=>[r.key,{...r,report:full}]));
- for(const row of updated){assert(latest.has(row.key),'Unexpected supplemental case');latest.set(row.key,{...row,report:supplemental});}
+ const paths=[supplemental,...process.argv.slice(2)],reports=paths.map(path=>({path,data:read(path)})),latest=new Map(original.map(r=>[r.key,{...r,report:full}]));
+ for(const {path,data} of reports){
+  assert.equal(data.stats.skipped+data.stats.flaky,0);
+  for(const row of cases(data)){assert(latest.has(row.key),'Unexpected supplemental case');latest.set(row.key,{...row,report:path});}
+ }
  const failures=[...latest.values()].filter(r=>!r.passed);
  assert.equal(failures.length,0,JSON.stringify(failures));
- assert.equal(next.stats.unexpected+next.stats.skipped+next.stats.flaky,0);
  const evidence={uniquePassingCases:latest.size,desktop:[...latest.values()].filter(r=>r.project==='desktop').length,
   mobile:[...latest.values()].filter(r=>r.project==='mobile-browser').length,
-  fullRun:{path:full,stats:initial.stats},supplemental:{path:supplemental,stats:next.stats},
+  fullRun:{path:full,stats:initial.stats},supplemental:reports.map(({path,data})=>({path,stats:data.stats})),
   scope:'Full run on pre-ruler-correction stable1965 bundle; latest PDF-only change verified by standard-kit/admin downloads and all diagnostic failures explicitly rerun. Raw failure reports retained; this is aggregate latest coverage, not a clean all-pass single full run.',cases:[...latest.values()]};
  mkdirSync('test-results/phase9-final',{recursive:true});
  writeFileSync('test-results/phase9-final/summary.json',JSON.stringify(evidence,null,2));
