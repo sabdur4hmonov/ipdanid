@@ -407,3 +407,9 @@ Final PDF refresh17740:2/2 actual customer PDFs pass exact1000px cover and all30
 ## 2026-10-17 — Phase12 full verification before Android assembly
 
 Full261/261unit passed509.8s,73files/84suites,0failed (phase12-full-unit.json), no concurrent timedChrome/heavyGradle. Aggregate38/38latest distinct browser outcomes passed (phase12-final/summary.json): sixA/B plus30customer/legacy and14recovery outcomes with12duplicates replaced; diagnostic failures retained, not a single clean38/fullhistorical run. Current2PDFs coverexact/all3000steps verified,79pages each; renderedcover visually inspected. Final1974module web/tsc passed, unchanged since workerretry.82old APK archives preserved; Capacitor sync passed; backendconfiguredfalse. Next offline Android debug+test assembly, strictpackage/signer/oldarchive verification, milestonecommit then newpreview/code/handoffproof. No protectedserver/API/assets/tmpdata contact/change.
+
+Commitad59842 freezes final261unit/38browser/2PDF milestone. Offline Gradle session58897 started using existingJDK21/cache/SDK, assembleDebug+assembleDebugAndroidTest, no network or phone install. Await actual result before APK verification/preview launch.
+
+## 2026-10-17 — Phase12 preserved APK verified before preview launch
+
+OfflineGradle58897 succeeded5m21s,176tasks/21executed/155uptodate, assembleDebug+assembleDebugAndroidTest. Strictverify81843 passed: APK29f469aec06e08f8cf562652be02ff9c7a1357fe6ceeccb10da1e77a5cfa9a74,43exact phase12-dist assets/customerFlowVerified=true plusclassic/reference/framing/legacy/font/licenses/privacy, samepublic8e43cfcertificate.82previous APK archives unchanged, testAPKSHAd52eaffc...same. Evidence output/mobile/ip-rasm-phase12-20261017-29f469aec06e-evidence.json. No phoneinstall/instrumentation/production claim, nativebackendunconfigured. Commit before freshpreview launch; next hidden start-customer-preview.mjs/free4198/API4480/freshDB/legitimate3-build code and protectedassetproof/finaldocs.

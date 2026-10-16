@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase12 ACTIVE. Full261/261unit(73files/84suites,509.8s), aggregate38/38latest browser outcomes,2exact3000step PDFs, final1974build pass.82old APKs preserved, Capacitor synced. Next offline Android assembly/signature/package then fresh preview/finaldocs. Protected4194–4197/data untouched.
+Last update:2026-10-17 — Phase12 APK VERIFIED.261unit/38latest browser/2exactPDF/build1974 pass. Offline Android5m21s/176tasks, APK29f469aec06e/43assets/samecert/82oldarchives unchanged. Next fresh4198/API4480 preview, legitimate unused3-build code, protectedassetproof and finaldocs. No push/install.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -32,7 +32,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-PHASE12 ACTIVE: full261/261unit passed509.8s (73files/84suites, phase12-full-unit.json); aggregate script verifies38/38latest unique browser cases and3tap/retainedcrop/default3000/screens/PDF evidence (phase12-final/summary.json). Recovery14/14passed7.5min on4345/API4489, no skips; prior30raw27/3retained, no fullhistory claim.2PDF exact1000px covers/all3000numeric+sectorsteps verified, cover visually inspected. Sixcase actual2500/3000 A/B and old/new report complete.82old APKs preserved and Capacitor sync from final1974module phase12-dist passed; native backend presencefalse. Next offlineGradle assembleDebug+assembleDebugAndroidTest (no Chrome/fullunit concurrent), strict APK verifier --customer-flow/old82/samecert/assets; commit APK milestone BEFORE new4198/API4480 preview/code/assetproof and finaldocs. Never oldports/assets/tmpdata.
+PHASE12 APK VERIFIED: app output/mobile/ip-rasm-phase12-20261017-29f469aec06e-debug.apk, SHA29f469aec06e08f8cf562652be02ff9c7a1357fe6ceeccb10da1e77a5cfa9a74. OfflineGradle58897 passed5m21s/176tasks(21executed), app+test APK assembled. Strict verifier81843 passed43exact finalphase12-dist assets, customerFlow/framing/reference/legacy/font/licenses/privacy markers, same8e43cfcertificate and82oldarchives unchanged.261unit/38latestbrowser/2exact3000stepPDF/report/screens verified; no install/phone/production/nativebackend claim. Commit APK milestone BEFORE starting preview. Next run start-customer-preview.mjs hidden (free4198/API4480 or nextfree, freshDB/unused3-buildkit); verify-phase12-handoff.mjs with new29f469...evidence; freeze newserved directory, update allfinaldocs/Uzbektests and commit. No more productbuild afterpreviewlaunch; never old4194–4197/assets/APIs/tmpdata.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 
