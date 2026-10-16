@@ -125,3 +125,7 @@ Yangi versiya uchun alohida `Start-Standard-Kit.cmd` tayyorlandi:4195, eski4194g
 ## 2026-10-16 — yorliqlarning yakuniy kesilishi
 
 Faqat oxirgi qayta yaratilgan PDFlarni ishlating: kvadrat yorliqlari tashqariga, yurakning pastki yarmi tashqariga qaraydi; yuqori yarmi ichkarida. Sektorlar alohida kesiladi, ticklar avvalgi720 nuqtaga aynan mos. Qog'ozni joylashtirib50mmni qayta o'lchang; yorliqning qaysi tomonga qaraganidan qat'i nazar, doirachani aynan o'z mixiga tenglang. Boshqa naqsh yorlig'ini bir vaqtda yopishtirmang. Yakuniy sinov tugaguncha yangi4195 oynasi hali ishga tushirilmagan.
+
+## 2026-10-16 — standart kit APK tayyor
+
+Yangi APK: `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`.43 veb fayl/imzo tekshirildi,70 eski APK saqlangan. Telefonga agent o'rnatmadi; Android test paketi faqat yig'ildi. APKda jonli kit serveri hali sozlanmagan; to'liq kit-kredit sinovini keyin ochiladigan4195 brauzer oynasida bajaring.4194 o'z holida qoldi. Chop/qadam/ovoz va haqiqiy telefon sinovi egasi tomonidan alohida tekshiriladi.
