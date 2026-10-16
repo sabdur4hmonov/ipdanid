@@ -1,3 +1,4 @@
+import { enterStandardExpert } from "./standard-expert-test";
 import { test as base } from "@playwright/test";
 export * from "@playwright/test";
 // Existing product regression deliberately selects the visible Custom/previous
@@ -7,6 +8,7 @@ export const test = base.extend({
     async function selectPreviousTools() {
       if (new URL(page.url()).pathname !== "/") return;
       await page.locator(".app").waitFor();
+      await enterStandardExpert(page);
       const mode = page.getByTestId("create-mode");
       if ((await mode.count()) && !(await mode.isVisible()))
         await page.getByTestId("expert-tools").locator("summary").click();

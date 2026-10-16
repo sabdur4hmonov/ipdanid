@@ -1,3 +1,4 @@
+import { frameCustomerHeads } from "./customer-framing";
 import { validSubjectPlan } from "./subject-plan";
 import { validateStandardProfile } from "./standard-kit";
 import { faceFill } from "./standard-preparation";
@@ -190,29 +191,42 @@ export async function validateInstruction(
       !p.standardKit ||
       !(
         ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
-          ? ["standard-preparation/2", "standard-preparation/3"]
+          ? [
+              "standard-preparation/2",
+              "standard-preparation/3",
+              "standard-preparation/4",
+            ]
           : ["standard-preparation/1"]
       ).includes(k.version) ||
       !/^[a-f0-9]{64}$/.test(k.sourceHash) ||
       !["automatic", "manual", "original"].includes(k.whiteBackground) ||
       JSON.stringify(k.transform) !==
         JSON.stringify(
-          k.version === "standard-preparation/3"
-            ? framePortraitHeads(
+          k.version === "standard-preparation/4"
+            ? frameCustomerHeads(
                 k.transform.faces,
                 p.shape,
                 k.sourceAspect,
                 k.transform.framing?.keepShoulders,
                 k.transform.framing?.adjustments,
+                k.transform.framing?.rotation,
               )
-            : ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
-              ? faceFillReference(k.transform.faces, p.shape, k.sourceAspect)
-              : faceFill(
+            : k.version === "standard-preparation/3"
+              ? framePortraitHeads(
                   k.transform.faces,
                   p.shape,
                   k.sourceAspect,
-                  p.standardKit.patternScale,
-                ),
+                  k.transform.framing?.keepShoulders,
+                  k.transform.framing?.adjustments,
+                )
+              : ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+                ? faceFillReference(k.transform.faces, p.shape, k.sourceAspect)
+                : faceFill(
+                    k.transform.faces,
+                    p.shape,
+                    k.sourceAspect,
+                    p.standardKit.patternScale,
+                  ),
         )
     )
       throw Error("Invalid reviewed kit preparation");

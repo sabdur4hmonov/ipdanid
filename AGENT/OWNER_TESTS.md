@@ -184,3 +184,7 @@ Yangi ilova: http://127.0.0.1:4197/ Kod: output/phase11/manual-testing.txt (3ta 
 
 
 Phase11 APK: `output/mobile/ip-rasm-phase11-20261016-46bc061bd5c2-debug.apk`.35.99MB, imzo va43fayl tekshirildi;79oldingi APK o‘z holida. Telefonga agent o‘rnatmagan. To‘liq kod/kredit sinovi uchun yangi http://127.0.0.1:4197/ manzilidan foydalaning.
+
+
+## Phase12 — sodda uch ekran (tayyorlanmoqda)
+Yangi manzil output/phase12/manual-testing.txt da bo‘ladi.1)Galereyadan tanlash yoki Rasmga olish, Doira/Kvadrat/Yurak.2)Suratni bevosita suring, ikki barmoq/g‘ildirak/slider bilan kattalashtiring; Burish90°, Qaytarish avtomatik joylashuvga. Oldin/Keyin, Yelkani ko‘rsatish, Yaratish.3)Haqiqiy natija, vaqt, Yig‘ishni boshlash/PDF/Qayta moslash. Oxirgisi joylashuvni saqlasin. Oddiy yo‘lda boshqa sozlama yo‘q; eski vositalar Menyu→Mutaxassis rejimi ichida.

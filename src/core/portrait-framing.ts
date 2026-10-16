@@ -148,15 +148,10 @@ function patternMask(shape: Shape, n: number) {
   }
   return mask;
 }
-export function preparePortraitCanvas(
+export function referenceToneCanvas(
   source: HTMLCanvasElement,
   mask: PersonMask | undefined,
-  transform: FaceFill,
-  shape: Shape,
-  n = 500,
 ) {
-  if (transform.version !== "reviewed-head-framing/3" || !transform.framing)
-    throw Error("framing/missing-proof");
   let cached = toneCache.get(source);
   if (!cached || cached.mask !== mask) {
     const tones = referenceTones(
@@ -182,6 +177,18 @@ export function preparePortraitCanvas(
     cached = { mask, full };
     toneCache.set(source, cached);
   }
+  return cached.full;
+}
+export function preparePortraitCanvas(
+  source: HTMLCanvasElement,
+  mask: PersonMask | undefined,
+  transform: FaceFill,
+  shape: Shape,
+  n = 500,
+) {
+  if (transform.version !== "reviewed-head-framing/3" || !transform.framing)
+    throw Error("framing/missing-proof");
+  const full = referenceToneCanvas(source, mask);
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = n;
   const ctx = canvas.getContext("2d")!,
@@ -200,7 +207,7 @@ export function preparePortraitCanvas(
     lc.imageSmoothingEnabled = true;
     lc.imageSmoothingQuality = "high";
     lc.drawImage(
-      cached.full,
+      full,
       (t.left - (s.left / s.width) * t.width) * n,
       (t.top - (s.top / s.height) * t.height) * n,
       (t.width / s.width) * n,

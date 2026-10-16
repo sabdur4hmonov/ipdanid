@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./standard-expert-test";
 import { createHash } from "node:crypto";
 import {
   readFileSync,

@@ -32,6 +32,12 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
+PHASE12 ACTIVE: three-screen customer component and versioned preparation4 implemented. Direct drag/pinch/wheel/slider/rotation/reset/before-after, stronger chin/jaw crop removes shirt corners; fixed classic2/500px/kit, result gate/PDF and persistent readjustment, menu-only expert.15/15foundation unit tests and TypeScript/build1974 pass. Next run phase12-ab.spec.ts desktop at4340/API4484 (6cases×2500/3000), inspect actual old11/new12 results and select default; final gesture/3tap/4locale/screens/PDF tests, fullunit/finalbuild/APK/newpreview. No A/B/default selection or UI acceptance yet. Protect4194–4197/APIs/live dirs, tmp/data; output/phase12-dist newonly.
+
+### Historical Phase11 handoff (superseded, keep4197 untouched)
+
+
+
 PHASE11 COMPLETE. No independent implementation/test/build work remains. Owner next: open http://127.0.0.1:4197/, read the3-build code in output/phase11/manual-testing.txt, upload/review the larger head/white chin fade/Heart composition, choose2000/2500/3000, unlock and start at step1 per Uzbek OWNER_TESTS. Hidden launcher13968/child9128/API4479 uses test-results/owner-framing-RR6GiM/database.sqlite. FREEZE output/phase11-dist (43files exactly verified APK); never rebuild/empty it or dist, output/phase9-dist, output/phase10-dist. Do not contact/restart4194/4195/4196. Future work needs a new port/directory. Pending owner phone/physical/original-photo/QBRIX/voice inputs remain separate; do not rerun rejected legacy fits.
 
 Phase11 evidence:253/253unit (71actual files,82reported suites),38unique latest browser outcomes across12+24+6+2 executed cases (duplicates deduplicated). One desktopCircle29.588s timing failure under concurrent full units retained; exact pixels/path passed. Final isolatedCircle5057ms/6584ms and latest14photo outputs max9643ms pass. Circle/pair before-after cache target/app/sequence exactly equal;14targets below chin+18px white;12Phase10 source hashes/aspects/profiles exact. Every14PDF cover equals app1000RGB and all2500/3000ordered numeric+sector steps equalJSON; clean actual cover inspected. Private report output/phase11/report.html and proofs in results/visual-review/target-verification/pdf-verification/final-verification.json.

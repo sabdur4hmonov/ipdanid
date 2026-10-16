@@ -1,5 +1,7 @@
 import type { Locale, Project, Shape } from "./core/types";
 import { lazy, Suspense, useState } from "react";
+import { CustomerStudio } from "./CustomerStudio";
+import { customerFlowText } from "./customer-flow-i18n";
 import { standardText } from "./standard-kit-i18n";
 const StandardKitStudio = lazy(() =>
   import("./StandardKitStudio").then((m) => ({ default: m.StandardKitStudio })),
@@ -13,6 +15,7 @@ import { LibraryScreen } from "./screens/LibraryScreen";
 import { MoreScreen } from "./screens/MoreScreen";
 export default function App() {
   const [standard, setStandard] = useState(true);
+  const [customerFlow, setCustomerFlow] = useState(true);
   const context = useAppController();
   const {
     Announcements,
@@ -69,7 +72,9 @@ export default function App() {
     view,
   } = context;
   return (
-    <div className="app">
+    <div
+      className={customerFlow && view === "create" ? "app customer-app" : "app"}
+    >
       <aside className="sidebar">
         <a
           className="brand"
@@ -127,23 +132,35 @@ export default function App() {
             <span>/</span> <span>{storefront.brandName || PRODUCT_NAME}</span>
           </div>
           <div className="header-right">
-            <MoreMenu context={context} />
+            <MoreMenu
+              context={context}
+              onCustomer={() => {
+                setCustomerFlow(true);
+                nav("create");
+              }}
+              onExpert={() => {
+                setCustomerFlow(false);
+                nav("create");
+              }}
+            />
             {!online && (
               <span className="offline">
                 <WifiOff size={15} />
                 {t("offline")}
               </span>
             )}
-            <select
-              aria-label="Language"
-              value={locale}
-              onChange={(e) => setLocale(e.target.value as Locale)}
-            >
-              <option value="uz">O‘zbekcha</option>
-              <option value="uz-Cyrl">Ўзбекча</option>
-              <option value="ru">Русский</option>
-              <option value="en">English</option>
-            </select>
+            {!(customerFlow && view === "create") && (
+              <select
+                aria-label="Language"
+                value={locale}
+                onChange={(e) => setLocale(e.target.value as Locale)}
+              >
+                <option value="uz">O‘zbekcha</option>
+                <option value="uz-Cyrl">Ўзбекча</option>
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+              </select>
+            )}
           </div>
         </header>
         <main>
@@ -250,7 +267,55 @@ export default function App() {
               }}
             />
           )}
-          {view === "create" && (
+          {customerFlow && (
+            <div className="customer-entry" hidden={view !== "create"}>
+              <CustomerStudio
+                active={view === "create"}
+                locale={locale}
+                setLocale={setLocale}
+                onExpert={() => {
+                  setCustomerFlow(false);
+                  setStandard(true);
+                }}
+                onNavigate={nav}
+                onPersist={(i) => {
+                  if (!loaded) return;
+                  setProjects((ps) =>
+                    ps.some(
+                      (p) => p.instruction.sequenceHash === i.sequenceHash,
+                    )
+                      ? ps
+                      : [
+                          {
+                            id: crypto.randomUUID(),
+                            name: customerFlowText(locale, "result"),
+                            instruction: i,
+                            progress: progressFor(i),
+                            edits: { ...DEFAULT_EDITS },
+                          },
+                          ...ps,
+                        ],
+                  );
+                }}
+                onGuide={(i) => {
+                  if (!loaded) return;
+                  const existing = projects.find(
+                    (p) => p.instruction.sequenceHash === i.sequenceHash,
+                  );
+                  const p = existing ?? {
+                    id: crypto.randomUUID(),
+                    name: customerFlowText(locale, "result"),
+                    instruction: i,
+                    progress: progressFor(i),
+                    edits: { ...DEFAULT_EDITS },
+                  };
+                  if (!existing) setProjects((ps) => [p, ...ps]);
+                  open(p);
+                }}
+              />
+            </div>
+          )}
+          {view === "create" && !customerFlow && (
             <>
               <details open={!standard} data-testid="expert-tools">
                 <summary>{standardText(locale, "details")}</summary>

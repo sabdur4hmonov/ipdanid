@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./standard-expert-test";
 import { readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { unlockKitGuide } from "./kit-access";
 import { validateInstruction } from "../../src/core/validation";

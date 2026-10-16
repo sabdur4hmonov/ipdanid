@@ -22,7 +22,10 @@ export function classicCircleProfile() {
 }
 export interface FaceFill {
   version:
-    "reviewed-face-fill/1" | "reviewed-face-fill/2" | "reviewed-head-framing/3";
+    | "reviewed-face-fill/1"
+    | "reviewed-face-fill/2"
+    | "reviewed-head-framing/3"
+    | "reviewed-customer-framing/4";
   sourceBounds: RegionBox;
   targetBounds: RegionBox;
   faces: RegionBox[];
@@ -32,13 +35,15 @@ export interface FaceFill {
     adjustments: { zoom: number; x: number; y: number }[];
     heads: { source: RegionBox; target: RegionBox; chin: number }[];
     fadePx: number;
+    rotation?: 0 | 1 | 2 | 3;
   };
 }
 export interface KitPreparation {
   version:
     | "standard-preparation/1"
     | "standard-preparation/2"
-    | "standard-preparation/3";
+    | "standard-preparation/3"
+    | "standard-preparation/4";
   sourceHash: string;
   sourceAspect: number;
   whiteBackground: "automatic" | "manual" | "original";

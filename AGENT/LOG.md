@@ -363,3 +363,13 @@ Source/verification checkpoints c58d92f,1bc9ce8,fd67d85,717793d,0a5a443. Hidden 
 Updated MASTER livefreeze, PROGRESS complete/exactnext, Uzbek OWNER_TESTS/FINAL_REPORT, RESUME/STATUS/native/framing checkpoints. Private report includes12equal-size comparisons and2singleHeart3000supplements, max latest9.643s; target/physical proofs and honest timing diagnostic retained.253units/38latest browser outcomes/14exactPDFs/43asset signedAPK/79oldarchives verified. Native backendfalse, no phone install/production or physical acceptance claim. Allphotos/output/credentials remain ignored. Newpreview left running for owner; no own test/build process active, old servers untouched, no push/reset. Finalhandoff committed after this entry.
 
 Codex browser-open request for new4197 returned queued; no claim that the tab was displayed and no forced reload of any protected tab.
+
+
+## 2026-10-16 — Phase12 owner scope accepted
+
+Read working protocol/PROGRESS/LOG, clean branchHEADc60eb76. Owner says quality improved but rejects UX and residual shoulder triangles. Added Phase12 plan: exactly3customer screens, true gestures/rotation/reset/live compare, automatic visible crop approval throughGenerate, fixed settings, menu-only expert, evidence-based2500/3000default, strict oldguide/preparation preservation. No source changes/checks yet. Next implement preparation4 and customer UI before isolated A/B/tests/APK/freshport. Protect all4194–4197 and APIs/assets, never tmp/data/push.
+
+
+## 2026-10-16 — Phase12 customer foundation
+
+New3-screen CustomerStudio, menu-only expert/legacy, fixed profile/classic2/500px/physical render, auto people-mask/head-fit, direct pointer/pinch/wheel/slider/90rotation/reset/live before-after, result effort/gated assembly/PDF/readjustment without state loss. New reviewed-customer-framing4/standard-preparation4 binds tighter chin and jaw crop removing shoulder triangles plus rotation; old3/2 contracts preserved, shared tone-canvas extraction unchanged.15/15 targeted unit tests pass including rotation/head/oldguide imports/tampering. TypeScript and clean1974module phase12-dist build pass; tests compile again after A/B helper. Ordinary source errors refuse generation rather than inventing faces. Legacy tests now explicitly choose Menu→Expert. Next actual6case2500/3000UI A/B then visual selection/gesture validation/screens/locale/fullunit/APK/freshpreview. No A/B or first-time usability claim yet, no photos/output/secrets staged, all4194–4197 untouched.

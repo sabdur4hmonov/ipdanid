@@ -10,6 +10,8 @@ export function PhotoActions({
   onPhoto,
   uploadRef,
   uploadLabel,
+  galleryLabel,
+  cameraLabel,
   disabled = false,
   hint = true,
 }: {
@@ -17,6 +19,8 @@ export function PhotoActions({
   onPhoto: (file: File) => Promise<void>;
   uploadRef?: RefObject<HTMLInputElement | null>;
   uploadLabel?: string;
+  galleryLabel?: string;
+  cameraLabel?: string;
   disabled?: boolean;
   hint?: boolean;
 }) {
@@ -198,7 +202,7 @@ export function PhotoActions({
           onClick={() => gallery.current?.click()}
         >
           <Upload size={18} />
-          {t("upload")}
+          {galleryLabel ?? t("upload")}
         </button>
         <button
           type="button"
@@ -211,7 +215,7 @@ export function PhotoActions({
           }}
         >
           <Camera size={18} />
-          {t("camera")}
+          {cameraLabel ?? t("camera")}
         </button>
       </div>
       {hint && <p className="fineprint">{t("hint")}</p>}

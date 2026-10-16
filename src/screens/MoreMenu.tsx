@@ -1,3 +1,4 @@
+import { customerFlowText } from "../customer-flow-i18n";
 import type { AppScreenContext } from "../useAppController";
 type ScreenContext = Pick<
   AppScreenContext,
@@ -12,7 +13,15 @@ type ScreenContext = Pick<
   | "simple"
   | "t"
 >;
-export function MoreMenu({ context }: { context: ScreenContext }) {
+export function MoreMenu({
+  context,
+  onCustomer,
+  onExpert,
+}: {
+  context: ScreenContext;
+  onCustomer?: () => void;
+  onExpert?: () => void;
+}) {
   const {
     addPhoto,
     customerText,
@@ -33,6 +42,16 @@ export function MoreMenu({ context }: { context: ScreenContext }) {
     >
       <summary>{simple("more")}</summary>
       <div className="more-menu-items">
+        {onCustomer && (
+          <button onClick={onCustomer}>
+            {customerFlowText(locale, "simple")}
+          </button>
+        )}
+        {onExpert && (
+          <button onClick={onExpert}>
+            {customerFlowText(locale, "expert")}
+          </button>
+        )}
         <button onClick={() => nav("materials")}>{t("materials")}</button>
         <button onClick={() => nav("customer")}>
           {customerText(locale, "customer")}
