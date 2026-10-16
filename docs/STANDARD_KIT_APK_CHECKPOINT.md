@@ -1,4 +1,10 @@
-# Latest Android checkpoint — uploaded photo visibility, 2026-10-16
+# Latest Android checkpoint — reference classic2, 2026-10-16
+
+App output/mobile/ip-rasm-phase10-20261016-a3f7b2d756f7-debug.apk, SHA256 a3f7b2d756f7bf244b3821c4e81622667c570d010bf840cbafe7f0252d37ec67. Test APK sameprefix/-debug-androidTest.apk, SHA d52eaffc3d9cd161326c736b9a44eef93f47273ca5e0f51748ebc5e287e49fe9. Public signer8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90 unchanged. Evidence matchingprefix-evidence.json has standardKitVerified=true/classicReferenceVerified=true,43exact assets/font/licenses/no private source/no fictional audio,76prior archives byte-identical.
+
+Clean web build1967 from source d32f04b, direct Capacitor sync0.49s, offline app/test assembly3m25s/176tasks(21executed155up-to-date). Full248unit/36unique latest browser outcomes; real portrait12/12 max9.450s; independent12PDF exact covers/all2500steps. No phone instrumentation/install or native production backend configured. New live4196/API4478 serves this exact APK web content, fresh isolated DB/code in output/phase10/manual-testing.txt. This folder is now LIVE/FROZEN; future builds must use a fresh directory. Old4194/4195 assets/session/data preserved; no push.
+
+## Historical uploaded-photo visibility APK (superseded)
 
 App `output/mobile/ip-rasm-photo-preview-20261016-f6cb7ddf0eea-debug.apk`; SHA256 `f6cb7ddf0eeadc86767b987c71fc6f13f7c45fb323e27280eee20dd1f399ffa7`. Test APK uses same prefix/-debug-androidTest.apk, SHA d52eaffc3d9cd161326c736b9a44eef93f47273ca5e0f51748ebc5e287e49fe9. Public signer unchanged `8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90`. Evidence `output/mobile/ip-rasm-photo-preview-20261016-f6cb7ddf0eea-evidence.json`.
 

@@ -35,7 +35,7 @@ The owner's urgent request authorizes a new `classic-greedy/2` default, independ
 - Git: work on branch `feat/full-roadmap` (create it from `feat/r1-r2-subjects` if it does not exist). Commit per milestone. NO push, reset, rebase, `git clean`, force, or history rewrite. Never commit `tmp/`, `output/`, photos, secrets, DB files.
 - Never touch `tmp/data` or the owner database (`tmp/data/iprasm.sqlite`, `tmp/data/local-secrets.json`). Tests always use an isolated temp DB, isolated ports and a separate `IP_RASM_TEST_ARTIFACTS` folder.
 - Never stop the owner's server on port 4194. Stop only processes you started yourself.
-- The owner's standard preview4195 currently serves `output/phase9-dist`, now an additive asset union. Never build/empty that live folder. Use clean `output/photo-preview-fix-dist` for later tests/APKs; a tested preview update may use `scripts/publish-photo-preview.mjs` to retain old hashed assets without restarting API/customer state.
+- Owner preview4195 serves `output/phase9-dist` (additive asset union). New reference preview4196/API4478 serves `output/phase10-dist`; that directory is now FROZEN/live and matches the verified APK. Never build/empty either live directory or dist/4194. Future work must build a new clean directory such as `output/phase10-next-dist`; preserve customer/test sessions and all old hashed assets.
 - Old guides, sequence hashes and saved progress stay valid. New algorithms get new version ids; old engines untouched.
 - No fake previews, no source-photo overlay, no invented facial details. The exact same ordered sequence drives preview, player, PDF, JSON and TXT.
 - No default promotion without visual + metric acceptance (Phase 2 rules).

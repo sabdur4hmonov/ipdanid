@@ -1,5 +1,29 @@
 # Ip Rasm — yakuniy hisobot, 2026-10-16
 
+## Phase10 — reference usuli va oddiy surat oqimi tayyor
+
+Yangi ilova: **http://127.0.0.1:4196/**. Lokal3-yig‘ish kodi: `output/phase10/manual-testing.txt`. Eski4194/4195 va ma’lumotlari o‘zgarmadi. Yangi server alohida bazada; klassik usul2 standart tanlanadi:500px nishon,240mix,2500haqiqiy ulanish,1000px fizik preview,0.12mm ip/0.9shaffoflik. Surat darhol ko‘rinadi, oq fon/CLAHE/kontrast/kesish tayyor nishonda tekshiriladi. Player/PDF/TXT/JSON ayni ketma-ketlik va sektor belgilaridan foydalanadi; eski yo‘riqnomalar saqlanadi.
+
+Uch sun’iy portret va avvalgi lokal egasi surati bilan desktop/mobilda12/12 sinov o‘tdi; eng sekin hisob9,45soniya. Egasi rasmining mavjud ishlov berilgan nusxasi ishlatildi, asl surat deb ko‘rsatilmadi. Natijalar yonma-yon ko‘rildi: yuzlar taniladi; reference bilan kesish farqi va ikki kishilik Heartdagi maydaroq/xiraroq yuzlar hisobotda ochiq yozildi. Hisobot: `output/phase10/report.html`. Suratlar Gitga kirmadi va boshqa saytga yuklanmadi.
+
+To‘liq248unit/81fayl o‘tdi.36ta brauzer holatining oxirgi natijalari o‘tdi: asosiy12, regressiya24dagi22muvaffaqiyat/2qizil-ip xatosi, tuzatishdan keyin4/4qayta sinov. Bu200ta eski holatni to‘liq qayta bajarish degani emas.12PDFning1000px rasmi ilovaga aynan teng, har birining2500qadami JSONga to‘liq mos; muqova ham ko‘rildi. Build1967 o‘tdi.
+
+Yangi debug APK: `output/mobile/ip-rasm-phase10-20261016-a3f7b2d756f7-debug.apk`. SHA256: `a3f7b2d756f7bf244b3821c4e81622667c570d010bf840cbafe7f0252d37ec67`. Offline Android yig‘ilishi3m25s;43veb fayl/reference markerlar/imzo tekshirildi,76eski APK aynan saqlandi. Dalil: shu prefiksdagi `-evidence.json` va `output/phase10/final-verification.json`. Telefon o‘rnatilishi/taxta sinovi qilinmadi; native ishlab chiqarish serveri hali sozlanmagan. Push qilinmadi. Keyingi egasi sinovi — yangi4196manzilida surat yuklash, tayyor nishonni tasdiqlash va kod bilan birinchi qadamdan yig‘ish.
+
+Quyidagi bo‘limlar avvalgi bosqichlarning tarixiy dalilidir; eng yangi ilova4196 va yuqoridagi APK.
+
+## Phase10 — reference usuli va oddiy surat oqimi tayyor
+
+Yangi ilova: **http://127.0.0.1:4196/**. Lokal3-yig‘ish kodi: `output/phase10/manual-testing.txt`. Eski4194/4195 va ma’lumotlari o‘zgarmadi. Yangi server alohida bazada; klassik usul2 standart tanlanadi:500px nishon,240mix,2500haqiqiy ulanish,1000px fizik preview,0.12mm ip/0.9shaffoflik. Surat darhol ko‘rinadi, oq fon/CLAHE/kontrast/kesish tayyor nishonda tekshiriladi. Player/PDF/TXT/JSON ayni ketma-ketlik va sektor belgilaridan foydalanadi; eski yo‘riqnomalar saqlanadi.
+
+Uch sun’iy portret va avvalgi lokal egasi surati bilan desktop/mobilda12/12 sinov o‘tdi; eng sekin hisob9,45soniya. Egasi rasmining mavjud ishlov berilgan nusxasi ishlatildi, asl surat deb ko‘rsatilmadi. Natijalar yonma-yon ko‘rildi: yuzlar taniladi; reference bilan kesish farqi va ikki kishilik Heartdagi maydaroq/xiraroq yuzlar hisobotda ochiq yozildi. Hisobot: `output/phase10/report.html`. Suratlar Gitga kirmadi va boshqa saytga yuklanmadi.
+
+To‘liq248unit/81fayl o‘tdi.36ta brauzer holatining oxirgi natijalari o‘tdi: asosiy12, regressiya24dagi22muvaffaqiyat/2qizil-ip xatosi, tuzatishdan keyin4/4qayta sinov. Bu200ta eski holatni to‘liq qayta bajarish degani emas.12PDFning1000px rasmi ilovaga aynan teng, har birining2500qadami JSONga to‘liq mos; muqova ham ko‘rildi. Build1967 o‘tdi.
+
+Yangi debug APK: `output/mobile/ip-rasm-phase10-20261016-a3f7b2d756f7-debug.apk`. SHA256: `a3f7b2d756f7bf244b3821c4e81622667c570d010bf840cbafe7f0252d37ec67`. Offline Android yig‘ilishi3m25s;43veb fayl/reference markerlar/imzo tekshirildi,76eski APK aynan saqlandi. Dalil: shu prefiksdagi `-evidence.json` va `output/phase10/final-verification.json`. Telefon o‘rnatilishi/taxta sinovi qilinmadi; native ishlab chiqarish serveri hali sozlanmagan. Push qilinmadi. Keyingi egasi sinovi — yangi4196manzilida surat yuklash, tayyor nishonni tasdiqlash va kod bilan birinchi qadamdan yig‘ish.
+
+Quyidagi bo‘limlar avvalgi bosqichlarning tarixiy dalilidir; eng yangi ilova4196 va yuqoridagi APK.
+
 ## So'nggi tuzatish — yuklangan surat, 2026-10-16
 
 Egasi surat tanlagan, ammo yangi Standart kit uni yopiq bo'limda yashirgan edi. Tuzatildi: “Yuklangan surat” asl/tayyorlangan rasmni darhol ko'rsatadi, fon holati ham ochiq.4195ni yangilab suratni bir marta qayta tanlang; eski sahifadagi surat faqat xotirada edi. Server/API/hisob/kreditlar o'zgarmadi, eski19 hashed fayl saqlandi. Oldingi vositalar alohida tugmada mavjud.

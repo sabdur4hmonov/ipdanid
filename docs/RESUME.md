@@ -1,4 +1,14 @@
-# Current resume — 2026-10-16
+# Current resume — Phase10 complete, 2026-10-16
+
+Read AGENTS/MASTER_PLAN/PROGRESS/latestLOG. Branch feat/full-roadmap. Source milestone d32f04b; final handoff follows. Classic-greedy/2 is the new-photo default with500px/240exact kit pins/2500fixed legal connections, local reference preparation2 and genuine1000px/.12mm/.9 physical rendering. Old classic1/materials/guides remain valid. Exact one-path player/sector/PDF/TXT/JSON identity, progress/cancel/recovery and optional real red21 are tested. No fake photo overlay.
+
+Full248unit/81files;36unique latest browser outcomes (12portrait acceptance +24focused, two red-selection failures fixed in4-case supplement); final build1967. Real JPEG gallery uploads for3synthetic+existing Phase9 owner crop on desktop/mobile, Square/two-face Heart, max9.450s. Reference solver paths and physical canvas bytes match;12PDF covers and every2500ordered step independently match app/JSON. Private report/provenance/visual review: output/phase10. Different owner crop/70%framing and fainter two-face Heart disclosed, no physical/phone/superiority claim.
+
+New live preview http://127.0.0.1:4196/API4478, launcher5952/child18652, fresh test-results/owner-reference-l967T8/database.sqlite. Private local3-build code: output/phase10/manual-testing.txt (unredeemed verified before handoff).43served files exactly packaged APK; NEVER rebuild/empty live output/phase10-dist. Future work uses a fresh clean directory.4194 original40 and4195 current43/retained19 asset hashes unchanged without server contact; tmp/data untouched. Debug APK output/mobile/ip-rasm-phase10-20261016-a3f7b2d756f7-debug.apk, SHA a3f7b2d756f7bf244b3821c4e81622667c570d010bf840cbafe7f0252d37ec67; offline3m25s, same signer/76old archives unchanged. No phone install/native production backend/no push.
+
+Exact next: owner tests new4196 from gallery through reviewed target/kit unlock/first assembly step using Uzbek OWNER_TESTS. No independent Phase10 work pending. Physical board/phone, original/real group photos, permitted QBRIX outputs and real746voice clips remain owner acceptance inputs. Do not repeat rejected legacy fits.
+
+## Historical photo-visibility predecessor (superseded)
 
 Read AGENTS/MASTER_PLAN/PROGRESS/latest LOG. Branch feat/full-roadmap. Latest owner bug: uploaded photo was hidden behind closed standard-kit details. Fixed345c0cd, safe4195 publicationd6f5fe7, final APK/handoff follows. Always-visible labelled source/composited canvas and background status; no engine/profile/sequence/credit change. Build1965 CLEAN output/photo-preview-fix-dist,10/10 focused browser cases3.9min (2new RGB/size/collapsed tools/replacement/4locale +old8 actual kit paths), mobile screenshot inspected. Prior184/unit241+PDF5/HTTP152 remain historical; no full186 claim.
 
