@@ -146,3 +146,5 @@ APK `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`; agent 
 Standart kitda surat yopiq yuz/fon bo'limlari ichida yashiringan edi. Tuzatishda galereyadan tanlash yoki kameradan olish bilanoq “Yuklangan surat” rasmi ko'rinadi; fon tayyorlanish holati ham ochiq. Rasmni ko'rish uchun yuz/qo'lda tuzatish bo'limini ochish kerak emas. Boshqa surat tanlasangiz yangi rasm chiqsin. Yuz va kesishni tasdiqlash → haqiqiy ip natijasi alohida qoladi.
 
 Agent4195dagi tuzatishni tekshirib qo'ygach sahifani yangilang va suratni yana bir marta tanlang. Eski sahifadagi tanlangan surat faqat xotirada bo'lgani uchun yangilashda qayta tanlash kerak. Kit hisobi/kredit/server qayta yaratilmaydi,4194 o'z holida. Oldingi interfeys kerak bo'lsa “Maxsus / oldingi vositalar” tugmasi bor.
+
+Tuzatish4195ga qo'yildi va yangi fayllar tekshirildi. Sahifani yangilang, suratni yana bir marta tanlang: “Yuklangan surat” yopiq bo'limlarsiz ko'rinsin; boshqa suratni tanlash ham ishlasin. Fon yuklanishi/xatosi rasm yonida ochiq ko'rinadi. Server, hisob va kreditlar qayta yaratilmagan.4194 o'z holida. APKning tuzatilgan nusxasi alohida yig'ilmoqda.
