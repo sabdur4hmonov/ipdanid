@@ -140,3 +140,9 @@ Yangi APK: `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`.
 4.B-17 va uning76raqamli IDsi, PDF/TXT/JSON/ovozdagi mosligini ko'ring. Qizil tanlansa haqiqiy ikkinchi segment/jami vaqt/metrni tekshiring. Qurilma ovozi yoki matn ishlaydi;746 haqiqiy yozuv hali yo'q.
 
 APK `output/mobile/ip-rasm-standard-kit-20261015-5f6c68918c50-debug.apk`; agent telefonga o'rnatmadi. Native kit uchun ishlab chiqarish serveri hali sozlanmagan, shu sabab to'liq kod-kredit sinovini4195da bajaring. O'xshashlik/QBRIX sifati o'tdi deb belgilanmagan: hozir burun/lab hududlari o'tmadi, tizza1500. Haqiqiy ikki kishilik asl surat va chop/yig'ish natijangiz keyingi qabul uchun kerak.
+
+## 2026-10-16 — yuklangan suratning darhol ko'rinishi
+
+Standart kitda surat yopiq yuz/fon bo'limlari ichida yashiringan edi. Tuzatishda galereyadan tanlash yoki kameradan olish bilanoq “Yuklangan surat” rasmi ko'rinadi; fon tayyorlanish holati ham ochiq. Rasmni ko'rish uchun yuz/qo'lda tuzatish bo'limini ochish kerak emas. Boshqa surat tanlasangiz yangi rasm chiqsin. Yuz va kesishni tasdiqlash → haqiqiy ip natijasi alohida qoladi.
+
+Agent4195dagi tuzatishni tekshirib qo'ygach sahifani yangilang va suratni yana bir marta tanlang. Eski sahifadagi tanlangan surat faqat xotirada bo'lgani uchun yangilashda qayta tanlash kerak. Kit hisobi/kredit/server qayta yaratilmaydi,4194 o'z holida. Oldingi interfeys kerak bo'lsa “Maxsus / oldingi vositalar” tugmasi bor.

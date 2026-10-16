@@ -32,6 +32,7 @@ const messages = {
     configError:
       "Invalid/colliding kit settings or a stale revision. Reload and check actual hole/edge clearances before saving.",
     title: "Standard kit",
+    photoPreview: "Uploaded photo",
     legacy: "Custom / previous tools",
     standard: "Standard kit",
     hint: "White standard base. Review every real face, the background and crop before calculating.",
@@ -100,6 +101,7 @@ const messages = {
     configError:
       "Sozlama noto‘g‘ri, teshiklar yaqin yoki versiya eskirgan. Qayta olib, haqiqiy oraliqlarni tekshiring.",
     title: "Standart kit",
+    photoPreview: "Yuklangan surat",
     legacy: "Maxsus / oldingi vositalar",
     standard: "Standart kit",
     hint: "Oq standart taxta. Hisoblashdan oldin har bir haqiqiy yuz, fon va kesishni tekshiring.",
@@ -169,6 +171,7 @@ const messages = {
     configError:
       "Недопустимые/пересекающиеся отверстия или устаревшая версия. Загрузите настройки и проверьте расстояния.",
     title: "Стандартный набор",
+    photoPreview: "Загруженное фото",
     legacy: "Другие / прежние инструменты",
     standard: "Стандартный набор",
     hint: "Белая стандартная основа. Перед расчётом проверьте все реальные лица, фон и кадрирование.",

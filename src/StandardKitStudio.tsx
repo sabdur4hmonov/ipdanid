@@ -66,6 +66,7 @@ export function StandardKitStudio({
     profileRequest = useRef(0),
     photoSerial = useRef(0),
     worker = useRef<Worker | null>(null),
+    photoPreview = useRef<HTMLCanvasElement>(null),
     target = useRef<HTMLCanvasElement>(null),
     actual = useRef<HTMLCanvasElement>(null);
   const profile = useMemo(
@@ -115,6 +116,19 @@ export function StandardKitStudio({
     redAccent,
     redColour,
   ]);
+  useEffect(() => {
+    if (!source || !photoPreview.current) return;
+    const canvas = photoPreview.current;
+    canvas.width = source.width;
+    canvas.height = source.height;
+    canvas
+      .getContext("2d")!
+      .drawImage(
+        background?.enabled && background.canvas ? background.canvas : source,
+        0,
+        0,
+      );
+  }, [source, background]);
   useEffect(() => {
     if (prepared && target.current) {
       target.current.width = n;
@@ -414,23 +428,40 @@ export function StandardKitStudio({
           </button>
         ))}
       </details>
-      <PhotoActions locale={locale} onPhoto={photo} />
+      <PhotoActions locale={locale} onPhoto={photo} hint={!source} />
       {source && (
         <>
-          <details>
-            <summary>{t("faces")}</summary>
-            <PersonBackground
-              key={sourceId}
-              source={source}
-              locale={locale}
-              initial={background}
-              onBusy={setBackgroundBusy}
-              onChange={(next) => {
-                setBackground(next);
-                if (next.faces?.length && next.faces !== background?.faces)
-                  setFaces(next.faces.map((f) => f.face));
+          <figure style={{ margin: "16px 0" }}>
+            <figcaption>{t("photoPreview")}</figcaption>
+            <canvas
+              ref={photoPreview}
+              role="img"
+              aria-label={t("photoPreview")}
+              data-testid="standard-photo-preview"
+              style={{
+                display: "block",
+                width: "100%",
+                height: "auto",
+                maxHeight: "60vh",
+                objectFit: "contain",
+                borderRadius: 12,
               }}
             />
+          </figure>
+          <PersonBackground
+            key={sourceId}
+            source={source}
+            locale={locale}
+            initial={background}
+            onBusy={setBackgroundBusy}
+            onChange={(next) => {
+              setBackground(next);
+              if (next.faces?.length && next.faces !== background?.faces)
+                setFaces(next.faces.map((f) => f.face));
+            }}
+          />
+          <details>
+            <summary>{t("faces")}</summary>
             <p>{t("faceReview")}</p>
             {faces.map((face, j) => (
               <fieldset key={j}>
