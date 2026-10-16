@@ -201,6 +201,16 @@ Yangi ilova: **http://127.0.0.1:4198/**. Uchta yig‘ish kodi: `output/phase12/m
 
 APK: `output/mobile/ip-rasm-phase12-20261017-29f469aec06e-debug.apk`.261unit va38ta oxirgi brauzer holati o‘tdi;2PDFning1000px rasmi va barcha3000qadami tekshirildi.43fayl/imzo va82oldingi APK saqlangani tasdiqlandi. Kompyuterda10.08s, mobil brauzerda11.78s hisoblash qayd etildi. Telefonga agent o‘rnatmagan va haqiqiy telefonda hali sinamagan. Native ishlab chiqarish serveri hali sozlanmagan; to‘liq kod/kredit sinovini yangi brauzer manzilida bajaring. Eski4194–4197ga tegilmagan; endi4198ham alohida saqlanadi, push qilinmagan.
 
-## Phase13 — tiniqroq portret (tayyorlanmoqda)
+## Phase13 — tiniqroq portret
 
-Yangi manzil/kod output/phase13/manual-testing.txt da beriladi;4194–4198 o‘z holida qoladi. Oddiy uch ekran orqali Doira/Kvadrat/Yurakni sinang. Batafsil:2500/3000/3500ip, taxmin5.6/6.7/7.8soat; standart3000. Yuz, ayniqsa ko‘z/burun/lab va kvadrat markazidagi “+”ni tekshiring. Yakuniy APK/hisobot/sinov tartibi ish tugagach yoziladi.
+Yangi manzil va uchta natija uchun kod `output/phase13/manual-testing.txt`da (ishga tushirilgach). Eski4194–4198 o‘z holida qoladi.
+
+1. Yangi manzilda Doira/Kvadrat/Yurak tanlang, galereyadan portret yuklang. Uch ekranli yo‘l avvalgidek: surat → Moslash → Natija. Suratni surish, ikki barmoq/g‘ildirak/slider, Burish/Qaytarish, Oldin/Keyin va yelka tugmasi ishlasin.
+2. Joylashuv ma’qul bo‘lsa **Yaratish**ni bosing. Yangi usul avtomatik ishlaydi; biror murakkab parametr kiritmang. Ko‘z, burun, lab va sochni avvalgi natija bilan teng o‘lchamda solishtiring. Bu haqiqiy0.12mm ip ketma-ketligi; tayyor surat ustiga bezak qo‘yilmaydi.
+3. Kvadrat markazidagi oldingi tekis “+” yo‘qolsin. Egasi sinovida avval ikkita shunday ip bor edi, endi0. Mixlar va andoza siljimagan. Boshqa qiya iplar va to‘qima izi tabiiy qoladi.
+4. Kichik **Batafsil**:2500≈5.6soat /3000≈6.7soat /3500≈7.8soat. Standart3000. Ayrim suratlarda3500 aniqroq, ammo bir soatcha qo‘shimcha yig‘ish talab qiladi; Yurak juftligi sinovida3000 yaxshiroq chiqdi. Har bir variant haqiqatan qayta hisoblansin.
+5. **Qayta moslash** joylashuvni saqlasin; o‘zgartirmay qayta yaratsangiz bir xil natija chiqsin. **PDF yuklab olish** yoki **Yig‘ishni boshlash**da yangi kit kodi bilan bitta natijani oching, birinchi mix/qadamdan boshlang. Player/PDF/TXT/JSONdagi sektorlar (masalanB-17) mos bo‘lsin. Ruxsat olingach shu qurilmada player oflayn ishlasin.
+6. `output/phase13/report.html`da bir xil tayyor nishon, v2 va v3 natijalarini ko‘ring. Egasi Kvadratida yuz ko‘rsatkichi0.512→0.574, Doirada0.545→0.612 bo‘ldi. Bular avvalgi320px ishlov berilgan lokal nusxa; yangi asl surat va haqiqiy telefon/taxtada o‘zingiz ham sinang. Hech qanday surat Gitga yoki tashqi saytga yuborilmagan.
+7. Eski saqlangan yo‘riqnomani ham oching: oldingi usuli, natijasi va progressi saqlansin. Chop etishda100%/Actual size,50mm belgini tekshirish va mix/sektor andozasi avvalgidek. Kerakli ip uzunligi va zaxira yetishini PDFdan tekshiring.
+
+APK, yangi manzil va yakuniy tekshiruvlar ish tugagach shu yerga yoziladi. Native kit serveri hali sozlanmagan; kod/kreditni yangi brauzer manzilida sinang. Agent telefonga o‘rnatmaydi.
