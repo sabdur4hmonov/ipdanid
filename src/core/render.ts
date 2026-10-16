@@ -2,6 +2,7 @@ import { usesOpticalRaster } from "./render-model";
 import type { Instruction } from "./types";
 import { flatten } from "./engine";
 import { rasterSequence } from "./optical";
+import { referenceRaster, classicPins } from "./classic-reference";
 export function renderInstruction(
   ctx: CanvasRenderingContext2D,
   i: Instruction,
@@ -12,8 +13,18 @@ export function renderInstruction(
   ctx.clearRect(0, 0, w, h);
   ctx.fillStyle = p.baseColor;
   ctx.fillRect(0, 0, w, h);
-  const pad = w * 0.06,
-    padY = h * 0.06,
+  const reference = ["classic-greedy/2", "standard-accent/21"].includes(
+      i.algorithm,
+    ),
+    viewPins = reference
+      ? classicPins(p, i.params.resolution).map((a) => ({
+          ...a,
+          x: a.x / i.params.resolution,
+          y: a.y / i.params.resolution,
+        }))
+      : p.pins;
+  const pad = reference ? 0 : w * 0.06,
+    padY = reference ? 0 : h * 0.06,
     sx = w - pad * 2,
     sy = h - padY * 2,
     steps = flatten(i);
@@ -21,8 +32,8 @@ export function renderInstruction(
   ctx.lineCap = "round";
   const end = options.completed ?? steps.length;
   if (usesOpticalRaster(i.algorithm)) {
-    const n = i.params.resolution,
-      raster = rasterSequence(i, end);
+    const n = reference ? 1000 : i.params.resolution,
+      raster = reference ? referenceRaster(i, n, end) : rasterSequence(i, end);
     const surface = document.createElement("canvas");
     surface.width = surface.height = n;
     const source = surface.getContext("2d")!;
@@ -49,7 +60,7 @@ export function renderInstruction(
     }
   ctx.globalAlpha = 1;
   if (options.pins)
-    for (const pin of p.pins) {
+    for (const pin of viewPins) {
       ctx.fillStyle = "#9a9b90";
       ctx.beginPath();
       ctx.arc(
@@ -63,8 +74,8 @@ export function renderInstruction(
     }
   const active = steps[(options.highlight ?? 0) - 1];
   if (active) {
-    const a = p.pins[active.from],
-      b = p.pins[active.to];
+    const a = viewPins[active.from],
+      b = viewPins[active.to];
     ctx.strokeStyle = "#e47b48";
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -78,11 +89,14 @@ export function renderInstruction(
       ctx.beginPath();
       ctx.arc(x, y, 24, 0, Math.PI * 2);
       ctx.fill();
-      ctx.font = p.standardKit?"bold 17px sans-serif":"bold 24px sans-serif";
+      ctx.font = p.standardKit
+        ? "bold 17px sans-serif"
+        : "bold 24px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "white";
-      ctx.fillText(pin.sectorLabel??String(pin.id), x, y);
+      const original = p.pins[j ? active.to : active.from];
+      ctx.fillText(original.sectorLabel ?? String(original.id), x, y);
     });
   }
 }

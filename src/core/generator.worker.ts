@@ -1,5 +1,6 @@
 import { refineHairCycles } from "./hair-cycles";
 import { generateClassic } from "./classic";
+import { generateClassicReference } from "./classic-reference";
 import { addHeartAccent } from "./heart-accent";
 import { DEFAULT_FEATURE_CONTRAST } from "./feature-contrast";
 import { DEFAULT_LOCAL_TEXTURE } from "./local-texture";
@@ -41,7 +42,9 @@ self.onmessage = async ({ data }) => {
     if (
       data.portrait?.enabled &&
       data.portrait.people &&
-      !["continuous", "guarded", "simplify", "subjects", "classic"].includes(data.strategy)
+      !["continuous", "guarded", "simplify", "subjects", "classic"].includes(
+        data.strategy,
+      )
     )
       throw Error(
         "Multiple portraits currently require the guarded continuous solver; experimental objectives are separate",
@@ -114,172 +117,198 @@ self.onmessage = async ({ data }) => {
         { ...options, seed: cycleSeed },
         await hash(options.pixels),
       );
-    const instruction = data.strategy === "classic"
-      ? await generateClassic({ ...options, onCheckpoint: (instruction) => self.postMessage({type:"checkpoint",jobId:data.jobId,instruction}) })
-      : cycleSeed
-      ? cycleSeed
-      : data.strategy === "simplify"
-        ? await simplifySequence(data.seed, data.pixels, {
-            maxProposals: 512,
-            onProgress: (d) =>
-              self.postMessage({
-                type: "stage",
-                jobId: data.jobId,
-                diagnostic: { stage: "simplify", ...d },
-              }),
-            onAccepted: (i) =>
+    const instruction =
+      data.strategy === "classic2"
+        ? await generateClassicReference({
+            ...options,
+            onCheckpoint: (instruction) =>
               self.postMessage({
                 type: "checkpoint",
                 jobId: data.jobId,
-                instruction: i,
+                instruction,
               }),
           })
-        : [
-              "global",
-              "multiscale",
-              "physical",
-              "anatomy",
-              "basis",
-              "features",
-              "texture",
-              "subjects",
-            ].includes(data.strategy)
-          ? await generateDensity(options, {
-              resolved:
-                ["basis", "features", "texture"].includes(data.strategy) &&
-                data.resolution === 320,
-              ...(data.strategy === "features"
-                ? {
-                    features:
-                      data.seed?.params.optimization?.features ??
-                      data.features ??
-                      DEFAULT_FEATURE_CONTRAST,
-                  }
-                : {}),
-              head: data.headRefine ? undefined : data.head,
-              ...(data.strategy === "subjects"
-                ? {
-                    subjectObjective:
-                      data.seed?.params.optimization?.subjectObjective ??
-                      data.subjectObjective ??
-                      DEFAULT_SUBJECT_OBJECTIVE,
-                  }
-                : {}),
-              ...(data.strategy === "texture"
-                ? {
-                    texture:
-                      data.seed?.params.optimization?.texture ??
-                      data.texture ??
-                      DEFAULT_LOCAL_TEXTURE,
-                  }
-                : {}),
-              edgeWeight:
-                data.seed?.params.optimization?.edgeWeight ??
-                ([
-                  "multiscale",
-                  "physical",
-                  "anatomy",
-                  "basis",
-                  "features",
-                  "texture",
-                  "subjects",
-                ].includes(data.strategy)
-                  ? 2
-                  : 1),
-              sweeps: ["features", "texture", "subjects"].includes(
-                data.strategy,
-              )
-                ? (data.totalSweeps ?? 8)
-                : data.strategy === "basis"
-                  ? (data.totalSweeps ??
-                    data.seed?.params.optimization?.sweeps ??
-                    8)
-                  : (data.seed?.params.optimization?.sweeps ?? 8),
-              multiscale: data.strategy === "multiscale",
-              ...(data.strategy === "anatomy"
-                ? { anatomy: data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE }
-                : {}),
-              ...(data.extension
-                ? { extension: data.extension, sweeps: data.totalSweeps }
-                : {}),
-              ...(data.exchange ? { exchange: data.exchange, sweeps: 1 } : {}),
-              ...(data.materializeOnly ? { materializeOnly: true } : {}),
-              ...([
-                "physical",
-                "anatomy",
-                "basis",
-                "features",
-                "texture",
-                "subjects",
-              ].includes(data.strategy)
-                ? {
-                    physical:
-                      data.seed?.params.optimization?.contrastPhysical ??
-                      defaultPhysicalContrast(),
-                  }
-                : {}),
-              ...([
-                "physical",
-                "anatomy",
-                "basis",
-                "features",
-                "texture",
-                "subjects",
-              ].includes(data.strategy)
-                ? {
-                    resume: data.resume,
-                    onCheckpoint: (checkpoint: unknown) =>
-                      self.postMessage({
-                        type: "fit-checkpoint",
-                        jobId: data.jobId,
-                        checkpoint,
-                        seed: options.seed,
-                        profile: options.profile,
-                        portrait: options.portrait,
-                        product: options.product,
-                        accessPolicy: options.accessPolicy,
-                        resolution: options.resolution,
-                        mode: options.mode,
-                        lines: data.lines,
-                        extension: data.extension,
-                        totalSweeps:
-                          data.strategy === "basis"
-                            ? (data.totalSweeps ??
-                              data.seed?.params.optimization?.sweeps ??
-                              8)
-                            : data.totalSweeps,
-                        exchange: data.exchange,
-                        strategy: data.strategy,
-                        head: data.head,
-                        headRefine: data.headRefine,
-                        anatomy:
-                          data.strategy === "anatomy"
-                            ? (data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE)
-                            : undefined,
-                        features:
-                          data.strategy === "features"
-                            ? (data.seed?.params.optimization?.features ??
-                              data.features ??
-                              DEFAULT_FEATURE_CONTRAST)
-                            : undefined,
-                        texture:
-                          data.strategy === "texture"
-                            ? (data.seed?.params.optimization?.texture ??
-                              data.texture ??
-                              DEFAULT_LOCAL_TEXTURE)
-                            : undefined,
-                        subjectObjective:
-                          data.strategy === "subjects"
-                            ? (data.seed?.params.optimization
-                                ?.subjectObjective ??
-                              data.subjectObjective ??
-                              DEFAULT_SUBJECT_OBJECTIVE)
-                            : undefined,
-                      }),
-                  }
-                : {}),
+        : data.strategy === "classic"
+          ? await generateClassic({
+              ...options,
+              onCheckpoint: (instruction) =>
+                self.postMessage({
+                  type: "checkpoint",
+                  jobId: data.jobId,
+                  instruction,
+                }),
             })
-          : await generate(options);
+          : cycleSeed
+            ? cycleSeed
+            : data.strategy === "simplify"
+              ? await simplifySequence(data.seed, data.pixels, {
+                  maxProposals: 512,
+                  onProgress: (d) =>
+                    self.postMessage({
+                      type: "stage",
+                      jobId: data.jobId,
+                      diagnostic: { stage: "simplify", ...d },
+                    }),
+                  onAccepted: (i) =>
+                    self.postMessage({
+                      type: "checkpoint",
+                      jobId: data.jobId,
+                      instruction: i,
+                    }),
+                })
+              : [
+                    "global",
+                    "multiscale",
+                    "physical",
+                    "anatomy",
+                    "basis",
+                    "features",
+                    "texture",
+                    "subjects",
+                  ].includes(data.strategy)
+                ? await generateDensity(options, {
+                    resolved:
+                      ["basis", "features", "texture"].includes(
+                        data.strategy,
+                      ) && data.resolution === 320,
+                    ...(data.strategy === "features"
+                      ? {
+                          features:
+                            data.seed?.params.optimization?.features ??
+                            data.features ??
+                            DEFAULT_FEATURE_CONTRAST,
+                        }
+                      : {}),
+                    head: data.headRefine ? undefined : data.head,
+                    ...(data.strategy === "subjects"
+                      ? {
+                          subjectObjective:
+                            data.seed?.params.optimization?.subjectObjective ??
+                            data.subjectObjective ??
+                            DEFAULT_SUBJECT_OBJECTIVE,
+                        }
+                      : {}),
+                    ...(data.strategy === "texture"
+                      ? {
+                          texture:
+                            data.seed?.params.optimization?.texture ??
+                            data.texture ??
+                            DEFAULT_LOCAL_TEXTURE,
+                        }
+                      : {}),
+                    edgeWeight:
+                      data.seed?.params.optimization?.edgeWeight ??
+                      ([
+                        "multiscale",
+                        "physical",
+                        "anatomy",
+                        "basis",
+                        "features",
+                        "texture",
+                        "subjects",
+                      ].includes(data.strategy)
+                        ? 2
+                        : 1),
+                    sweeps: ["features", "texture", "subjects"].includes(
+                      data.strategy,
+                    )
+                      ? (data.totalSweeps ?? 8)
+                      : data.strategy === "basis"
+                        ? (data.totalSweeps ??
+                          data.seed?.params.optimization?.sweeps ??
+                          8)
+                        : (data.seed?.params.optimization?.sweeps ?? 8),
+                    multiscale: data.strategy === "multiscale",
+                    ...(data.strategy === "anatomy"
+                      ? {
+                          anatomy:
+                            data.anatomy ?? DEFAULT_ANATOMICAL_IMPORTANCE,
+                        }
+                      : {}),
+                    ...(data.extension
+                      ? { extension: data.extension, sweeps: data.totalSweeps }
+                      : {}),
+                    ...(data.exchange
+                      ? { exchange: data.exchange, sweeps: 1 }
+                      : {}),
+                    ...(data.materializeOnly ? { materializeOnly: true } : {}),
+                    ...([
+                      "physical",
+                      "anatomy",
+                      "basis",
+                      "features",
+                      "texture",
+                      "subjects",
+                    ].includes(data.strategy)
+                      ? {
+                          physical:
+                            data.seed?.params.optimization?.contrastPhysical ??
+                            defaultPhysicalContrast(),
+                        }
+                      : {}),
+                    ...([
+                      "physical",
+                      "anatomy",
+                      "basis",
+                      "features",
+                      "texture",
+                      "subjects",
+                    ].includes(data.strategy)
+                      ? {
+                          resume: data.resume,
+                          onCheckpoint: (checkpoint: unknown) =>
+                            self.postMessage({
+                              type: "fit-checkpoint",
+                              jobId: data.jobId,
+                              checkpoint,
+                              seed: options.seed,
+                              profile: options.profile,
+                              portrait: options.portrait,
+                              product: options.product,
+                              accessPolicy: options.accessPolicy,
+                              resolution: options.resolution,
+                              mode: options.mode,
+                              lines: data.lines,
+                              extension: data.extension,
+                              totalSweeps:
+                                data.strategy === "basis"
+                                  ? (data.totalSweeps ??
+                                    data.seed?.params.optimization?.sweeps ??
+                                    8)
+                                  : data.totalSweeps,
+                              exchange: data.exchange,
+                              strategy: data.strategy,
+                              head: data.head,
+                              headRefine: data.headRefine,
+                              anatomy:
+                                data.strategy === "anatomy"
+                                  ? (data.anatomy ??
+                                    DEFAULT_ANATOMICAL_IMPORTANCE)
+                                  : undefined,
+                              features:
+                                data.strategy === "features"
+                                  ? (data.seed?.params.optimization?.features ??
+                                    data.features ??
+                                    DEFAULT_FEATURE_CONTRAST)
+                                  : undefined,
+                              texture:
+                                data.strategy === "texture"
+                                  ? (data.seed?.params.optimization?.texture ??
+                                    data.texture ??
+                                    DEFAULT_LOCAL_TEXTURE)
+                                  : undefined,
+                              subjectObjective:
+                                data.strategy === "subjects"
+                                  ? (data.seed?.params.optimization
+                                      ?.subjectObjective ??
+                                    data.subjectObjective ??
+                                    DEFAULT_SUBJECT_OBJECTIVE)
+                                  : undefined,
+                            }),
+                        }
+                      : {}),
+                  })
+                : await generate(options);
     const finalInstruction =
       (data.headRefine || cycleSeed) && data.strategy !== "simplify"
         ? await refineHairCycles(instruction, options.pixels, data.head, {
@@ -303,8 +332,17 @@ self.onmessage = async ({ data }) => {
     self.postMessage({
       type: "done",
       jobId: data.jobId,
-      instruction: data.strategy==="classic" && data.redAccentColor?await addHeartAccent(finalInstruction,options.pixels,data.redAccentColor):finalInstruction,
-      ...(data.strategy==="classic" && data.redAccentColor?{classicBody:finalInstruction}:{}),
+      instruction:
+        ["classic", "classic2"].includes(data.strategy) && data.redAccentColor
+          ? await addHeartAccent(
+              finalInstruction,
+              options.pixels,
+              data.redAccentColor,
+            )
+          : finalInstruction,
+      ...(["classic", "classic2"].includes(data.strategy) && data.redAccentColor
+        ? { classicBody: finalInstruction }
+        : {}),
       ...(data.strategy === "subjects" && data.seed
         ? {
             subjectScreen: await reviewSubjectCandidate(

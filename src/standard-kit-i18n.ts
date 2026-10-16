@@ -2,6 +2,7 @@ import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 const messages = {
   en: {
+    engine: "Details — generation engine",
     face: "Face",
     left: "left",
     top: "top",
@@ -71,6 +72,7 @@ const messages = {
       "A measured knee has not been accepted for this photo; line count is a starting budget.",
   },
   uz: {
+    engine: "Tafsilotlar — hisoblash usuli",
     face: "Yuz",
     left: "chap",
     top: "yuqori",
@@ -141,6 +143,7 @@ const messages = {
       "Bu surat uchun o‘lchangan eng samarali nuqta qabul qilinmagan; ip soni boshlang‘ich chegara.",
   },
   ru: {
+    engine: "Подробности — метод расчёта",
     face: "Лицо",
     left: "слева",
     top: "сверху",

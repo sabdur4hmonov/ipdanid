@@ -7,7 +7,7 @@ import type { EditParams, Instruction } from "./core/types";
 import { RecoveryOrder } from "./recovery-order";
 const operations = new RecoveryOrder();
 export interface OptimizerRecovery {
-  redAccentColor?:string;
+  redAccentColor?: string;
   accessPolicy?: "kit-build/1";
   version: "iprasm.optimizer-recovery/1";
   checkpoint?: DensityCheckpoint;
@@ -22,7 +22,14 @@ export interface OptimizerRecovery {
   pixels: Uint8Array;
   lines: number;
   strategy:
-    "physical" | "anatomy" | "basis" | "features" | "texture" | "subjects" | "classic";
+    | "physical"
+    | "anatomy"
+    | "basis"
+    | "features"
+    | "texture"
+    | "subjects"
+    | "classic"
+    | "classic2";
   headRefine?: boolean;
   hairSeed?: Instruction;
   head?: import("./core/head-importance").HeadImportance;

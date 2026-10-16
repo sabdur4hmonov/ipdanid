@@ -1,5 +1,6 @@
 import type { Instruction, MaterialProfile } from "./types";
 import { insideProfile } from "./geometry";
+import { referenceRaster } from "./classic-reference";
 
 export interface Footprint {
   pixels: Uint32Array;
@@ -90,6 +91,8 @@ export function rasterSequence(
   i: Instruction,
   completed = i.metrics.lines,
 ): Float32Array {
+  if (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm))
+    return referenceRaster(i, i.params.resolution, completed);
   return rasterSequenceAtResolution(i, i.params.resolution, completed);
 }
 

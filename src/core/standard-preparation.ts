@@ -21,14 +21,18 @@ export function classicCircleProfile() {
   };
 }
 export interface FaceFill {
-  version: "reviewed-face-fill/1";
+  version: "reviewed-face-fill/1" | "reviewed-face-fill/2";
   sourceBounds: RegionBox;
   targetBounds: RegionBox;
   faces: RegionBox[];
+  targetFaces?: RegionBox[];
 }
 export interface KitPreparation {
-  version:"standard-preparation/1"; sourceHash:string; sourceAspect:number;
-  whiteBackground:"automatic"|"manual"|"original"; transform:FaceFill;
+  version: "standard-preparation/1" | "standard-preparation/2";
+  sourceHash: string;
+  sourceAspect: number;
+  whiteBackground: "automatic" | "manual" | "original";
+  transform: FaceFill;
 }
 // Explicit crop of real source pixels. A whole face union must fit; a failed
 // detector never becomes an invented box. The caller shows and reviews this crop.

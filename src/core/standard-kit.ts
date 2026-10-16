@@ -37,6 +37,7 @@ export const DEFAULT_STANDARD_KIT: Readonly<StandardKitConfig> = Object.freeze({
   threadColor: "#000000",
 });
 export interface StandardProfile {
+  referenceRender?: "classic-coverage/2";
   accessory?: { version: "legal-heart-accent/1"; colour: string };
   version: "standard-profile/1";
   config: StandardKitConfig;
@@ -215,6 +216,12 @@ export function validateStandardProfile(p: MaterialProfile) {
   validateStandardConfig(config);
   const profiles = standardProfiles(config),
     expected = profiles.find((v) => v.shape === p.shape);
+  if (expected && p.standardKit.referenceRender === "classic-coverage/2") {
+    expected.id += "-classic2";
+    expected.version = 11;
+    expected.opacity = 0.9;
+    expected.standardKit!.referenceRender = "classic-coverage/2";
+  }
   if (expected && p.standardKit.accessory) {
     const accessory = p.standardKit.accessory;
     if (
@@ -225,7 +232,7 @@ export function validateStandardProfile(p: MaterialProfile) {
     )
       throw Error("kit/invalid-accessory");
     expected.standardKit!.accessory = structuredClone(accessory);
-    expected.version = 10;
+    expected.version = p.standardKit.referenceRender ? 12 : 10;
     expected.id += `-accent-${accessory.colour.slice(1)}`;
     expected.minPinGap = 1;
     expected.colors.push(accessory.colour);
@@ -233,12 +240,21 @@ export function validateStandardProfile(p: MaterialProfile) {
   // JS engines differ by a few trig ULPs. Metadata/labels remain exact; only
   // coordinate reconstruction has the same 1e-12 normalized tolerance as the
   // existing circle contract. The hash still binds the exact saved doubles.
-  if (!expected || JSON.stringify({...p,pins:[]}) !== JSON.stringify({...expected,pins:[]}) ||
-      p.pins.length!==expected.pins.length || p.pins.some((pin,id)=>{
-        const e=expected.pins[id];
-        return Math.abs(pin.x-e.x)>1e-12 || Math.abs(pin.y-e.y)>1e-12 ||
-          JSON.stringify({...pin,x:0,y:0})!==JSON.stringify({...e,x:0,y:0});
-      }))
+  if (
+    !expected ||
+    JSON.stringify({ ...p, pins: [] }) !==
+      JSON.stringify({ ...expected, pins: [] }) ||
+    p.pins.length !== expected.pins.length ||
+    p.pins.some((pin, id) => {
+      const e = expected.pins[id];
+      return (
+        Math.abs(pin.x - e.x) > 1e-12 ||
+        Math.abs(pin.y - e.y) > 1e-12 ||
+        JSON.stringify({ ...pin, x: 0, y: 0 }) !==
+          JSON.stringify({ ...e, x: 0, y: 0 })
+      );
+    })
+  )
     throw Error("kit/profile-coordinate-contract");
 }
 export function pinLabel(p: MaterialProfile, id: number, hyphen = true) {

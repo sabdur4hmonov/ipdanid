@@ -1,6 +1,8 @@
 import { validSubjectPlan } from "./subject-plan";
 import { validateStandardProfile } from "./standard-kit";
 import { faceFill } from "./standard-preparation";
+import { faceFillReference } from "./reference-preparation";
+import { CLASSIC_REFERENCE_DEFAULTS } from "./classic-reference";
 import { validateHeartAccent } from "./heart-accent";
 import { validLetteringProduct } from "./lettering-contract";
 import { validateGlyphInstruction } from "./glyph-layout";
@@ -36,6 +38,8 @@ export async function validateInstruction(
     i.schema !== "iprasm.instruction/1" ||
     ![
       "classic-greedy/1",
+      "classic-greedy/2",
+      "standard-accent/21",
       "standard-accent/20",
       "greedy-optical/1",
       "greedy-optical/2",
@@ -64,6 +68,8 @@ export async function validateInstruction(
   const qualityFirst = [
       "standard-accent/20",
       "classic-greedy/1",
+      "classic-greedy/2",
+      "standard-accent/21",
       "greedy-optical/4",
       "density-optical/5",
       "continuous-guarded/6",
@@ -174,26 +180,70 @@ export async function validateInstruction(
   if (i.params.kitPreparation) {
     const k = i.params.kitPreparation;
     if (
-      !["classic-greedy/1", "standard-accent/20"].includes(i.algorithm) ||
+      ![
+        "classic-greedy/1",
+        "classic-greedy/2",
+        "standard-accent/21",
+        "standard-accent/20",
+        "standard-accent/21",
+      ].includes(i.algorithm) ||
       !p.standardKit ||
-      k.version !== "standard-preparation/1" ||
+      k.version !==
+        (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+          ? "standard-preparation/2"
+          : "standard-preparation/1") ||
       !/^[a-f0-9]{64}$/.test(k.sourceHash) ||
       !["automatic", "manual", "original"].includes(k.whiteBackground) ||
       JSON.stringify(k.transform) !==
         JSON.stringify(
-          faceFill(
-            k.transform.faces,
-            p.shape,
-            k.sourceAspect,
-            p.standardKit.patternScale,
-          ),
+          ["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+            ? faceFillReference(k.transform.faces, p.shape, k.sourceAspect)
+            : faceFill(
+                k.transform.faces,
+                p.shape,
+                k.sourceAspect,
+                p.standardKit.patternScale,
+              ),
         )
     )
       throw Error("Invalid reviewed kit preparation");
   }
-  if (i.algorithm === "standard-accent/20") await validateHeartAccent(i);
+  if (["standard-accent/20", "standard-accent/21"].includes(i.algorithm))
+    await validateHeartAccent(i);
   else if (i.params.accent || p.standardKit?.accessory)
     throw Error("Unbound heart accessory");
+  if (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)) {
+    const c = i.params.classic;
+    const colours = i.algorithm === "standard-accent/21" ? 2 : 1;
+    if (
+      !c ||
+      JSON.stringify(c) !==
+        JSON.stringify({
+          ...CLASSIC_REFERENCE_DEFAULTS,
+          faces: i.params.kitPreparation?.transform.targetFaces ?? [],
+        }) ||
+      p.standardKit?.referenceRender !== "classic-coverage/2" ||
+      p.colors.length !== colours ||
+      i.segments?.length !== colours ||
+      i.params.mode !== "dark" ||
+      i.params.optimization?.lookahead !== 0 ||
+      i.params.optimization.coarseScale !== 1 ||
+      i.params.optimization.minimumRelativeGain !== 0
+    )
+      throw Error("classic2/contract");
+    const seen = new Set<number>(),
+      path = i.segments[0].path;
+    for (let j = 1; j < path.length; j++) {
+      const a = path[j - 1],
+        b = path[j],
+        d = Math.abs(a - b),
+        key = Math.min(a, b) * p.pins.length + Math.max(a, b);
+      if (Math.min(d, p.pins.length - d) < 25 || seen.has(key))
+        throw Error("classic2/chord-contract");
+      seen.add(key);
+    }
+  } else if (i.params.classic || p.standardKit?.referenceRender)
+    throw Error("classic2/unbound-contract");
   if (
     i.algorithm === "classic-greedy/1" &&
     (p.baseColor.toLowerCase() !== "#ffffff" ||
@@ -263,7 +313,9 @@ export async function validateInstruction(
     i.metrics.reconstructionMse < 0 ||
     !Number.isFinite(i.metrics.baselineMse) ||
     i.metrics.baselineMse < 0 ||
-    (!["glyph-outline/19", "standard-accent/20"].includes(i.algorithm) &&
+    (!["glyph-outline/19", "standard-accent/20", "classic-greedy/2"].includes(
+      i.algorithm,
+    ) &&
       i.metrics.reconstructionMse > i.metrics.baselineMse + 1e-6)
   )
     throw new Error("Invalid sequence limits");
@@ -273,26 +325,28 @@ export async function validateInstruction(
     !Number.isInteger(i.params.resolution) ||
     i.params.resolution < 32 ||
     i.params.resolution >
-      ([
-        "density-resolved/12",
-        "glyph-outline/19",
-        "density-feature/16",
-        "density-texture/17",
-        "density-subject/18",
-        "density-head/13",
-        "hair-cycles/14",
-      ].includes(i.algorithm) ||
-      (i.algorithm === "assembly-prune/9" &&
-        [
-          "density-resolved/12",
-          "density-feature/16",
-          "density-texture/17",
-          "density-subject/18",
-          "density-head/13",
-          "hair-cycles/14",
-        ].includes(i.params.simplification?.sourceAlgorithm ?? ""))
-        ? 320
-        : 192) ||
+      (["classic-greedy/2", "standard-accent/21"].includes(i.algorithm)
+        ? 500
+        : [
+              "density-resolved/12",
+              "glyph-outline/19",
+              "density-feature/16",
+              "density-texture/17",
+              "density-subject/18",
+              "density-head/13",
+              "hair-cycles/14",
+            ].includes(i.algorithm) ||
+            (i.algorithm === "assembly-prune/9" &&
+              [
+                "density-resolved/12",
+                "density-feature/16",
+                "density-texture/17",
+                "density-subject/18",
+                "density-head/13",
+                "hair-cycles/14",
+              ].includes(i.params.simplification?.sourceAlgorithm ?? ""))
+          ? 320
+          : 192) ||
     !Number.isInteger(i.params.requestedLines) ||
     i.params.requestedLines < total ||
     i.params.requestedLines > limit
@@ -301,6 +355,8 @@ export async function validateInstruction(
   if (
     [
       "classic-greedy/1",
+      "classic-greedy/2",
+      "standard-accent/21",
       "standard-accent/20",
       "continuous-guarded/6",
       "group-optical/15",
@@ -810,7 +866,13 @@ export async function validateInstruction(
         ? i.params.optimization.lookahead !== 8 ||
           i.params.optimization.coarseScale !== 4 ||
           i.params.optimization.minimumRelativeGain !== 1e-7
-        : ["classic-greedy/1", "standard-accent/20"].includes(i.algorithm)
+        : [
+              "classic-greedy/1",
+              "classic-greedy/2",
+              "standard-accent/21",
+              "standard-accent/20",
+              "standard-accent/21",
+            ].includes(i.algorithm)
           ? i.params.optimization.lookahead !== 0 ||
             i.params.optimization.coarseScale !== 1 ||
             i.params.optimization.minimumRelativeGain !== 0
@@ -870,6 +932,8 @@ export async function validateInstruction(
       i.algorithm !== "assembly-prune/9" &&
       i.algorithm !== "glyph-outline/19" &&
       i.algorithm !== "standard-accent/20" &&
+      i.algorithm !== "classic-greedy/2" &&
+      i.algorithm !== "standard-accent/21" &&
       (!i.metrics.weightedError ||
         !Number.isFinite(i.metrics.weightedError.baseline) ||
         !Number.isFinite(i.metrics.weightedError.final) ||
@@ -958,6 +1022,8 @@ export function toTxt(i: Instruction): string {
       ? `${i.profile.pins[id].sectorLabel} [${id}]`
       : String(id);
   const knots = [
+    "classic-greedy/2",
+    "standard-accent/21",
     "standard-accent/20",
     "classic-greedy/1",
     "glyph-outline/19",

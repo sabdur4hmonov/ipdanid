@@ -5,6 +5,7 @@ import { hash, sequencePayload, deepFreeze } from "./engine";
 import { rasterSequence } from "./optical";
 import { standardProfiles, validateStandardProfile } from "./standard-kit";
 import { MAX_LINES } from "./limits";
+import { referenceProfile } from "./classic-reference";
 
 // Visit the actual perimeter pins in order. Any concave-notch detour is a real
 // visible bridge and is counted; never draw an idealized red silhouette overlay.
@@ -60,7 +61,7 @@ export async function addHeartAccent(
   colour: string,
 ): Promise<Instruction> {
   if (
-    body.algorithm !== "classic-greedy/1" ||
+    !["classic-greedy/1", "classic-greedy/2"].includes(body.algorithm) ||
     body.profile.shape !== "heart" ||
     !body.profile.standardKit ||
     body.profile.standardKit.accessory ||
@@ -71,7 +72,7 @@ export async function addHeartAccent(
   const i = structuredClone(body),
     p = i.profile;
   p.standardKit!.accessory = { version: "legal-heart-accent/1", colour };
-  p.version = 10;
+  p.version = body.algorithm === "classic-greedy/2" ? 12 : 10;
   p.id += `-accent-${colour.slice(1)}`;
   p.minPinGap = 1;
   p.colors.push(colour);
@@ -80,7 +81,10 @@ export async function addHeartAccent(
     extra = path.length - 1;
   if (body.metrics.lines + extra > MAX_LINES)
     throw Error("kit/accent-line-limit");
-  i.algorithm = "standard-accent/20";
+  i.algorithm =
+    body.algorithm === "classic-greedy/2"
+      ? "standard-accent/21"
+      : "standard-accent/20";
   i.id = crypto.randomUUID();
   i.createdAt = new Date().toISOString();
   i.segments.push({ color: colour, path });
@@ -128,7 +132,10 @@ export async function addHeartAccent(
   let mse = 0,
     count = 0;
   for (let k = 0; k < n * n; k++)
-    if (insideProfile(p, (k % n) / (n - 1), Math.floor(k / n) / (n - 1)))
+    if (
+      i.algorithm === "standard-accent/21" ||
+      insideProfile(p, (k % n) / (n - 1), Math.floor(k / n) / (n - 1))
+    )
       for (let c = 0; c < 3; c++) {
         mse += (raster[k * 3 + c] - pixels[k * 3 + c] / 255) ** 2;
         count++;
@@ -166,16 +173,21 @@ export async function validateHeartAccent(i: Instruction) {
     throw Error("kit/accent-contract");
   const originalProfile = structuredClone(p);
   delete originalProfile.standardKit!.accessory;
-  const standard = standardProfiles(p.standardKit.config).find(
+  let standard = standardProfiles(p.standardKit.config).find(
     (p) => p.shape === "heart",
   )!;
+  if (i.algorithm === "standard-accent/21")
+    standard = referenceProfile(standard);
   originalProfile.id = standard.id;
   originalProfile.version = standard.version;
   originalProfile.minPinGap = standard.minPinGap;
   originalProfile.colors = [p.colors[0]];
   const original = {
     ...i,
-    algorithm: "classic-greedy/1" as const,
+    algorithm:
+      i.algorithm === "standard-accent/21"
+        ? ("classic-greedy/2" as const)
+        : ("classic-greedy/1" as const),
     profile: originalProfile,
     params: a.bodyParams,
     segments: [i.segments[0]],

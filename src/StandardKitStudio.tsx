@@ -3,6 +3,11 @@ import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
 import { faceFill, type KitPreparation } from "./core/standard-preparation";
 import {
+  faceFillReference,
+  prepareReferenceCanvas,
+} from "./core/reference-preparation";
+import { referenceProfile } from "./core/classic-reference";
+import {
   DEFAULT_STANDARD_KIT,
   standardProfiles,
   type StandardKitConfig,
@@ -48,7 +53,8 @@ export function StandardKitStudio({
     [sourceId, setSourceId] = useState(""),
     [background, setBackground] = useState<BackgroundState>(),
     [faces, setFaces] = useState<RegionBox[]>([]),
-    [n, setN] = useState(160),
+    [n, setN] = useState(500),
+    [engine, setEngine] = useState<"classic2" | "classic">("classic2"),
     [lines, setLines] = useState(2500),
     [prepared, setPrepared] = useState<{
       pixels: Uint8Array;
@@ -69,10 +75,10 @@ export function StandardKitStudio({
     photoPreview = useRef<HTMLCanvasElement>(null),
     target = useRef<HTMLCanvasElement>(null),
     actual = useRef<HTMLCanvasElement>(null);
-  const profile = useMemo(
-    () => standardProfiles(config).find((p) => p.shape === shape)!,
-    [config, shape],
-  );
+  const profile = useMemo(() => {
+    const p = standardProfiles(config).find((p) => p.shape === shape)!;
+    return engine === "classic2" ? referenceProfile(p) : p;
+  }, [config, shape, engine]);
   useEffect(() => {
     let live = true;
     const request = ++profileRequest.current;
@@ -89,7 +95,8 @@ export function StandardKitStudio({
   }, []);
   useEffect(() => {
     void readOptimizerRecovery().then((r) => {
-      if (r?.strategy === "classic") setRecovery(r);
+      if (r?.strategy === "classic" || r?.strategy === "classic2")
+        setRecovery(r);
     });
     return () => {
       serial.current++;
@@ -115,6 +122,7 @@ export function StandardKitStudio({
     shape,
     redAccent,
     redColour,
+    engine,
   ]);
   useEffect(() => {
     if (!source || !photoPreview.current) return;
@@ -138,8 +146,8 @@ export function StandardKitStudio({
   }, [prepared, n]);
   useEffect(() => {
     if (result && actual.current) {
-      actual.current.width = 600;
-      actual.current.height = 600;
+      actual.current.width = 1000;
+      actual.current.height = 1000;
       renderInstruction(actual.current.getContext("2d")!, result);
     }
   }, [result]);
@@ -162,6 +170,10 @@ export function StandardKitStudio({
       c.getContext("2d")!.drawImage(image, 0, 0, c.width, c.height);
       image.close();
       setFaces([]);
+      setEngine("classic2");
+      setN(500);
+      setLines(2500);
+      setRedAccent(false);
       setBackground(undefined);
       setSourceId(crypto.randomUUID());
       setSource(c);
@@ -173,13 +185,16 @@ export function StandardKitStudio({
     const request = serial.current;
     try {
       if (!source) throw Error();
-      const transform = faceFill(
-        faces,
-        shape,
-        source.width / source.height,
-        profile.standardKit!.patternScale,
-      );
-      const c = document.createElement("canvas");
+      const transform =
+        engine === "classic2"
+          ? faceFillReference(faces, shape, source.width / source.height)
+          : faceFill(
+              faces,
+              shape,
+              source.width / source.height,
+              profile.standardKit!.patternScale,
+            );
+      let c = document.createElement("canvas");
       c.width = c.height = n;
       const ctx = c.getContext("2d")!,
         s = transform.sourceBounds,
@@ -199,11 +214,21 @@ export function StandardKitStudio({
         d.width * n,
         d.height * n,
       );
-      const rgba = ctx.getImageData(0, 0, n, n).data,
-        pixels = Uint8Array.from(
-          { length: n * n * 3 },
-          (_, k) => rgba[Math.floor(k / 3) * 4 + (k % 3)],
+      const rgba = ctx.getImageData(0, 0, n, n).data;
+      let pixels = Uint8Array.from(
+        { length: n * n * 3 },
+        (_, k) => rgba[Math.floor(k / 3) * 4 + (k % 3)],
+      );
+      if (engine === "classic2") {
+        const prepared = prepareReferenceCanvas(
+          source,
+          background?.enabled ? background.mask : undefined,
+          transform,
+          n,
         );
+        c = prepared.canvas;
+        pixels = prepared.pixels;
+      }
       const sourceHash = await hash(
         new Uint8Array(
           source
@@ -216,7 +241,10 @@ export function StandardKitStudio({
         pixels,
         canvas: c,
         proof: {
-          version: "standard-preparation/1",
+          version:
+            engine === "classic2"
+              ? "standard-preparation/2"
+              : "standard-preparation/1",
           sourceHash,
           sourceAspect: source.width / source.height,
           whiteBackground:
@@ -235,6 +263,28 @@ export function StandardKitStudio({
       setError(t("error"));
     }
   }
+  useEffect(() => {
+    if (
+      source &&
+      background &&
+      !backgroundBusy &&
+      background.status !== "processing" &&
+      faces.length
+    )
+      void prepare();
+  }, [
+    source,
+    background,
+    backgroundBusy,
+    faces,
+    n,
+    lines,
+    config,
+    shape,
+    engine,
+    redAccent,
+    redColour,
+  ]);
   function calculate(resume?: OptimizerRecovery) {
     if (!resume && (!prepared || !reviewed)) return;
     worker.current?.terminate();
@@ -259,7 +309,7 @@ export function StandardKitStudio({
           if (request !== serial.current) return;
           const next: OptimizerRecovery = {
             version: "iprasm.optimizer-recovery/1",
-            strategy: "classic",
+            strategy: resume?.strategy ?? engine,
             pixels,
             profile: p,
             resolution,
@@ -283,9 +333,10 @@ export function StandardKitStudio({
           const i = await validateInstruction(data.instruction);
           if (request !== serial.current) return;
           setResult(i);
-          setRecommendation(
-            measuredKnee(qualityCurve(data.classicBody ?? i, pixels)),
-          );
+          if (!["classic-greedy/2", "standard-accent/21"].includes(i.algorithm))
+            setRecommendation(
+              measuredKnee(qualityCurve(data.classicBody ?? i, pixels)),
+            );
           await clearOptimizerRecovery();
           setRecovery(undefined);
         } catch {
@@ -309,7 +360,7 @@ export function StandardKitStudio({
       }
     };
     w.postMessage({
-      strategy: "classic",
+      strategy: resume?.strategy ?? engine,
       jobId: request,
       pixels,
       profile: p,
@@ -513,6 +564,22 @@ export function StandardKitStudio({
           <details>
             <summary>{t("lines")}</summary>
             <label>
+              {t("engine")}
+              <select
+                aria-label={t("engine")}
+                value={engine}
+                onChange={(e) => {
+                  const v = e.target.value as "classic" | "classic2";
+                  setEngine(v);
+                  setN(v === "classic2" ? 500 : 160);
+                  setRedAccent(false);
+                }}
+              >
+                <option value="classic2">classic-greedy/2</option>
+                <option value="classic">classic-greedy/1</option>
+              </select>
+            </label>
+            <label>
               {t("lines")}
               <input
                 type="number"
@@ -529,7 +596,10 @@ export function StandardKitStudio({
                 value={n}
                 onChange={(e) => setN(Number(e.target.value))}
               >
-                {[64, 96, 160, 192].map((v) => (
+                {(engine === "classic2"
+                  ? [64, 96, 160, 192, 500]
+                  : [64, 96, 160, 192]
+                ).map((v) => (
                   <option key={v}>{v}</option>
                 ))}
               </select>
@@ -543,7 +613,13 @@ export function StandardKitStudio({
       {prepared && (
         <>
           <p>{t("target")}</p>
-          <canvas ref={target} style={{ width: "100%", maxWidth: 600 }} />
+          <canvas
+            ref={target}
+            role="img"
+            aria-label={t("target")}
+            data-testid="standard-prepared-target"
+            style={{ width: "100%", maxWidth: 600 }}
+          />
           <label>
             <input
               type="checkbox"
@@ -578,7 +654,13 @@ export function StandardKitStudio({
       {result && (
         <>
           <h2>{t("actual")}</h2>
-          <canvas ref={actual} style={{ width: "100%", maxWidth: 600 }} />
+          <canvas
+            ref={actual}
+            role="img"
+            aria-label={t("actual")}
+            data-testid="standard-thread-result"
+            style={{ width: "100%", maxWidth: 600 }}
+          />
           <p>
             {result.metrics.lines} · {result.metrics.estimatedMeters.toFixed(1)}{" "}
             m · {t("hours")}:{" "}
