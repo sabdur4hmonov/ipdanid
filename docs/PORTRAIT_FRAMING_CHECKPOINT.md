@@ -11,3 +11,10 @@ Visible2000/2500(default)/3000 budgets show8seconds/connection:4.4/5.6/6.7h befo
 Evidence and exact next step are maintained in AGENT/PROGRESS.md. Private actual-gallery desktop/mobile captures live in output/phase11, compared with read-only Phase10 files at equal size in report.html. Owner source remains the same existing processed320px crop, not the missing original. Synthetic sources were generated in Phase10 and are reused locally. Real phone/printed board/owner visual acceptance remains separate from automated mechanics and agent comparison.
 
 Never rebuild/change/contact previews4194/4195/4196 or their live asset directories. Phase11 uses a new build directory and will receive a new isolated preview/API/database/code. No photos, credentials, generated outputs or databases belong in Git.
+
+
+## Final engineering verification
+
+253/253unit,71files(82reported suites).38unique latest browser outcomes across4isolated runs, with actual12old/new comparisons and2additional single-Heart3000 exports; final max9.643s. First supplemental desktopCircle29.588s under concurrent full-unit load failed timing but passed exact pixels/path; failure retained and final isolatedCircle2/2passed5.057s/6.584s. Never run heavy jobs during timed UI acceptance. All4Circle/pair cache parities are exact target/app/sequence.14targets white below chin+18px;12Phase10 source hashes/aspects/physical profiles exact. All14PDF covers exactly app1000RGB and every2500/3000ordered numeric+sector step equalsJSON. Actual cover rendered/inspected clean.
+
+Build1968, offline Gradle app/test6m22s/176tasks(21executed). APK output/mobile/ip-rasm-phase11-20261016-46bc061bd5c2-debug.apk SHA46bc061bd5c2d5dad8bc21ec1b5a5a39d92334b94dfaa5ec71cdafeed94edc78.43exact packaged assets/allframing+legacy markers/fonts/licenses/privacy, samehistoricalsigner,79oldAPK files byte-identical. Instrumentation APK built but not installed/run. Native production backend unconfigured. Fresh preview/handoff exact state lives in AGENT/PROGRESS.md.
