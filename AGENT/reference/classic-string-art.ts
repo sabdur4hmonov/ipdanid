@@ -15,6 +15,7 @@ export interface ClassicOptions {
   startPin?: number;
   minScore?: number; // stop early when the best mean gain falls below this
   overdrawPenalty?: number; // >1 makes lines avoid areas that are already dark enough (light skin, white background)
+  scoring?: "mean" | "ls"; // ls = least-squares error reduction (penalizes overdraw naturally)
   darknessGamma?: number; // >1 keeps mid-tones (skin) lighter and features darker
 }
 
@@ -98,10 +99,18 @@ export function classicGreedy(
       if ((used.get(key(cur, b, n)) ?? 0) >= o.maxChordRepeat) continue;
       const px = chord(cur, b);
       let sum = 0;
-      for (let i = 0; i < px.length; i++) {
-        const e = err[px[i]];
-        sum += e > 0 ? e : e * pen;
-      }
+      if (o.scoring === "ls") {
+        const d = o.lineDarkness;
+        for (let i = 0; i < px.length; i++) {
+          const e = err[px[i]],
+            dd = d * (weight ? weight[px[i]] : 1);
+          sum += dd * (2 * e - dd);
+        }
+      } else
+        for (let i = 0; i < px.length; i++) {
+          const e = err[px[i]];
+          sum += e > 0 ? e : e * pen;
+        }
       const score = sum / px.length;
       if (score > bestScore) {
         bestScore = score;

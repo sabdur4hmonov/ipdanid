@@ -12,7 +12,7 @@ const [size, lines, dark, out, minGap] = [
   process.argv[5],
   +(process.argv[6] ?? 20),
 ];
-const buf = readFileSync("target.f32");
+const buf = readFileSync(process.env.TGT ?? "target.f32");
 const target = new Float32Array(buf.buffer, buf.byteOffset, size * size);
 const pins = circlePins(240, size);
 // importance: face oval (centre) gets more weight
@@ -40,6 +40,7 @@ const r = classicGreedy(target, {
   importance: imp,
   overdrawPenalty: +(process.env.PEN ?? 1),
   darknessGamma: +(process.env.GAM ?? 1),
+  scoring: (process.env.SCORE as any) ?? "mean",
 });
 const ms = Date.now() - t0;
 const prev = renderPreview(r.sequence, pins, size, 1000, 460, 0.12, 0.9);

@@ -200,3 +200,7 @@ Yangi ilova: **http://127.0.0.1:4198/**. Uchta yig‘ish kodi: `output/phase12/m
 8. Natijalarni `output/phase12/report.html`da teng o‘lchamda solishtiring; ekranlar `output/phase12/screens/`da. Egasi surati avvalgi lokal320px ishlov berilgan nusxa; haqiqiy telefon, yangi asl surat va taxtada o‘zingiz tekshiring. Chop etishda100%/Actual size va50mm belgini tekshirish, mix/sektor andozasi avvalgidek.3000ip uchun haqiqiy kerakli ip uzunligini PDFdan tekshiring; kit zaxirasi yetishini tasdiqlang.
 
 APK: `output/mobile/ip-rasm-phase12-20261017-29f469aec06e-debug.apk`.261unit va38ta oxirgi brauzer holati o‘tdi;2PDFning1000px rasmi va barcha3000qadami tekshirildi.43fayl/imzo va82oldingi APK saqlangani tasdiqlandi. Kompyuterda10.08s, mobil brauzerda11.78s hisoblash qayd etildi. Telefonga agent o‘rnatmagan va haqiqiy telefonda hali sinamagan. Native ishlab chiqarish serveri hali sozlanmagan; to‘liq kod/kredit sinovini yangi brauzer manzilida bajaring. Eski4194–4197ga tegilmagan; endi4198ham alohida saqlanadi, push qilinmagan.
+
+## Phase13 — tiniqroq portret (tayyorlanmoqda)
+
+Yangi manzil/kod output/phase13/manual-testing.txt da beriladi;4194–4198 o‘z holida qoladi. Oddiy uch ekran orqali Doira/Kvadrat/Yurakni sinang. Batafsil:2500/3000/3500ip, taxmin5.6/6.7/7.8soat; standart3000. Yuz, ayniqsa ko‘z/burun/lab va kvadrat markazidagi “+”ni tekshiring. Yakuniy APK/hisobot/sinov tartibi ish tugagach yoziladi.

@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase12 COMPLETE/TESTED.261unit/38latest browser/2exact3000stepPDF/build1974/43asset signedAPK29f469aec06e/82oldarchives pass. New4198/API4480/fresh3-buildcode verified; protected4194–4197 assets exact without contacting servers. No push/install; phone/physical/nativebackend acceptance separate.
+Last update:2026-10-17 — Phase13 ACTIVE. Owner supplied v3 least-squares reference/SSIM update, Phase12 handoffbb109b9 remains intact. Next newengine3/strictcontracts +exactSSIM helper/parity, synthetic quality test and Squareaxis diagnosis; then actualUI/report/tests/APK/newpreview. Old4194–4198 protected.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -26,6 +26,7 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 | 10 Reference classic and ordinary photo repair | DONE / TESTED / DEBUG APK VERIFIED | Classic2/500px/2500 fixed connections, preparation2, exact1000px/.12/.9 render, progress/cancel/recovery.12/12 real JPG cases max9.450s,248unit/36latest browser outcomes;12PDF covers+all2500ordered steps equal app/JSON. Owner/3synthetic recognizable on agent review. APK a3f7b2d756f7,43assets/same signer/76old archives exact; new4196/API4478/fresh3-build code. Phone/physical/production acceptance remains separate. |
 | 11 Larger-head framing | DONE / TESTED / DEBUG APK VERIFIED | Preparation3/87% heads/18px chin fade/Heart lobes/pan-zoom/shoulders/2000–3000.253unit/38latest browser outcomes/max9.643s,14exact PDF covers+allsteps,43asset APK46bc061bd5c2/same signer/79oldarchives exact. Fresh4197/API4479/new3-build code; physical/phone acceptance separate. |
 | 12 Dead-simple customer flow | DONE / TESTED / DEBUG APK VERIFIED | Exactly3screens/directgestures/4locales/3tap auto path/retainedcrop; preparation4/default3000 selectedactual6case A/B.261unit/38latest browser/2exact3000stepPDF/build1974;43asset APK29f469aec06e/samecert/82oldarchives. Fresh4198/API4480/unused3-buildcode; phone/physical acceptance separate. |
+| 13 Sharper portraits (v3) | ACTIVE | New owner-authorized least-squares engine and viewing-distance SSIM; preserve2 and physicalpins/render. Quality/default/axis diagnosis pending actual checks. |
 
 ## Phase12 complete — simple customer creation
 
@@ -43,7 +44,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-Phase12 requested work is COMPLETE. Owner opens http://127.0.0.1:4198/ and follows the Uzbek Phase12 steps in AGENT/OWNER_TESTS.md; unused3-build code is output/phase12/manual-testing.txt, verifiedAPK29f469aec06e. No further autonomous Phase12 code/build/test step remains. Preserve all five owner previews4194–4198/APIs/live directories, including newly frozen phase12-dist and fresh owner-customer-7Je0gL account/code. Never rebuild a served directory or use tmp/data. Future new work needs a new directory/port; do not repeat completed experiments. Remaining phone/physical/nativeHTTPS/QBRIX/realvoice owner inputs listed below are separate acceptance work; no push/install.
+PHASE13 ACTIVE: initial working tree contains ONLY owner-supplied AGENT/reference README/classic-string-art/run-reference edits and new score-viewing-ssim.py, preserved as input snapshot with this milestone; no prior unrecorded agentwork. Read v3update/reference ls and metric: Gaussian blur->160area resize,7x7sigma1.5localSSIM, fixed reference faceoval; normalizationcomment has no corresponding arithmetic, suppliedtargetargument ignored byPython (always target.f32), port explicit selectedtarget honestly. First implement new classic-greedy/3/strictsettings/profile binding +Worker/recovery/render/export integration, leave old2math intact; exactaxis-square-centre helper only new3. Add metric pureTS/helper numericOpenCV parity and meaningful synthetic regressions. Then actualfresh UI ownerSquare+Circle/3synthetic/Heartpair budget2500/3000/3500+v2baseline SSIM/report. Test/build phase13-dist only, preserveAPK, new4199/API4481/freshcode, finaldocs. Never contact/restart/rebuild4194–4198/APIs/liveassets or tmpdata, no push/install.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

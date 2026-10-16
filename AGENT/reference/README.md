@@ -27,3 +27,23 @@ Proof image (local only, not in git): `output/reference-classic/comparison.png`
 
 ## Acceptance
 Running the app's normal flow on the owner photo must look at least as recognizable as `output/reference-classic/reference-2500.png` and finish in < 15 s on the laptop.
+
+---
+
+# v3 update (2026-10-17) — sharper face, same speed
+
+Tested on the owner photo with a viewing-distance SSIM metric (`score-viewing-ssim.py`: Gaussian blur + 160 px, SSIM in the face oval):
+
+| Variant | lines | face SSIM |
+| --- | ---: | ---: |
+| v2 (current app: mean score, lineDarkness 0.15, penalty 3) | 2500 | 0.539 |
+| v2 with 3000 lines | 3000 | 0.545 |
+| edge-enhanced target (rejected, worse) | 2500 | 0.533 |
+| **v3: least-squares score, lineDarkness 0.08, gamma 1.6, face importance 1.0** | **3000** | **0.622** |
+
+v3 change = ONE function: score each candidate chord by least-squares error reduction
+`score = mean over chord pixels of dd·(2·err − dd)`, where `dd = lineDarkness·importance` (err may be negative; this automatically avoids over-darkening, so overdrawPenalty is not used).
+Parameters: lines 3000, lineDarkness **0.08**, darknessGamma 1.6, importance = 1 + **1.0**·Gaussian(face), minGap 25, maxChordRepeat 1. Runtime ~2.7 s in Node for 3000 lines.
+Run: `SCORE=ls IMP=1.0 GAM=1.6 node --experimental-strip-types run-reference.ts 500 3000 0.08 out 25`.
+Proof: `output/reference-classic/v3-comparison.png`, `reference-v3-3000.png` (local only).
+Edge-darkening the target was tested and rejected (lower SSIM, harsher look).
