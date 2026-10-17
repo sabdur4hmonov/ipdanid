@@ -230,3 +230,6 @@ Egadan hozir qo‘lda test talab qilinmaydi. Yangi manzil yakuniy manual-testing
 ## Phase14 — VPS va APK ulash
 
 Hozir egadan qo‘lda sinov talab qilinmaydi: Dockerning desktop/mobil HTTPS oqimi va bazani qayta ochish tekshirildi. Domen/VPSni docs/DEPLOY_VPS_UZ.md bilan, release kalitini docs/APK_SERVER_AND_SIGNING_UZ.md bilan ulang. Debug APKning lokal manzili http://127.0.0.1:4482/api; haqiqiy telefonda kompyuterga USB ulab `adb reverse tcp:4482 tcp:4482` kerak yoki Admin → Server manzili orqali o‘z HTTPS domeningizni kiriting. Agent telefonga o‘rnatmagan.
+
+
+Phase14 APK tayyor: `output/mobile/ip-rasm-phase14-20261017-04f92e0d8c1d-debug.apk`.46fayl, imzo va88eski APK saqlangani tekshirildi; Android yangi ekran-yoqish qismi kompilyatsiya qilindi. Agent telefonga o‘rnatmagan.295unit va300ta oxirgi desktop/mobil holat o‘tdi; dastlabki16test xatosi tuzatilgan46ta qayta sinov bilan yopildi. Yangi sayt va uchta natija kodi yakuniy ko‘rsatmada beriladi; hozir qo‘lda test kutmaymiz.
