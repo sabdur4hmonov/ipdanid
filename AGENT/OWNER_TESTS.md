@@ -225,4 +225,8 @@ Qo‘lda tekshirishingizni kutmayman. Qayta ochilganda oxirgi loyiha va qadam ti
 
 ## Phase14 — to‘lov va Admin (avtomatik tekshirildi)
 
-Egadan hozir qo‘lda test talab qilinmaydi. Yangi manzil yakuniy manual-testing.txt da bo‘ladi. Menyu → Hisob / Admin → Admin: bir sahifada kit kodlari, kredit sarfi, buyurtma, narx, dostavka va e’lonlar. Kit to‘plamini yaratib PDF / QR ni yuklash mumkin. Narx so‘mda kiritiladi. Shopdagi Click/Payme faqat sinov; haqiqiy pul olinmaydi. Kalitlarni ulash uchun docs/PAYMENTS_UZ.md ni o‘qing. Production auth va push xavfsizlik tekshiruvi sabab hozircha bloklangan.
+Egadan hozir qo‘lda test talab qilinmaydi. Yangi manzil yakuniy manual-testing.txt da bo‘ladi. Menyu → Hisob / Admin → Admin: bir sahifada kit kodlari, kredit sarfi, buyurtma, narx, dostavka va e’lonlar. Kit to‘plamini yaratib PDF / QR ni yuklash mumkin. Narx so‘mda kiritiladi. Shopdagi Click/Payme faqat sinov; haqiqiy pul olinmaydi. Kalitlarni ulash uchun docs/PAYMENTS_UZ.md ni o‘qing. Production Admin paroli qayta tasdiqdan so‘ng lokal HTTP va Docker HTTPSda sinaldi. Push manzili tasdig‘i hali kutilmoqda.
+
+## Phase14 — VPS va APK ulash
+
+Hozir egadan qo‘lda sinov talab qilinmaydi: Dockerning desktop/mobil HTTPS oqimi va bazani qayta ochish tekshirildi. Domen/VPSni docs/DEPLOY_VPS_UZ.md bilan, release kalitini docs/APK_SERVER_AND_SIGNING_UZ.md bilan ulang. Debug APKning lokal manzili http://127.0.0.1:4482/api; haqiqiy telefonda kompyuterga USB ulab `adb reverse tcp:4482 tcp:4482` kerak yoki Admin → Server manzili orqali o‘z HTTPS domeningizni kiriting. Agent telefonga o‘rnatmagan.
