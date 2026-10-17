@@ -10,7 +10,9 @@ for (const port of [previewPort, apiPort])
     !Number.isInteger(port) ||
     port < 1024 ||
     port > 65535 ||
-    [4194, 4195, 4196, 4197, 4198, 4199, 4331, 4465, 4478, 4479, 4480, 4481].includes(port)
+    [
+      4194, 4195, 4196, 4197, 4198, 4199, 4331, 4465, 4478, 4479, 4480, 4481,
+    ].includes(port)
   )
     throw Error(
       "Invalid local test port (owner previews and APIs are reserved)",
@@ -28,6 +30,8 @@ for (const name of [
   "LOCAL_ADMIN_TOKEN",
   "CODE_PEPPER",
   "SANDBOX_PAYMENT_KEY",
+  "CLICK_SECRET_KEY",
+  "PAYME_TEST_KEY",
 ]) {
   const testName = `IP_RASM_TEST_${name}`;
   process.env[testName] ??= randomBytes(32).toString("base64url");
@@ -67,6 +71,11 @@ export default defineConfig({
         LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN!,
         CODE_PEPPER: process.env.CODE_PEPPER!,
         SANDBOX_PAYMENT_KEY: process.env.SANDBOX_PAYMENT_KEY!,
+        PAYMENTS_SANDBOX: "1",
+        CLICK_SERVICE_ID: "12345",
+        CLICK_SECRET_KEY: process.env.CLICK_SECRET_KEY!,
+        PAYME_LOGIN: "Paycom-test",
+        PAYME_TEST_KEY: process.env.PAYME_TEST_KEY!,
       },
       url: `http://127.0.0.1:${apiPort}/api/health`,
       reuseExistingServer: false,

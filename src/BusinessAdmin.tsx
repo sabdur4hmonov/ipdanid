@@ -60,7 +60,7 @@ export function BusinessAdmin({
   return (
     <div className="business-admin" data-testid="business-admin">
       {settingsAllowed && (
-        <section className="card">
+        <section className="card" id="admin-delivery">
           <h2>{t("business")}</h2>
           <fieldset disabled={!loaded}>
             {(
@@ -154,7 +154,7 @@ export function BusinessAdmin({
         </section>
       )}
       {messagesAllowed && (
-        <section className="card">
+        <section className="card" id="admin-announcements">
           <h2>{t("announcements")}</h2>
           <p>{t("messageDelivery")}</p>
           <label>

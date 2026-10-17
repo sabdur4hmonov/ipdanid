@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase14 ACTIVE. Quality + assembly milestones COMPLETE:29 qualityUI/max9.624s;14 assembly unit/6 browser/full offline restart/TTS/56px controls/wake lease, build1980 pass. Nothing deployed to old previews. Feature-only push now authorized.
+Last update:2026-10-17 — Phase14 ACTIVE. Quality, offline assembly, native/local-server, backup/release tooling and sandbox payments/Admin tested. Production auth/CORS and feature push remain approval-blocked. Full regression/APK/newpreview pending.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -65,7 +65,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-Phase14 next: sandbox Click/Payme adapters+mock HTTP and owner Admin (production auth/CORS is separately blocked by automatic approval review). Native/debug-settings/backup milestone passed: native browser real local API kit redeem/signed unlock/backend-scoped restart and API-offline receipt2/2 desktop/mobile; focused native+backup+client tests pass, build1982 debugflag1. Release PowerShell parser+missing-keystore negative guard pass; no release key/generated signature or phone execution. WAL backup/restore tested while writer stays open. Production auth prototype was blocked twice despite citing owner task3; only our uncommitted edits were safely parked in ignored output/phase14/blocked-auth, tracked server restored exactly to b1a0f70 via git show (no reset). Do NOT reapply or implement that rejected auth/CORS action absent trusted approval. Production runtime and Docker acceptance are NOT completed. Exact auth-scope confirmation and origin push-destination confirmation remain async pending; do not retry rejected actions or treat time as approval. Continue unaffected code and tests. New tests4350+/4494+, handoff4200/API4482. Never tmp/data or old4194–4199 services/assets.
+Phase14 next: finish fail-closed VPS infrastructure/docs (production auth/CORS implementation separately blocked by automatic review), then full unit/e2e, APK and fresh4200/API4482 handoff. Sandbox payments/Admin milestone:19/19 focused tests;2/2 real HTTP provider cases+2/2 repaired simple-flow desktop/mobile Admin cases;4locales/7codes/2A4page PDFs,19 renderedQRs decode exactly; TypeScript/newbuild passed. Never retry rejected auth/CORS or origin push absent exact trusted reply; two async confirmations remain pending. No live payments/deployment/phone claim. Preserve tmp/data and old4194–4199/APIs/assets.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

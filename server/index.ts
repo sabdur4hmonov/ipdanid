@@ -8,6 +8,7 @@ import { DomainError } from "./store.ts";
 import { KitStore } from "./kit-store.ts";
 import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
+import { Payments } from "./payments.ts";
 const adminToken =
   process.env.LOCAL_ADMIN_TOKEN ?? randomBytes(32).toString("base64url");
 const pepper = process.env.CODE_PEPPER ?? randomBytes(32).toString("base64url"),
@@ -29,6 +30,27 @@ const store = new KitStore(
 store.seed();
 const business = new BusinessStore(store);
 const staffAccess = new AdminAccess(store, adminToken);
+// Sandbox adapters remain separate from the blocked production-auth work.
+const payments = new Payments(store, {
+  mode: process.env.PAYMENTS_SANDBOX === "1" ? "sandbox" : "disabled",
+  mockCheckout: process.env.IP_RASM_TEST_SERVER === "1",
+  ...(process.env.CLICK_SECRET_KEY && process.env.CLICK_SERVICE_ID
+    ? {
+        click: {
+          serviceId: process.env.CLICK_SERVICE_ID,
+          secret: process.env.CLICK_SECRET_KEY,
+        },
+      }
+    : {}),
+  ...(process.env.PAYME_TEST_KEY && process.env.PAYME_LOGIN
+    ? {
+        payme: {
+          login: process.env.PAYME_LOGIN,
+          secret: process.env.PAYME_TEST_KEY,
+        },
+      }
+    : {}),
+});
 const budgets = new Map<string, { start: number; count: number }>();
 const authBudgets = new Map<string, { start: number; count: number }>();
 const server = createServer(async (req, res) => {
@@ -115,10 +137,14 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (req.method === "GET" && path === "/api/kit-profiles") {
-      send(200,store.standardKit());return;
+      send(200, store.standardKit());
+      return;
     }
-    const kitRevision=path.match(/^\/api\/kit-profiles\/(\d+)$/);
-    if(req.method==="GET" && kitRevision){send(200,store.standardKit(Number(kitRevision[1])));return;}
+    const kitRevision = path.match(/^\/api\/kit-profiles\/(\d+)$/);
+    if (req.method === "GET" && kitRevision) {
+      send(200, store.standardKit(Number(kitRevision[1])));
+      return;
+    }
     const chunks: Buffer[] = [];
     let receivedBytes = 0;
     for await (const chunk of req) {
@@ -128,7 +154,34 @@ const server = createServer(async (req, res) => {
       chunks.push(Buffer.from(chunk));
     }
     const raw = Buffer.concat(chunks).toString("utf8");
-    const body = raw ? JSON.parse(raw) : {};
+    const clickForm =
+      path === "/api/payments/click" &&
+      String(req.headers["content-type"]).startsWith(
+        "application/x-www-form-urlencoded",
+      );
+    const body = raw
+      ? clickForm
+        ? Object.fromEntries(new URLSearchParams(raw))
+        : JSON.parse(raw)
+      : {};
+    if (req.method === "GET" && path === "/api/payments/config") {
+      send(200, payments.availability());
+      return;
+    }
+    if (
+      req.method === "POST" &&
+      (path === "/api/payments/click" || path === "/api/payments/payme")
+    ) {
+      send(
+        200,
+        payments.callback(
+          path.endsWith("click") ? "click" : "payme",
+          body,
+          String(req.headers.authorization ?? ""),
+        ),
+      );
+      return;
+    }
     if (
       req.method === "POST" &&
       /^\/api\/account\/(login|recover|register|kit)$/.test(path)
@@ -190,11 +243,12 @@ const server = createServer(async (req, res) => {
         );
       const actor = session.id;
       if (path === "/api/admin/kits" && req.method === "GET") {
-        send(200, {...store.kitAdmin(),standardKit:store.standardKit()});
+        send(200, { ...store.kitAdmin(), standardKit: store.standardKit() });
         return;
       }
       if (path === "/api/admin/kits/profiles" && req.method === "POST") {
-        send(200,store.setStandardKit(actor,body));return;
+        send(200, store.setStandardKit(actor, body));
+        return;
       }
       if (path === "/api/admin/kits/policy" && req.method === "POST") {
         send(200, store.setKitPolicy(actor, body));
@@ -321,6 +375,42 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (req.method === "POST" && path === "/api/payments/invoices") {
+      send(
+        201,
+        payments.createInvoice(
+          user,
+          body.provider,
+          body.orderId,
+          body.requestKey,
+        ),
+      );
+      return;
+    }
+    const invoicePath = path.match(/^\/api\/payments\/invoices\/([a-f0-9-]+)$/);
+    if (req.method === "GET" && invoicePath) {
+      send(200, payments.orderStatus(user, invoicePath[1]));
+      return;
+    }
+    const invoiceAction = path.match(
+      /^\/api\/payments\/invoices\/([a-f0-9-]+)\/(cancel|mock)$/,
+    );
+    if (req.method === "POST" && invoiceAction) {
+      if (
+        invoiceAction[2] === "mock" &&
+        !["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(
+          req.socket.remoteAddress ?? "",
+        )
+      )
+        throw new DomainError("Mock checkout is local only", 403);
+      send(
+        200,
+        invoiceAction[2] === "cancel"
+          ? payments.cancelInvoice(user, invoiceAction[1])
+          : payments.simulate(user, invoiceAction[1]),
+      );
+      return;
+    }
     if (path === "/api/builds/archive" && req.method === "POST") {
       send(
         200,

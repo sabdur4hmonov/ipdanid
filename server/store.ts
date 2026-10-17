@@ -542,12 +542,16 @@ export class Store {
     if (!order) throw new DomainError("Order not found", 404);
     return order;
   }
-  cancelOrder(user: string, id: string) {
+  cancelOrder(user: string, id: string, beforeCancel?: () => void) {
     return this.tx(() => {
       const o = this.order(user, id);
-      if (o.status === "cancelled") return o;
+      if (o.status === "cancelled") {
+        beforeCancel?.();
+        return o;
+      }
       if (o.status !== "pending")
         throw new DomainError("Use a return request for a paid order", 409);
+      beforeCancel?.();
       for (const l of this.db
         .prepare("SELECT product_id,quantity FROM order_lines WHERE order_id=?")
         .all(id) as { product_id: string; quantity: number }[])
@@ -564,7 +568,7 @@ export class Store {
   signSandbox(raw: string) {
     return createHmac("sha256", this.paymentKey).update(raw).digest("hex");
   }
-  payment(raw: string, signature: string) {
+  payment(raw: string, signature: string, accepted?: () => void) {
     if (
       !/^[a-f0-9]{64}$/.test(signature) ||
       !timingSafeEqual(
@@ -644,6 +648,7 @@ export class Store {
           );
       }
       this.audit("sandbox-provider", "payment.accept", o.id);
+      accepted?.();
       return { sandbox: true, duplicate: false };
     });
   }

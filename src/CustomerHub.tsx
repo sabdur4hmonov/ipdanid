@@ -1,3 +1,5 @@
+import { PaymentOptions } from "./PaymentOptions";
+import { OwnerAdminNavigation } from "./OwnerAdminNavigation";
 import { NativeServerSettings } from "./NativeServerSettings";
 import { BusinessAdmin } from "./BusinessAdmin";
 import { KitAdmin } from "./KitAdmin";
@@ -338,7 +340,8 @@ export function CustomerHub({
     setAdminSession(session);
     setUnlocked(true);
   }
-  const money = (v: number) => `${v.toLocaleString(locale)} UZS`;
+  const money = (v: number) =>
+    `${(v / 100).toLocaleString(locale, { maximumFractionDigits: 2 })} UZS`;
   const state = (v: string) =>
     t(
       (
@@ -915,6 +918,13 @@ export function CustomerHub({
                     </p>
                   ))}
                   {o.status === "pending" && (
+                    <PaymentOptions
+                      orderId={o.id}
+                      locale={locale}
+                      onUpdated={refresh}
+                    />
+                  )}
+                  {o.status === "pending" && (
                     <button
                       className="outline"
                       onClick={() =>
@@ -1133,6 +1143,9 @@ export function CustomerHub({
             </section>
             {unlocked && (
               <>
+                {adminSession?.role === "owner" && (
+                  <OwnerAdminNavigation locale={locale} />
+                )}
                 {can("codes") && (
                   <KitAdmin locale={locale} token={adminToken} />
                 )}
@@ -1152,6 +1165,7 @@ export function CustomerHub({
                 )}
                 <section
                   className="card"
+                  id="admin-prices"
                   data-admin-permission="catalog"
                   hidden={!can("catalog")}
                 >
@@ -1220,11 +1234,17 @@ export function CustomerHub({
                       <input
                         type="number"
                         min={0}
-                        value={product[k]}
+                        value={
+                          k === "price_minor" ? product[k] / 100 : product[k]
+                        }
+                        step={k === "price_minor" ? 0.01 : 1}
                         onChange={(e) =>
                           setProduct((v) => ({
                             ...v,
-                            [k]: Number(e.target.value),
+                            [k]:
+                              k === "price_minor"
+                                ? Math.round(Number(e.target.value) * 100)
+                                : Number(e.target.value),
                           }))
                         }
                       />
@@ -1344,6 +1364,7 @@ export function CustomerHub({
                 </section>
                 <section
                   className="card"
+                  id="admin-orders"
                   data-admin-permission="orders"
                   hidden={!can("orders")}
                 >

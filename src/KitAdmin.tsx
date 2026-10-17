@@ -50,9 +50,13 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
     ["periodDays", "periodDays"],
   ];
   return (
-    <section className="card kit-admin" data-testid="kit-admin">
+    <section className="card kit-admin" data-testid="kit-admin" id="admin-kits">
       <h2>{t("batch")}</h2>
-      <StandardKitAdmin locale={locale} token={token} onSaved={c=>setProfile(`standard-base-r${c.revision}`)}/>
+      <StandardKitAdmin
+        locale={locale}
+        token={token}
+        onSaved={(c) => setProfile(`standard-base-r${c.revision}`)}
+      />
       <p>{t("note")}</p>
       {error && <p role="alert">{error}</p>}
       <fieldset disabled={busy} aria-label={t("batch")}>
@@ -151,6 +155,26 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
           <div data-testid="kit-batch">
             <code>{batch.id}</code>
             <button
+              data-testid="kit-inserts-pdf"
+              onClick={() =>
+                void run(async () => {
+                  const { kitInsertsPdf } = await import("./kit-inserts-pdf");
+                  await download(
+                    "ip-rasm-kit-codes.pdf",
+                    new Blob(
+                      [
+                        Uint8Array.from(await kitInsertsPdf(batch, locale))
+                          .buffer,
+                      ],
+                      { type: "application/pdf" },
+                    ),
+                  );
+                })
+              }
+            >
+              PDF / QR
+            </button>
+            <button
               onClick={() =>
                 void run(async () => {
                   const { kitInserts } = await import("./kit-inserts");
@@ -227,13 +251,15 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
               </tbody>
             </table>
           </div>
-          {data.accounts.map((a: any) => (
-            <p key={a.account_id}>
-              {a.account_id} · {t("usage")}: {a.builds}
-              {" · "}
-              {t("credits")}: {a.credits}
-            </p>
-          ))}
+          <div id="admin-credits">
+            {data.accounts.map((a: any) => (
+              <p key={a.account_id}>
+                {a.account_id} · {t("usage")}: {a.builds}
+                {" · "}
+                {t("credits")}: {a.credits}
+              </p>
+            ))}
+          </div>
         </>
       )}
     </section>

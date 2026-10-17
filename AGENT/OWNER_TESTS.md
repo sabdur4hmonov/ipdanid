@@ -222,3 +222,7 @@ Hozir qo‘lda sinash talab qilinmaydi. Menyu → Rasm turi orqali Odam/Hayvon/A
 ## Phase14 — yig‘ish rejimi avtomatik tekshirildi
 
 Qo‘lda tekshirishingizni kutmayman. Qayta ochilganda oxirgi loyiha va qadam tiklanadi. Pastdagi katta tugma qadamni tasdiqlaydi; oldingi/keyingi tugmalar faqat ko‘rsatilayotgan qadamni almashtiradi. Foiz va qolgan vaqt tasdiqlangan ishlardan olinadi. Offline qayta ochish va davom etish desktop/mobile testlarda o‘tdi. Ilova ekranni yoqib turadi; qurilmada kerakli TTS ovozi bo‘lmasa matn ishlaydi. Yozib olingan ovozlar uchun docs/VOICE_RECORDING_UZ.md va docs/VOICE_RECORDING_LIST.csv ga amal qilinadi; haqiqiy yozuvlar hozircha qo‘shilmagan.
+
+## Phase14 — to‘lov va Admin (avtomatik tekshirildi)
+
+Egadan hozir qo‘lda test talab qilinmaydi. Yangi manzil yakuniy manual-testing.txt da bo‘ladi. Menyu → Hisob / Admin → Admin: bir sahifada kit kodlari, kredit sarfi, buyurtma, narx, dostavka va e’lonlar. Kit to‘plamini yaratib PDF / QR ni yuklash mumkin. Narx so‘mda kiritiladi. Shopdagi Click/Payme faqat sinov; haqiqiy pul olinmaydi. Kalitlarni ulash uchun docs/PAYMENTS_UZ.md ni o‘qing. Production auth va push xavfsizlik tekshiruvi sabab hozircha bloklangan.
