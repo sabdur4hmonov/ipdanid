@@ -1,3 +1,4 @@
+import { numberVoiceClips, requiredVoiceClips } from "./core/voice-catalog";
 import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
 const uz = {
@@ -1058,9 +1059,15 @@ const ru: Record<Key, string> = {
     "Проекты изменены в другой вкладке. Сохраните JSON текущего проекта, затем перезагрузите библиотеку.",
 };
 export const translate = (locale: Locale) => (key: Key) =>
-  scriptText(({ uz, en, ru })[baseLocale(locale)][key], locale);
+  scriptText({ uz, en, ru }[baseLocale(locale)][key], locale);
 export function spokenPin(locale: Locale, pin: number): string {
   if (baseLocale(locale) !== "uz") return String(pin);
+  if (pin >= 1000) {
+    const clips = requiredVoiceClips("uz");
+    return numberVoiceClips("uz", pin)
+      .map((id) => clips[id])
+      .join(" ");
+  }
   const ones = [
       "nol",
       "bir",

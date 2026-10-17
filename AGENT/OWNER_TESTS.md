@@ -218,3 +218,7 @@ APK: `output/mobile/ip-rasm-phase13-20261017-7b42969cd9ba-debug.apk`.268unit va4
 ## Phase14 — avtomatik tekshiruvlar
 
 Hozir qo‘lda sinash talab qilinmaydi. Menyu → Rasm turi orqali Odam/Hayvon/Avtomobil/Buyum/Yozuv tanlanadi. Lotin, kirill va arab yozuvi mahalliy shrift bilan ishlaydi. Foto moslashda eski suratlardagi joylashuv buzilmaydi. Yakuniy yangi manzil va qolgan ulash ishlari Phase14 tugaganda quyida yoziladi.
+
+## Phase14 — yig‘ish rejimi avtomatik tekshirildi
+
+Qo‘lda tekshirishingizni kutmayman. Qayta ochilganda oxirgi loyiha va qadam tiklanadi. Pastdagi katta tugma qadamni tasdiqlaydi; oldingi/keyingi tugmalar faqat ko‘rsatilayotgan qadamni almashtiradi. Foiz va qolgan vaqt tasdiqlangan ishlardan olinadi. Offline qayta ochish va davom etish desktop/mobile testlarda o‘tdi. Ilova ekranni yoqib turadi; qurilmada kerakli TTS ovozi bo‘lmasa matn ishlaydi. Yozib olingan ovozlar uchun docs/VOICE_RECORDING_UZ.md va docs/VOICE_RECORDING_LIST.csv ga amal qilinadi; haqiqiy yozuvlar hozircha qo‘shilmagan.

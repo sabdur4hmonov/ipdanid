@@ -1533,3 +1533,6 @@ footer > span:last-child {
     font-size: 30px;
   }
 }
+
+/* The six-hour assembly control stays reachable with one thumb. */
+.assembly-focus{background:#fff;border:1px solid #dce2e9;border-radius:18px;padding:16px;margin:0 0 20px;box-shadow:0 4px 22px #132d4920;z-index:30;text-align:center}.assembly-focus-route{display:block;font-size:clamp(28px,5vw,44px);font-variant-numeric:tabular-nums;color:#173452}.assembly-focus-status{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-size:14px}.assembly-focus-status small{color:#53677b}.assembly-focus progress{display:block;width:100%;height:8px;margin:8px 0}.assembly-focus-actions{display:grid;grid-template-columns:58px 1fr 58px;gap:10px}.assembly-focus-actions button{min-height:56px;font-size:18px;touch-action:manipulation}.assembly-focus>small{display:block;font-size:11px;margin-top:5px;color:#53677b}@media(max-width:700px){.assembly-focus{position:fixed;left:8px;right:8px;bottom:calc(64px + env(safe-area-inset-bottom));padding:10px;margin:0;max-height:220px}.assembly-focus-status small{font-size:10px}.assembly-focus-route{font-size:30px}.app-main:has(.assembly-focus),main:has(.assembly-focus){padding-bottom:300px}.assembly-focus-actions button{min-height:56px;font-size:15px}}

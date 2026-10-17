@@ -1,3 +1,8 @@
+import {
+  readAssemblySession,
+  writeAssemblySession,
+  validAssemblySession,
+} from "./assembly-session";
 import { SubjectChooser } from "./SubjectChooser";
 import { recordedClipPlayer } from "./recorded-player";
 import { recordedStepEntries } from "./core/recorded-voices";
@@ -418,6 +423,42 @@ export function useAppController() {
     instruction = project?.instruction,
     steps = instruction && canBuild(instruction) ? flatten(instruction) : [],
     active = steps[current - 1];
+  const assemblyRestored = useRef(false);
+  useEffect(() => {
+    if (!loaded || assemblyRestored.current) return;
+    assemblyRestored.current = true;
+    let live = true;
+    void readAssemblySession().then((raw) => {
+      if (!live) return;
+      const saved = validAssemblySession(raw, projects);
+      if (saved && view === "create") {
+        setSelected(saved.projectId);
+        setCurrent(saved.current);
+        setPace(saved.pace);
+        setView("assemble");
+      }
+    });
+    return () => {
+      live = false;
+    };
+  }, [loaded]);
+  useEffect(() => {
+    if (loaded && view === "assemble" && project)
+      void writeAssemblySession({
+        version: 1,
+        projectId: project.id,
+        sequenceHash: project.instruction.sequenceHash,
+        current,
+        pace,
+      }).catch(() => setError(guideText(locale, "saveFailed")));
+  }, [
+    loaded,
+    view,
+    project?.id,
+    project?.instruction.sequenceHash,
+    current,
+    pace,
+  ]);
   const matchingVoices = voices.filter((v) =>
     v.lang.toLowerCase().startsWith(guideLocale),
   );
