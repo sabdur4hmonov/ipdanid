@@ -6,8 +6,22 @@ export async function enterStandardExpert(
 ) {
   const menu = page.getByTestId("customer-menu");
   if (await menu.isVisible()) {
-    await menu.locator("summary").click();
+    if (!(await menu.evaluate((e) => (e as HTMLDetailsElement).open)))
+      await menu.locator("summary").click();
     await page.getByTestId("enter-expert").click();
+  } else {
+    // Phase14 resumes assembly after a reload. The visible app menu provides
+    // the same explicit Expert action; hidden creator controls are not bypassed.
+    const appMenu = page.locator("details.more-menu");
+    if (await appMenu.isVisible()) {
+      if (!(await appMenu.evaluate((e) => (e as HTMLDetailsElement).open)))
+        await appMenu.locator("summary").click();
+      await appMenu
+        .getByRole("button", {
+          name: /^(Expert mode|Mutaxassis rejimi|Мутахассис режими|Режим эксперта)$/,
+        })
+        .click();
+    }
   }
 }
 export const test = base.extend({

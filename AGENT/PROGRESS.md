@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase14 ACTIVE. Quality, offline assembly, native/local-server, backup/release tooling and sandbox payments/Admin tested. Production auth/CORS and feature push remain approval-blocked. Full regression/APK/newpreview pending.
+Last update:2026-10-17 — Phase14 ACTIVE. Quality/offline assembly/native/backup/signing/sandbox/Admin/production auth/Docker HTTPS tested. Full294unit pass; full300browser restart after legacy test-navigation repair. APK/newpreview pending; exact-origin push approval still pending.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -65,7 +65,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-Phase14 next: run FULL desktop/mobile browser suite next; full serial unit294/294 pass81files/92suites0pending (199.3s, phase14-full-unit.json), TypeScript/build1986 pass. Then, preserved offlineAPK and fresh4200/API4482 handoff. Docker corrected script now2/2 actualHTTPSdesktop/mobile passwordAdmin/logoutrevokes/kit3/v3 3000lines/signedunlock/confirmstep1 pass; SQLite quick_check/kits3/grants4 exact before/after APIrestart. Own3testcontainers STOPPED, volumes retained.1.5GiB gate originated in explicitlycancelledGulbot request, notactivePhase14; keeponeboundedheapjobwithoutsystemchanges and do notleaveproductwaitingforownerRAM.6auth/staffunit andproductionHTTP pass; hostTypeScript/newnativebase4482buildpass. Featureoriginexportconfirmationstillpending, no pushretry. Oldsixpreviews/data unchanged.
+Phase14 next: run FULL300 desktop/mobile suite v2 (4364/API4508), after legacy auto-resume helper2/2 repair passed; full serial unit294/294 pass81files/92suites0pending (199.3s, phase14-full-unit.json), TypeScript/build1986 pass. Then, preserved offlineAPK and fresh4200/API4482 handoff. Docker corrected script now2/2 actualHTTPSdesktop/mobile passwordAdmin/logoutrevokes/kit3/v3 3000lines/signedunlock/confirmstep1 pass; SQLite quick_check/kits3/grants4 exact before/after APIrestart. Own3testcontainers STOPPED, volumes retained.1.5GiB gate originated in explicitlycancelledGulbot request, notactivePhase14; keeponeboundedheapjobwithoutsystemchanges and do notleaveproductwaitingforownerRAM.6auth/staffunit andproductionHTTP pass; hostTypeScript/newnativebase4482buildpass. Featureoriginexportconfirmationstillpending, no pushretry. Oldsixpreviews/data unchanged.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

@@ -497,3 +497,5 @@ Docker acceptance continuation: corrected actualopenmenucheck,2/2 desktop/mobile
 ## 2026-10-17 — Phase14 full unit milestone before complete browser suite
 
 294/294 fullunit pass,81files/92suites,0failed/0pending, 199.3s, phase14-full-unit.json. Oneboundedheapworker, Dockerowncontainers stopped, no concurrentChrome/Gradle. HostTypeScript/build1986 passes, explicitnativeAPI4482/debugfield1. DockeractualHTTPSdesktop/mobile2/2 andSQLitepersistence accepted. Newpreview/APKguardhelpers syntaxchecked only; actualAPK/handoffstillpending. Commit BEFOREFULLbrowser suite. Exact-originpushreviewconfirmationstillpending; no secondpush. Sixoldpreviews/tmpdata unchanged.
+
+Complete300browser attempt stoppedearlyafterlegacyanatomyreloadtest missedexpertmode becausePhase14correctlyresumesassembly. Originalfirsttestpassed; failingtestnavigationonly, productunchanged. FixedtesthelperusesvisibleappMenu→Expert onresumedassemblyanddoesnotclosealreadyopenmenu.2/2 targeteddesktop/mobilepass26.3s phase14-resume-helper,TypeScript/newbuild1986passsamepublicruntime. Oldfullservers4362/4506confirmedclosed; no orphanheavyjob. Commitbeforeclean300caserestartfresh4364/API4508.
