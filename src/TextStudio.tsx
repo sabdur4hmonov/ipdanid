@@ -2,12 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Instruction, Locale } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
 import { letteringText } from "./lettering-i18n";
-import {
-  letteringInput,
-  loadLetteringFont,
-  shapeLettering,
-  type LetteringGeometry,
-} from "./core/lettering";
+import { loadLetteringFont, type LetteringGeometry } from "./core/lettering";
 import {
   generateGlyphOutline,
   letteringTarget,
@@ -23,6 +18,7 @@ import {
   type OptimizerRecovery,
 } from "./optimizer-storage";
 import { customerError } from "./errors";
+import { shapeText, textInput } from "./core/mixed-lettering";
 
 export default function TextStudio({
   locale,
@@ -116,9 +112,9 @@ export default function TextStudio({
     setResult(undefined);
     setReviewed(false);
     try {
-      const { font } = letteringInput(text),
+      const { font } = textInput(text),
         bytes = await loadLetteringFont(font),
-        g = await shapeLettering(text, bytes, {
+        g = await shapeText(text, {
           widthMm: width,
           heightMm: height,
           shape: "rectangle",
@@ -150,6 +146,7 @@ export default function TextStudio({
           accessPolicy: "kit-build/1",
           text,
           fontBytes: prepared.bytes,
+          bidi: !!prepared.g.fontRuns,
           widthMm: width,
           heightMm: height,
           count: pins,

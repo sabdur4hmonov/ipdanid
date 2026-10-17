@@ -6,4 +6,4 @@ Oldin/Keyin bilan ko‘ring, keyin Yaratish. Yozuv tayyor surat ustidagi bezak e
 
 Qisqa ism/sana tanlang; Yurakning pastki qismi tor. Mayda harf va nuqtalarning haqiqiy ipda o‘qilishi oldindan kafolatlanmaydi: nishon va haqiqiy ip natijasini alohida ko‘ring. Konturdan tashqaridagi harflar yashirincha kesilmaydi. Noto‘g‘ri yoki juda uzun matn yaratishni to‘xtatadi. Surat va matn qurilmada ishlanadi.
 
-Phase15ning aralash arab+lotin/kirill va raqam tartibi ishlari alohida C02 bandida kuzatiladi; yakuniy hisobotdagi holatni o‘qing. Oldingi tayyor yo‘riqnomalar qayta yozilmaydi.
+Aralash arab+lotin/kirill va raqamlar bitta qatorda ishlaydi: masalan `Ali علي Мир 2026`. Matnni teskari yozmang; dastur yo‘nalishni ajratadi. Oldingi tayyor yo‘riqnomalar qayta yozilmaydi.

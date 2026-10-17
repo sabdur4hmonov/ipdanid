@@ -12,13 +12,17 @@ import { glyphPath, glyphCoordinateHash } from "./glyph-layout";
 import { rasterSequence } from "./optical";
 import { validateInstruction } from "./validation";
 import { makeSubjectPlan } from "./subject-plan";
+import { BIDI_VERSION, textInput } from "./bidi-runs";
 
 export function letteringProduct(
   g: LetteringGeometry,
   style: LetteringProduct["style"],
 ): LetteringProduct {
   return {
-    version: "thread-lettering/1",
+    version: g.fontRuns ? "thread-lettering/2" : "thread-lettering/1",
+    ...(g.fontRuns
+      ? { fontRuns: structuredClone(g.fontRuns), bidiVersion: BIDI_VERSION }
+      : {}),
     style,
     text: g.text,
     font: g.font,
@@ -73,6 +77,8 @@ export async function generateGlyphOutline(input: {
   accessPolicy?: "kit-build/1";
   text: string;
   fontBytes: Uint8Array;
+  bidi?: boolean;
+  fallbackFontBytes?: Uint8Array;
   widthMm: number;
   heightMm: number;
   count: number;
@@ -81,11 +87,19 @@ export async function generateGlyphOutline(input: {
   const { widthMm, heightMm, count, resolution: n } = input;
   if (!Number.isInteger(n) || n < 32 || n > 320)
     throw Error("lettering/resolution");
-  const g = await shapeLettering(input.text, input.fontBytes, {
-      widthMm,
-      heightMm,
-      shape: "rectangle",
-    }),
+  const board = {
+    widthMm,
+    heightMm,
+    shape: "rectangle" as const,
+  };
+  const g = input.bidi
+      ? await (
+          await import("./mixed-lettering")
+        ).shapeText(input.text, board, {
+          [textInput(input.text).font]: input.fontBytes,
+          ...(input.fallbackFontBytes ? { sans: input.fallbackFontBytes } : {}),
+        })
+      : await shapeLettering(input.text, input.fontBytes, board),
     p = createProfile("rectangle", count, "dark", { widthMm, heightMm }),
     pins = letteringPins(g, count, p.shaftMm + p.threadMm),
     product = letteringProduct(g, "outline");

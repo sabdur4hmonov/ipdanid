@@ -1,3 +1,4 @@
+import type { ShapedTextRun } from "./bidi-runs";
 import fontkit from "@pdf-lib/fontkit";
 import { hash } from "./engine";
 import { inside } from "./geometry";
@@ -18,7 +19,8 @@ export type GlyphCommand = {
   args: number[];
 };
 export interface LetteringGeometry {
-  version: "shaped-glyph-paths/1";
+  version: "shaped-glyph-paths/1" | "shaped-bidi-paths/2";
+  fontRuns?: ShapedTextRun[];
   text: string;
   font: LetteringFont;
   fontHash: string;
@@ -207,6 +209,30 @@ export async function shapeLettering(
     penX += position.xAdvance;
     penY += position.yAdvance;
   });
+  return finishLettering(
+    text,
+    fontId,
+    fontHash,
+    direction,
+    run.glyphs.map((g) => g.id),
+    raw,
+    [minX, minY, maxX, maxY],
+    board,
+  );
+}
+export function finishLettering(
+  text: string,
+  fontId: LetteringFont,
+  fontHash: string,
+  direction: "ltr" | "rtl",
+  glyphs: number[],
+  raw: GlyphCommand[],
+  box: [number, number, number, number],
+  board: { widthMm: number; heightMm: number; shape: Shape },
+  fontRuns?: ShapedTextRun[],
+): LetteringGeometry {
+  const [minX, minY, maxX, maxY] = box,
+    { widthMm, heightMm, shape } = board;
   if (!(maxX > minX && maxY > minY) || raw.length > 40000)
     throw Error("lettering/geometry");
   const fit =
@@ -240,12 +266,13 @@ export async function shapeLettering(
   )
     throw Error("lettering/clipped");
   return {
-    version: "shaped-glyph-paths/1",
+    version: fontRuns ? "shaped-bidi-paths/2" : "shaped-glyph-paths/1",
+    ...(fontRuns ? { fontRuns } : {}),
     text,
     font: fontId,
     fontHash,
     direction,
-    glyphs: run.glyphs.map((g) => g.id),
+    glyphs,
     widthMm,
     heightMm,
     shape,

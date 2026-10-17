@@ -2,11 +2,13 @@ import type { FaceFill } from "./standard-preparation";
 import type { Shape } from "./types";
 import { LETTERING_FONTS, letteringInput } from "./lettering-contract";
 import type { LetteringGeometry } from "./lettering";
+import { textInput } from "./bidi-runs";
 
 export function withPortraitCaption(
   base: FaceFill,
   shape: Shape,
   input: string,
+  shaping: "single/1" | "bidi/2" = "single/1",
 ): FaceFill {
   if (!input.trim()) return base;
   if (
@@ -14,7 +16,8 @@ export function withPortraitCaption(
     base.product?.kind !== "people"
   )
     throw Error("caption/portrait-required");
-  const { text, font } = letteringInput(input),
+  const { text, font } =
+      shaping === "bidi/2" ? textInput(input) : letteringInput(input),
     scale = shape === "heart" ? 0.88 : 0.82;
   const bounds =
     shape === "heart"
@@ -32,7 +35,8 @@ export function withPortraitCaption(
       height: b.height * scale,
     })),
     caption: {
-      version: "portrait-caption/1",
+      version:
+        shaping === "bidi/2" ? "portrait-caption/2" : "portrait-caption/1",
       text,
       font,
       fontHash: LETTERING_FONTS[font].sha256,

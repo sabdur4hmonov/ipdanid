@@ -137,7 +137,7 @@ export function CustomerStudio({
   const framing = useMemo(() => {
     if (!baseFraming || kind !== "people") return baseFraming;
     try {
-      return withPortraitCaption(baseFraming, shape, caption);
+      return withPortraitCaption(baseFraming, shape, caption, "bidi/2");
     } catch {
       return undefined;
     }
@@ -148,11 +148,10 @@ export function CustomerStudio({
     setCaptionInvalid(false);
     if (framing?.caption)
       void (async () => {
-        const { loadLetteringFont, shapeLettering, rasterLettering } =
-            await import("./core/lettering"),
+        const { rasterLettering } = await import("./core/lettering"),
+          { shapeText } = await import("./core/mixed-lettering"),
           proof = framing.caption!,
-          bytes = await loadLetteringFont(proof.font),
-          g = await shapeLettering(proof.text, bytes, {
+          g = await shapeText(proof.text, {
             widthMm: 500,
             heightMm: 500,
             shape: "rectangle",
@@ -671,16 +670,10 @@ export function CustomerStudio({
                 onClick={() =>
                   void (async () => {
                     try {
-                      const {
-                        loadLetteringFont,
-                        shapeLettering,
-                        letteringInput,
-                        rasterLettering,
-                      } = await import("./core/lettering");
-                      const bytes = await loadLetteringFont(
-                        letteringInput(lettering).font,
-                      );
-                      const g = await shapeLettering(lettering, bytes, {
+                      const { rasterLettering } =
+                          await import("./core/lettering"),
+                        { shapeText } = await import("./core/mixed-lettering");
+                      const g = await shapeText(lettering, {
                         widthMm: 500,
                         heightMm: 500,
                         shape: "rectangle",

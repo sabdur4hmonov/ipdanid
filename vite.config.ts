@@ -25,7 +25,12 @@ const fontFiles = [
   "local.css",
 ]
   .map((f) => "/fonts/" + f)
-  .concat(["/licenses/qrcode.txt", "/licenses/dijkstrajs.txt"]);
+  .concat([
+    "/licenses/qrcode.txt",
+    "/licenses/dijkstrajs.txt",
+    "/licenses/bidi-js.txt",
+    "/licenses/require-from-string.txt",
+  ]);
 export default defineConfig({
   // Native build caches and private evidence are served on demand, never source watched.
   server: {

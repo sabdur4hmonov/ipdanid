@@ -247,3 +247,8 @@ Admin → kit → PDF/QR, narx/stock/dostavka/e’lonlar bir sahifada. To‘lovl
 ## Phase15 — ism/sana (avtomatik sinov, qo‘lda kutmaymiz)
 
 Yakuniy yangi manzil Phase15 tugaganda beriladi;4200eski holida saqlanadi. Odam surati → Moslash → Ism/sana maydoniga qisqa matn. Yozuv nishonda va haqiqiy ip ketma-ketligida bo‘lsin; bo‘sh maydon avvalgi joylashuvni saqlaydi. Doira/lotin, Kvadrat/kirill, Yurak/arab desktop va mobilda kit orqali ochish/qayta yaratish/eksport bilan6/6o‘tdi. Batafsil docs/CAPTION_UZ.md; aralash yozuv/raqam tartibi C02da davom etadi. Agent qo‘lda sinov kutmaydi.
+
+
+## Phase15 — aralash yozuv (avtomatik tekshirildi)
+
+Ism/sana yoki Menyu → Rasm turi → Yozuvda `Ali سلام Мир 2026` kabi bitta qatorda aralash yozish mumkin. Arab harflari qo‘shiladi, raqamlar teskarilanmaydi; matnni o‘zingiz teskari yozmang. Mutaxassis rejimidagi kontur ham aralash matn bilan ishlaydi, mix oralig‘i sig‘masa kattaroq taxta/kamroq mix so‘raydi.23unit va16ta oxirgi desktop/mobil holat o‘tdi. Eski saqlangan matnli yo‘riqnomalar saqlanadi. Agent qo‘lda test kutmaydi.

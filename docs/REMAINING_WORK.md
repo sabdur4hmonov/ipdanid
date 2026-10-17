@@ -2,14 +2,14 @@
 
 Written before Phase15 implementation. Sources: AGENT/MASTER_PLAN.md; all current and historical open/remaining rows in AGENT/FINAL_REPORT.md; docs/ROADMAP.md, FEATURE_MATRIX.md and BLOCKERS.md; Phase14 source and acceptance records. Historical checkpoint next-task paragraphs are not new instructions. A partial device/physical/production column does not itself mean missing code. Conversely, a schema, disabled card or mock is not a completed customer feature.
 
-Status: **IMPLEMENTING. C01 passed16 focused units and6 actual desktop/mobile cases; final build/commit checkpoint in PROGRESS.** Every CODE row below stays open until linked implementation and actual tests exist. Minimal releases must perform their advertised operation, preserve old guides, and be reachable. Experimental features remain clearly labelled in Expert mode. OWNER rows never block independent CODE work.
+Status: **IMPLEMENTING. C01 DONE; C02 DONE (23unit/16latest UI/build1990); C03 next. Actual milestone commits/results are in PROGRESS/LOG.** Every CODE row below stays open until linked implementation and actual tests exist. Minimal releases must perform their advertised operation, preserve old guides, and be reachable. Experimental features remain clearly labelled in Expert mode. OWNER rows never block independent CODE work.
 
 ## CODE — ordered implementation ledger
 
 | ID | Remaining deliverable / source IDs | Acceptance and intended milestone | Status |
 | --- | --- | --- | --- |
 | C01 | Optional name/date under a portrait, all three shapes and Latin/Cyrillic/Arabic; MASTER Phase4, historical FINAL Phase4 | Versioned reviewed composition; actual text pixels in the same prepared target and immutable sequence; preview/player/exports agree; blank text preserves old preparation. | DONE:16unit/6UI/1987module build; docs/CAPTION_UZ.md, local output/phase15/caption. Thin physical lettering remains O06; mixed/number ordering C02. |
-| C02 | Mixed Arabic+Latin/Cyrillic in one line; I18N-01, historical FINAL Phase4 | Unicode bidirectional runs, Arabic contextual shaping and per-run licensed fonts; punctuation/numbers; exact raster/provenance and old single-script guides preserved. | OPEN |
+| C02 | Mixed Arabic+Latin/Cyrillic in one line; I18N-01, historical FINAL Phase4 | Unicode bidirectional runs, Arabic contextual shaping and per-run licensed fonts; punctuation/numbers; exact raster/provenance and old single-script guides preserved. | DONE:23unit/16latestUI/1990build; docs/BIDI_CHECKPOINT.md. Initial14/2 run and2/2repair preserved. |
 | C03 | Push delivery/configuration and token lifecycle; MSG-01, WEB-02 | FCM HTTP v1 adapter, placeholder-only configuration, authenticated registration/rotation/revocation, permission opt-in, Admin announcement queue/retry/idempotency, invalid-token cleanup, mock sends only. In-app fallback remains. | OPEN |
 | C04 | Mosaic polish; BRICK-01/02 | Existing real inventory engine retained; baseplate partition/stock/spares, richer finite-palette options, progress and actual exports reachable from Menu. No physical calibration claim. | OPEN |
 | C05 | Diamond/paint polish; DIAM-01, PAINT-01 | Explicit grid/pitch/style/magnetic material parameters, counts/spares; connected paint boundaries/print labels/coverage/progress; offline exported plans; physical palettes remain configurable. | OPEN |

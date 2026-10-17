@@ -25,7 +25,7 @@ const en = {
   steps: "connections",
   minutes: "estimated minutes",
   error:
-    "Check the text and settings. Use one script per line, supported letters, a larger board or fewer pins. Review the prepared target again.",
+    "Check the text and settings. Use supported letters, a larger board or fewer pins. Review the prepared target again.",
   waiting: "Prepare and review the text first.",
   archive:
     "Could not save the local recovery input. Keep this page open and retry.",
@@ -59,7 +59,7 @@ const uz: typeof en = {
   steps: "ulanish",
   minutes: "taxminiy daqiqa",
   error:
-    "Matn va sozlamalarni tekshiring. Bir qatorda bitta yozuv turini, mavjud harflarni, kattaroq taxta yoki kamroq mixni tanlang. Tayyor nishonni qayta tekshiring.",
+    "Matn va sozlamalarni tekshiring. Mavjud harflarni, kattaroq taxta yoki kamroq mixni tanlang. Tayyor nishonni qayta tekshiring.",
   waiting: "Avval matnni tayyorlang va tekshiring.",
   archive:
     "Mahalliy tiklash ma’lumoti saqlanmadi. Oynani ochiq qoldirib qayta urinib ko‘ring.",

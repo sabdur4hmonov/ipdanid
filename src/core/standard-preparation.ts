@@ -29,7 +29,7 @@ export interface FaceFill {
     | "reviewed-product-framing/5"
     | "reviewed-caption-framing/6";
   caption?: {
-    version: "portrait-caption/1";
+    version: "portrait-caption/1" | "portrait-caption/2";
     text: string;
     font: import("./lettering-contract").LetteringFont;
     fontHash: string;

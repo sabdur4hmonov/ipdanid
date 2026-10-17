@@ -1,3 +1,9 @@
+import {
+  bidiTextRuns,
+  BIDI_VERSION,
+  textInput,
+  type ShapedTextRun,
+} from "./bidi-runs";
 export const LETTERING_FONTS = {
   sans: {
     path: "/fonts/NotoSans-Regular.ttf",
@@ -26,22 +32,27 @@ export function letteringInput(input: string) {
   return { text, font: (arabic ? "arabic" : "sans") as LetteringFont };
 }
 export interface LetteringProduct {
-  version: "thread-lettering/1";
+  version: "thread-lettering/1" | "thread-lettering/2";
   style: "target" | "outline";
   text: string;
   font: LetteringFont;
   fontHash: string;
   direction: "ltr" | "rtl";
   glyphs: number[];
-  geometryVersion: "shaped-glyph-paths/1";
+  geometryVersion: "shaped-glyph-paths/1" | "shaped-bidi-paths/2";
+  fontRuns?: ShapedTextRun[];
+  bidiVersion?: typeof BIDI_VERSION;
   toleranceMm: number;
 }
 export function validLetteringProduct(p: LetteringProduct) {
   if (
     !p ||
-    p.version !== "thread-lettering/1" ||
+    !["thread-lettering/1", "thread-lettering/2"].includes(p.version) ||
     !["target", "outline"].includes(p.style) ||
-    p.geometryVersion !== "shaped-glyph-paths/1" ||
+    p.geometryVersion !==
+      (p.version === "thread-lettering/2"
+        ? "shaped-bidi-paths/2"
+        : "shaped-glyph-paths/1") ||
     p.toleranceMm !== 0.2 ||
     !Array.isArray(p.glyphs) ||
     p.glyphs.length < 1 ||
@@ -49,14 +60,42 @@ export function validLetteringProduct(p: LetteringProduct) {
     p.glyphs.some((v) => !Number.isInteger(v) || v <= 0 || v > 65535)
   )
     throw Error("Invalid lettering provenance");
-  const input = letteringInput(p.text);
+  const input =
+    p.version === "thread-lettering/2"
+      ? textInput(p.text)
+      : letteringInput(p.text);
+  const resolved =
+    p.version === "thread-lettering/2" ? bidiTextRuns(p.text) : undefined;
   if (
     input.text !== p.text ||
     input.font !== p.font ||
     p.fontHash !== LETTERING_FONTS[p.font]?.sha256 ||
-    p.direction !== (p.font === "arabic" ? "rtl" : "ltr")
+    p.direction !==
+      (resolved?.direction ?? (p.font === "arabic" ? "rtl" : "ltr"))
   )
     throw Error("Invalid lettering provenance");
+  if (resolved) {
+    if (
+      p.bidiVersion !== BIDI_VERSION ||
+      !Array.isArray(p.fontRuns) ||
+      p.fontRuns.length !== resolved.runs.length ||
+      JSON.stringify(p.fontRuns.flatMap((r) => r.glyphs)) !==
+        JSON.stringify(p.glyphs)
+    )
+      throw Error("Invalid bidi provenance");
+    p.fontRuns.forEach((r, j) => {
+      const { glyphs, fontHash, ...run } = r;
+      if (
+        JSON.stringify(run) !== JSON.stringify(resolved.runs[j]) ||
+        fontHash !== LETTERING_FONTS[r.font]?.sha256 ||
+        !Array.isArray(glyphs) ||
+        !glyphs.length ||
+        glyphs.some((v) => !Number.isSafeInteger(v) || v <= 0 || v > 65535)
+      )
+        throw Error("Invalid bidi provenance");
+    });
+  } else if (p.fontRuns || p.bidiVersion)
+    throw Error("Unexpected bidi provenance on legacy lettering");
 }
 export interface GlyphLayout {
   version: "glyph-outline/1";

@@ -230,6 +230,9 @@ export async function validateInstruction(
                 ),
                 p.shape,
                 k.transform.caption?.text ?? "",
+                k.transform.caption?.version === "portrait-caption/2"
+                  ? "bidi/2"
+                  : "single/1",
               )
             : k.version === "standard-preparation/5"
               ? frameProduct(
