@@ -1,4 +1,5 @@
 import { expect, type Page, type TestInfo } from "@playwright/test";
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import UPNGModule from "@pdf-lib/upng";
 import { gallery, english, png, photoCases } from "./phase12-cases";
@@ -45,7 +46,7 @@ export async function reportCase(
   info: TestInfo,
   c: (typeof phase13Cases)[number],
 ) {
-  const out = `${process.env.IP_RASM_SHARPER_EVIDENCE || "output/current-sharper"}/${info.project.name}/${c.name}`;
+  const out = `${newEvidenceRoot(process.env.IP_RASM_SHARPER_EVIDENCE || "output/current-sharper")}/${info.project.name}/${c.name}`;
   mkdirSync(out, { recursive: true });
   await page.goto("/");
   await english(page);

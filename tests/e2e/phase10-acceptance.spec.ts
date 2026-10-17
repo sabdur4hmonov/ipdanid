@@ -1,4 +1,5 @@
 import { test, expect } from "./standard-expert-test";
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import {
   readFileSync,
   writeFileSync,
@@ -62,7 +63,7 @@ for (const c of cases)
         ("pair" in c && !existsSync("output/phase10/inputs/synthetic-2.png")),
       "Local synthetic/owner acceptance files are required; photos are deliberately excluded from Git.",
     );
-    const out = `output/phase10/${info.project.name}/${c.name}`;
+    const out = `${newEvidenceRoot(process.env.IP_RASM_CLASSIC_EVIDENCE || "output/current-reference")}/${info.project.name}/${c.name}`;
     mkdirSync(out, { recursive: true });
     const evidence: Record<string, unknown> = {
       name: c.name,

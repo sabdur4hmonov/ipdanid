@@ -1,4 +1,5 @@
 import { test, expect } from "./standard-expert-test";
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { createHash } from "node:crypto";
 import {
   readFileSync,
@@ -70,7 +71,7 @@ for (const c of cases)
         ("pair" in c && !existsSync("output/phase10/inputs/synthetic-2.png")),
       "Local synthetic/owner acceptance files are required; photos are deliberately excluded from Git.",
     );
-    const out = `output/phase11/${info.project.name}/${c.name}`;
+    const out = `${newEvidenceRoot(process.env.IP_RASM_FRAMING_EVIDENCE || "output/current-framing")}/${info.project.name}/${c.name}`;
     mkdirSync(out, { recursive: true });
     const evidence: Record<string, unknown> = {
       name: c.name,
@@ -263,10 +264,19 @@ for (const c of cases)
           .every((v) => v === 255),
       ).toBe(true);
       evidence.targetWhiteBelowChinFade = true;
-      const oldPath = `output/phase10/${info.project.name}/${c.name}/guide.json`;
+      const oldPath = `output/phase10/mobile-browser/${c.name}/guide.json`;
       if (existsSync(oldPath)) {
-        const before = JSON.parse(readFileSync(oldPath, "utf8")).params
-          .kitPreparation.transform.targetFaces;
+        const frozen = JSON.parse(readFileSync(oldPath, "utf8"));
+        expect(frozen.params.kitPreparation.version).toBe(
+          "standard-preparation/2",
+        );
+        const original = JSON.parse(
+          readFileSync("output/phase10/results.json", "utf8"),
+        ).rows.find(
+          (r: any) => r.project === "mobile-browser" && r.name === c.name,
+        );
+        expect(frozen.sequenceHash).toBe(original.sequenceHash);
+        const before = frozen.params.kitPreparation.transform.targetFaces;
         evidence.oldFaceHeights = before.map(
           (f: { height: number }) => f.height,
         );

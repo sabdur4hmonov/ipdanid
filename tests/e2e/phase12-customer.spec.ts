@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import {
   mkdirSync,
   writeFileSync,
@@ -11,8 +12,9 @@ import { customerFlowText } from "../../src/customer-flow-i18n";
 import { DEFAULT_CUSTOMER_LINES } from "../../src/customer-defaults";
 import { unlockKitGuide } from "./kit-access";
 import { validateInstruction } from "../../src/core/validation";
-const evidenceRoot =
-  process.env.IP_RASM_CUSTOMER_EVIDENCE || "output/current-customer/screens";
+const evidenceRoot = newEvidenceRoot(
+  process.env.IP_RASM_CUSTOMER_EVIDENCE || "output/current-customer/screens",
+);
 test.use({ serviceWorkers: "block" });
 test("three customer screens preserve real mouse/touch crop through regeneration and signed PDF", async ({
   page,

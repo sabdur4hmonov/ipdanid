@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase14 ACTIVE. Quality/offline assembly/native/backup/signing/sandbox/Admin/production auth/Docker HTTPS tested. Full294unit pass; full300browser restart after legacy test-navigation repair. APK/newpreview pending; exact-origin push approval still pending.
+Last update:2026-10-17 — Phase14 ACTIVE. Quality/offline assembly/native/backup/signing/sandbox/Admin/production auth/Docker HTTPS tested. Full295unit pass;18/18 historical/multitab repairs pass; full300browser v3 next. APK/newpreview pending; exact-origin push approval still pending.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -65,7 +65,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-Phase14 next: run FULL300 desktop/mobile suite v2 (4364/API4508), after legacy auto-resume helper2/2 repair passed; full serial unit294/294 pass81files/92suites0pending (199.3s, phase14-full-unit.json), TypeScript/build1986 pass. Then, preserved offlineAPK and fresh4200/API4482 handoff. Docker corrected script now2/2 actualHTTPSdesktop/mobile passwordAdmin/logoutrevokes/kit3/v3 3000lines/signedunlock/confirmstep1 pass; SQLite quick_check/kits3/grants4 exact before/after APIrestart. Own3testcontainers STOPPED, volumes retained.1.5GiB gate originated in explicitlycancelledGulbot request, notactivePhase14; keeponeboundedheapjobwithoutsystemchanges and do notleaveproductwaitingforownerRAM.6auth/staffunit andproductionHTTP pass; hostTypeScript/newnativebase4482buildpass. Featureoriginexportconfirmationstillpending, no pushretry. Oldsixpreviews/data unchanged.
+Phase14 next: run FULL300 desktop/mobile v3 on4366/API4510, after full295/295 unit (82files/93suites,197.99s), TypeScript/build1986 and18/18 legacy/framing repair cases passed. Fresh output/current-reference/current-framing/current-customer/current-sharper with tested frozen-path guard; every legacy context tab enters actual Expert UI. Prior complete attempts stoppedearly: v1reloadmenu, v2secondarytabs+legacyPhase10/11 reportcollision, diagnosticlogsretained. Historical Phase10desktop6 main images24 andresultmetadata6 are originalbyteexact again; guide/PDF/TXT18 recoveredfromoriginalmobile withsameoldsequence, originaldesktopmetadata and6screens cannotbeclaimedunchanged. Evidence output/phase14/history-recovery; no oldserver/dist/data touch. OriginalPhase11sixdesktop target/app/path baselines remainexact. Futuretests neverwritehistoricalreports. AfterFULLbrowser: APKpreservation/offlineGradle/strictverifier/new4200/API4482unused3buildcode/finalUzreport. ProductionDockerHTTPS2/2+backup/persistence pass, ownDockerproject STOPPED. Exactoriginpushquestionpending; no pushretry.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 
