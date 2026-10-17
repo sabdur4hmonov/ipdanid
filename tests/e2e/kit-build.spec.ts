@@ -5,6 +5,26 @@ import { createProfile } from "../../src/core/geometry";
 import { DEFAULT_EDITS } from "../../src/core/types";
 import { progressFor } from "../../src/core/validation";
 import { openMore } from "./navigation";
+let originalPolicy: any;
+test.beforeEach(async ({ request }) => {
+  const r = await request.get(
+    process.env.IP_RASM_TEST_API_URL + "/api/admin/kits",
+    {
+      headers: { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN}` },
+    },
+  );
+  originalPolicy = (await r.json()).policy;
+});
+test.afterEach(async ({ request }) => {
+  const r = await request.post(
+    process.env.IP_RASM_TEST_API_URL + "/api/admin/kits/policy",
+    {
+      headers: { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN}` },
+      data: originalPolicy,
+    },
+  );
+  expect(r.ok()).toBe(true);
+});
 async function importGuide(page: Page, file: string) {
   await page.goto("/");
   await page.locator(".app").waitFor();

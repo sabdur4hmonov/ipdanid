@@ -1,4 +1,24 @@
 import { test, expect } from "./standard-expert-test";
+import { openMore } from "./navigation";
+let originalConfig: any;
+test.beforeEach(async ({ request }) => {
+  originalConfig = await (
+    await request.get(process.env.IP_RASM_TEST_API_URL + "/api/kit-profiles")
+  ).json();
+});
+test.afterEach(async ({ request }) => {
+  const base = process.env.IP_RASM_TEST_API_URL!,
+    current = await (await request.get(base + "/api/kit-profiles")).json(),
+    { revision: _oldRevision, ...before } = originalConfig,
+    { revision: _newRevision, ...after } = current;
+  if (JSON.stringify(before) !== JSON.stringify(after)) {
+    const restored = await request.post(base + "/api/admin/kits/profiles", {
+      headers: { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN}` },
+      data: { ...originalConfig, revision: current.revision },
+    });
+    expect(restored.ok()).toBe(true);
+  }
+});
 import { readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { unlockKitGuide } from "./kit-access";
 import { validateInstruction } from "../../src/core/validation";
@@ -300,4 +320,36 @@ test("printed kit revision survives admin defaults and offline missing revisions
     .click();
   await expect(studio.getByRole("alert")).toBeVisible();
   await expect(studio).toContainText("r1");
+  await context.setOffline(false);
+  await openMore(page);
+  await page
+    .getByRole("button", { name: "Account & shop", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Administration", exact: true })
+    .click();
+  await page
+    .getByLabel("Administrator token", { exact: true })
+    .fill(process.env.LOCAL_ADMIN_TOKEN!);
+  await page
+    .getByRole("button", { name: "Open administration", exact: true })
+    .click();
+  const kits = page.getByTestId("kit-admin"),
+    profile = kits.getByLabel("Material profile", { exact: true });
+  await expect(profile).toHaveValue(`standard-base-r${revision}`);
+  await kits.getByLabel("Codes per batch", { exact: true }).fill("1");
+  const issued = page.waitForResponse(
+    (r) =>
+      r.url().endsWith("/api/admin/kits/batch") &&
+      r.request().method() === "POST",
+  );
+  await kits.getByTestId("issue-kit-batch").click();
+  expect((await (await issued).json()).profile).toBe(
+    `standard-base-r${revision}`,
+  );
+  await profile.fill("owner-custom-profile");
+  await kits
+    .getByRole("button", { name: "Refresh kit usage", exact: true })
+    .click();
+  await expect(profile).toHaveValue("owner-custom-profile");
 });

@@ -1,5 +1,95 @@
-import fs from 'node:fs';import path from 'node:path';
-const root='output/phase14';let rows=[];for(const platform of ['desktop','mobile-browser']){const dir=path.join(root,platform);if(!fs.existsSync(dir))continue;for(const name of fs.readdirSync(dir)){if(name==='lettering-2')continue;const file=path.join(dir,name,'metrics.json');if(fs.existsSync(file)){const m=JSON.parse(fs.readFileSync(file));if(m.kind!=='people')m.ssim={version:m.ssim.version,all:m.ssim.all};rows.push({...m,platform,path:platform+'/'+name});}}}
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-fs.writeFileSync(root+'/quality.html','<!doctype html><meta charset="utf-8"><title>Phase14 quality</title><style>body{font:16px system-ui;max-width:1300px;margin:30px auto;padding:16px}section{border-top:1px solid #ccd;padding:20px 0}.pair{display:flex;gap:16px;flex-wrap:wrap}img{width:380px;max-width:100%}figure{margin:0}pre{white-space:pre-wrap}</style><h1>Phase14 actual application quality</h1><p>Real classic-greedy/3 sequences, 3000 connections, exact240 physical pins and physical0.12mm/0.9 rendering. No source overlays. Product preparation5 closes the jaw crop; old preparation4 and axis-centre-skip/1 guides remain unchanged. Polished Square excludes exactly horizontal/vertical full-span chords at every interior level and caps actual middle-row crossing occupancy at8 per1px bin, without moving holes. Peak25 in the axis-only owner diagnostic becomes at most8; the rejected cap4/both-axis trial is not an accepted result.</p><p>Generic examples are procedural mechanics fixtures, not claims of photographic animal/vehicle likeness. Border-connected background cleanup is conservative on textured photos: review and crop before creating. Existing private owner input is a processed crop, never committed. SSIM compares each actual prepared target to its physical render; changed targets are not a same-target cross-phase metric. Physical fan texture can remain even with a white target below the chin.</p>'+rows.map(m=>'<section><h2>'+esc(m.platform+' / '+m.case)+'</h2><p>'+esc(m.kind+' / '+m.shape+' / '+m.elapsed+'ms / SSIM '+JSON.stringify(m.ssim))+'</p><div class="pair">'+[['target.png','Prepared target'],['result.png','Actual physical sequence']].map(([f,label])=>'<figure><figcaption>'+label+'</figcaption><img src="'+esc(m.path+'/'+f)+'"></figure>').join('')+(m.case==='owner-square'?'<figure><figcaption>Frozen Phase13 result (different crop)</figcaption><img src="../phase13/desktop/owner-phase9-square/app-v3-3000.png"></figure>':'')+'</div></section>').join(''));
-fs.writeFileSync(root+'/quality-results.json',JSON.stringify({cases:rows.length,maximumMs:Math.max(...rows.map(r=>r.elapsed)),rows},null,2));console.log(JSON.stringify({cases:rows.length,maximumMs:Math.max(...rows.map(r=>r.elapsed))}));
+import fs from "node:fs";
+import path from "node:path";
+const root = "output/phase14";
+let rows = [];
+for (const platform of ["desktop", "mobile-browser"]) {
+  const dir = path.join(root, platform);
+  if (!fs.existsSync(dir)) continue;
+  for (const name of fs.readdirSync(dir)) {
+    if (name === "lettering-2") continue;
+    const file = path.join(dir, name, "metrics.json");
+    if (fs.existsSync(file)) {
+      const m = JSON.parse(fs.readFileSync(file));
+      const guide = JSON.parse(
+        fs.readFileSync(path.join(dir, name, "guide.json")),
+      );
+      m.kitRevision = guide.profile.standardKit.config.revision;
+      m.sectors = guide.profile.standardKit.config.sectors;
+      m.pin76Label = guide.profile.pins[76].sectorLabel;
+      if (m.kind !== "people")
+        m.ssim = { version: m.ssim.version, all: m.ssim.all };
+      rows.push({ ...m, platform, path: platform + "/" + name });
+    }
+  }
+}
+const esc = (s) =>
+  String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ],
+  );
+fs.writeFileSync(
+  root + "/quality.html",
+  '<!doctype html><meta charset="utf-8"><title>Phase14 quality</title><style>body{font:16px system-ui;max-width:1300px;margin:30px auto;padding:16px}section{border-top:1px solid #ccd;padding:20px 0}.pair{display:flex;gap:16px;flex-wrap:wrap}img{width:380px;max-width:100%}figure{margin:0}pre{white-space:pre-wrap}</style><h1>Phase14 actual application quality</h1><p>Real classic-greedy/3 sequences, 3000 connections, exact240 physical pins and physical0.12mm/0.9 rendering. No source overlays. Product preparation5 closes the jaw crop; old preparation4 and axis-centre-skip/1 guides remain unchanged. Polished Square excludes exactly horizontal/vertical full-span chords at every interior level and caps actual middle-row crossing occupancy at8 per1px bin, without moving holes. Peak25 in the axis-only owner diagnostic becomes at most8; the rejected cap4/both-axis trial is not an accepted result.</p><p>Each row records its actual kit revision and sector count. Desktop exercises4x60; the full mobile run also exercises the admin-configured8x30 layout (physical coordinates stay unchanged). Fresh owner handoff uses the default4x60. Generic examples are procedural mechanics fixtures, not claims of photographic animal/vehicle likeness. Border-connected background cleanup is conservative on textured photos: review and crop before creating. Existing private owner input is a processed crop, never committed. SSIM compares each actual prepared target to its physical render; changed targets are not a same-target cross-phase metric. Physical fan texture can remain even with a white target below the chin.</p>' +
+    rows
+      .map(
+        (m) =>
+          "<section><h2>" +
+          esc(m.platform + " / " + m.case) +
+          "</h2><p>" +
+          esc(
+            m.kind +
+              " / " +
+              m.shape +
+              " / r" +
+              m.kitRevision +
+              " / " +
+              m.sectors +
+              " sectors / pin76=" +
+              m.pin76Label +
+              " / " +
+              m.elapsed +
+              "ms / SSIM " +
+              JSON.stringify(m.ssim),
+          ) +
+          '</p><div class="pair">' +
+          [
+            ["target.png", "Prepared target"],
+            ["result.png", "Actual physical sequence"],
+          ]
+            .map(
+              ([f, label]) =>
+                "<figure><figcaption>" +
+                label +
+                '</figcaption><img src="' +
+                esc(m.path + "/" + f) +
+                '"></figure>',
+            )
+            .join("") +
+          (m.case === "owner-square"
+            ? '<figure><figcaption>Frozen Phase13 result (different crop)</figcaption><img src="../phase13/desktop/owner-phase9-square/app-v3-3000.png"></figure>'
+            : "") +
+          "</div></section>",
+      )
+      .join(""),
+);
+fs.writeFileSync(
+  root + "/quality-results.json",
+  JSON.stringify(
+    {
+      cases: rows.length,
+      maximumMs: Math.max(...rows.map((r) => r.elapsed)),
+      rows,
+    },
+    null,
+    2,
+  ),
+);
+console.log(
+  JSON.stringify({
+    cases: rows.length,
+    maximumMs: Math.max(...rows.map((r) => r.elapsed)),
+  }),
+);

@@ -9,6 +9,8 @@ import { generate } from "../../src/core/engine";
 import { createProfile } from "../../src/core/geometry";
 import { progressFor } from "../../src/core/validation";
 import { DEFAULT_EDITS } from "../../src/core/types";
+// Synthetic media routes must reach Playwright, rather than the offline SW.
+test.use({ serviceWorkers: "block" });
 function tone(frequency: number) {
   const b = Buffer.alloc(12044);
   b.write("RIFF");
@@ -190,6 +192,7 @@ for (const corrupt of [false, true])
       await page
         .getByRole("checkbox", { name: "Voice guidance", exact: true })
         .uncheck();
+      await page.unrouteAll();
       await context.setOffline(true);
       await page.getByRole("button", { name: "Repeat", exact: true }).click();
       await page

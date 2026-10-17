@@ -131,6 +131,20 @@ for (const c of cases)
       await expect(studio.getByTestId("standard-photo-preview")).toBeVisible();
       await page.getByLabel("Language", { exact: true }).selectOption("en");
       await studio
+        .locator("summary")
+        .filter({ hasText: "Revision printed on your kit" })
+        .click();
+      await studio
+        .getByLabel("Revision printed on your kit", { exact: true })
+        .fill("1");
+      await studio
+        .getByRole("button", {
+          name: "Use this printed kit revision",
+          exact: true,
+        })
+        .click();
+      await expect(studio).toContainText("r1");
+      await studio
         .getByLabel("Kit shape", { exact: true })
         .selectOption(c.shape);
       await expect(studio.getByTestId("background-status")).toHaveAttribute(
@@ -251,6 +265,7 @@ for (const c of cases)
       expect(i.profile.threadMm).toBe(0.12);
       expect(i.profile.opacity).toBe(0.9);
       expect(i.profile.pins[76].sectorLabel).toBe("B-17");
+      expect(i.profile.standardKit!.config.revision).toBe(1);
       expect(i.params.kitPreparation!.version).toBe("standard-preparation/3");
       const after = i.params.kitPreparation!.transform.targetFaces!;
       evidence.framing = i.params.kitPreparation!.transform;

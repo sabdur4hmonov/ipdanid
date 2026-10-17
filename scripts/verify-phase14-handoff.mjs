@@ -10,9 +10,9 @@ for (const value of [launch.site, launch.api]) {
   if (
     url.hostname !== "127.0.0.1" ||
     url.protocol !== "http:" ||
-    [4194, 4195, 4196, 4197, 4198, 4199, 4331, 4465, 4478, 4479, 4480, 4481].includes(
-      Number(url.port),
-    )
+    [
+      4194, 4195, 4196, 4197, 4198, 4199, 4331, 4465, 4478, 4479, 4480, 4481,
+    ].includes(Number(url.port))
   )
     throw Error("Refusing protected/nonlocal service");
 }
@@ -46,6 +46,18 @@ const stateResponse = await fetch(launch.api + "/admin/kits", {
 });
 if (!stateResponse.ok) throw Error("Fresh preview admin read failed");
 const state = await stateResponse.json();
+const kitProfile = state.standardKit;
+if (
+  kitProfile.baseMm !== 500 ||
+  kitProfile.circleDiameterMm !== 460 ||
+  kitProfile.nails !== 240 ||
+  kitProfile.sectors !== 4 ||
+  kitProfile.threadMm !== 0.12 ||
+  state.policy.quota !== 3
+)
+  throw Error(
+    "Fresh preview must use the default standard kit and three credits",
+  );
 if (
   state.codes.length !== 1 ||
   state.codes[0].quota !== 3 ||
@@ -112,7 +124,17 @@ for (const asset of old4198.assets)
     sha(readFileSync(join("output/phase12-dist", asset.path))) !== asset.sha256
   )
     throw Error("Protected4198 asset changed");
-const old4199=JSON.parse(readFileSync('output/mobile/ip-rasm-phase13-20261017-7b42969cd9ba-evidence.json','utf8'));for(const asset of old4199.assets)if(sha(readFileSync(join('output/phase13-dist',asset.path)))!==asset.sha256)throw Error('Protected4199 asset changed');
+const old4199 = JSON.parse(
+  readFileSync(
+    "output/mobile/ip-rasm-phase13-20261017-7b42969cd9ba-evidence.json",
+    "utf8",
+  ),
+);
+for (const asset of old4199.assets)
+  if (
+    sha(readFileSync(join("output/phase13-dist", asset.path))) !== asset.sha256
+  )
+    throw Error("Protected4199 asset changed");
 const apkEvidence = process.argv[2];
 let packagedAssets;
 if (apkEvidence) {
@@ -123,7 +145,8 @@ if (apkEvidence) {
     throw Error("Wrong APK evidence path");
   const apk = JSON.parse(readFileSync(apkEvidence, "utf8"));
   if (
-    !apk.productCodeVerified || !apk.classicReferenceVerified ||
+    !apk.productCodeVerified ||
+    !apk.classicReferenceVerified ||
     !apk.classicLeastSquaresVerified ||
     !apk.portraitFramingVerified ||
     !apk.customerFlowVerified ||
@@ -141,10 +164,13 @@ const evidence = {
   isolatedDatabase: launch.databasePath,
   ownerDataUsed: false,
   freshKitQuota: 3,
+  standardKitDefaultVerified: true,
+  sectors: kitProfile.sectors,
   freshKitUnredeemed: true,
   htmlExact: true,
   runtimeClassic3: true,
-  owner4199Contacted:false,owner4199FilesUnchanged:old4199.assets.length,
+  owner4199Contacted: false,
+  owner4199FilesUnchanged: old4199.assets.length,
   owner4198Contacted: false,
   owner4198FilesUnchanged: old4198.assets.length,
   owner4197Contacted: false,
