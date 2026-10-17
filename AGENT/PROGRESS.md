@@ -1,14 +1,14 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase14 regression/build/APK VERIFIED. Full295unit,300latestbrowser,52qualitymax9433ms; APK04f92e0d8c1d verifies46assets/nativeawake/signer/88oldarchives. cdbfbec pushed. Freshpreview/finalhandoff next.
+Last update:2026-10-17 — Phase14 COMPLETE / CODE TESTED.295unit,300latestbrowser,52qualitymax9433ms,1986modulebuild,46assetAPK04f92e0d8c1d/signer/88oldarchives verified. New4200/API4482/unused3-buildcode;6oldservedtrees+19retainedassets unchanged. Finaldocs/normalfeaturepush checkpoint below.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
 Historical Phase0–7 acceptance checkpoint (superseded by Phase8/9 evidence below):176/176 Chrome browser tests passed (88 desktop+88 mobile,26.6min), zero skips/flaky/unexpected; test-results/final-full-e2e/report.json. Full unit232/232,test-results/final-full-unit.json. Final HTTP customer37/37(customer-http-cEqyvP; output/product-evidence/customer-http.json), staff67/67(staff-http-q0sj67; output/completion/staff-http.json), kit38/38(kit-http-Fy4z00/report.json). After the final outline-only control correction, production build1955 and lettering4/4 passed39.2s(final-lettering-controls/report.json). All own ports/fresh DBs; owner4194/data untouched, no active owned test run. Android offline app/test assembly passed; dedicated verifier passed40 dist assets, notices/font/new feature markers/no private or synthetic audio assets, same old app/test signer and67 historical APKs exact. App SHA87d13077714591e342ad63e371936934a1266c0caa7f960c4baefc1c5c6cf2f5; artifacts in output/mobile, series20261014 completedOct15. Native backend configuration rechecked false, no secrets printed; no phone install or production acceptance claimed.
 Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
 
-## Phase14 active
+## Phase14 complete
 
 Owner authorizes feature-only push after each tested/built milestone. Historical no-push statements are superseded for feat/full-roadmap only. Four sequential milestones in MASTER_PLAN; no manual owner dependency blocks code. Six old previews stay frozen. No Gulbot changes were made.
 
@@ -30,8 +30,8 @@ Owner authorizes feature-only push after each tested/built milestone. Historical
 | 10 Reference classic and ordinary photo repair | DONE / TESTED / DEBUG APK VERIFIED | Classic2/500px/2500 fixed connections, preparation2, exact1000px/.12/.9 render, progress/cancel/recovery.12/12 real JPG cases max9.450s,248unit/36latest browser outcomes;12PDF covers+all2500ordered steps equal app/JSON. Owner/3synthetic recognizable on agent review. APK a3f7b2d756f7,43assets/same signer/76old archives exact; new4196/API4478/fresh3-build code. Phone/physical/production acceptance remains separate. |
 | 11 Larger-head framing | DONE / TESTED / DEBUG APK VERIFIED | Preparation3/87% heads/18px chin fade/Heart lobes/pan-zoom/shoulders/2000–3000.253unit/38latest browser outcomes/max9.643s,14exact PDF covers+allsteps,43asset APK46bc061bd5c2/same signer/79oldarchives exact. Fresh4197/API4479/new3-build code; physical/phone acceptance separate. |
 | 12 Dead-simple customer flow | DONE / TESTED / DEBUG APK VERIFIED | Exactly3screens/directgestures/4locales/3tap auto path/retainedcrop; preparation4/default3000 selectedactual6case A/B.261unit/38latest browser/2exact3000stepPDF/build1974;43asset APK29f469aec06e/samecert/82oldarchives. Fresh4198/API4480/unused3-buildcode; phone/physical acceptance separate. |
-| 14 Finish product code | ACTIVE | Quality → assembly → server/native/payments/admin → full regression/APK/fresh preview. |
 | 13 Sharper portraits (v3) | DONE / TESTED / DEBUG APK VERIFIED | LS3/.08/faceGaussian1/default3000,3shape simpleflow/Details2500–3500. OwnerSquareSSIM.512→.574/2axispluschords→0, allsyntheticper-face3>=2;268unit/41browser/11exactPDF/build1975.43asset APK7b42969cd9ba/samecert/85oldarchives; fresh4199/API4481/unused3-buildcode. Phone/physical separate. |
+| 14 Finish product code | COMPLETE / CODE TESTED / DEBUG APK VERIFIED |295unit,300unique latest desktop/mobile cases,52qualitymax9.433s,1986build,46asset APK04f92e0d8c1d/same signer/88oldarchives; DockerHTTPS2cases/backup/native sandbox/payment/Admin pass. Fresh4200/API4482/unused3-buildcode. Only owner external setup remains. |
 
 ## Phase13 complete — sharper portraits (v3)
 
@@ -65,7 +65,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-Phase14 next: commit/scan/push this APK checkpoint, then launch only scripts/start-product-preview.mjs hidden on new4200/API4482; do NOT rebuild phase14-dist after launch. Stricthandoff scripts/verify-phase14-handoff.mjs output/mobile/ip-rasm-phase14-20261017-04f92e0d8c1d-evidence.json verifiesunused3-buildcode/standard500x500/460/240/4sectors/.12/46assets plus6oldservedtrees and19retainedassets byhash WITHOUT contactingoldservers/APIs. Then finalUzreport/OWNER_TESTS/masterstatus/PROGRESS/LOG, finalcommit+scan+normal featurepush, verifyoriginhead. APK appSHA04f92e0d8c1dafb27f54fa8a5b03d706caea7e568a1556299dc96ab51c66d2a5; testAPKunchangedd52eaffc.88oldarchivesunchanged/same8e43cf signer/46exactassets/allnewandlegacyfeatures/nativeawakeDEXverified. No phone install/realdevice test/ownerkeysigning. Initial unqualifiedGradletasks also selected Capacitorlibraryinstrumentation andfaileduncachedconcurrent-futures1.2.0 afterappandapptestbuilt; scoped :app tasks PASS offline61s/176uptodate, no downloads/installs. Full295unit, raw300284pass16harnessfail then46/46repairs givesstrict300latest(150each), finalTypeScript/Vite1986/52.35s, DockerHTTPS2cases+backup/persistence+maskedsetup passed. cdbfbec already pushed exactapprovedoriginfeature. No codeworkwaitingowner; onlyfiveexternalplug-ins in finalreport. Sixoldpreviews/APIs/tmpdata unchanged; historicalPhase10reportrecovery limitations documented.
+No autonomous Phase14 code step remains. COMPLETE after full295unit, strict300latestbrowser(150each; rawfull284/16 then46/46repaired),52actualqualitycases/max9433ms,TypeScript/build1986,verifiedAPK04f92e0d8c1d46assets/nativeawake/signer/88oldarchives. New http://127.0.0.1:4200 API4482, freshowner-product-OGdldt database, launcher24936/child17884; codeonlyignored output/phase14/manual-testing.txt,3buildsunredeemed. Stricthandoff output/phase14/final-verification.json passesdefaultkit500/460/240/4sectors/.12 and274oldserved/retainedfiles byhash WITHOUT contacting4194–4199/APIs. FREEZE output/phase14-dist/4200/API4482 too; neverrebuild/stop any7ownerpreviews or touch tmp/data. APKappSHA04f92e0d8c1dafb27f54fa8a5b03d706caea7e568a1556299dc96ab51c66d2a5. InitialunqualifiedGradlelibrarytestscopefaileduncacheddependency; correctedofflineappscoped176tasks passed, noinstalls/downloads. ProductionDockerHTTPS2/2+SQLitebackups/restart+maskedsetup pass; privateownerkey/domain/recordings/livecharges/realphone/board notclaimed. Codecheckpoints cdbfbec and20c2530 already normallypushed to exactuserapproved https://github.com/sabdur4hmonov/ipdanid.git feat/full-roadmap; finaldocscommit/push closespublication. Onlyfiveownerplug-ins in FINAL_REPORT:domain/VPS,keystore,merchanttestkeys/contracts,746WAV,physicalboard. HistoricalPhase10reportrecoveryexceptions remain documented in docs/PHASE14_VALIDATION.md; do notclaim allhistoricalreportbytesunchanged. Futurecodechanges require a NEW builddir/port and actual regression, no unsolicited newphase.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 
@@ -127,13 +127,13 @@ Phase 1 validation: production build passed, same 1875 modules/assets; safety te
 
 Reproduction: PowerShell env `IP_RASM_TEST_BROWSER_CHANNEL=chrome`, `IP_RASM_TEST_PORT=4289`, `IP_RASM_TEST_API_PORT=4429`, `IP_RASM_TEST_ARTIFACTS=test-results/phase0-full-v3`, `IP_RASM_TEST_REPORT=test-results/phase0-full-v3/report.json`, then `npm run test:e2e`. Choose fresh unused ports for a later run; existing owner services must not be reused/stopped.
 
-## Waiting for owner
+## Owner-only external setup — code does not wait
 
-- Phase9 genuine2-person Heart original and real new background/face-fill acceptance; current owner A/B uses an existing single-person processed crop. All three owner profiles failed regional quality gates, knee1500 not accepted2000–3000. Physical50mm/drill/sticker/assembly results must precede a production-kit claim.
-- Phase3 visual acceptance needs real two/three-person, animal and object photographs; mechanics implementation/procedural checks are complete. Existing one-person owner photo remains private/local and is not a group/animal acceptance set.
-- Phase6 actual comparison needs the exact original/crop, permitted QBRIX preview/guide and board/pin/material settings in ignored comparison/qbrix; howto written. No comparative result exists.
-- Phase7/9 two real offline instructors need consented UZ/RU/EN WAV clips,746 total including sector letters across both slots; exact CSV/howto written,0 installed. Browser synthetic tones verify mechanics only.
-- Real phone/physical board/text/QR acceptance remains owner testing. Native production kit login requires a configured HTTPS backend/signing trust; no production credentials/domain or release signing/publishing authorized here. Debug APK/build verification is independent and continues without installation.
+- Domain/VPS/HTTPS and owner Admin password: docs/DEPLOY_VPS_UZ.md. Local Docker HTTPS/backup/auth acceptance passed; no public DNS/ACME action.
+- Owner keystore and release signing: docs/APK_SERVER_AND_SIGNING_UZ.md. Debug APK is verified, nativeAPI4482/browserbridge passed; no phone install or owner signing key created.
+- Merchant test keys/contracts/certification: docs/PAYMENTS_UZ.md. Sandbox implementations/mocks/tests done; no live checkout or real charge.
+-746 consented realWAVs: docs/VOICE_RECORDING_UZ.md + docs/VOICE_RECORDING_LIST.csv. TTS/text and complete recorded-set automatic preference implemented/tested; realclips0.
+- Physical board/50mm/drilling/stickers/metres/firststep: docs/PHYSICAL_BOARD_UZ.md. No invented physical/phone likeness acceptance. Historical QBRIX/original-group-photo comparisons were not performed and do not block completed Phase14 code; no competitor superiority claim.
 
 ## Known facts carried over
 

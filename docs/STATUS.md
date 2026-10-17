@@ -1,3 +1,11 @@
+# Latest — Phase14 product code complete, 2026-10-17
+
+Current handoff: http://127.0.0.1:4200/ API4482, unused3-buildcode only output/phase14/manual-testing.txt, verified debugAPK04f92e0d8c1d. Productclassic3/preparation5/profile14, durableofflineassembly/nativeawake, hashedpassword productionAPI/DockerHTTPS/backups, nativeAPI/release tooling, sandboxpayments/ownerAdmin implemented.295unit,300latestdesktop/mobile outcomes(raw284/16 then46/46repair),52qualitymax9.433s,1986build,46exactAPKassets/samesigner/88oldarchives. See AGENT/FINAL_REPORT.md and docs/PHASE14_VALIDATION.md for actual evidence/limits. Onlyfive external owner plug-ins remain, no autonomous Phase14 code step. Normal exact-origin feature pushes approved/succeeded; main/force/merge/PR untouched. Freeze phase14-dist/4200/4482 and all6oldpreviews/APIs;274oldserved/retainedhashes exact, no oldHTTP/tmpdata. Historical Phase10report metadata/screens recovery exceptions are documented, not hidden.
+
+---
+
+Historical checkpoints below are superseded by Phase14.
+
 # Latest — Phase13 sharper portraits3 verified, 2026-10-17
 
 Phase13 COMPLETE/TESTED,2026-10-17. Ordinary3-screen flow defaults classic-greedy/3 for all3shapes: exact supplied LS mean(dd*(2*err-dd)), dd=.08*importance, gamma1.6,1+max faceGaussian,500px/240exactpins/fixed3000/minGap25/no chordrepeat/oldlegality+incidentguards; no penalty/earlystop. New strict reference3/profile13 provenance, unchanged classic-coverage/2 physics/pins/sectors/preparation4. Old2 guides/algorithm/arithmetic remain unchanged and importable. Worker/progress/cancel/checkpoint/replay/recovery/export dispatch supports3.

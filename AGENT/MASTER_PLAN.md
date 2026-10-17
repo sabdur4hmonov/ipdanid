@@ -150,3 +150,8 @@ Kit inputs are owner-editable; provisional defaults:500×500mm white MDF base,46
 
 ### FINAL
 `AGENT/FINAL_REPORT.md` + chat, in Uzbek: every phase done / tested / pending (with reason), branch, commit list, report paths, and exactly what the owner should test. For Phase8/9 use `Start-Standard-Kit.cmd` → http://127.0.0.1:4195 (fresh isolated test data/local code file); keep existing4194/API4331/live dist untouched. Historical Phase0–7 `npm run local` instructions are not authorization to restart4194.
+
+
+## Phase14 completion checkpoint — 2026-10-17
+
+COMPLETE / code tested. Classic3 product preparation5/profile14 quality, offline durable assembly/native awake/TTS, production API/password/CORS/rate limits/SQLite+Caddy+backup deployment, debug-native API/release signing tooling, sandbox Click/Payme and one-page Admin are implemented.295unit;300unique latest desktop/mobile outcomes after46/46 repair;52qualitycases/max9433ms; TypeScript/build1986; verified46asset debugAPK04f92e0d8c1d/same signer/88oldarchives. Actual local DockerHTTPS desktop/mobile2/2, SQLitebackup/restart and masked setup passed. New4200/API4482/unused3-buildcode is isolated and frozen with phase14-dist. Sixoldservedtrees and retainedassets hashverified withoutoldserverHTTP; tmp/data unused. Normal feature pushes explicitly owner-approved for exact origin only. FINAL_REPORT/PHASE14_VALIDATION record external-only fiveownersteps, honest rawfull284/16 vs300latest aggregate and historicalreport recovery limits. No autonomous newphase is pending; futurechanges use newports/builddirs.

@@ -233,3 +233,12 @@ Hozir egadan qo‘lda sinov talab qilinmaydi: Dockerning desktop/mobil HTTPS oqi
 
 
 Phase14 APK tayyor: `output/mobile/ip-rasm-phase14-20261017-04f92e0d8c1d-debug.apk`.46fayl, imzo va88eski APK saqlangani tekshirildi; Android yangi ekran-yoqish qismi kompilyatsiya qilindi. Agent telefonga o‘rnatmagan.295unit va300ta oxirgi desktop/mobil holat o‘tdi; dastlabki16test xatosi tuzatilgan46ta qayta sinov bilan yopildi. Yangi sayt va uchta natija kodi yakuniy ko‘rsatmada beriladi; hozir qo‘lda test kutmaymiz.
+
+
+## Phase14 yakuniy manzil — hozir qo‘lda test kutmaymiz
+
+Yangi ilova **http://127.0.0.1:4200/**; uchta natija uchun ishlatilmagan kit kodi va lokal Admin kirishi `output/phase14/manual-testing.txt`da. Eski4194–4199ni to‘xtatmang. APK `output/mobile/ip-rasm-phase14-20261017-04f92e0d8c1d-debug.apk`;46fayl/imzo/88eski APK va barcha yangi funksiyalar tekshirildi.
+
+Keyin vaqt bo‘lganda: shakl → galereya → suratni surish/kattalashtirish/Burish/Oldin-Keyin → Yaratish. Qayta moslash joylashuvni saqlaydi.3000ip≈6.7soat, boshqa variant Batafsilda. Yig‘ishni boshlash → yangi kit kodi → bitta natijani ochish → katta sektorlar bo‘yicha birinchi qadam. Tasdiq bajarilgan ishni saqlaydi, oldingi/keyingi faqat ko‘rsatadi. Internet o‘chganda qayta ochib davom etish avtomatik tekshirildi.
+
+Admin → kit → PDF/QR, narx/stock/dostavka/e’lonlar bir sahifada. To‘lovlar sinov, haqiqiy pul olinmaydi. Chop etish100%/Actual size,50mm ni tekshirish, mix/sektor stikerlarini moslash va birinchi qadam uchun docs/PHYSICAL_BOARD_UZ.md. Hozir taxta/telefon sinovi bajarilgan deb da’vo qilinmaydi. Faqat egasi keyin ulaydigan besh narsa va aniq yo‘riqnomalar AGENT/FINAL_REPORT.mdda.

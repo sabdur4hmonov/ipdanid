@@ -1,3 +1,35 @@
+# Phase14 — mahsulot kodi tayyor, 2026-10-17
+
+Ilova: **http://127.0.0.1:4200/**. Uchta yig‘ish uchun yangi, ishlatilmagan kod va lokal Admin kirishi: `output/phase14/manual-testing.txt`. APK: `output/mobile/ip-rasm-phase14-20261017-04f92e0d8c1d-debug.apk`. Kod `feat/full-roadmap` branchiga oddiy push qilindi; main/force/merge/PR yo‘q.
+
+Surat → Moslash → Natija yo‘li saqlangan. Yangi portret kesishi, iyak ostini oq qilish va Kvadratning ko‘z yonidagi gorizontal to‘qimasini kamaytirish qo‘shildi. Odam, Hayvon, Avtomobil, Buyum va lotin/kirill/arab yozuvi uchala shaklda v3dan foydalanadi. Standart3000ip≈6.7soat. Natija haqiqiy ip ketma-ketligidan chiziladi; tabiiy vertikal va yelpig‘ich izlari qolishi mumkin. Sifat hisobotida52haqiqiy UI holati bor, eng sekin hisob9.433soniya: `output/phase14/quality.html`. Hayvon/buyum namunalari sun’iy mexanik sinov; egasining surati avvalgi ishlov berilgan lokal nusxa. Haqiqiy taxta o‘xshashligi avtomatik test bilan tasdiqlanmaydi.
+
+Yig‘ishda katta sektorlar, oldingi/keyingi qadam, alohida tasdiqlash, foiz/qolgan vaqt, avtomatik saqlash va oflayn qayta ochib davom etish ishlaydi. Ekranni yoqib turish browserda sinaldi, Android qismi kompilyatsiya qilindi. Qurilmada o‘rnatilgan mos UZ/RU/EN TTS ishlatiladi; haqiqiy ovoz fayllari keyin qo‘shilsa yozilgan instruktor avtomatik tanlanadi. Hozir746haqiqiy WAVning birortasi yo‘q.
+
+API+SQLite+Caddy va kundalik tekshirilgan zaxira uchun Docker tayyor. Lokal HTTPSda desktop/mobil Admin paroli, kit yaratish, chiqishda sessiyani bekor qilish, haqiqiy v3 yaratish va imzolangan ochish2/2o‘tdi. API qayta ochilganda baza saqlandi; ikki zaxira quick_checkdan o‘tdi. Admin bir sahifada kodlar/PDF/QR, kreditlar, buyurtma, narx, dostavka va e’lonlarni boshqaradi. APKning lokal API4482ulanishi browser native-mode sinovida tekshirildi. Release imzolash skripti bor, egasining kaliti yaratilmagan.
+
+Click/Payme **faqat sandbox**: invoice, callback imzosi/auth, takroriy so‘rov, holat va bir martalik kredit berish sinovdan o‘tdi. Mustaqil lokal soxta provayderlar ishlatildi; haqiqiy pul olinmadi. Live checkout/fiskal sertifikatsiya hali ishga tushirilmagan; shunchaki live kalit qo‘yish real to‘lovni yoqmaydi.
+
+295unit testi o‘tdi.300ta desktop/mobil holatning oxirgi natijalari o‘tdi: to‘liq dastlabki run284o‘tgan/16test xatosi bilan tugadi, keyin tegishli46holat toza muhitda46/46o‘tdi; jami150desktop+150mobil, o‘tkazib yuborilgan holat yo‘q. Bu dastlabki run xatosiz bo‘lgan degani emas. TypeScript/build1986o‘tdi. APKning46fayli, eski/yangi funksiyalari, Android ekran plagini va imzosi tekshirildi;88eski APK o‘zgarmadi. Telefon o‘rnatish/instrumentation yoki haqiqiy domen sertifikati sinovi bajarilmadi.
+
+4194–4199serverlariga HTTP so‘rov yuborilmadi yoki o‘zgartirish kiritilmadi. Ularning274saqlangan fayli/assetlari hash bilan tekshirildi, tmp/data ishlatilmadi. Endi4200/API4482va `output/phase14-dist` ham saqlanadi. Tarixiy Phase10hisobotining oldingi testda almashtirilgan qismi to‘liq asl holiga qaytmagan:6skrinshot tiklanmadi,18guide/PDF/TXTda metadata farqi bor; asl ketma-ketliklar saqlangan. Tafsilot va barcha dalillar: [PHASE14_VALIDATION.md](../docs/PHASE14_VALIDATION.md).
+
+## Faqat egasi ulaydigan besh narsa
+
+Hozir qo‘lda test qilish shart emas; kod ishi bularni kutib qolmadi.
+
+| Ish | Aniq yo‘riqnoma |
+| --- | --- |
+| Domen/VPS: DNS, SSH, Docker va o‘z Admin paroli | [DEPLOY_VPS_UZ.md](../docs/DEPLOY_VPS_UZ.md), bitta buyruq: `bash scripts/deploy.sh` |
+| Shaxsiy release keystore, HTTPS APK manzili va imzolash | [APK_SERVER_AND_SIGNING_UZ.md](../docs/APK_SERVER_AND_SIGNING_UZ.md) |
+| Click/Payme test merchant kalitlari va keyingi live shartnoma/sertifikatsiya | [PAYMENTS_UZ.md](../docs/PAYMENTS_UZ.md) |
+| Ikki rozilik bergan instruktorning746WAV yozuvi | [VOICE_RECORDING_UZ.md](../docs/VOICE_RECORDING_UZ.md), [aniq CSV](../docs/VOICE_RECORDING_LIST.csv) |
+| Haqiqiy taxta:100%print,50mm, teshik/mix, sektor stikeri, ip uzunligi va birinchi qadam | [PHYSICAL_BOARD_UZ.md](../docs/PHYSICAL_BOARD_UZ.md) |
+
+---
+
+Quyidagi hisobotlar tarixiy; joriy yakun Phase14yuqorida.
+
 # Phase13 — tiniqroq portret tayyor, 2026-10-17
 
 Yangi ilova: **http://127.0.0.1:4199/**. Uchta natija uchun kod: `output/phase13/manual-testing.txt`. Doira/Kvadrat/Yurakda yangi v3 avtomatik ishlaydi; uch ekran va suratni bevosita moslash saqlangan. Standart3000ip≈6.7soat, Batafsil2500/3000/3500 va vaqtni ko‘rsatadi. Eski v2 yo‘riqnomalari o‘zgarmagan.
