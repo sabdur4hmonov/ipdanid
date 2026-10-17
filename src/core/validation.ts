@@ -1,6 +1,8 @@
+import { frameProduct } from "./product-framing";
 import {
   CLASSIC_LS_DEFAULTS,
-  isSquareCentreAxis,
+  squareChordExcluded,
+  SquareWeave,
 } from "./classic-least-squares";
 import { frameCustomerHeads } from "./customer-framing";
 import { validSubjectPlan } from "./subject-plan";
@@ -204,6 +206,7 @@ export async function validateInstruction(
               "standard-preparation/2",
               "standard-preparation/3",
               "standard-preparation/4",
+              "standard-preparation/5",
             ]
           : ["standard-preparation/1"]
       ).includes(k.version) ||
@@ -211,35 +214,50 @@ export async function validateInstruction(
       !["automatic", "manual", "original"].includes(k.whiteBackground) ||
       JSON.stringify(k.transform) !==
         JSON.stringify(
-          k.version === "standard-preparation/4"
-            ? frameCustomerHeads(
+          k.version === "standard-preparation/5"
+            ? frameProduct(
+                k.transform.product!.kind,
                 k.transform.faces,
                 p.shape,
                 k.sourceAspect,
                 k.transform.framing?.keepShoulders,
                 k.transform.framing?.adjustments,
                 k.transform.framing?.rotation,
+                k.transform.product?.bounds,
               )
-            : k.version === "standard-preparation/3"
-              ? framePortraitHeads(
+            : k.version === "standard-preparation/4"
+              ? frameCustomerHeads(
                   k.transform.faces,
                   p.shape,
                   k.sourceAspect,
                   k.transform.framing?.keepShoulders,
                   k.transform.framing?.adjustments,
+                  k.transform.framing?.rotation,
                 )
-              : [
-                    "classic-greedy/2",
-                    "classic-greedy/3",
-                    "standard-accent/21",
-                  ].includes(i.algorithm)
-                ? faceFillReference(k.transform.faces, p.shape, k.sourceAspect)
-                : faceFill(
+              : k.version === "standard-preparation/3"
+                ? framePortraitHeads(
                     k.transform.faces,
                     p.shape,
                     k.sourceAspect,
-                    p.standardKit.patternScale,
-                  ),
+                    k.transform.framing?.keepShoulders,
+                    k.transform.framing?.adjustments,
+                  )
+                : [
+                      "classic-greedy/2",
+                      "classic-greedy/3",
+                      "standard-accent/21",
+                    ].includes(i.algorithm)
+                  ? faceFillReference(
+                      k.transform.faces,
+                      p.shape,
+                      k.sourceAspect,
+                    )
+                  : faceFill(
+                      k.transform.faces,
+                      p.shape,
+                      k.sourceAspect,
+                      p.standardKit.patternScale,
+                    ),
         )
     )
       throw Error("Invalid reviewed kit preparation");
@@ -260,7 +278,11 @@ export async function validateInstruction(
       JSON.stringify(c) !==
         JSON.stringify({
           ...(i.algorithm === "classic-greedy/3"
-            ? CLASSIC_LS_DEFAULTS
+            ? {
+                ...CLASSIC_LS_DEFAULTS,
+                squareAxisExclusion:
+                  p.standardKit?.chordPolicy ?? "axis-centre-skip/1",
+              }
             : CLASSIC_REFERENCE_DEFAULTS),
           faces: i.params.kitPreparation?.transform.targetFaces ?? [],
         }) ||
@@ -276,7 +298,8 @@ export async function validateInstruction(
     )
       throw Error("classic2/contract");
     const seen = new Set<number>(),
-      path = i.segments[0].path;
+      path = i.segments[0].path,
+      weave = new SquareWeave(p);
     for (let j = 1; j < path.length; j++) {
       const a = path[j - 1],
         b = path[j],
@@ -285,10 +308,12 @@ export async function validateInstruction(
       if (
         Math.min(d, p.pins.length - d) < 25 ||
         seen.has(key) ||
-        (i.algorithm === "classic-greedy/3" && isSquareCentreAxis(p, a, b))
+        (i.algorithm === "classic-greedy/3" &&
+          (squareChordExcluded(p, a, b) || !weave.allows(a, b)))
       )
         throw Error("classic2/chord-contract");
       seen.add(key);
+      weave.add(a, b);
     }
   } else if (i.params.classic || p.standardKit?.referenceRender)
     throw Error("classic2/unbound-contract");

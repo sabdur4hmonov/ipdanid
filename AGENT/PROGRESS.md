@@ -1,12 +1,16 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase13 COMPLETE/TESTED.268unit/41browser/11exact3000stepPDF/build1975,43asset signedAPK7b42969cd9ba/85oldarchives pass. New4199/API4481/freshunused3-buildcode verified; all5old4194–4198 assettrees exact without HTTPcontact. No push/install, phone/physical/nativebackend acceptance separate.
+Last update:2026-10-17 — Phase14 ACTIVE. Product quality core5/5 current tests + isolated build1977 passed; actual26-case quality/visual acceptance running. Nothing deployed to old previews. Feature-only push now authorized.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
 Historical Phase0–7 acceptance checkpoint (superseded by Phase8/9 evidence below):176/176 Chrome browser tests passed (88 desktop+88 mobile,26.6min), zero skips/flaky/unexpected; test-results/final-full-e2e/report.json. Full unit232/232,test-results/final-full-unit.json. Final HTTP customer37/37(customer-http-cEqyvP; output/product-evidence/customer-http.json), staff67/67(staff-http-q0sj67; output/completion/staff-http.json), kit38/38(kit-http-Fy4z00/report.json). After the final outline-only control correction, production build1955 and lettering4/4 passed39.2s(final-lettering-controls/report.json). All own ports/fresh DBs; owner4194/data untouched, no active owned test run. Android offline app/test assembly passed; dedicated verifier passed40 dist assets, notices/font/new feature markers/no private or synthetic audio assets, same old app/test signer and67 historical APKs exact. App SHA87d13077714591e342ad63e371936934a1266c0caa7f960c4baefc1c5c6cf2f5; artifacts in output/mobile, series20261014 completedOct15. Native backend configuration rechecked false, no secrets printed; no phone install or production acceptance claimed.
 Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase1; `c8c72b9`, `3d1c433`, `ed368e2` — Phase2; `cb9b4a7`, `86feef4` — Phase3. Phase4 font/shaping foundation commits with this record.
+
+## Phase14 active
+
+Owner authorizes feature-only push after each tested/built milestone. Historical no-push statements are superseded for feat/full-roadmap only. Four sequential milestones in MASTER_PLAN; no manual owner dependency blocks code. Six old previews stay frozen. No Gulbot changes were made.
 
 ## Phase status
 
@@ -26,6 +30,7 @@ Session commits: `f7fab35`, `44b9f74`, `ec21ec3` — Phase0; `3d914c0` — Phase
 | 10 Reference classic and ordinary photo repair | DONE / TESTED / DEBUG APK VERIFIED | Classic2/500px/2500 fixed connections, preparation2, exact1000px/.12/.9 render, progress/cancel/recovery.12/12 real JPG cases max9.450s,248unit/36latest browser outcomes;12PDF covers+all2500ordered steps equal app/JSON. Owner/3synthetic recognizable on agent review. APK a3f7b2d756f7,43assets/same signer/76old archives exact; new4196/API4478/fresh3-build code. Phone/physical/production acceptance remains separate. |
 | 11 Larger-head framing | DONE / TESTED / DEBUG APK VERIFIED | Preparation3/87% heads/18px chin fade/Heart lobes/pan-zoom/shoulders/2000–3000.253unit/38latest browser outcomes/max9.643s,14exact PDF covers+allsteps,43asset APK46bc061bd5c2/same signer/79oldarchives exact. Fresh4197/API4479/new3-build code; physical/phone acceptance separate. |
 | 12 Dead-simple customer flow | DONE / TESTED / DEBUG APK VERIFIED | Exactly3screens/directgestures/4locales/3tap auto path/retainedcrop; preparation4/default3000 selectedactual6case A/B.261unit/38latest browser/2exact3000stepPDF/build1974;43asset APK29f469aec06e/samecert/82oldarchives. Fresh4198/API4480/unused3-buildcode; phone/physical acceptance separate. |
+| 14 Finish product code | ACTIVE | Quality → assembly → server/native/payments/admin → full regression/APK/fresh preview. |
 | 13 Sharper portraits (v3) | DONE / TESTED / DEBUG APK VERIFIED | LS3/.08/faceGaussian1/default3000,3shape simpleflow/Details2500–3500. OwnerSquareSSIM.512→.574/2axispluschords→0, allsyntheticper-face3>=2;268unit/41browser/11exactPDF/build1975.43asset APK7b42969cd9ba/samecert/85oldarchives; fresh4199/API4481/unused3-buildcode. Phone/physical separate. |
 
 ## Phase13 complete — sharper portraits (v3)
@@ -60,7 +65,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-Phase13 requested work is COMPLETE. Owner opens http://127.0.0.1:4199/ and follows Phase13 Uzbek steps in AGENT/OWNER_TESTS.md; freshunused3-buildcode output/phase13/manual-testing.txt, verifiedAPK7b42969cd9ba. No autonomous code/build/test step remains for Phase13. Preserve all6ownerpreviews4194–4199/APIs/live directories including newlyfrozen phase13-dist andfresh owner-sharper-cyUQrV account/code; neverrebuildservedassets orusetmp/data. Future newwork needs newdirectory/port; do not repeat completedLS/budget/edge/feature/material sweeps. Phone/physical/productionHTTPS/originalphotos/QBRIX/voices require separateownerinputs/acceptance, not unfinished Phase13 engineering. No push/install.
+Phase14 next: finish actual26 desktop quality cases in test-results/phase14-quality-v4/report.json (running4353/API4497); visually accept or fix horizontal-only cap8 before marking quality accepted, run mobile, generate output/phase14/quality.html. Current new modes/preparation5/import/axis/weave core5/5 passes, build1977 passes. Initial both-axis cap4 rejected (ownerSSIM.4483); axis-only owner timing16.120s failed, precomputed darkness and1000-step new-profile checkpoints now reduce cost. After quality milestone: assembly, production/native/sandbox/Admin, final full suite/APK/fresh preview. New tests4350+/4494+, handoff4200/API4482. Never tmp/data or old4194–4199 services/assets.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

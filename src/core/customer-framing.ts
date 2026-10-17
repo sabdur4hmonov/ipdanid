@@ -103,7 +103,12 @@ export function prepareCustomerCanvas(
   shape: Shape,
   before = false,
 ) {
-  if (f.version !== "reviewed-customer-framing/4" || !f.framing)
+  if (
+    !["reviewed-customer-framing/4", "reviewed-product-framing/5"].includes(
+      f.version,
+    ) ||
+    !f.framing
+  )
     throw Error("customer/proof");
   const n = 500,
     full = before ? source : referenceToneCanvas(source, mask),
@@ -143,7 +148,9 @@ export function prepareCustomerCanvas(
           k = (y * n + x) * 4;
         let alpha = before
           ? 1
-          : customerHeadAlpha(
+          : (f.version === "reviewed-product-framing/5"
+              ? polishedHeadAlpha
+              : customerHeadAlpha)(
               u,
               v,
               targetFace,
@@ -189,4 +196,25 @@ export function prepareCustomerCanvas(
       (_, k) => image.data[Math.floor(k / 3) * 4 + (k % 3)],
     ),
   };
+}
+
+// A closed head silhouette removes high shirt corners beside the jaw. Version4
+// arithmetic stays frozen for previously generated/recovered guides.
+export function polishedHeadAlpha(
+  u: number,
+  v: number,
+  face: RegionBox,
+  chin: number,
+  keep: boolean,
+) {
+  if (keep) return 1;
+  const vertical = 1 - smooth((v - chin + 20 / 500) / (20 / 500));
+  const start = face.top + face.height * 0.55;
+  if (v <= start) return vertical;
+  const t = smooth((v - start) / Math.max(0.001, chin - start));
+  const half = face.width * (0.56 - 0.38 * t);
+  return (
+    vertical *
+    (1 - smooth((Math.abs(u - face.left - face.width / 2) - half) / 0.014))
+  );
 }

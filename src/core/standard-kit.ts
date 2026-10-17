@@ -39,6 +39,7 @@ export const DEFAULT_STANDARD_KIT: Readonly<StandardKitConfig> = Object.freeze({
 export interface StandardProfile {
   referenceRender?: "classic-coverage/2";
   referenceEngine?: "classic-greedy/3";
+  chordPolicy?: "axis-interior-skip/2";
   accessory?: { version: "legal-heart-accent/1"; colour: string };
   version: "standard-profile/1";
   config: StandardKitConfig;
@@ -223,6 +224,12 @@ export function validateStandardProfile(p: MaterialProfile) {
       p.standardKit.accessory)
   )
     throw Error("kit/unbound-reference-engine");
+  if (
+    p.standardKit.chordPolicy !== undefined &&
+    (p.standardKit.chordPolicy !== "axis-interior-skip/2" ||
+      p.standardKit.referenceEngine !== "classic-greedy/3")
+  )
+    throw Error("kit/chord-policy");
   const config = p.standardKit.config;
   validateStandardConfig(config);
   const key = JSON.stringify(config);
@@ -245,6 +252,11 @@ export function validateStandardProfile(p: MaterialProfile) {
     expected.id = stored!.id + "-classic3";
     expected.version = 13;
     expected.standardKit!.referenceEngine = "classic-greedy/3";
+  }
+  if (expected && p.standardKit.chordPolicy) {
+    expected.id = stored!.id + "-classic3-polished";
+    expected.version = 14;
+    expected.standardKit!.chordPolicy = "axis-interior-skip/2";
   }
   if (expected && p.standardKit.accessory) {
     const accessory = p.standardKit.accessory;

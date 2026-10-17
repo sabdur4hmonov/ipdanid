@@ -1,3 +1,10 @@
+import {
+  frameProduct,
+  prepareProductCanvas,
+  productSource,
+  type ProductKind,
+} from "./core/product-framing";
+import { productText } from "./product-i18n";
 import { leastSquaresProfile } from "./core/classic-least-squares";
 import { useState, useEffect, useMemo, useRef, type PointerEvent } from "react";
 import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
@@ -60,6 +67,9 @@ export function CustomerStudio({
     customerFlowText(locale, k);
   const [step, setStep] = useState<"start" | "adjust" | "result">("start"),
     [shape, setShape] = useState<Shape>("circle"),
+    [kind, setKind] = useState<ProductKind>("people"),
+    [bounds, setBounds] = useState<RegionBox>(),
+    [lettering, setLettering] = useState("SALOM"),
     [source, setSource] = useState<HTMLCanvasElement>(),
     [analysis, setAnalysis] = useState<PhotoAnalysis>(),
     [sourceHash, setSourceHash] = useState(""),
@@ -93,37 +103,40 @@ export function CustomerStudio({
     () =>
       leastSquaresProfile(
         standardProfiles(config).find((p) => p.shape === shape)!,
+        true,
       ),
     [config, shape],
   );
   const faces = analysis?.faces.map((f) => f.face) ?? [];
   const framing = useMemo(
     () =>
-      source && analysis?.faces.length
-        ? frameCustomerHeads(
+      source && analysis && (kind !== "people" || analysis.faces.length)
+        ? frameProduct(
+            kind,
             analysis.faces.map((f) => f.face),
             shape,
             source.width / source.height,
             shoulders,
-            analysis.faces.map(
+            (kind === "people" ? analysis.faces : [0]).map(
               (_, j) => adjustments[j] ?? defaultHeadAdjustment(),
             ),
             rotation,
+            bounds,
           )
         : undefined,
-    [source, analysis, shape, shoulders, adjustments, rotation],
+    [source, analysis, shape, shoulders, adjustments, rotation, kind, bounds],
   );
   const prepared = useMemo(
     () =>
       source && analysis && framing
-        ? prepareCustomerCanvas(source, analysis.mask, framing, shape)
+        ? prepareProductCanvas(source, analysis.mask, framing, shape)
         : undefined,
     [source, analysis, framing, shape],
   );
   const original = useMemo(
     () =>
       before && source && framing
-        ? prepareCustomerCanvas(source, undefined, framing, shape, true)
+        ? prepareProductCanvas(source, undefined, framing, shape, true)
         : undefined,
     [before, source, framing, shape],
   );
@@ -254,7 +267,19 @@ export function CustomerStudio({
       setSource(c);
       const abort = new AbortController();
       controller.current = abort;
-      let a = await preparePersonPhoto(c, abort.signal);
+      let a: PhotoAnalysis;
+      if (kind === "people") a = await preparePersonPhoto(c, abort.signal);
+      else {
+        const prepared = productSource(c);
+        c = prepared.canvas;
+        setBounds(prepared.bounds);
+        a = {
+          faces: [],
+          mask: { width: 1, height: 1, values: new Float32Array([1]) },
+          faceUnavailable: false,
+          cleanupUnavailable: false,
+        } as PhotoAnalysis;
+      }
       if (id !== upload.current) return;
       if (a.analysisTurn) {
         const r = a.analysisTurn,
@@ -285,7 +310,10 @@ export function CustomerStudio({
       if (id !== upload.current) return;
       setSource(c);
       setSourceHash(digest);
-      if (!a.faces.length || a.faces.length > (shape === "heart" ? 2 : 3)) {
+      if (
+        kind === "people" &&
+        (!a.faces.length || a.faces.length > (shape === "heart" ? 2 : 3))
+      ) {
         setError("noFace");
         return;
       }
@@ -298,7 +326,7 @@ export function CustomerStudio({
   }
   function change(j: number, fn: (a: HeadAdjustment) => HeadAdjustment) {
     setAdjustments((old) =>
-      faces.map((_, k) =>
+      (kind === "people" ? faces : [0]).map((_, k) =>
         k === j
           ? fn(old[k] ?? defaultHeadAdjustment())
           : (old[k] ?? defaultHeadAdjustment()),
@@ -346,7 +374,7 @@ export function CustomerStudio({
     if (!pointers.current.size) {
       let nearest = 0,
         distance = Infinity;
-      framing.targetFaces!.forEach((f, j) => {
+      (framing.targetFaces ?? []).forEach((f, j) => {
         const d = Math.hypot(
           p.x - f.left - f.width / 2,
           p.y - f.top - f.height / 2,
@@ -415,7 +443,7 @@ export function CustomerStudio({
     setFraction(0);
     setError("");
     const proof: KitPreparation = {
-      version: "standard-preparation/4",
+      version: "standard-preparation/5",
       sourceHash,
       sourceAspect: source.width / source.height,
       whiteBackground: "automatic",
@@ -536,6 +564,34 @@ export function CustomerStudio({
             <button onClick={() => onNavigate("customer")}>
               {t("account")}
             </button>
+            <label>
+              {productText(locale, "kind")}
+              <select
+                data-testid="product-kind"
+                value={kind}
+                onChange={(e) => {
+                  setKind(e.target.value as ProductKind);
+                  setStep("start");
+                  setSource(undefined);
+                  setAnalysis(undefined);
+                  setBounds(undefined);
+                }}
+              >
+                {(
+                  [
+                    "people",
+                    "animal",
+                    "vehicle",
+                    "object",
+                    "lettering",
+                  ] as const
+                ).map((k) => (
+                  <option key={k} value={k}>
+                    {productText(locale, k)}
+                  </option>
+                ))}
+              </select>
+            </label>
             <button data-testid="enter-expert" onClick={onExpert}>
               {t("expert")}
             </button>
@@ -544,13 +600,75 @@ export function CustomerStudio({
       </header>
       {step === "start" && (
         <div className="customer-start" data-testid="customer-start">
-          <PhotoActions
-            locale={locale}
-            onPhoto={photo}
-            galleryLabel={t("gallery")}
-            cameraLabel={t("camera")}
-            hint={false}
-          />
+          {kind === "lettering" ? (
+            <div>
+              <label>
+                {productText(locale, "lettering")}
+                <input
+                  data-testid="lettering-input"
+                  value={lettering}
+                  onChange={(e) => setLettering(e.target.value)}
+                />
+              </label>
+              <button
+                className="primary"
+                data-testid="prepare-lettering"
+                onClick={() =>
+                  void (async () => {
+                    try {
+                      const {
+                        loadLetteringFont,
+                        shapeLettering,
+                        letteringInput,
+                        rasterLettering,
+                      } = await import("./core/lettering");
+                      const bytes = await loadLetteringFont(
+                        letteringInput(lettering).font,
+                      );
+                      const g = await shapeLettering(lettering, bytes, {
+                        widthMm: 500,
+                        heightMm: 500,
+                        shape,
+                      });
+                      const pixels = rasterLettering(g, 500);
+                      const c = document.createElement("canvas");
+                      c.width = c.height = 500;
+                      const ctx = c.getContext("2d")!,
+                        d = ctx.createImageData(500, 500);
+                      for (let k = 0; k < 500 * 500; k++) {
+                        d.data[k * 4] =
+                          d.data[k * 4 + 1] =
+                          d.data[k * 4 + 2] =
+                            pixels[k * 3];
+                        d.data[k * 4 + 3] = 255;
+                      }
+                      ctx.putImageData(d, 0, 0);
+                      const blob = await new Promise<Blob>((r) =>
+                        c.toBlob((b) => r(b!)),
+                      );
+                      await photo(
+                        new File([blob], "lettering.png", {
+                          type: "image/png",
+                        }),
+                      );
+                    } catch {
+                      setError("error");
+                    }
+                  })()
+                }
+              >
+                {t("adjust")}
+              </button>
+            </div>
+          ) : (
+            <PhotoActions
+              locale={locale}
+              onPhoto={photo}
+              galleryLabel={t("gallery")}
+              cameraLabel={t("camera")}
+              hint={false}
+            />
+          )}
           <div className="shape-chips" aria-label={t("adjust")}>
             {(["circle", "rectangle", "heart"] as const).map((s) => (
               <button
@@ -667,7 +785,7 @@ export function CustomerStudio({
                   {t("reset")}
                 </button>
               </div>
-              <label className="customer-shoulders">
+              <label className="customer-shoulders" hidden={kind !== "people"}>
                 <input
                   type="checkbox"
                   checked={shoulders}

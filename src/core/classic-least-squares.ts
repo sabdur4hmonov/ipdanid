@@ -23,14 +23,26 @@ export const CLASSIC_LS_DEFAULTS = Object.freeze({
   renderer: "classic-coverage/2" as const,
   squareAxisExclusion: "axis-centre-skip/1" as const,
 });
-export type ClassicLeastSquaresSettings = typeof CLASSIC_LS_DEFAULTS & {
+export type ClassicLeastSquaresSettings = Omit<
+  typeof CLASSIC_LS_DEFAULTS,
+  "squareAxisExclusion"
+> & {
+  squareAxisExclusion: "axis-centre-skip/1" | "axis-interior-skip/2";
   faces: RegionBox[];
 };
-export function leastSquaresProfile(p: MaterialProfile): MaterialProfile {
+export function leastSquaresProfile(
+  p: MaterialProfile,
+  polished = false,
+): MaterialProfile {
   const result = referenceProfile(p);
   result.id = p.id + "-classic3";
   result.version = 13;
   result.standardKit!.referenceEngine = "classic-greedy/3";
+  if (polished) {
+    result.id = p.id + "-classic3-polished";
+    result.version = 14;
+    result.standardKit!.chordPolicy = "axis-interior-skip/2";
+  }
   return result;
 }
 // Preserve the physical kit/template coordinates. Only exactly horizontal or
@@ -52,6 +64,84 @@ export function isSquareCentreAxis(p: MaterialProfile, a: number, b: number) {
       Math.min(u.x, v.x) <= 0.5 + h &&
       Math.max(u.x, v.x) >= 0.5 - h)
   );
+}
+export function isSquareInteriorAxis(p: MaterialProfile, a: number, b: number) {
+  if (p.shape !== "rectangle") return false;
+  const u = p.pins[a],
+    v = p.pins[b],
+    eps = 1e-12;
+  return (
+    (Math.abs(u.y - v.y) <= eps && Math.abs(u.x - v.x) > 0.5) ||
+    (Math.abs(u.x - v.x) <= eps && Math.abs(u.y - v.y) > 0.5)
+  );
+}
+export function squareChordExcluded(p: MaterialProfile, a: number, b: number) {
+  return p.standardKit?.chordPolicy === "axis-interior-skip/2"
+    ? isSquareInteriorAxis(p, a, b)
+    : isSquareCentreAxis(p, a, b);
+}
+// Bound to the new profile only. The regular Square perimeter concentrates
+// many opposite-edge chord crossings at the exact middle row/column (up to25
+// in a1px bin on the owner's guide). Limit real strands there, not image pixels.
+export class SquareWeave {
+  private horizontal = new Uint8Array(1001);
+  private vertical = new Uint8Array(1001);
+  private h: Int16Array;
+  private v: Int16Array;
+  private count: number;
+  private enabled: boolean;
+  constructor(p: MaterialProfile) {
+    this.count = p.pins.length;
+    this.enabled =
+      p.shape === "rectangle" &&
+      p.standardKit?.chordPolicy === "axis-interior-skip/2";
+    this.h = new Int16Array(this.enabled ? this.count * this.count : 0).fill(
+      -1,
+    );
+    this.v = new Int16Array(this.h.length).fill(-1);
+    if (!this.enabled) return;
+    for (let a = 0; a < this.count; a++)
+      for (let b = 0; b < this.count; b++) {
+        const u = p.pins[a],
+          v = p.pins[b],
+          k = a * this.count + b;
+        if ((u.y - 0.5) * (v.y - 0.5) < 0)
+          this.h[k] = Math.max(
+            0,
+            Math.min(
+              1000,
+              Math.round(
+                (u.x + ((0.5 - u.y) / (v.y - u.y)) * (v.x - u.x)) * 1000,
+              ),
+            ),
+          );
+        if ((u.x - 0.5) * (v.x - 0.5) < 0)
+          this.v[k] = Math.max(
+            0,
+            Math.min(
+              1000,
+              Math.round(
+                (u.y + ((0.5 - u.x) / (v.x - u.x)) * (v.y - u.y)) * 1000,
+              ),
+            ),
+          );
+      }
+  }
+  allows(a: number, b: number) {
+    if (!this.enabled) return true;
+    const k = a * this.count + b,
+      h = this.h[k],
+      v = this.v[k];
+    return h < 0 || this.horizontal[h] < 8;
+  }
+  add(a: number, b: number) {
+    if (!this.enabled) return;
+    const k = a * this.count + b,
+      h = this.h[k],
+      v = this.v[k];
+    if (h >= 0) this.horizontal[h]++;
+    if (v >= 0) this.vertical[v]++;
+  }
 }
 export function leastSquaresImportance(n: number, faces: RegionBox[]) {
   const out = new Float32Array(n * n);
@@ -94,9 +184,11 @@ export async function generateClassicLeastSquares(
   const faces = o.kitPreparation?.transform.targetFaces ?? [],
     settings: ClassicLeastSquaresSettings = {
       ...CLASSIC_LS_DEFAULTS,
+      squareAxisExclusion: p.standardKit?.chordPolicy ?? "axis-centre-skip/1",
       faces,
     },
     importance = leastSquaresImportance(n, faces),
+    darkness = Float64Array.from(importance, (v) => 0.08 * v),
     target = Float32Array.from(
       { length: n * n },
       (_, k) => o.pixels[k * 3] / 255,
@@ -112,7 +204,8 @@ export async function generateClassicLeastSquares(
     cache = new Map<number, Int32Array>(),
     legalCache = new Map<number, boolean>(),
     used = new Set<number>(),
-    distribution = new Distribution(count);
+    distribution = new Distribution(count),
+    weave = new SquareWeave(p);
   let prev = -1,
     meters = 0.5,
     peakCacheBytes = 0;
@@ -219,7 +312,8 @@ export async function generateClassicLeastSquares(
         gap < 25 ||
         b === prev ||
         used.has(k) ||
-        isSquareCentreAxis(p, cur, b) ||
+        squareChordExcluded(p, cur, b) ||
+        !weave.allows(cur, b) ||
         distribution.degree[cur] >= 160 ||
         distribution.degree[b] >= 160
       )
@@ -232,7 +326,7 @@ export async function generateClassicLeastSquares(
       let sum = 0;
       for (let j = 0; j < pixels.length; j++) {
         const e = err[pixels[j]],
-          dd = 0.08 * importance[pixels[j]];
+          dd = darkness[pixels[j]];
         sum += dd * (2 * e - dd);
       }
       const score = sum / pixels.length;
@@ -244,10 +338,11 @@ export async function generateClassicLeastSquares(
     if (best < 0) throw Error("classic3/fixed-budget-has-no-legal-path");
     const pixels = chord(cur, best);
     for (let j = 0; j < pixels.length; j++)
-      err[pixels[j]] -= 0.08 * importance[pixels[j]];
+      err[pixels[j]] -= darkness[pixels[j]];
     used.add(key(cur, best));
     distribution.apply([[cur, best]]);
     path.push(best);
+    weave.add(cur, best);
     prev = cur;
     if (
       o.seed &&
@@ -268,7 +363,7 @@ export async function generateClassicLeastSquares(
     }
     if (
       o.onCheckpoint &&
-      (s + 1) % 500 === 0 &&
+      (s + 1) % (p.standardKit?.chordPolicy ? 1000 : 500) === 0 &&
       s + 1 < o.lines &&
       s + 1 > (o.seed?.metrics.lines ?? 0)
     )

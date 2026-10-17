@@ -45,7 +45,7 @@ export async function reportCase(
   info: TestInfo,
   c: (typeof phase13Cases)[number],
 ) {
-  const out = `output/phase13/${info.project.name}/${c.name}`;
+  const out = `${process.env.IP_RASM_SHARPER_EVIDENCE || "output/current-sharper"}/${info.project.name}/${c.name}`;
   mkdirSync(out, { recursive: true });
   await page.goto("/");
   await english(page);

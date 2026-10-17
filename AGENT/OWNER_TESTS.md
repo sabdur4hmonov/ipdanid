@@ -214,3 +214,7 @@ Yangi ilova: **http://127.0.0.1:4199/**. Uchta natija uchun kod `output/phase13/
 7. Eski saqlangan yo‘riqnomani ham oching: oldingi usuli, natijasi va progressi saqlansin. Chop etishda100%/Actual size,50mm belgini tekshirish va mix/sektor andozasi avvalgidek. Kerakli ip uzunligi va zaxira yetishini PDFdan tekshiring.
 
 APK: `output/mobile/ip-rasm-phase13-20261017-7b42969cd9ba-debug.apk`.268unit va41ta brauzer holati o‘tdi;11PDFning rasmlari va barcha3000qadami bir xil.43fayl/imzo/85eski APK saqlangani tekshirildi. Eng sekin sifat hisob9.22soniya; haqiqiy telefon emas, mobil brauzer emulyatsiyasi ham sinalgan. Kvadratdagi3000ip sinovi taxmin1546m ip talab qildi, vaqtinchalik1200m zaxira yetmaydi; haqiqiy kitdagi ip uzunligini tekshiring. Native kit serveri hali sozlanmagan; kod/kreditni yangi brauzerda sinang. Agent telefonga o‘rnatmagan. Eski4194–4198 va tmp/data saqlangan, push qilinmagan.
+
+## Phase14 — avtomatik tekshiruvlar
+
+Hozir qo‘lda sinash talab qilinmaydi. Menyu → Rasm turi orqali Odam/Hayvon/Avtomobil/Buyum/Yozuv tanlanadi. Lotin, kirill va arab yozuvi mahalliy shrift bilan ishlaydi. Foto moslashda eski suratlardagi joylashuv buzilmaydi. Yakuniy yangi manzil va qolgan ulash ishlari Phase14 tugaganda quyida yoziladi.

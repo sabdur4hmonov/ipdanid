@@ -271,7 +271,7 @@ export function rasterLettering(
   if (
     !Number.isInteger(n) ||
     n < 32 ||
-    n > 320 ||
+    n > 500 ||
     [...background, ...ink].some(
       (v) => !Number.isInteger(v) || v < 0 || v > 255,
     ) ||

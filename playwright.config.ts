@@ -10,7 +10,7 @@ for (const port of [previewPort, apiPort])
     !Number.isInteger(port) ||
     port < 1024 ||
     port > 65535 ||
-    [4194, 4195, 4196, 4197, 4198, 4331, 4465, 4478, 4479, 4480].includes(port)
+    [4194, 4195, 4196, 4197, 4198, 4199, 4331, 4465, 4478, 4479, 4480, 4481].includes(port)
   )
     throw Error(
       "Invalid local test port (owner previews and APIs are reserved)",
