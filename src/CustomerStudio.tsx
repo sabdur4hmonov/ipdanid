@@ -5,6 +5,7 @@ import {
   type ProductKind,
 } from "./core/product-framing";
 import { productText } from "./product-i18n";
+import { withPortraitCaption, captionGeometry } from "./core/portrait-caption";
 import { leastSquaresProfile } from "./core/classic-least-squares";
 import { useState, useEffect, useMemo, useRef, type PointerEvent } from "react";
 import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
@@ -70,6 +71,12 @@ export function CustomerStudio({
     [kind, setKind] = useState<ProductKind>("people"),
     [bounds, setBounds] = useState<RegionBox>(),
     [lettering, setLettering] = useState("SALOM"),
+    [caption, setCaption] = useState(""),
+    [captionRaster, setCaptionRaster] = useState<{
+      key: string;
+      pixels: Uint8Array;
+    }>(),
+    [captionInvalid, setCaptionInvalid] = useState(false),
     [source, setSource] = useState<HTMLCanvasElement>(),
     [cleaned, setCleaned] = useState<HTMLCanvasElement>(),
     [analysis, setAnalysis] = useState<PhotoAnalysis>(),
@@ -109,7 +116,7 @@ export function CustomerStudio({
     [config, shape],
   );
   const faces = analysis?.faces.map((f) => f.face) ?? [];
-  const framing = useMemo(
+  const baseFraming = useMemo(
     () =>
       source && analysis && (kind !== "people" || analysis.faces.length)
         ? frameProduct(
@@ -127,12 +134,54 @@ export function CustomerStudio({
         : undefined,
     [source, analysis, shape, shoulders, adjustments, rotation, kind, bounds],
   );
+  const framing = useMemo(() => {
+    if (!baseFraming || kind !== "people") return baseFraming;
+    try {
+      return withPortraitCaption(baseFraming, shape, caption);
+    } catch {
+      return undefined;
+    }
+  }, [baseFraming, kind, shape, caption]);
+  const captionKey = JSON.stringify(framing?.caption);
+  useEffect(() => {
+    let live = true;
+    setCaptionInvalid(false);
+    if (framing?.caption)
+      void (async () => {
+        const { loadLetteringFont, shapeLettering, rasterLettering } =
+            await import("./core/lettering"),
+          proof = framing.caption!,
+          bytes = await loadLetteringFont(proof.font),
+          g = await shapeLettering(proof.text, bytes, {
+            widthMm: 500,
+            heightMm: 500,
+            shape: "rectangle",
+          }),
+          pixels = rasterLettering(captionGeometry(g, proof.bounds), 500);
+        if (live) setCaptionRaster({ key: captionKey, pixels });
+      })().catch(() => {
+        if (live) setCaptionInvalid(true);
+      });
+    return () => {
+      live = false;
+    };
+  }, [captionKey]);
   const prepared = useMemo(
     () =>
-      source && analysis && framing
-        ? prepareProductCanvas(cleaned ?? source, analysis.mask, framing, shape)
+      source &&
+      analysis &&
+      framing &&
+      (!framing.caption || captionRaster?.key === captionKey)
+        ? prepareProductCanvas(
+            cleaned ?? source,
+            analysis.mask,
+            framing,
+            shape,
+            false,
+            captionRaster?.pixels,
+          )
         : undefined,
-    [source, cleaned, analysis, framing, shape],
+    [source, cleaned, analysis, framing, shape, captionRaster, captionKey],
   );
   const original = useMemo(
     () =>
@@ -445,7 +494,9 @@ export function CustomerStudio({
     setFraction(0);
     setError("");
     const proof: KitPreparation = {
-      version: "standard-preparation/5",
+      version: framing.caption
+        ? "standard-preparation/6"
+        : "standard-preparation/5",
       sourceHash,
       sourceAspect: source.width / source.height,
       whiteBackground: "automatic",
@@ -798,6 +849,24 @@ export function CustomerStudio({
                 />
                 {t("shoulders")}
               </label>
+              {kind === "people" && (
+                <label className="customer-caption">
+                  {t("caption")}
+                  <input
+                    data-testid="portrait-caption"
+                    value={caption}
+                    maxLength={64}
+                    dir="auto"
+                    disabled={busy}
+                    onChange={(e) => setCaption(e.target.value)}
+                  />
+                </label>
+              )}
+              {kind === "people" &&
+                caption.trim() &&
+                (!framing || captionInvalid) && (
+                  <p role="alert">{t("captionError")}</p>
+                )}
             </>
           )}
           <button

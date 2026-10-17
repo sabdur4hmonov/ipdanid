@@ -242,3 +242,8 @@ Yangi ilova **http://127.0.0.1:4200/**; uchta natija uchun ishlatilmagan kit kod
 Keyin vaqt bo‘lganda: shakl → galereya → suratni surish/kattalashtirish/Burish/Oldin-Keyin → Yaratish. Qayta moslash joylashuvni saqlaydi.3000ip≈6.7soat, boshqa variant Batafsilda. Yig‘ishni boshlash → yangi kit kodi → bitta natijani ochish → katta sektorlar bo‘yicha birinchi qadam. Tasdiq bajarilgan ishni saqlaydi, oldingi/keyingi faqat ko‘rsatadi. Internet o‘chganda qayta ochib davom etish avtomatik tekshirildi.
 
 Admin → kit → PDF/QR, narx/stock/dostavka/e’lonlar bir sahifada. To‘lovlar sinov, haqiqiy pul olinmaydi. Chop etish100%/Actual size,50mm ni tekshirish, mix/sektor stikerlarini moslash va birinchi qadam uchun docs/PHYSICAL_BOARD_UZ.md. Hozir taxta/telefon sinovi bajarilgan deb da’vo qilinmaydi. Faqat egasi keyin ulaydigan besh narsa va aniq yo‘riqnomalar AGENT/FINAL_REPORT.mdda.
+
+
+## Phase15 — ism/sana (avtomatik sinov, qo‘lda kutmaymiz)
+
+Yakuniy yangi manzil Phase15 tugaganda beriladi;4200eski holida saqlanadi. Odam surati → Moslash → Ism/sana maydoniga qisqa matn. Yozuv nishonda va haqiqiy ip ketma-ketligida bo‘lsin; bo‘sh maydon avvalgi joylashuvni saqlaydi. Doira/lotin, Kvadrat/kirill, Yurak/arab desktop va mobilda kit orqali ochish/qayta yaratish/eksport bilan6/6o‘tdi. Batafsil docs/CAPTION_UZ.md; aralash yozuv/raqam tartibi C02da davom etadi. Agent qo‘lda sinov kutmaydi.

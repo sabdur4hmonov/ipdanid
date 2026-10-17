@@ -16,7 +16,7 @@ function checked(root: string, output: string, results: string) {
   if (!child(output) && !child(results))
     throw Error("Evidence must use a new output/ or test-results/ directory");
   const rel = relative(output, root).split(sep)[0].toLowerCase();
-  if (/^phase(?:9|10|11|12|13)$/.test(rel) || /-dist$/.test(rel))
+  if (/^phase(?:9|10|11|12|13|14)$/.test(rel) || /-dist$/.test(rel))
     throw Error("Historical reports and live web directories are frozen");
 }
 // Check lexical paths before filesystem inspection, then resolve existing

@@ -7,6 +7,7 @@ test("current evidence cannot overwrite historical reports, served builds or esc
     "output/phase11",
     "output/phase12/anything",
     "output/phase13",
+    "output/phase14",
     "output/phase14-dist",
     "output/current/../phase10",
     "dist",
@@ -17,6 +18,6 @@ test("current evidence cannot overwrite historical reports, served builds or esc
   expect(newEvidenceRoot("output/current-reference")).toMatch(
     /current-reference$/,
   );
-  expect(newEvidenceRoot("output/phase14/screens")).toMatch(/screens$/);
+  expect(newEvidenceRoot("output/phase15/screens")).toMatch(/screens$/);
   expect(newEvidenceRoot("test-results/phase14-new")).toMatch(/phase14-new$/);
 });

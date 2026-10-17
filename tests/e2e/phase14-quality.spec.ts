@@ -120,7 +120,7 @@ for (const c of cases)
       "null",
       { timeout: 90000 },
     );
-    const out = "output/phase14/" + info.project.name + "/" + c.name;
+    const out = "output/current-product/" + info.project.name + "/" + c.name;
     mkdirSync(out, { recursive: true });
     writeFileSync(
       out + "/target.png",

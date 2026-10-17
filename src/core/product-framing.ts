@@ -210,7 +210,53 @@ export function prepareProductCanvas(
   f: FaceFill,
   shape: Shape,
   before = false,
+  captionPixels?: Uint8Array,
 ) {
+  if (f.version === "reviewed-caption-framing/6") {
+    if (!f.caption || (!before && captionPixels?.length !== 500 * 500 * 3))
+      throw Error("caption/not-ready");
+    const base = frameProduct(
+        "people",
+        f.faces,
+        shape,
+        source.width / source.height,
+        f.framing?.keepShoulders,
+        f.framing?.adjustments,
+        f.framing?.rotation,
+      ),
+      portrait = prepareCustomerCanvas(source, mask, base, shape, before),
+      c = document.createElement("canvas");
+    c.width = c.height = 500;
+    const ctx = c.getContext("2d")!,
+      scale = f.caption.portraitScale;
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, 500, 500);
+    ctx.drawImage(
+      portrait.canvas,
+      (1 - scale) * 250,
+      0,
+      500 * scale,
+      500 * scale,
+    );
+    const image = ctx.getImageData(0, 0, 500, 500),
+      pixels = new Uint8Array(500 * 500 * 3);
+    for (let k = 0; k < 500 * 500; k++)
+      for (let ch = 0; ch < 3; ch++) {
+        const value = inside(
+          shape,
+          ((k % 500) + 0.5) / 500,
+          (Math.floor(k / 500) + 0.5) / 500,
+        )
+          ? Math.min(
+              image.data[k * 4 + ch],
+              before ? 255 : captionPixels![k * 3 + ch],
+            )
+          : 255;
+        pixels[k * 3 + ch] = image.data[k * 4 + ch] = value;
+      }
+    ctx.putImageData(image, 0, 0);
+    return { canvas: c, pixels };
+  }
   if (f.product?.kind === "people")
     return prepareCustomerCanvas(source, mask, f, shape, before);
   const n = 500,

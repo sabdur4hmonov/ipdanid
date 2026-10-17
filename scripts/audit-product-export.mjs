@@ -1,7 +1,8 @@
 import { execFileSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
-const base = "fe9e5a3",
+const phase15 = process.argv.includes("--phase15"),
+  base = phase15 ? "40fd2f5" : "fe9e5a3",
   git = (...args) =>
     execFileSync("git", args, {
       encoding: "utf8",
@@ -55,10 +56,10 @@ const report = {
   credentialPatterns: 0,
   ownerPhotoIncluded: false,
   scope:
-    "All Phase14 committed patches and export paths; private owner env/data never read. Format scan cannot prove the absence of arbitrary unrecognized secrets.",
+    "Committed product patches and export paths; private owner env/data never read. Format scan cannot prove the absence of arbitrary unrecognized secrets.",
 };
 writeFileSync(
-  "output/phase14/source-export-audit.json",
+  `output/phase${phase15 ? 15 : 14}/source-export-audit.json`,
   JSON.stringify(report, null, 2),
 );
 console.log(JSON.stringify(report));

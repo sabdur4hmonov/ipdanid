@@ -208,7 +208,7 @@ test("offline assembly resumes exact position after restart; one-hand controls, 
     "saved",
   );
   expect(await page.evaluate(() => navigator.onLine)).toBe(false);
-  const out = "output/phase14/assembly/" + info.project.name;
+  const out = "output/current-product/assembly/" + info.project.name;
   mkdirSync(out, { recursive: true });
   await page.screenshot({ path: out + "/offline-resumed.png", fullPage: true });
   await context.setOffline(false);

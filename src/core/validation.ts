@@ -1,4 +1,5 @@
 import { frameProduct } from "./product-framing";
+import { withPortraitCaption } from "./portrait-caption";
 import {
   CLASSIC_LS_DEFAULTS,
   squareChordExcluded,
@@ -207,6 +208,7 @@ export async function validateInstruction(
               "standard-preparation/3",
               "standard-preparation/4",
               "standard-preparation/5",
+              "standard-preparation/6",
             ]
           : ["standard-preparation/1"]
       ).includes(k.version) ||
@@ -214,50 +216,65 @@ export async function validateInstruction(
       !["automatic", "manual", "original"].includes(k.whiteBackground) ||
       JSON.stringify(k.transform) !==
         JSON.stringify(
-          k.version === "standard-preparation/5"
-            ? frameProduct(
-                k.transform.product!.kind,
-                k.transform.faces,
-                p.shape,
-                k.sourceAspect,
-                k.transform.framing?.keepShoulders,
-                k.transform.framing?.adjustments,
-                k.transform.framing?.rotation,
-                k.transform.product?.bounds,
-              )
-            : k.version === "standard-preparation/4"
-              ? frameCustomerHeads(
+          k.version === "standard-preparation/6"
+            ? withPortraitCaption(
+                frameProduct(
+                  k.transform.product!.kind,
                   k.transform.faces,
                   p.shape,
                   k.sourceAspect,
                   k.transform.framing?.keepShoulders,
                   k.transform.framing?.adjustments,
                   k.transform.framing?.rotation,
+                  k.transform.product?.bounds,
+                ),
+                p.shape,
+                k.transform.caption?.text ?? "",
+              )
+            : k.version === "standard-preparation/5"
+              ? frameProduct(
+                  k.transform.product!.kind,
+                  k.transform.faces,
+                  p.shape,
+                  k.sourceAspect,
+                  k.transform.framing?.keepShoulders,
+                  k.transform.framing?.adjustments,
+                  k.transform.framing?.rotation,
+                  k.transform.product?.bounds,
                 )
-              : k.version === "standard-preparation/3"
-                ? framePortraitHeads(
+              : k.version === "standard-preparation/4"
+                ? frameCustomerHeads(
                     k.transform.faces,
                     p.shape,
                     k.sourceAspect,
                     k.transform.framing?.keepShoulders,
                     k.transform.framing?.adjustments,
+                    k.transform.framing?.rotation,
                   )
-                : [
-                      "classic-greedy/2",
-                      "classic-greedy/3",
-                      "standard-accent/21",
-                    ].includes(i.algorithm)
-                  ? faceFillReference(
+                : k.version === "standard-preparation/3"
+                  ? framePortraitHeads(
                       k.transform.faces,
                       p.shape,
                       k.sourceAspect,
+                      k.transform.framing?.keepShoulders,
+                      k.transform.framing?.adjustments,
                     )
-                  : faceFill(
-                      k.transform.faces,
-                      p.shape,
-                      k.sourceAspect,
-                      p.standardKit.patternScale,
-                    ),
+                  : [
+                        "classic-greedy/2",
+                        "classic-greedy/3",
+                        "standard-accent/21",
+                      ].includes(i.algorithm)
+                    ? faceFillReference(
+                        k.transform.faces,
+                        p.shape,
+                        k.sourceAspect,
+                      )
+                    : faceFill(
+                        k.transform.faces,
+                        p.shape,
+                        k.sourceAspect,
+                        p.standardKit.patternScale,
+                      ),
         )
     )
       throw Error("Invalid reviewed kit preparation");

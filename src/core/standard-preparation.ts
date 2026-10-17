@@ -26,7 +26,16 @@ export interface FaceFill {
     | "reviewed-face-fill/2"
     | "reviewed-head-framing/3"
     | "reviewed-customer-framing/4"
-    | "reviewed-product-framing/5";
+    | "reviewed-product-framing/5"
+    | "reviewed-caption-framing/6";
+  caption?: {
+    version: "portrait-caption/1";
+    text: string;
+    font: import("./lettering-contract").LetteringFont;
+    fontHash: string;
+    bounds: RegionBox;
+    portraitScale: number;
+  };
   product?: {
     kind: "people" | "animal" | "vehicle" | "object" | "lettering";
     bounds?: RegionBox;
@@ -49,7 +58,8 @@ export interface KitPreparation {
     | "standard-preparation/2"
     | "standard-preparation/3"
     | "standard-preparation/4"
-    | "standard-preparation/5";
+    | "standard-preparation/5"
+    | "standard-preparation/6";
   sourceHash: string;
   sourceAspect: number;
   whiteBackground: "automatic" | "manual" | "original";
