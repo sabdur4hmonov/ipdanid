@@ -71,6 +71,7 @@ export function CustomerStudio({
     [bounds, setBounds] = useState<RegionBox>(),
     [lettering, setLettering] = useState("SALOM"),
     [source, setSource] = useState<HTMLCanvasElement>(),
+    [cleaned, setCleaned] = useState<HTMLCanvasElement>(),
     [analysis, setAnalysis] = useState<PhotoAnalysis>(),
     [sourceHash, setSourceHash] = useState(""),
     [config, setConfig] = useState(structuredClone(DEFAULT_STANDARD_KIT)),
@@ -129,9 +130,9 @@ export function CustomerStudio({
   const prepared = useMemo(
     () =>
       source && analysis && framing
-        ? prepareProductCanvas(source, analysis.mask, framing, shape)
+        ? prepareProductCanvas(cleaned ?? source, analysis.mask, framing, shape)
         : undefined,
-    [source, analysis, framing, shape],
+    [source, cleaned, analysis, framing, shape],
   );
   const original = useMemo(
     () =>
@@ -240,6 +241,7 @@ export function CustomerStudio({
     generation.current++;
     setResult(undefined);
     setSource(undefined);
+    setCleaned(undefined);
     setAnalysis(undefined);
     setSourceHash("");
     setAdjustments([]);
@@ -271,7 +273,7 @@ export function CustomerStudio({
       if (kind === "people") a = await preparePersonPhoto(c, abort.signal);
       else {
         const prepared = productSource(c);
-        c = prepared.canvas;
+        setCleaned(prepared.canvas);
         setBounds(prepared.bounds);
         a = {
           faces: [],
@@ -573,6 +575,7 @@ export function CustomerStudio({
                   setKind(e.target.value as ProductKind);
                   setStep("start");
                   setSource(undefined);
+                  setCleaned(undefined);
                   setAnalysis(undefined);
                   setBounds(undefined);
                 }}
@@ -606,6 +609,7 @@ export function CustomerStudio({
                 {productText(locale, "lettering")}
                 <input
                   data-testid="lettering-input"
+                  dir="auto"
                   value={lettering}
                   onChange={(e) => setLettering(e.target.value)}
                 />
@@ -628,7 +632,7 @@ export function CustomerStudio({
                       const g = await shapeLettering(lettering, bytes, {
                         widthMm: 500,
                         heightMm: 500,
-                        shape,
+                        shape: "rectangle",
                       });
                       const pixels = rasterLettering(g, 500);
                       const c = document.createElement("canvas");

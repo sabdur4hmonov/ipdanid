@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-17 — Phase14 ACTIVE. Product quality core5/5 current tests + isolated build1977 passed; actual26-case quality/visual acceptance running. Nothing deployed to old previews. Feature-only push now authorized.
+Last update:2026-10-17 — Phase14 ACTIVE. Quality milestone COMPLETE:11/11 focused unit,29 unique actual desktop/mobile quality cases, max9.624s; isolated build1977 passed. Nothing deployed to old previews. Feature-only push now authorized.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -65,7 +65,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-Phase14 next: finish actual26 desktop quality cases in test-results/phase14-quality-v4/report.json (running4353/API4497); visually accept or fix horizontal-only cap8 before marking quality accepted, run mobile, generate output/phase14/quality.html. Current new modes/preparation5/import/axis/weave core5/5 passes, build1977 passes. Initial both-axis cap4 rejected (ownerSSIM.4483); axis-only owner timing16.120s failed, precomputed darkness and1000-step new-profile checkpoints now reduce cost. After quality milestone: assembly, production/native/sandbox/Admin, final full suite/APK/fresh preview. New tests4350+/4494+, handoff4200/API4482. Never tmp/data or old4194–4199 services/assets.
+Phase14 next: assembly milestone — durable offline cursor/resume after restart, large one-hand mobile navigation, wake lock, device TTS fallback with automatic recorded-clip preference; tests + clean build + PROGRESS/LOG + commit before production/native/payments/Admin. Quality accepted29 unique actual cases (desktop25 from v4 plus3 repair replacing2 repeats =26; mobile3), max9.624s, report output/phase14/quality.html. OwnerSquareSSIM.5665 on stricter target; frozen Phase13.5745 used different target, no improved-SSIM claim. Horizontal middle-row peak25 becomes<=8, no pin movement; physical fan/vertical texture remains. All target pixels below chin verified white. ArabicHeart fixed by shaping into a temporary rectangle then fitting actual glyph bounds into final Heart; generic Before now retains actual original source.11/11 focused unit, build1977 passed. Push of2321759 automatically rejected: unverified origin export destination; exact origin https://github.com/sabdur4hmonov/ipdanid.git and existing remote HEAD read-only verified, gh unavailable, destination confirmation pending via async question. No workaround or second push. A proposed AGENTS no-push edit was also automatically rejected; no policy files changed by that rejected command, do not retry it. Continue code without waiting. New tests4350+/4494+, handoff4200/API4482. Never tmp/data or old4194–4199 services/assets.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

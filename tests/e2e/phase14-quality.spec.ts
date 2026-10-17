@@ -1,3 +1,4 @@
+import { hash } from "../../src/core/engine";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { gallery, english, png, photoCases } from "./phase12-cases";
@@ -196,6 +197,9 @@ for (const c of cases)
         { length: 1000 * 1000 },
         (_, k) => raster[k * 3],
       );
+    expect(i.imageHash).toBe(await hash(Uint8Array.from(rgba.filter((_,k)=>k%4!==3))));
+    const actualPng=UPNG.decode(Uint8Array.from(readFileSync(out+'/result.png')).buffer),actualRgba=new Uint8Array(UPNG.toRGBA8(actualPng)[0]);
+    expect(Buffer.from(actualRgba.filter((_,k)=>k%4!==3)).equals(Buffer.from(Uint8Array.from(raster,v=>Math.round(v*255))))).toBe(true);
     const ssim = viewingSsim(target, 500, image, 1000, {
       faces: i.params.kitPreparation.transform.targetFaces,
     });
