@@ -1,3 +1,7 @@
+import {
+  nativeConfiguredBase,
+  nativeServerEditing,
+} from "./native-server-settings";
 import { resolveBackendUrl } from "./backend-url";
 import { Capacitor, CapacitorHttp } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
@@ -12,7 +16,10 @@ export class ApiError extends Error {
 }
 const base = resolveBackendUrl(
   Capacitor.isNativePlatform(),
-  import.meta.env.VITE_NATIVE_API_BASE,
+  nativeConfiguredBase(
+    import.meta.env.VITE_NATIVE_API_BASE,
+    nativeServerEditing,
+  ),
 );
 const legacyKey = "iprasm.customer.product-4311.v1";
 const KEY =

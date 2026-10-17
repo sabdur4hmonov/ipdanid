@@ -1,3 +1,4 @@
+import { NativeServerSettings } from "./NativeServerSettings";
 import { BusinessAdmin } from "./BusinessAdmin";
 import { KitAdmin } from "./KitAdmin";
 import { KitLogin } from "./KitLogin";
@@ -1106,6 +1107,7 @@ export function CustomerHub({
         )}
         {pane === "admin" && (
           <>
+            <NativeServerSettings locale={locale} />
             <section className="card">
               <h2>{t("admin")}</h2>
               <p>{t("adminNotice")}</p>
