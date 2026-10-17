@@ -1,3 +1,5 @@
+import { assertProductionConfig } from "./runtime-config.ts";
+assertProductionConfig(process.env);
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { assertTestDatabasePath } from "./test-safety.mjs";
@@ -11,10 +13,11 @@ const names = [
   "SANDBOX_PAYMENT_KEY",
 ] as const;
 let saved: Record<string, string> = {};
-const testing = process.env.IP_RASM_TEST_SERVER === "1" || process.env.NODE_ENV === "test";
-if (testing)
-  assertTestDatabasePath(process.env.DATABASE_PATH);
+const testing =
+  process.env.IP_RASM_TEST_SERVER === "1" || process.env.NODE_ENV === "test";
+if (testing) assertTestDatabasePath(process.env.DATABASE_PATH);
 const isolated =
+  process.env.NODE_ENV === "production" ||
   testing ||
   names.every((name) => process.env[name] !== undefined);
 if (!isolated && existsSync(file)) {

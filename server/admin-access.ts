@@ -42,6 +42,9 @@ export class AdminAccess {
   constructor(
     private store: CustomerStore,
     private ownerToken: string,
+    private ownerSessions?: {
+      authenticate(token: string, now?: number): boolean;
+    },
   ) {
     if (ownerToken.length < 32) throw Error("Owner credential too short");
     store.db.exec(
@@ -56,7 +59,10 @@ export class AdminAccess {
       throw new DomainError("Administrator authorization required", 403);
     const a = Buffer.from(token),
       b = Buffer.from(this.ownerToken);
-    if (a.length === b.length && timingSafeEqual(a, b))
+    if (
+      this.ownerSessions?.authenticate(token, now) ||
+      (!this.ownerSessions && a.length === b.length && timingSafeEqual(a, b))
+    )
       return {
         id: "local-owner",
         name: "Owner",

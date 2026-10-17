@@ -1,3 +1,5 @@
+import { allowedOrigin } from "./runtime-config.ts";
+import { ProductionAdminAuth } from "./production-auth.ts";
 import { BusinessStore } from "./business-store.ts";
 import { createServer } from "node:http";
 import { randomBytes } from "node:crypto";
@@ -9,15 +11,13 @@ import { KitStore } from "./kit-store.ts";
 import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 import { Payments } from "./payments.ts";
-const adminToken =
-  process.env.LOCAL_ADMIN_TOKEN ?? randomBytes(32).toString("base64url");
+const production = process.env.NODE_ENV === "production";
+const adminToken = production
+  ? randomBytes(32).toString("base64url")
+  : (process.env.LOCAL_ADMIN_TOKEN ?? randomBytes(32).toString("base64url"));
 const pepper = process.env.CODE_PEPPER ?? randomBytes(32).toString("base64url"),
   paymentKey =
     process.env.SANDBOX_PAYMENT_KEY ?? randomBytes(32).toString("base64url");
-if (process.env.NODE_ENV === "production")
-  throw new Error(
-    "This sandbox server is not a production deployment. Configure production adapters/auth/retention first.",
-  );
 if (process.env.DATABASE_PATH !== ":memory:")
   mkdirSync(dirname(process.env.DATABASE_PATH ?? "tmp/data/iprasm.sqlite"), {
     recursive: true,
@@ -27,13 +27,16 @@ const store = new KitStore(
   pepper,
   paymentKey,
 );
-store.seed();
+if (!production) store.seed();
 const business = new BusinessStore(store);
-const staffAccess = new AdminAccess(store, adminToken);
+const ownerAuth = production
+  ? new ProductionAdminAuth(store, process.env.ADMIN_PASSWORD_HASH!)
+  : undefined;
+const staffAccess = new AdminAccess(store, adminToken, ownerAuth);
 // Sandbox adapters remain separate from the blocked production-auth work.
 const payments = new Payments(store, {
   mode: process.env.PAYMENTS_SANDBOX === "1" ? "sandbox" : "disabled",
-  mockCheckout: process.env.IP_RASM_TEST_SERVER === "1",
+  mockCheckout: !production && process.env.IP_RASM_TEST_SERVER === "1",
   ...(process.env.CLICK_SECRET_KEY && process.env.CLICK_SERVICE_ID
     ? {
         click: {
@@ -62,30 +65,8 @@ const server = createServer(async (req, res) => {
     res.end(JSON.stringify(data));
   };
   try {
-    // Loopback development server only; never allow third-party websites to mutate it.
     const origin = req.headers.origin;
-    if (
-      origin &&
-      !(
-        process.env.IP_RASM_TEST_SERVER === "1" &&
-        origin === process.env.IP_RASM_TEST_ORIGIN &&
-        /^http:\/\/127\.0\.0\.1:\d+$/.test(origin)
-      ) &&
-      ![
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:4173",
-        "http://127.0.0.1:4310",
-        "http://127.0.0.1:5183",
-        "http://127.0.0.1:4183",
-        "http://localhost:5183",
-        "http://localhost:4183",
-        "http://127.0.0.1:4194",
-        "http://127.0.0.1:4195",
-        "http://localhost",
-        "https://localhost",
-        "capacitor://localhost",
-      ].includes(origin)
-    )
+    if (origin && !allowedOrigin(origin, process.env))
       throw new DomainError("Origin forbidden", 403);
     if (origin) res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
@@ -122,17 +103,18 @@ const server = createServer(async (req, res) => {
     if (req.method === "GET" && path === "/api/catalog") {
       send(200, {
         sandbox: true,
-        developmentPrices: true,
+        developmentPrices: !production,
         products: store.catalog(),
       });
       return;
     }
     if (req.method === "GET" && path === "/api/health") {
       send(200, {
-        sandbox: true,
+        sandbox: !production,
+        adminAuth: production ? "password" : "token",
         livePayments: false,
         liveMessages: false,
-        apiVersion: "business-sandbox/2",
+        apiVersion: production ? "product-api/3" : "business-sandbox/2",
       });
       return;
     }
@@ -184,7 +166,8 @@ const server = createServer(async (req, res) => {
     }
     if (
       req.method === "POST" &&
-      /^\/api\/account\/(login|recover|register|kit)$/.test(path)
+      (/^\/api\/account\/(login|recover|register|kit)$/.test(path) ||
+        path === "/api/admin/login")
     ) {
       const attempts = authBudgets.get(ip) ?? { start: Date.now(), count: 0 };
       if (Date.now() - attempts.start > 60000) {
@@ -229,10 +212,19 @@ const server = createServer(async (req, res) => {
       );
       return;
     }
+    if (path === "/api/admin/login" && req.method === "POST" && ownerAuth) {
+      send(200, await ownerAuth.login(body.password));
+      return;
+    }
     if (path.startsWith("/api/admin/")) {
       const session = staffAccess.authenticate(token);
       if (path === "/api/admin/session" && req.method === "GET") {
         send(200, session);
+        return;
+      }
+      if (path === "/api/admin/logout" && req.method === "POST" && ownerAuth) {
+        ownerAuth.revoke(token);
+        send(200, { signedOut: true });
         return;
       }
       const permission = adminRoutePermission(req.method ?? "", path);
@@ -581,10 +573,13 @@ const server = createServer(async (req, res) => {
 const port = Number(process.env.PORT ?? 4311);
 if (!Number.isInteger(port) || port < 1024 || port > 65535)
   throw new Error("Invalid local server port");
-server.listen(port, "127.0.0.1", () =>
-  console.log(
-    `Ip Rasm local sandbox: http://127.0.0.1:${port} (no live payments or messages). Private setup: tmp/data/local-secrets.json.`,
-  ),
+server.listen(
+  port,
+  production ? (process.env.HOST ?? "0.0.0.0") : "127.0.0.1",
+  () =>
+    console.log(
+      `Ip Rasm ${production ? "production API" : "local sandbox"} ready on port ${port}; live payments disabled.`,
+    ),
 );
 const cleanup = setInterval(() => {
   store.expireReservations();

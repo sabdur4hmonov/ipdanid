@@ -65,7 +65,7 @@ Phase10 engineering evidence remains valid, but owner review found insufficient 
 
 ## Exact next step
 
-Phase14 next: finish fail-closed VPS infrastructure/docs (production auth/CORS implementation separately blocked by automatic review), then full unit/e2e, APK and fresh4200/API4482 handoff. Sandbox payments/Admin milestone:19/19 focused tests;2/2 real HTTP provider cases+2/2 repaired simple-flow desktop/mobile Admin cases;4locales/7codes/2A4page PDFs,19 renderedQRs decode exactly; TypeScript/newbuild passed. Never retry rejected auth/CORS or origin push absent exact trusted reply; two async confirmations remain pending. No live payments/deployment/phone claim. Preserve tmp/data and old4194–4199/APIs/assets.
+Phase14 next: finish isolated Docker desktop/mobile HTTPS/customer acceptance (first desktop Admin/password/kit issue passed; script then closed an already-open menu and failed, now corrected, not yet rerun). Docker images built after production-only tsconfig repair; fresh project API/Caddy/backup healthy,2backups quick_check pass. All3own test containers STOPPED to release RAM; volumes retained. Free RAM1.08GiB, do not start another heavy job below1.5GiB. Owner latest reply1 is acceptance of most recent auth/CORS confirmation; re-approved implementation now runs.2auth+4staff unit6/6, real fresh production HTTP password/rawtokenreject/origin/kitquota3/revoke/rate/secretlogs pass. No real VPS/domain/phone/livecharge. Then full unit/e2e, APK/fresh4200 handoff. Exact-origin push confirmation still pending; no retry. Old six previews/data unchanged.
 
 ### Historical Phase11 handoff (superseded, keep4197 untouched)
 

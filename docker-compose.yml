@@ -1,0 +1,73 @@
+services:
+  api:
+    image: iprasm-api:${APP_IMAGE_TAG:-local}
+    build:
+      context: .
+      target: api
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "4311"
+      DATABASE_PATH: /data/iprasm.sqlite
+      APP_ORIGIN: https://${APP_DOMAIN:?Set APP_DOMAIN}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?Set ADMIN_PASSWORD_HASH}
+      CODE_PEPPER: ${CODE_PEPPER:?Set CODE_PEPPER}
+      SANDBOX_PAYMENT_KEY: ${SANDBOX_PAYMENT_KEY:?Set SANDBOX_PAYMENT_KEY}
+      PAYMENTS_SANDBOX: ${PAYMENTS_SANDBOX:-0}
+      CLICK_SERVICE_ID: ${CLICK_SERVICE_ID:-}
+      CLICK_SECRET_KEY: ${CLICK_SECRET_KEY:-}
+      PAYME_LOGIN: ${PAYME_LOGIN:-}
+      PAYME_TEST_KEY: ${PAYME_TEST_KEY:-}
+    volumes:
+      - sqlite:/data
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4311/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: &logging
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+  caddy:
+    image: iprasm-web:${APP_IMAGE_TAG:-local}
+    build:
+      context: .
+      target: web
+    restart: unless-stopped
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes: ["caddy-data:/data", "caddy-config:/config"]
+    networks: [backend, public]
+    depends_on:
+      api: {condition: service_healthy}
+    logging: *logging
+  backup:
+    image: iprasm-api:${APP_IMAGE_TAG:-local}
+    restart: unless-stopped
+    init: true
+    command: ["node", "scripts/backup-sqlite.mjs", "--daemon"]
+    environment:
+      DATABASE_PATH: /data/iprasm.sqlite
+      BACKUP_DIR: /backups
+    volumes: ["sqlite:/data:ro", "backups:/backups"]
+    networks: [backend]
+    depends_on:
+      api: {condition: service_healthy}
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: *logging
+networks:
+  backend: {internal: true}
+  public: {}
+volumes:
+  sqlite: {}
+  backups: {}
+  caddy-data: {}
+  caddy-config: {}

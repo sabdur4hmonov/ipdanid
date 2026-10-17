@@ -1,0 +1,31 @@
+import {spawn} from 'node:child_process';
+import {randomBytes,randomUUID} from 'node:crypto';
+import {writeFileSync} from 'node:fs';
+import {createServer} from 'node:net';
+import assert from 'node:assert/strict';
+import {freshTestDatabase} from './test-artifacts.mjs';
+import {hashAdminPassword} from '../server/production-auth.ts';
+const isolated=freshTestDatabase('phase14-production'),password=randomBytes(24).toString('base64url'),localToken=randomBytes(32).toString('base64url'),hash=await hashAdminPassword(password);
+const probe=createServer();await new Promise(r=>probe.listen(0,'127.0.0.1',r));const port=probe.address().port;await new Promise(r=>probe.close(r));
+assert(![4194,4195,4196,4197,4198,4199,4331,4465,4478,4479,4480,4481].includes(port));
+const api='http://127.0.0.1:'+port+'/api',origin='https://iprasm.example.invalid';let logs='';
+const child=spawn(process.execPath,['--import','tsx','server/index.ts'],{windowsHide:true,env:{...process.env,NODE_ENV:'production',HOST:'127.0.0.1',PORT:String(port),DATABASE_PATH:isolated.databasePath,APP_ORIGIN:origin,ADMIN_PASSWORD_HASH:hash,LOCAL_ADMIN_TOKEN:localToken,CODE_PEPPER:randomBytes(32).toString('base64url'),SANDBOX_PAYMENT_KEY:randomBytes(32).toString('base64url'),PAYMENTS_SANDBOX:'0',IP_RASM_TEST_SERVER:'1'},stdio:['ignore','pipe','pipe']});
+child.stdout.on('data',d=>logs+=d);child.stderr.on('data',d=>logs+=d);
+const call=async(path,body,token,headers={})=>{const r=await fetch(api+path,{headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...headers},...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})});return {status:r.status,data:await r.json()};};
+try{
+ let ready=false;for(let i=0;i<100;i++){try{if((await call('/health')).status===200){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert(ready,'isolated production API readiness');
+ assert.equal((await call('/health')).data.adminAuth,'password');assert.equal((await call('/catalog')).data.products.length,0);
+ assert.equal((await call('/health',undefined,undefined,{Origin:'https://evil.invalid'})).status,403);
+ assert.equal((await call('/health',undefined,undefined,{Origin:origin})).status,200);
+ assert.equal((await call('/health',undefined,undefined,{Origin:'capacitor://localhost'})).status,200);
+ assert.equal((await call('/admin/session',undefined,localToken)).status,403);
+ assert.equal((await call('/admin/login',{password:'wrong synthetic password'})).status,401);
+ const login=await call('/admin/login',{password});assert.equal(login.status,200);const token=login.data.token;assert.equal((await call('/admin/session',undefined,token)).data.role,'owner');
+ const batch=await call('/admin/kits/batch',{profile:'standard-base-r1',count:1,requestKey:randomUUID()},token);assert.equal(batch.status,201);assert.equal(batch.data.codes[0].quota,3);
+ const customer=await call('/account/kit',{code:batch.data.codes[0].code});assert.equal(customer.status,200);assert.equal((await call('/credits',undefined,customer.data.token)).data.credits,3);
+ assert.equal((await call('/admin/logout',{},token)).status,200);assert.equal((await call('/admin/session',undefined,token)).status,403);
+ let limited=false;for(let i=0;i<13;i++){const r=await call('/admin/login',{password:'wrong synthetic password'});if(r.status===429){limited=true;break;}assert.equal(r.status,401);}assert(limited,'password login rate limit');
+ for(const secret of [password,hash,localToken,token,customer.data.token,batch.data.codes[0].code])assert(!logs.includes(secret),'secret absent from startup logs');
+ writeFileSync(isolated.directory+'/report.json',JSON.stringify({production:true,liveCharges:false,health:true,noSeedCatalog:true,passwordLogin:true,localTokenRejected:true,originGuards:true,nativeOrigin:true,kitQuota:3,revocation:true,rateLimit:true,secretLogs:false},null,2));
+ console.log(JSON.stringify({passed:true,report:isolated.directory+'/report.json',ownerDataUsed:false}));
+}finally{child.kill('SIGINT');await Promise.race([new Promise(r=>child.once('exit',r)),new Promise(r=>setTimeout(r,3000))]);}

@@ -14,7 +14,7 @@ PAYME_LOGIN=provider_test_login
 PAYME_TEST_KEY=provider_test_key
 ```
 
-Bu namunalar ishlaydigan kalitlar emas. Test callback manzillari: `https://SIZNING_DOMEN/api/payments/click` va `/api/payments/payme`. Production API/auth qabul sinovi tugamaguncha internetga chiqarmang; joriy xavfsizlik bloki `DEPLOY_VPS_UZ.md` da yozilgan.
+Bu namunalar ishlaydigan kalitlar emas. Test callback manzillari: `https://SIZNING_DOMEN/api/payments/click` va `/api/payments/payme`. VPS/HTTPS ulash va maxfiy sozlamalar `DEPLOY_VPS_UZ.md` da yozilgan.
 
 ## Nima ishlaydi
 

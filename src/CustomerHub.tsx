@@ -1,4 +1,5 @@
 import { PaymentOptions } from "./PaymentOptions";
+import { AdminPasswordLogin, adminLoginText } from "./AdminPasswordLogin";
 import { OwnerAdminNavigation } from "./OwnerAdminNavigation";
 import { NativeServerSettings } from "./NativeServerSettings";
 import { BusinessAdmin } from "./BusinessAdmin";
@@ -193,6 +194,20 @@ export function CustomerHub({
         redeemed_by: string | null;
       }[]
     >([]);
+  const [adminMode, setAdminMode] = useState<"password" | "token">();
+  useEffect(() => {
+    let live = true;
+    void api
+      .request<{ adminAuth?: string }>("/health")
+      .then((h) => {
+        if (live)
+          setAdminMode(h.adminAuth === "password" ? "password" : "token");
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
   const [product, setProduct] = useState<Product>(freshProduct),
     [quota, setQuota] = useState(1),
     [days, setDays] = useState(30),
@@ -306,30 +321,30 @@ export function CustomerHub({
     orderRequest.current = null;
     setPendingCheckout(false);
   }
-  async function adminRefresh() {
+  async function adminRefresh(credential = adminToken) {
     setUnlocked(false);
     const session = await api.request<AdminSession>(
       "/admin/session",
       undefined,
-      adminToken,
+      credential,
     );
     const allowed = (permission: AdminPermission) =>
       session.permissions.includes(permission);
     const [p, o, s, a, c] = await Promise.all([
       allowed("catalog")
-        ? api.request<Product[]>("/admin/products", undefined, adminToken)
+        ? api.request<Product[]>("/admin/products", undefined, credential)
         : [],
       allowed("orders")
-        ? api.request<Order[]>("/admin/orders", undefined, adminToken)
+        ? api.request<Order[]>("/admin/orders", undefined, credential)
         : [],
       allowed("support")
-        ? api.request<Ticket[]>("/admin/support", undefined, adminToken)
+        ? api.request<Ticket[]>("/admin/support", undefined, credential)
         : [],
       allowed("audit")
-        ? api.request<typeof audit>("/admin/audit", undefined, adminToken)
+        ? api.request<typeof audit>("/admin/audit", undefined, credential)
         : [],
       allowed("codes")
-        ? api.request<typeof codes>("/admin/codes", undefined, adminToken)
+        ? api.request<typeof codes>("/admin/codes", undefined, credential)
         : [],
     ]);
     setAdminProducts(p);
@@ -1120,26 +1135,51 @@ export function CustomerHub({
             <NativeServerSettings locale={locale} />
             <section className="card">
               <h2>{t("admin")}</h2>
-              <p>{t("adminNotice")}</p>
-              <label>
-                {t("adminToken")}
-                <input
-                  type="password"
-                  autoComplete="off"
-                  value={adminToken}
-                  onChange={(e) => {
-                    setAdminToken(e.target.value);
+              {adminMode === "password" && (
+                <AdminPasswordLogin
+                  locale={locale}
+                  token={
+                    unlocked && adminSession?.role === "owner" ? adminToken : ""
+                  }
+                  onLogin={async (token) => {
+                    await adminRefresh(token);
+                    setAdminToken(token);
+                  }}
+                  onLogout={() => {
+                    setAdminToken("");
                     setUnlocked(false);
                     setAdminSession(null);
                   }}
                 />
-              </label>
-              <button
-                disabled={!adminToken}
-                onClick={() => void run(adminRefresh)}
-              >
-                {t("unlock")}
-              </button>
+              )}
+              {adminMode && (
+                <details open={adminMode === "token"}>
+                  <summary>
+                    {adminMode === "password"
+                      ? adminLoginText(locale, "staff")
+                      : t("adminNotice")}
+                  </summary>
+                  <label>
+                    {t("adminToken")}
+                    <input
+                      type="password"
+                      autoComplete="off"
+                      value={adminToken}
+                      onChange={(e) => {
+                        setAdminToken(e.target.value);
+                        setUnlocked(false);
+                        setAdminSession(null);
+                      }}
+                    />
+                  </label>
+                  <button
+                    disabled={!adminToken}
+                    onClick={() => void run(adminRefresh)}
+                  >
+                    {t("unlock")}
+                  </button>
+                </details>
+              )}
             </section>
             {unlocked && (
               <>
