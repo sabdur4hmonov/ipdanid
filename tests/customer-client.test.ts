@@ -125,3 +125,27 @@ it("expired browser sign out clears local credentials and malformed saved sessio
   await restored.restore();
   expect(restored.session).toBeNull();
 });
+
+it("logout waits for registration cleanup but a hung permission dialog cannot prevent server revocation", async () => {
+  vi.useFakeTimers();
+  try {
+    const { CustomerApi } = await import("../src/customer-api"),
+      api = new CustomerApi();
+    await api.retain({ id: "unit-account", token: "unit-session" });
+    mocked.request.mockResolvedValue({ status: 200, data: {} });
+    api.beforeLogout.add(() => new Promise<void>(() => {}));
+    const result = api.logout();
+    await vi.advanceTimersByTimeAsync(14999);
+    expect(mocked.request).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    await result;
+    expect(mocked.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: "https://configured-test.example/api/account/logout",
+      }),
+    );
+    expect(api.session).toBeNull();
+  } finally {
+    vi.useRealTimers();
+  }
+});

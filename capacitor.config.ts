@@ -5,5 +5,16 @@ const config: CapacitorConfig = {
   webDir: process.env.IP_RASM_NATIVE_WEB_DIR || "dist",
   android: { allowMixedContent: false },
   ios: { contentInset: "automatic" },
+  experimental: {
+    ios: {
+      spm: {
+        packageOptions: {
+          "@capacitor-firebase/messaging": {
+            symlink: process.platform !== "win32",
+          },
+        },
+      },
+    },
+  },
 };
 export default config;

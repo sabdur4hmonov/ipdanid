@@ -11,7 +11,8 @@ for (const port of [previewPort, apiPort])
     port < 1024 ||
     port > 65535 ||
     [
-      4194, 4195, 4196, 4197, 4198, 4199, 4200, 4331, 4465, 4478, 4479, 4480, 4481, 4482,
+      4194, 4195, 4196, 4197, 4198, 4199, 4200, 4331, 4465, 4478, 4479, 4480,
+      4481, 4482,
     ].includes(port)
   )
     throw Error(
@@ -72,6 +73,7 @@ export default defineConfig({
         CODE_PEPPER: process.env.CODE_PEPPER!,
         SANDBOX_PAYMENT_KEY: process.env.SANDBOX_PAYMENT_KEY!,
         PAYMENTS_SANDBOX: "1",
+        FCM_MODE: "mock",
         CLICK_SERVICE_ID: "12345",
         CLICK_SECRET_KEY: process.env.CLICK_SECRET_KEY!,
         PAYME_LOGIN: "Paycom-test",

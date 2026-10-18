@@ -5,6 +5,7 @@ import { DEFAULT_STOREFRONT } from "./business-types";
 import { businessText } from "./business-i18n";
 import { customerApi as api } from "./customer-api";
 import { useBusiness } from "./BusinessContext";
+import { PushAnnouncementAction } from "./PushAnnouncementAction";
 export function BusinessAdmin({
   locale,
   token,
@@ -265,6 +266,12 @@ export function BusinessAdmin({
             <article key={a.id} className="customer-item">
               <strong>{a.title}</strong>
               <p>{a.body}</p>
+              <PushAnnouncementAction
+                locale={locale}
+                token={token}
+                announcement={a}
+                run={run}
+              />
               <button
                 className="outline"
                 onClick={() => {

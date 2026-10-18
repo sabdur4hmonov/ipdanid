@@ -6,6 +6,7 @@ import { BusinessAdmin } from "./BusinessAdmin";
 import { KitAdmin } from "./KitAdmin";
 import { KitLogin } from "./KitLogin";
 import { PromotionPreference } from "./Announcements";
+import { PushSettings } from "./PushSettings";
 import { useBusiness } from "./BusinessContext";
 import { businessText } from "./business-i18n";
 import type { OrderCommerce } from "./business-types";
@@ -410,6 +411,7 @@ export function CustomerHub({
         {t("sandbox")}
       </p>
       <PromotionPreference locale={locale} />
+      <PushSettings locale={locale} />
       <div className="customer-tabs" role="group" aria-label={t("customer")}>
         {(["account", "shop", "sync", "support", "admin"] as Pane[]).map(
           (p) => (

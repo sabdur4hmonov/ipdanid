@@ -99,6 +99,11 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
       if (document.visibilityState === "visible") void refresh();
     };
     window.addEventListener("online", visible);
+    window.addEventListener("iprasm-push", visible);
+    const pushed = (e: MessageEvent) => {
+      if (e.data?.type === "IP_RASM_PUSH") void refresh();
+    };
+    navigator.serviceWorker?.addEventListener("message", pushed);
     document.addEventListener("visibilitychange", visible);
     const timer = window.setInterval(visible, 60000);
     const native = Capacitor.isNativePlatform()
@@ -110,6 +115,8 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
       if (s.life === life) s.alive = false;
       window.clearInterval(timer);
       window.removeEventListener("online", visible);
+      window.removeEventListener("iprasm-push", visible);
+      navigator.serviceWorker?.removeEventListener("message", pushed);
       document.removeEventListener("visibilitychange", visible);
       void native?.then((h) => h.remove());
     };

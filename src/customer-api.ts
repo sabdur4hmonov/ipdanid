@@ -29,15 +29,23 @@ const KEY =
 export const customerCacheNamespace = KEY;
 type Session = { id: string; token: string; email?: string };
 export class CustomerApi {
+  readonly beforeLogout = new Set<() => Promise<void>>();
+  readonly sessionChanged = new Set<() => void>();
   session: Session | null = null;
+  private generation = 0;
   async restore() {
+    const generation = this.generation;
     const raw = Capacitor.isNativePlatform()
       ? (await Preferences.get({ key: KEY })).value
       : localStorage.getItem(KEY);
     if (raw) {
       try {
         const s = JSON.parse(raw);
-        if (typeof s.id === "string" && typeof s.token === "string")
+        if (
+          generation === this.generation &&
+          typeof s.id === "string" &&
+          typeof s.token === "string"
+        )
           this.session = {
             id: s.id,
             token: s.token,
@@ -49,6 +57,7 @@ export class CustomerApi {
     }
   }
   async retain(session: Session | null) {
+    ++this.generation;
     this.session = session;
     if (Capacitor.isNativePlatform()) {
       if (session)
@@ -56,6 +65,7 @@ export class CustomerApi {
       else await Preferences.remove({ key: KEY });
     } else if (session) localStorage.setItem(KEY, JSON.stringify(session));
     else localStorage.removeItem(KEY);
+    this.sessionChanged.forEach((fn) => fn());
   }
   async request<T>(
     path: string,
@@ -127,6 +137,19 @@ export class CustomerApi {
   }
   async logout() {
     let failure: unknown;
+    // Invalidate/drain pending device registrations before the server revokes
+    // all account tokens. Cleanup failure must never prevent account logout.
+    let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([
+        Promise.allSettled([...this.beforeLogout].map((fn) => fn())),
+        new Promise<void>((resolve) => {
+          cleanupTimer = setTimeout(resolve, 15000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(cleanupTimer);
+    }
     try {
       await this.request("/account/logout", {});
     } catch (error) {

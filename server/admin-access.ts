@@ -190,6 +190,11 @@ export function adminRoutePermission(
   path: string,
 ): AdminPermission | null {
   if (
+    (method === "GET" && path === "/api/admin/push/status") ||
+    (method === "POST" && path === "/api/admin/push/enqueue")
+  )
+    return "messages";
+  if (
     (method === "GET" && path === "/api/admin/kits") ||
     (method === "POST" &&
       [

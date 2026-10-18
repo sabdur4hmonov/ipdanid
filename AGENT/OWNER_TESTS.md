@@ -2,6 +2,12 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-18 — Phase15 bildirishnomalar (egasi hozir sinashi shart emas)
+
+Avtomatik tekshiruv faqat soxta FCM bilan bajariladi; haqiqiy xabar yuborilmaydi. Yakuniy Phase15 manzili keyin `output/phase15/manual-testing.txt` da bo‘ladi;4194–4200 eski sahifalarini bu sinov uchun ishlatmang.
+
+Firebase ulash kerak bo‘lganda [PUSH_NOTIFICATIONS_UZ.md](../docs/PUSH_NOTIFICATIONS_UZ.md) ga amal qiling. Hisob → Bildirishnomalar → “Shu qurilmada yoqish”; tizim ruxsatini bering. Reklama roziligini alohida tanlang. Admin → E’lonlar → e’lonni chop eting → “Bildirishnoma yuborish”. Sozlanmagan serverda tugma o‘chiq va ilova ichidagi e’lonlar ishlashi kerak. Soxta muhit haqiqiy yetkazildi deb ko‘rsatmaydi. O‘chirish yoki hisobdan chiqish tokenni bekor qiladi; keyingi kirishda qayta rozilik talab qilinadi. Android/iPhone haqiqiy yetkazilishi Firebase/APNs va egasining telefoni ulanishidan keyin tekshiriladi.
+
 ## 2026-10-16 — Phase10, yangi reference usuli
 
 Yangi sinov manzili: **http://127.0.0.1:4196/**. Uchta yig‘ishga mo‘ljallangan kit kodi `output/phase10/manual-testing.txt` faylida. Eski4195 sahifasi oldingi talqin; yangi usulni4196da sinang.

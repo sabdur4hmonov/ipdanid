@@ -1,5 +1,6 @@
 import type { Locale, Project, Shape } from "./core/types";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
+import { startPushRuntime } from "./push-client";
 import { CustomerStudio } from "./CustomerStudio";
 import { customerFlowText } from "./customer-flow-i18n";
 import { standardText } from "./standard-kit-i18n";
@@ -71,6 +72,7 @@ export default function App() {
     t,
     view,
   } = context;
+  useEffect(() => startPushRuntime(locale), [locale]);
   return (
     <div
       className={customerFlow && view === "create" ? "app customer-app" : "app"}

@@ -30,6 +30,8 @@ const fontFiles = [
     "/licenses/dijkstrajs.txt",
     "/licenses/bidi-js.txt",
     "/licenses/require-from-string.txt",
+    "/licenses/capacitor-firebase-messaging.txt",
+    "/licenses/firebase-sdk.txt",
   ]);
 export default defineConfig({
   // Native build caches and private evidence are served on demand, never source watched.

@@ -11,7 +11,10 @@ import { KitStore } from "./kit-store.ts";
 import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 import { Payments } from "./payments.ts";
+import { pushAdapter } from "./fcm-adapter.ts";
+import { PushStore } from "./push-store.ts";
 const production = process.env.NODE_ENV === "production";
+const notificationAdapter = pushAdapter(process.env);
 const adminToken = production
   ? randomBytes(32).toString("base64url")
   : (process.env.LOCAL_ADMIN_TOKEN ?? randomBytes(32).toString("base64url"));
@@ -29,6 +32,15 @@ const store = new KitStore(
 );
 if (!production) store.seed();
 const business = new BusinessStore(store);
+const push = new PushStore(store, pepper, notificationAdapter, (id) =>
+  business.announcements(true).find((a) => a.id === id),
+);
+const pushTimer =
+  notificationAdapter.mode !== "disabled"
+    ? setInterval(() => {
+        void push.drain().catch(() => {});
+      }, 2000).unref()
+    : undefined;
 const ownerAuth = production
   ? new ProductionAdminAuth(store, process.env.ADMIN_PASSWORD_HASH!)
   : undefined;
@@ -113,13 +125,35 @@ const server = createServer(async (req, res) => {
         sandbox: !production,
         adminAuth: production ? "password" : "token",
         livePayments: false,
-        liveMessages: false,
+        liveMessages: notificationAdapter.mode === "fcm",
         apiVersion: production ? "product-api/3" : "business-sandbox/2",
       });
       return;
     }
     if (req.method === "GET" && path === "/api/kit-profiles") {
       send(200, store.standardKit());
+      return;
+    }
+    if (req.method === "GET" && path === "/api/push/config") {
+      const web =
+        notificationAdapter.mode === "fcm" &&
+        process.env.FCM_WEB_API_KEY &&
+        process.env.FCM_WEB_APP_ID &&
+        process.env.FCM_SENDER_ID &&
+        process.env.FCM_VAPID_PUBLIC_KEY
+          ? {
+              apiKey: process.env.FCM_WEB_API_KEY,
+              appId: process.env.FCM_WEB_APP_ID,
+              projectId: process.env.FCM_PROJECT_ID,
+              messagingSenderId: process.env.FCM_SENDER_ID,
+              vapidKey: process.env.FCM_VAPID_PUBLIC_KEY,
+            }
+          : null;
+      send(200, {
+        mode: notificationAdapter.mode,
+        enabled: notificationAdapter.mode !== "disabled",
+        web,
+      });
       return;
     }
     const kitRevision = path.match(/^\/api\/kit-profiles\/(\d+)$/);
@@ -234,6 +268,14 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (path === "/api/admin/push/status" && req.method === "GET") {
+        send(200, push.status());
+        return;
+      }
+      if (path === "/api/admin/push/enqueue" && req.method === "POST") {
+        send(201, push.enqueue(actor, body));
+        return;
+      }
       if (path === "/api/admin/kits" && req.method === "GET") {
         send(200, { ...store.kitAdmin(), standardKit: store.standardKit() });
         return;
@@ -367,6 +409,18 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/push/devices" && req.method === "GET") {
+      send(200, push.list(user));
+      return;
+    }
+    if (path === "/api/push/devices" && req.method === "POST") {
+      send(200, push.register(user, body));
+      return;
+    }
+    if (path === "/api/push/revoke" && req.method === "POST") {
+      send(200, push.revoke(user, body));
+      return;
+    }
     if (req.method === "POST" && path === "/api/payments/invoices") {
       send(
         201,
@@ -435,6 +489,7 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (path === "/api/account/logout" && req.method === "POST") {
+      push.revokeAccount(user);
       send(200, store.logout(token));
       return;
     }
@@ -588,6 +643,7 @@ const cleanup = setInterval(() => {
 cleanup.unref();
 process.on("SIGINT", () =>
   server.close(() => {
+    if (pushTimer) clearInterval(pushTimer);
     store.close();
     process.exit(0);
   }),
