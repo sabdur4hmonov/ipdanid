@@ -4,7 +4,9 @@ import { PaintStudio } from "./PaintStudio";
 import { paintText } from "./paint-i18n";
 import type { Instruction, Locale } from "./core/types";
 import { letteringText } from "./lettering-i18n";
+import { qrCraftText } from "./qr-craft-i18n";
 const TextStudio = lazy(() => import("./TextStudio"));
+const QrCraftStudio = lazy(() => import("./QrCraftStudio"));
 export function CraftStudio({
   locale,
   onGuide,
@@ -14,7 +16,7 @@ export function CraftStudio({
   onGuide: (i: Instruction) => void;
   onPreset: (kind: "animal" | "object") => void;
 }) {
-  const [mode, setMode] = useState<"grid" | "paint" | "text">("grid");
+  const [mode, setMode] = useState<"grid" | "paint" | "text" | "qr">("grid");
   return (
     <>
       <div className="card">
@@ -45,8 +47,15 @@ export function CraftStudio({
         <button aria-pressed={mode === "text"} onClick={() => setMode("text")}>
           {letteringText(locale, "title")}
         </button>
+        <button aria-pressed={mode === "qr"} onClick={() => setMode("qr")}>
+          {qrCraftText(locale, "title")}
+        </button>
       </div>
-      {mode === "text" ? (
+      {mode === "qr" ? (
+        <Suspense fallback={<p role="status">…</p>}>
+          <QrCraftStudio locale={locale} />
+        </Suspense>
+      ) : mode === "text" ? (
         <Suspense fallback={<p role="status">…</p>}>
           <TextStudio locale={locale} onGuide={onGuide} />
         </Suspense>

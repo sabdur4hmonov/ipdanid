@@ -133,3 +133,11 @@
   width: auto;
   margin-right: 8px;
 }
+.qr-craft input[type="checkbox"] {
+  width: auto;
+}
+.qr-craft .check-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

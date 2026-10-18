@@ -98,7 +98,7 @@ test("diamond physical shape and magnetic materials survive exact exports and of
   expect((await json(page, "Grid JSON")).project.guide.sequenceHash).toBe(
     p.guide.sequenceHash,
   );
-  const out = `output/phase15/craft/${info.project.name}`;
+  const out = `output/current-craft/${info.project.name}`;
   mkdirSync(out, { recursive: true });
   const pdf = page.waitForEvent("download");
   await page.getByRole("button", { name: "Grid PDF", exact: true }).click();
@@ -163,7 +163,7 @@ test("paint has closed physical contours, exact area coverage and durable offlin
     .first()
     .click();
   expect(await json(page, "Boundary JSON")).toEqual(plan);
-  const out = `output/phase15/craft/${info.project.name}`;
+  const out = `output/current-craft/${info.project.name}`;
   mkdirSync(out, { recursive: true });
   await page
     .getByTestId("paint-boundaries")

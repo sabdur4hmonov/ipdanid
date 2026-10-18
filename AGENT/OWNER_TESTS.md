@@ -267,3 +267,8 @@ Ism/sana yoki Menyu → Rasm turi → Yozuvda `Ali سلام Мир 2026` kabi bi
 Menyu → Mutaxassis rejimi → Menyu → donali hunarmandchilik. Olmos turida dumaloq/kvadrat, dona eni, taglik rangi va tajriba magnit+po‘lat variantini tanlash mumkin. Dona eni qadamdan katta bo‘lsa reja rad etiladi. Yaratish → saqlash → birinchi donani tasdiqlash → internetni uzib qayta ochish: material va jarayon saqlansin. SVG haqiqiy mm; PDFdagi kataklar tartib chizmasi.
 
 Raqamli bo‘yashda hududni belgilaganda bo‘yalgan maydon foizi ham o‘zgarsin. Yopiq chegaralar SVG va JSONni yuklash mumkin; SVGdagi 50 mm chiziqni 100% chop etib keyin o‘lchang. Ichki bo‘shliqlar saqlanadi, raqam sig‘magan kichik hududning markazi JSONda bor. Batafsil docs/CRAFT_POLISH_UZ.md. Agent avtomatik tekshiradi, hozir egasining qo‘lda sinovini kutmaydi.
+
+
+## Phase15 — QR lenta naqshi (avtomatik tekshirildi)
+
+Menyu → Mutaxassis rejimi → Menyu → donali hunarmandchilik → QR ip naqshi. Qisqa matn/havola → yaratish. Old tasvir skanerlanadi; orqa ko‘rinish o‘tishlarni ko‘rsatadi. Qadamni tasdiqlab, oflayn qayta ochganda keyingi qadam saqlansin. JSON/CSV/SVG/PDF bir xil reja bo‘lsin. Bu oddiy 240 mixli kit uchun emas: alohida oq teshikli varaq va 1.4 mm yassi qora lenta kerak, dumaloq ip almashtirmaydi. Fizik teshik/lenta mosligi va tayyor buyumni telefon bilan skanerlash keyingi egasi sinovi. Andozada 50 mm belgini o‘lchang. Aniq yo‘l: docs/QR_CRAFT_UZ.md.6unit va4desktop/mobil holat o‘tdi; agent hozir qo‘lda sinovni kutmaydi.
