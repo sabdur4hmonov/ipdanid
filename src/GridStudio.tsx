@@ -14,6 +14,8 @@ import {
   newGridProject,
   replaceGridCell,
   mosaicLayout,
+  diamondPiece,
+  type DiamondMaterial,
   type GridGuide,
   type GridKind,
   type GridProject,
@@ -53,6 +55,12 @@ export function GridStudio({ locale }: { locale: Locale }) {
     [plateColumns, setPlateColumns] = useState(16),
     [plateRows, setPlateRows] = useState(16),
     [plateStock, setPlateStock] = useState(100),
+    [diamondStyle, setDiamondStyle] =
+      useState<DiamondMaterial["style"]>("round"),
+    [pieceSize, setPieceSize] = useState(2.3),
+    [magnetic, setMagnetic] = useState(false),
+    [backingMm, setBackingMm] = useState(0.5),
+    [backingHex, setBackingHex] = useState("#ffffff"),
     [palette, setPalette] = useState(paletteText(COLORS)),
     [image, setImage] = useState<HTMLCanvasElement>(),
     [original, setOriginal] = useState<HTMLCanvasElement>(),
@@ -88,16 +96,28 @@ export function GridStudio({ locale }: { locale: Locale }) {
     c.width = g.columns * 8;
     c.height = g.rows * 8;
     const ctx = c.getContext("2d")!;
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle =
+      g.profile.kind === "diamond"
+        ? diamondPiece(g.profile).backingHex
+        : "#fff";
     ctx.fillRect(0, 0, c.width, c.height);
     g.cells.forEach((v, k) => {
       const x = (k % g.columns) * 8,
         y = Math.floor(k / g.columns) * 8;
       ctx.fillStyle = g.profile.palette[v].hex;
       if (g.profile.kind === "mosaic") ctx.fillRect(x, y, 8, 8);
-      else {
+      else if (diamondPiece(g.profile).style === "square") {
+        const side = 8 * diamondPiece(g.profile).ratio;
+        ctx.fillRect(x + (8 - side) / 2, y + (8 - side) / 2, side, side);
+      } else {
         ctx.beginPath();
-        ctx.arc(x + 4, y + 4, 3.6, 0, Math.PI * 2);
+        ctx.arc(
+          x + 4,
+          y + 4,
+          4 * diamondPiece(g.profile).ratio,
+          0,
+          Math.PI * 2,
+        );
         ctx.fill();
       }
     });
@@ -111,13 +131,15 @@ export function GridStudio({ locale }: { locale: Locale }) {
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       setError(
-        message.includes("baseplate")
-          ? craftPolishText(locale, "error")
-          : message.includes("Insufficient")
-            ? t("insufficient")
-            : message.includes("another window")
-              ? t("conflict")
-              : message,
+        message.includes("diamond")
+          ? craftPolishText(locale, "diamondError")
+          : message.includes("baseplate")
+            ? craftPolishText(locale, "error")
+            : message.includes("Insufficient")
+              ? t("insufficient")
+              : message.includes("another window")
+                ? t("conflict")
+                : message,
       );
     } finally {
       setBusy(false);
@@ -129,6 +151,17 @@ export function GridStudio({ locale }: { locale: Locale }) {
     setStep(Math.min(p.guide.cells.length, p.progress.confirmed + 1));
     setReplacement(0);
     setError("");
+    setKind(p.guide.profile.kind);
+    setColumns(p.guide.columns);
+    setRows(p.guide.rows);
+    setPitch(p.guide.profile.pitchMm);
+    setSpares(p.guide.profile.sparePercent);
+    const material = p.guide.profile.diamond;
+    setDiamondStyle(material?.style ?? "round");
+    setPieceSize(material?.sizeMm ?? p.guide.profile.pitchMm * 0.9);
+    setMagnetic(material?.attachment === "magnetic-steel");
+    setBackingMm(material?.backingMm || 0.5);
+    setBackingHex(material?.backingHex ?? "#ffffff");
     if (p.layout) {
       setPlateColumns(p.layout.columns);
       setPlateRows(p.layout.rows);
@@ -199,6 +232,20 @@ export function GridStudio({ locale }: { locale: Locale }) {
         sparePercent: spares,
         palette: colors,
         provisional: true,
+        ...(kind === "diamond"
+          ? {
+              diamond: {
+                version: "diamond-material/1" as const,
+                style: diamondStyle,
+                sizeMm: pieceSize,
+                attachment: magnetic
+                  ? ("magnetic-steel" as const)
+                  : ("adhesive" as const),
+                backingMm: magnetic ? backingMm : 0,
+                backingHex,
+              },
+            }
+          : {}),
       });
     const p = await plannedProject(g, name || t(kind));
     if (token === job.current) open(p);
@@ -364,6 +411,71 @@ export function GridStudio({ locale }: { locale: Locale }) {
               />
             </label>
             <p>{t("paletteHelp")}</p>
+            {kind === "diamond" && (
+              <>
+                <label>
+                  {craftPolishText(locale, "diamondStyle")}
+                  <select
+                    aria-label={craftPolishText(locale, "diamondStyle")}
+                    value={diamondStyle}
+                    onChange={(e) =>
+                      setDiamondStyle(
+                        e.target.value as DiamondMaterial["style"],
+                      )
+                    }
+                  >
+                    <option value="round">
+                      {craftPolishText(locale, "round")}
+                    </option>
+                    <option value="square">
+                      {craftPolishText(locale, "square")}
+                    </option>
+                  </select>
+                </label>
+                <label>
+                  {craftPolishText(locale, "pieceSize")}
+                  <input
+                    type="number"
+                    min={0.5}
+                    max={pitch}
+                    step={0.1}
+                    value={pieceSize}
+                    onChange={(e) => setPieceSize(Number(e.target.value))}
+                  />
+                </label>
+                <label className="check-label">
+                  <input
+                    type="checkbox"
+                    checked={magnetic}
+                    onChange={(e) => setMagnetic(e.target.checked)}
+                  />
+                  {craftPolishText(locale, "magnetic")}
+                </label>
+                {magnetic && (
+                  <label>
+                    {craftPolishText(locale, "backingMm")}
+                    <input
+                      type="number"
+                      min={0.2}
+                      max={3}
+                      step={0.1}
+                      value={backingMm}
+                      onChange={(e) => setBackingMm(Number(e.target.value))}
+                    />
+                  </label>
+                )}
+              </>
+            )}
+            {kind === "diamond" && (
+              <label>
+                {craftPolishText(locale, "backingColor")}
+                <input
+                  type="color"
+                  value={backingHex}
+                  onChange={(e) => setBackingHex(e.target.value)}
+                />
+              </label>
+            )}
             {kind === "mosaic" &&
               (
                 [
@@ -450,6 +562,19 @@ export function GridStudio({ locale }: { locale: Locale }) {
                 mm · {project.guide.columns} × {project.guide.rows}
               </p>
               <p>{t("order")}</p>
+              {project.guide.profile.diamond && (
+                <p data-testid="diamond-materials">
+                  {craftPolishText(locale, project.guide.profile.diamond.style)}{" "}
+                  · {project.guide.profile.diamond.sizeMm} mm ·{" "}
+                  {craftPolishText(
+                    locale,
+                    project.guide.profile.diamond.attachment === "adhesive"
+                      ? "adhesive"
+                      : "magnetic",
+                  )}{" "}
+                  · {project.guide.profile.diamond.backingMm} mm
+                </p>
+              )}
               {project.layout && (
                 <MosaicPlan
                   project={project}

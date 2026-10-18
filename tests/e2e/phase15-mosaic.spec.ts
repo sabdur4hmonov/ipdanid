@@ -85,7 +85,7 @@ test("mosaic baseplates use real inventory, exact sequence, local positions and 
     .getByRole("button", { name: "Baseplate PDF", exact: true })
     .click();
   const pdf = await pdfDownload;
-  const path = `output/phase15/mosaic/${info.project.name}`;
+  const path = `output/current-mosaic/${info.project.name}`;
   mkdirSync(path, { recursive: true });
   await pdf.saveAs(path + "/baseplates.pdf");
   const doc = await PDFDocument.load(readFileSync(path + "/baseplates.pdf"));

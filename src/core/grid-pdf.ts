@@ -9,6 +9,7 @@ import {
 } from "./grid-craft";
 import { gridText } from "../grid-i18n";
 import type { Locale } from "./types";
+import { craftPolishText } from "../craft-polish-i18n";
 export async function gridPdf(
   p: GridProject,
   locale: Locale = "en",
@@ -62,6 +63,12 @@ export async function gridPdf(
     t("order"),
     t("chart"),
     t("print"),
+    ...(g.profile.diamond
+      ? [
+          `${craftPolishText(locale, g.profile.diamond.style)} · ${g.profile.diamond.sizeMm} mm`,
+          `${craftPolishText(locale, g.profile.diamond.attachment === "adhesive" ? "adhesive" : "magnetic")} · ${g.profile.diamond.backingMm} mm`,
+        ]
+      : []),
   ])
     y = wrap(cover, s, y);
   const legend = page();

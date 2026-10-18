@@ -119,7 +119,7 @@ test("owner announcement queues through the real UI, mocks delivery and protects
         );
       })
       .toBeGreaterThan(0);
-    const out = join("output", "phase15", "push", info.project.name);
+    const out = join("output", "current-push", info.project.name);
     mkdirSync(out, { recursive: true });
     await card.screenshot({ path: join(out, "admin-mock-queued.png") });
     expect(

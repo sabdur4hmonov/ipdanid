@@ -16,6 +16,14 @@ function checked(root: string, output: string, results: string) {
   if (!child(output) && !child(results))
     throw Error("Evidence must use a new output/ or test-results/ directory");
   const rel = relative(output, root).split(sep)[0].toLowerCase();
+  const parts = relative(output, root)
+    .split(sep)
+    .map((p) => p.toLowerCase());
+  if (
+    parts[0] === "phase15" &&
+    ["caption-v1", "caption-v2", "bidi", "push", "mosaic"].includes(parts[1])
+  )
+    throw Error("Completed Phase15 checkpoint evidence is frozen");
   if (/^phase(?:9|10|11|12|13|14)$/.test(rel) || /-dist$/.test(rel))
     throw Error("Historical reports and live web directories are frozen");
 }

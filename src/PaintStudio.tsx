@@ -20,6 +20,7 @@ import { paintText } from "./paint-i18n";
 import { download } from "./download";
 import type { Locale } from "./core/types";
 import "./grid.css";
+import { PaintPolish } from "./PaintPolish";
 const DEFAULT_PALETTE = [
   "#ffffff",
   "#161a1d",
@@ -520,6 +521,12 @@ export function PaintStudio({ locale }: { locale: Locale }) {
                 </div>
               </details>
               <p>{t("physical")}</p>
+              <PaintPolish
+                project={project}
+                region={region}
+                locale={locale}
+                run={run}
+              />
               <p>{t("print")}</p>
               <div className="grid-actions">
                 {(["json", "svg", "csv", "pdf"] as const).map((format) => (

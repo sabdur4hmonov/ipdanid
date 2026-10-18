@@ -11,9 +11,25 @@ export interface GridProfile {
   sparePercent: number;
   palette: GridColor[];
   provisional: true;
+  diamond?: DiamondMaterial;
+}
+export type DiamondMaterial = {
+  version: "diamond-material/1";
+  style: "round" | "square";
+  sizeMm: number;
+  attachment: "adhesive" | "magnetic-steel";
+  backingMm: number;
+  backingHex: string;
+};
+export function diamondPiece(p: GridProfile) {
+  return {
+    style: p.diamond?.style ?? "round",
+    ratio: p.diamond ? p.diamond.sizeMm / p.pitchMm : 0.9,
+    backingHex: p.diamond?.backingHex ?? "#ffffff",
+  };
 }
 export interface GridGuide {
-  schema: "iprasm.grid/1";
+  schema: "iprasm.grid/1" | "iprasm.grid/2";
   algorithm: "inventory-regret-linear-rgb/1";
   id: string;
   createdAt: string;
@@ -91,6 +107,37 @@ export function checkGridProfile(p: GridProfile) {
     p.palette.length > 32
   )
     throw Error("Invalid grid materials");
+  if (p.diamond !== undefined) {
+    const d = p.diamond;
+    if (
+      p.kind !== "diamond" ||
+      !d ||
+      d.version !== "diamond-material/1" ||
+      !["round", "square"].includes(d.style) ||
+      !Number.isFinite(d.sizeMm) ||
+      d.sizeMm < 0.5 ||
+      d.sizeMm > p.pitchMm ||
+      typeof d.backingHex !== "string" ||
+      !HEX.test(d.backingHex) ||
+      !["adhesive", "magnetic-steel"].includes(d.attachment) ||
+      !Number.isFinite(d.backingMm) ||
+      (d.attachment === "adhesive"
+        ? d.backingMm !== 0
+        : d.backingMm < 0.2 || d.backingMm > 3) ||
+      Object.keys(d).some(
+        (k) =>
+          ![
+            "version",
+            "style",
+            "sizeMm",
+            "attachment",
+            "backingMm",
+            "backingHex",
+          ].includes(k),
+      )
+    )
+      throw Error("Invalid diamond materials");
+  }
   const codes = new Set<string>();
   for (const c of p.palette) {
     if (
@@ -141,7 +188,7 @@ export function gridCounts(g: GridGuide) {
 export async function validateGrid(g: GridGuide) {
   if (
     !g ||
-    g.schema !== "iprasm.grid/1" ||
+    !["iprasm.grid/1", "iprasm.grid/2"].includes(g.schema) ||
     g.algorithm !== "inventory-regret-linear-rgb/1" ||
     g.order !== "serpentine-top-left/1" ||
     typeof g.id !== "string" ||
@@ -153,6 +200,8 @@ export async function validateGrid(g: GridGuide) {
     throw Error("Invalid grid guide");
   dimensions(g.columns, g.rows);
   checkGridProfile(g.profile);
+  if ((g.schema === "iprasm.grid/2") !== !!g.profile.diamond)
+    throw Error("Invalid diamond guide version");
   if (
     !Array.isArray(g.cells) ||
     g.cells.length !== g.columns * g.rows ||
@@ -237,7 +286,7 @@ export async function generateGrid(
   }
   const sourceHash = await hash(Array.from(pixels).join(",")),
     g: GridGuide = {
-      schema: "iprasm.grid/1",
+      schema: profile.diamond ? "iprasm.grid/2" : "iprasm.grid/1",
       algorithm: "inventory-regret-linear-rgb/1",
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
@@ -329,7 +378,9 @@ export async function parseGridProject(raw: string) {
   const data = JSON.parse(raw);
   if (
     !["iprasm.grid-project/1", "iprasm.grid-project/2"].includes(data.schema) ||
-    (data.schema === "iprasm.grid-project/2") !== !!data.project?.layout
+    (data.schema === "iprasm.grid-project/2") !==
+      (!!data.project?.layout ||
+        data.project?.guide?.schema === "iprasm.grid/2")
   )
     throw Error("Unsupported grid file");
   const p = await validateGridProject(data.project);
@@ -338,7 +389,10 @@ export async function parseGridProject(raw: string) {
 export function gridFile(p: GridProject) {
   return JSON.stringify(
     {
-      schema: p.layout ? "iprasm.grid-project/2" : "iprasm.grid-project/1",
+      schema:
+        p.layout || p.guide.schema === "iprasm.grid/2"
+          ? "iprasm.grid-project/2"
+          : "iprasm.grid-project/1",
       project: p,
     },
     null,
@@ -358,6 +412,7 @@ export function gridCsv(g: GridGuide) {
 export function gridSvg(g: GridGuide) {
   const w = g.columns * g.profile.pitchMm,
     h = g.rows * g.profile.pitchMm;
+  const piece = diamondPiece(g.profile);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="0 0 ${g.columns} ${g.rows}" data-sequence-hash="${g.sequenceHash}"><title>Exact physical grid; verify print scale and materials</title>${g.cells
     .map((v, k) => {
       const x = k % g.columns,
@@ -365,7 +420,7 @@ export function gridSvg(g: GridGuide) {
         color = g.profile.palette[v].hex;
       return g.profile.kind === "mosaic"
         ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${color}" stroke="#777" stroke-width=".025"/>`
-        : `<rect x="${x}" y="${y}" width="1" height="1" fill="#fff"/><circle cx="${x + 0.5}" cy="${y + 0.5}" r=".45" fill="${color}"/>`;
+        : `<rect x="${x}" y="${y}" width="1" height="1" fill="${g.profile.diamond ? piece.backingHex : "#fff"}"/>${piece.style === "square" ? `<rect x="${x + (1 - piece.ratio) / 2}" y="${y + (1 - piece.ratio) / 2}" width="${piece.ratio}" height="${piece.ratio}" fill="${color}"/>` : `<circle cx="${x + 0.5}" cy="${y + 0.5}" r="${g.profile.diamond ? piece.ratio / 2 : ".45"}" fill="${color}"/>`}`;
     })
     .join("")}</svg>`;
 }

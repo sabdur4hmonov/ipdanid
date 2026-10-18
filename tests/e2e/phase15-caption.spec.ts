@@ -68,7 +68,7 @@ for (const [shape, text] of [
     tampered.params.kitPreparation.transform.caption.portraitScale = 0.99;
     tampered.sequenceHash = await hash(sequencePayload(tampered));
     await expect(validateInstruction(tampered)).rejects.toThrow();
-    const out = `output/phase15/caption-v2/${info.project.name}/${shape}`;
+    const out = `output/current-caption/${info.project.name}/${shape}`;
     mkdirSync(out, { recursive: true });
     writeFileSync(out + "/target.png", Buffer.from(target, "base64"));
     writeFileSync(out + "/guide.json", JSON.stringify(guide));

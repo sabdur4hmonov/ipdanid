@@ -111,6 +111,6 @@ it("produces a bounded localized cover, global inventory and one genuine chart p
     doc = await PDFDocument.load(bytes);
   expect(doc.getPageCount()).toBe(11);
   expect(doc.getSubject()).toContain(p.layout!.hash);
-  mkdirSync("output/phase15/mosaic", { recursive: true });
-  writeFileSync("output/phase15/mosaic/unit-baseplates.pdf", bytes);
+  mkdirSync("output/current-mosaic", { recursive: true });
+  writeFileSync("output/current-mosaic/unit-baseplates.pdf", bytes);
 });

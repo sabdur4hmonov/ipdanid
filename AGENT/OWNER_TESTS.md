@@ -260,3 +260,10 @@ Yakuniy yangi manzil Phase15 tugaganda beriladi;4200eski holida saqlanadi. Odam 
 ## Phase15 — aralash yozuv (avtomatik tekshirildi)
 
 Ism/sana yoki Menyu → Rasm turi → Yozuvda `Ali سلام Мир 2026` kabi bitta qatorda aralash yozish mumkin. Arab harflari qo‘shiladi, raqamlar teskarilanmaydi; matnni o‘zingiz teskari yozmang. Mutaxassis rejimidagi kontur ham aralash matn bilan ishlaydi, mix oralig‘i sig‘masa kattaroq taxta/kamroq mix so‘raydi.23unit va16ta oxirgi desktop/mobil holat o‘tdi. Eski saqlangan matnli yo‘riqnomalar saqlanadi. Agent qo‘lda test kutmaydi.
+
+
+## Phase15 — olmos materiali va yopiq bo‘yash chegaralari
+
+Menyu → Mutaxassis rejimi → Menyu → donali hunarmandchilik. Olmos turida dumaloq/kvadrat, dona eni, taglik rangi va tajriba magnit+po‘lat variantini tanlash mumkin. Dona eni qadamdan katta bo‘lsa reja rad etiladi. Yaratish → saqlash → birinchi donani tasdiqlash → internetni uzib qayta ochish: material va jarayon saqlansin. SVG haqiqiy mm; PDFdagi kataklar tartib chizmasi.
+
+Raqamli bo‘yashda hududni belgilaganda bo‘yalgan maydon foizi ham o‘zgarsin. Yopiq chegaralar SVG va JSONni yuklash mumkin; SVGdagi 50 mm chiziqni 100% chop etib keyin o‘lchang. Ichki bo‘shliqlar saqlanadi, raqam sig‘magan kichik hududning markazi JSONda bor. Batafsil docs/CRAFT_POLISH_UZ.md. Agent avtomatik tekshiradi, hozir egasining qo‘lda sinovini kutmaydi.
