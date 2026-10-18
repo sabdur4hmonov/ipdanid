@@ -13,6 +13,8 @@ import {
   parseGridProject,
   newGridProject,
   replaceGridCell,
+  mosaicLayout,
+  type GridGuide,
   type GridKind,
   type GridProject,
   type GridColor,
@@ -22,6 +24,9 @@ import { gridText } from "./grid-i18n";
 import { download } from "./download";
 import type { Locale } from "./core/types";
 import "./grid.css";
+import { MosaicPlan } from "./MosaicPlan";
+import { EXTENDED_GRID_COLORS } from "./core/mosaic-plan";
+import { craftPolishText } from "./craft-polish-i18n";
 const COLORS = [
   "#faf8ef",
   "#18201d",
@@ -45,6 +50,9 @@ export function GridStudio({ locale }: { locale: Locale }) {
     [rows, setRows] = useState(48),
     [pitch, setPitch] = useState(8),
     [spares, setSpares] = useState(0),
+    [plateColumns, setPlateColumns] = useState(16),
+    [plateRows, setPlateRows] = useState(16),
+    [plateStock, setPlateStock] = useState(100),
     [palette, setPalette] = useState(paletteText(COLORS)),
     [image, setImage] = useState<HTMLCanvasElement>(),
     [original, setOriginal] = useState<HTMLCanvasElement>(),
@@ -103,11 +111,13 @@ export function GridStudio({ locale }: { locale: Locale }) {
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       setError(
-        message.includes("Insufficient")
-          ? t("insufficient")
-          : message.includes("another window")
-            ? t("conflict")
-            : message,
+        message.includes("baseplate")
+          ? craftPolishText(locale, "error")
+          : message.includes("Insufficient")
+            ? t("insufficient")
+            : message.includes("another window")
+              ? t("conflict")
+              : message,
       );
     } finally {
       setBusy(false);
@@ -119,6 +129,17 @@ export function GridStudio({ locale }: { locale: Locale }) {
     setStep(Math.min(p.guide.cells.length, p.progress.confirmed + 1));
     setReplacement(0);
     setError("");
+    if (p.layout) {
+      setPlateColumns(p.layout.columns);
+      setPlateRows(p.layout.rows);
+      setPlateStock(p.layout.stock);
+    }
+  }
+  async function plannedProject(g: GridGuide, title: string) {
+    const p = newGridProject(g, title);
+    if (g.profile.kind === "mosaic")
+      p.layout = await mosaicLayout(g, plateColumns, plateRows, plateStock);
+    return p;
   }
   async function importPhoto(file: File) {
     const token = ++job.current,
@@ -179,7 +200,8 @@ export function GridStudio({ locale }: { locale: Locale }) {
         palette: colors,
         provisional: true,
       });
-    if (token === job.current) open(newGridProject(g, name || t(kind)));
+    const p = await plannedProject(g, name || t(kind));
+    if (token === job.current) open(p);
   }
   const cell = project ? gridCell(project.guide, step) : undefined;
   return (
@@ -321,6 +343,13 @@ export function GridStudio({ locale }: { locale: Locale }) {
               >
                 {t("mono")}
               </button>
+              <button
+                onClick={() =>
+                  setPalette(paletteText([...EXTENDED_GRID_COLORS]))
+                }
+              >
+                {craftPolishText(locale, "richer")}
+              </button>
               <button onClick={() => setPalette(paletteText(COLORS))}>
                 {t("color")}
               </button>
@@ -335,6 +364,43 @@ export function GridStudio({ locale }: { locale: Locale }) {
               />
             </label>
             <p>{t("paletteHelp")}</p>
+            {kind === "mosaic" &&
+              (
+                [
+                  {
+                    key: "plateColumns",
+                    value: plateColumns,
+                    set: setPlateColumns,
+                    max: 48,
+                    min: 4,
+                  },
+                  {
+                    key: "plateRows",
+                    value: plateRows,
+                    set: setPlateRows,
+                    max: 48,
+                    min: 4,
+                  },
+                  {
+                    key: "plateStock",
+                    value: plateStock,
+                    set: setPlateStock,
+                    max: 100000,
+                    min: 0,
+                  },
+                ] as const
+              ).map((field) => (
+                <label key={field.key}>
+                  {craftPolishText(locale, field.key)}
+                  <input
+                    type="number"
+                    min={field.min}
+                    max={field.max}
+                    value={field.value}
+                    onChange={(e) => field.set(Number(e.target.value))}
+                  />
+                </label>
+              ))}
             <button
               className="primary"
               disabled={!image || busy || backgroundBusy}
@@ -384,6 +450,14 @@ export function GridStudio({ locale }: { locale: Locale }) {
                 mm · {project.guide.columns} × {project.guide.rows}
               </p>
               <p>{t("order")}</p>
+              {project.layout && (
+                <MosaicPlan
+                  project={project}
+                  step={step}
+                  locale={locale}
+                  run={run}
+                />
+              )}
               <p data-testid="grid-progress">
                 {t("progress")}: {project.progress.confirmed}/
                 {project.guide.cells.length}
@@ -519,7 +593,7 @@ export function GridStudio({ locale }: { locale: Locale }) {
                   onClick={() =>
                     void run(async () =>
                       open(
-                        newGridProject(
+                        await plannedProject(
                           await replaceGridCell(
                             project.guide,
                             cell!.index,

@@ -31,6 +31,46 @@ export interface GridProject {
   name: string;
   guide: GridGuide;
   progress: { sequenceHash: string; confirmed: number; revision: number };
+  layout?: MosaicLayout;
+}
+export type MosaicLayout = {
+  version: "mosaic-baseplates/1";
+  sequenceHash: string;
+  columns: number;
+  rows: number;
+  stock: number;
+  hash: string;
+};
+export async function mosaicLayout(
+  g: GridGuide,
+  columns: number,
+  rows: number,
+  stock: number,
+): Promise<MosaicLayout> {
+  if (
+    g.profile.kind !== "mosaic" ||
+    !Number.isInteger(columns) ||
+    !Number.isInteger(rows) ||
+    columns < 4 ||
+    rows < 4 ||
+    columns > 48 ||
+    rows > 48 ||
+    !Number.isSafeInteger(stock) ||
+    stock < 0 ||
+    stock > 100000
+  )
+    throw Error("Invalid baseplate materials");
+  const required = Math.ceil(g.columns / columns) * Math.ceil(g.rows / rows);
+  if (required > 64) throw Error("Use larger baseplates (maximum64)");
+  if (required > stock) throw Error("Insufficient baseplates");
+  const payload = {
+    version: "mosaic-baseplates/1" as const,
+    sequenceHash: g.sequenceHash,
+    columns,
+    rows,
+    stock,
+  };
+  return deepFreeze({ ...payload, hash: await hash(JSON.stringify(payload)) });
 }
 const HEX = /^#[0-9a-f]{6}$/i,
   DIGEST = /^[0-9a-f]{64}$/;
@@ -256,6 +296,21 @@ export async function validateGridProject(p: GridProject) {
   )
     throw Error("Invalid grid project");
   await validateGrid(p.guide);
+  if (p.layout) {
+    const expected = await mosaicLayout(
+      p.guide,
+      p.layout.columns,
+      p.layout.rows,
+      p.layout.stock,
+    );
+    if (
+      p.layout.version !== expected.version ||
+      p.layout.sequenceHash !== expected.sequenceHash ||
+      p.layout.hash !== expected.hash ||
+      Object.keys(p.layout).some((k) => !Object.keys(expected).includes(k))
+    )
+      throw Error("Invalid baseplate layout provenance");
+  }
   const x = p.progress;
   if (
     !x ||
@@ -272,14 +327,20 @@ export async function validateGridProject(p: GridProject) {
 export async function parseGridProject(raw: string) {
   if (raw.length > 2_000_000) throw Error("Grid file exceeds limit");
   const data = JSON.parse(raw);
-  if (data.schema !== "iprasm.grid-project/1")
+  if (
+    !["iprasm.grid-project/1", "iprasm.grid-project/2"].includes(data.schema) ||
+    (data.schema === "iprasm.grid-project/2") !== !!data.project?.layout
+  )
     throw Error("Unsupported grid file");
   const p = await validateGridProject(data.project);
   return { ...p, id: crypto.randomUUID() };
 }
 export function gridFile(p: GridProject) {
   return JSON.stringify(
-    { schema: "iprasm.grid-project/1", project: p },
+    {
+      schema: p.layout ? "iprasm.grid-project/2" : "iprasm.grid-project/1",
+      project: p,
+    },
     null,
     2,
   );

@@ -136,15 +136,15 @@ for (const kind of ["mosaic", "diamond"] as const)
     const pdfEvent = page.waitForEvent("download");
     await page.getByRole("button", { name: "Grid PDF", exact: true }).click();
     const pdf = await pdfEvent;
-    mkdirSync("output/grid", { recursive: true });
+    mkdirSync("output/current-grid", { recursive: true });
     await pdf.saveAs(
-      `output/grid/${kind}-${test.info().project.name}-guide.pdf`,
+      `output/current-grid/${kind}-${test.info().project.name}-guide.pdf`,
     );
     const jsonEvent = page.waitForEvent("download");
     await page.getByRole("button", { name: "Grid JSON", exact: true }).click();
     await (
       await jsonEvent
-    ).saveAs(`output/grid/${kind}-${test.info().project.name}-guide.json`);
+    ).saveAs(`output/current-grid/${kind}-${test.info().project.name}-guide.json`);
     await page.getByText("Edit current piece", { exact: true }).click();
     const next = gridCell(source.guide, 6),
       newColor =
@@ -171,7 +171,7 @@ for (const kind of ["mosaic", "diamond"] as const)
     ).toBe(5);
     expect(stored[0].guide.manualEdit.parentSequenceHash).toBe(hash);
     await page.screenshot({
-      path: `output/grid/${kind}-${test.info().project.name}.png`,
+      path: `output/current-grid/${kind}-${test.info().project.name}.png`,
       fullPage: true,
     });
     expect(errors).toEqual([]);

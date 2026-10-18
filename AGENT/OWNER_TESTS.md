@@ -4,6 +4,8 @@ Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak
 
 ## 2026-10-18 — Phase15 bildirishnomalar (egasi hozir sinashi shart emas)
 
+Mozaika ham avtomatik sinaldi: yangi Phase15 da Menyu → Mutaxassis rejimi → Mozaika, haqiqiy rang/dona/zaxira va taglik o‘lchamlarini kiriting. “Tagliklar rejasi” har qadamning tagligi va mahalliy koordinatasini ko‘rsatadi. Saqlab, oflayn qayta ochish hamda JSON/PDF/SVG ishlaydi. PDF chizmasi masshtabli emas; SVGdagi 50 mm belgini 100% bosmada tekshirish egasiga qoladi. Batafsil: [MOSAIC_UZ.md](../docs/MOSAIC_UZ.md). Hozir qo‘lda sinashni kutmaymiz.
+
 Avtomatik tekshiruv faqat soxta FCM bilan bajariladi; haqiqiy xabar yuborilmaydi. Yakuniy Phase15 manzili keyin `output/phase15/manual-testing.txt` da bo‘ladi;4194–4200 eski sahifalarini bu sinov uchun ishlatmang.
 
 Firebase ulash kerak bo‘lganda [PUSH_NOTIFICATIONS_UZ.md](../docs/PUSH_NOTIFICATIONS_UZ.md) ga amal qiling. Hisob → Bildirishnomalar → “Shu qurilmada yoqish”; tizim ruxsatini bering. Reklama roziligini alohida tanlang. Admin → E’lonlar → e’lonni chop eting → “Bildirishnoma yuborish”. Sozlanmagan serverda tugma o‘chiq va ilova ichidagi e’lonlar ishlashi kerak. Soxta muhit haqiqiy yetkazildi deb ko‘rsatmaydi. O‘chirish yoki hisobdan chiqish tokenni bekor qiladi; keyingi kirishda qayta rozilik talab qilinadi. Android/iPhone haqiqiy yetkazilishi Firebase/APNs va egasining telefoni ulanishidan keyin tekshiriladi.
