@@ -5,8 +5,10 @@ import { paintText } from "./paint-i18n";
 import type { Instruction, Locale } from "./core/types";
 import { letteringText } from "./lettering-i18n";
 import { qrCraftText } from "./qr-craft-i18n";
+import { bookText } from "./book-i18n";
 const TextStudio = lazy(() => import("./TextStudio"));
 const QrCraftStudio = lazy(() => import("./QrCraftStudio"));
+const BookStudio = lazy(() => import("./BookStudio"));
 export function CraftStudio({
   locale,
   onGuide,
@@ -16,7 +18,9 @@ export function CraftStudio({
   onGuide: (i: Instruction) => void;
   onPreset: (kind: "animal" | "object") => void;
 }) {
-  const [mode, setMode] = useState<"grid" | "paint" | "text" | "qr">("grid");
+  const [mode, setMode] = useState<"grid" | "paint" | "text" | "qr" | "book">(
+    "grid",
+  );
   return (
     <>
       <div className="card">
@@ -50,8 +54,15 @@ export function CraftStudio({
         <button aria-pressed={mode === "qr"} onClick={() => setMode("qr")}>
           {qrCraftText(locale, "title")}
         </button>
+        <button aria-pressed={mode === "book"} onClick={() => setMode("book")}>
+          {bookText(locale, "title")}
+        </button>
       </div>
-      {mode === "qr" ? (
+      {mode === "book" ? (
+        <Suspense fallback={<p role="status">…</p>}>
+          <BookStudio locale={locale} />
+        </Suspense>
+      ) : mode === "qr" ? (
         <Suspense fallback={<p role="status">…</p>}>
           <QrCraftStudio locale={locale} />
         </Suspense>

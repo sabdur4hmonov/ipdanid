@@ -2,6 +2,10 @@ import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { customerApi, customerCacheNamespace } from "./customer-api";
 import type { Instruction } from "./core/types";
+export type BuildAccessReference = {
+  sequenceHash: string;
+  params: Pick<Instruction["params"], "accessPolicy">;
+};
 export interface BuildReceipt {
   payload: {
     version: "iprasm.build-access/1";
@@ -108,7 +112,7 @@ function serial<T>(fn: () => Promise<T>) {
   return result;
 }
 export const buildAccess = {
-  async allowed(i: Instruction) {
+  async allowed(i: BuildAccessReference) {
     if (!i.params.accessPolicy) return true;
     try {
       const c = await read(),
@@ -146,7 +150,7 @@ export const buildAccess = {
       "/builds/account",
     );
   },
-  async unlock(i: Instruction) {
+  async unlock(i: BuildAccessReference) {
     return serial(async () => {
       await customerApi.restore();
       if (!customerApi.session) throw Error("build-access/login");

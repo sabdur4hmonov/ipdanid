@@ -21,7 +21,16 @@ function checked(root: string, output: string, results: string) {
     .map((p) => p.toLowerCase());
   if (
     parts[0] === "phase15" &&
-    ["caption-v1", "caption-v2", "bidi", "push", "mosaic", "craft", "qr"].includes(parts[1])
+    [
+      "caption-v1",
+      "caption-v2",
+      "bidi",
+      "push",
+      "mosaic",
+      "craft",
+      "qr",
+      "book",
+    ].includes(parts[1])
   )
     throw Error("Completed Phase15 checkpoint evidence is frozen");
   if (/^phase(?:9|10|11|12|13|14)$/.test(rel) || /-dist$/.test(rel))

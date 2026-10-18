@@ -272,3 +272,7 @@ Raqamli bo‘yashda hududni belgilaganda bo‘yalgan maydon foizi ham o‘zgarsi
 ## Phase15 — QR lenta naqshi (avtomatik tekshirildi)
 
 Menyu → Mutaxassis rejimi → Menyu → donali hunarmandchilik → QR ip naqshi. Qisqa matn/havola → yaratish. Old tasvir skanerlanadi; orqa ko‘rinish o‘tishlarni ko‘rsatadi. Qadamni tasdiqlab, oflayn qayta ochganda keyingi qadam saqlansin. JSON/CSV/SVG/PDF bir xil reja bo‘lsin. Bu oddiy 240 mixli kit uchun emas: alohida oq teshikli varaq va 1.4 mm yassi qora lenta kerak, dumaloq ip almashtirmaydi. Fizik teshik/lenta mosligi va tayyor buyumni telefon bilan skanerlash keyingi egasi sinovi. Andozada 50 mm belgini o‘lchang. Aniq yo‘l: docs/QR_CRAFT_UZ.md.6unit va4desktop/mobil holat o‘tdi; agent hozir qo‘lda sinovni kutmaydi.
+
+## Phase15 — kitob buklash (avtomatik tekshirildi)
+
+Mutaxassis rejimi → Menyu → donali hunarmandchilik → Kitob buklash. Yurak yoki ism/sana tanlang; haqiqiy varaq o‘lchami va sonini kiriting. Bitta varaqning ikki tomoni bor. Reja → kit kodi → 1 kredit bilan belgilarni ochish → shu varaqqacha tasdiqlash → internetsiz qayta ochish. PDF/SVGdagi50mmni100%chop etib o‘lchang; yuqori/pastki belgi varaq tepasidan, ikkinchi belgi tashqi chet bo‘ylab o‘lchanadi. Kesish kerak emas; burchak doim45°emas. Avval keraksiz qog‘ozda sinang. Aniq qadamlar docs/BOOK_FOLDING_UZ.md.9unit/4desktop-mobil tekshiruv o‘tdi; fizik sinovni kutmay keyingi kod ishlari davom etadi.
