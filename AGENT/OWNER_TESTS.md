@@ -276,3 +276,7 @@ Menyu → Mutaxassis rejimi → Menyu → donali hunarmandchilik → QR ip naqsh
 ## Phase15 — kitob buklash (avtomatik tekshirildi)
 
 Mutaxassis rejimi → Menyu → donali hunarmandchilik → Kitob buklash. Yurak yoki ism/sana tanlang; haqiqiy varaq o‘lchami va sonini kiriting. Bitta varaqning ikki tomoni bor. Reja → kit kodi → 1 kredit bilan belgilarni ochish → shu varaqqacha tasdiqlash → internetsiz qayta ochish. PDF/SVGdagi50mmni100%chop etib o‘lchang; yuqori/pastki belgi varaq tepasidan, ikkinchi belgi tashqi chet bo‘ylab o‘lchanadi. Kesish kerak emas; burchak doim45°emas. Avval keraksiz qog‘ozda sinang. Aniq qadamlar docs/BOOK_FOLDING_UZ.md.9unit/4desktop-mobil tekshiruv o‘tdi; fizik sinovni kutmay keyingi kod ishlari davom etadi.
+
+## Phase15 — ipdan video/GIF (avtomatik tekshirildi)
+
+Natija → Batafsil → Ipdan video → Video yuklab olish yoki GIF yuklab olish. Shu oynani ochiq qoldiring; bekor qilish darhol to‘xtatsin. Yig‘ish oynasidagi Animatsiya orqali ham olinadi. Video ovozsiz, haqiqiy ip tartibidan; original surat qo‘shilmaydi. GIF kichikroq, ranglari soddalashtiriladi; video yo‘q qurilmada shu tugma ishlaydi. Internet uzilganda oldingi qo‘llanmaning GIFini ham olish mumkin. Aniq cheklovlar docs/SEQUENCE_VIDEO_UZ.md.9unit va4desktop/mobil test o‘tdi, haqiqiy fayllar mustaqil dekoderda ochildi; telefon kodek/ulashish sinovi keyin, agent uni kutmaydi.

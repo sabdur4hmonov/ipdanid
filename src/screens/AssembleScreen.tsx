@@ -1,4 +1,6 @@
 import { AssemblyFocus } from "../AssemblyFocus";
+import { lazy, Suspense } from "react";
+const SequenceAnimation = lazy(() => import("../SequenceAnimation"));
 import type { AppScreenContext } from "../useAppController";
 import { pinLabel, sectorPin } from "../core/standard-kit";
 import { recordedVoiceText } from "../recorded-voice-i18n";
@@ -613,6 +615,20 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
           {t("exportPreview")}
         </button>
       </div>
+      <details className="card">
+        <summary>
+          {locale === "en"
+            ? "Animation"
+            : locale === "ru"
+              ? "Анимация"
+              : locale === "uz-Cyrl"
+                ? "Анимация"
+                : "Animatsiya"}
+        </summary>
+        <Suspense fallback={<span>…</span>}>
+          <SequenceAnimation instruction={instruction} locale={locale} />
+        </Suspense>
+      </details>
       {project.progress.confirmed === steps.length && (
         <div className="alert success">{t("finish")}</div>
       )}

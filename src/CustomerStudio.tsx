@@ -7,7 +7,15 @@ import {
 import { productText } from "./product-i18n";
 import { withPortraitCaption, captionGeometry } from "./core/portrait-caption";
 import { leastSquaresProfile } from "./core/classic-least-squares";
-import { useState, useEffect, useMemo, useRef, type PointerEvent } from "react";
+import {
+  lazy,
+  Suspense,
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  type PointerEvent,
+} from "react";
 import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
 import type { KitPreparation } from "./core/standard-preparation";
@@ -45,6 +53,7 @@ import {
   clearOptimizerRecovery,
 } from "./optimizer-storage";
 import "./customer-flow.css";
+const SequenceAnimation = lazy(() => import("./SequenceAnimation"));
 
 type Props = {
   active: boolean;
@@ -930,6 +939,13 @@ export function CustomerStudio({
                 </button>
               ))}
             </div>
+            <Suspense fallback={<span>…</span>}>
+              <SequenceAnimation
+                instruction={result}
+                locale={locale}
+                active={active}
+              />
+            </Suspense>
           </details>
         </div>
       )}

@@ -4,9 +4,14 @@ import { flatten } from "./engine";
 import { rasterSequence } from "./optical";
 import { referenceRaster, classicPins } from "./classic-reference";
 export function renderInstruction(
-  ctx: CanvasRenderingContext2D,
+  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
   i: Instruction,
-  options: { completed?: number; highlight?: number; pins?: boolean } = {},
+  options: {
+    completed?: number;
+    highlight?: number;
+    pins?: boolean;
+    surface?: () => HTMLCanvasElement | OffscreenCanvas;
+  } = {},
 ) {
   const { width: w, height: h } = ctx.canvas,
     p = i.profile;
@@ -36,9 +41,10 @@ export function renderInstruction(
   if (usesOpticalRaster(i.algorithm)) {
     const n = reference ? 1000 : i.params.resolution,
       raster = reference ? referenceRaster(i, n, end) : rasterSequence(i, end);
-    const surface = document.createElement("canvas");
+    const surface = options.surface?.() ?? document.createElement("canvas");
     surface.width = surface.height = n;
-    const source = surface.getContext("2d")!;
+    const source = surface.getContext("2d")! as
+      CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
     const pixels = source.createImageData(n, n);
     for (let k = 0; k < n * n; k++) {
       for (let c = 0; c < 3; c++)
