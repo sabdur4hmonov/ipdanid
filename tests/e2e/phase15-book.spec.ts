@@ -7,6 +7,8 @@ import {
   bookLeafSvg,
   validateBookPlan,
 } from "../../src/core/book-folding";
+import { mockCraftVoices } from "./craft-voice";
+import { unlockCraftGuide } from "./kit-access";
 async function enter(page: any) {
   await page.goto("/");
   await page.getByLabel("Language", { exact: true }).selectOption("en");
@@ -24,6 +26,48 @@ async function exported(page: any, name: string) {
   await page.getByRole("button", { name, exact: true }).click();
   return await download;
 }
+test("book measurements use only requested local language speech and stop on a different leaf", async ({
+  page,
+}) => {
+  await mockCraftVoices(page);
+  await enter(page);
+  await page
+    .getByRole("button", { name: "Create folding plan", exact: true })
+    .click();
+  await unlockCraftGuide(page);
+  for (const locale of ["uz", "uz-Cyrl", "ru", "en"]) {
+    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    const speech = page.getByTestId("craft-step-voice");
+    await speech.getByRole("button").first().click();
+    const lang = locale.startsWith("uz")
+      ? "uz-UZ"
+      : locale === "ru"
+        ? "ru-RU"
+        : "en-US";
+    await expect
+      .poll(() =>
+        page.evaluate(() => (window as any).__craftSpoken.at(-1)?.lang),
+      )
+      .toBe(lang);
+  }
+  expect(
+    await page.evaluate(() => (window as any).__craftSpoken.at(-1).text),
+  ).toContain("one hundred sixty one");
+  const stopped = await page.evaluate(() => (window as any).__craftStops);
+  await page.getByLabel("Folding step", { exact: true }).fill("5");
+  await expect
+    .poll(() => page.evaluate(() => (window as any).__craftStops))
+    .toBeGreaterThan(stopped);
+  await page
+    .getByRole("button", { name: "Read this step", exact: true })
+    .click();
+  await expect
+    .poll(() => page.evaluate(() => (window as any).__craftSpoken.at(-1)?.text))
+    .toContain("Top mark");
+  await page
+    .getByRole("button", { name: "Stop step voice", exact: true })
+    .click();
+});
 async function unlock(page: any) {
   const issued = await page.request.post(
     process.env.IP_RASM_TEST_API_URL + "/api/admin/kits/batch",

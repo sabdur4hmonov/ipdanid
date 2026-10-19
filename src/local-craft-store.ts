@@ -78,6 +78,12 @@ export function localCraftStore<T extends { sequenceHash: string }>(
   }
   return {
     read,
+    load: async (id: string) => {
+      const all = await read(),
+        project = all.find((p) => p.id === id);
+      if (!project) throw Error("craft/conflict");
+      return { all, project };
+    },
     check,
     save: (p: CraftProject<T>, expected?: number) =>
       mutate(async (all) => {

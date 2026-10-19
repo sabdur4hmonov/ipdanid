@@ -6,10 +6,12 @@ export function CraftBuildGate({
   reference,
   locale,
   onUnlocked,
+  hint,
 }: {
   reference: BuildAccessReference;
   locale: Locale;
   onUnlocked: () => void;
+  hint?: string;
 }) {
   const [code, setCode] = useState(""),
     [credits, setCredits] = useState<number>(),
@@ -49,7 +51,7 @@ export function CraftBuildGate({
   return (
     <section data-testid="craft-build-gate">
       <h2>{t("locked")}</h2>
-      <p>{t("hint")}</p>
+      <p>{hint ?? t("hint")}</p>
       {credits !== undefined && (
         <p data-testid="craft-credits">
           {t("credits")}: {credits}

@@ -15,6 +15,9 @@ import { CraftBuildGate } from "./CraftBuildGate";
 import { bookText } from "./book-i18n";
 import type { Locale } from "./core/types";
 import { download } from "./download";
+import { CraftSpeechButton } from "./CraftSpeechButton";
+import { craftNumber } from "./craft-voice";
+import { baseLocale } from "./uzbek-script";
 const store = localCraftStore("book", validateBookPlan, (g) => g.leaves.length);
 function SvgImage({ svg, label }: { svg: string; label: string }) {
   const [url, setUrl] = useState("");
@@ -291,6 +294,27 @@ export default function BookStudio({ locale }: { locale: Locale }) {
                 <h2 data-testid="book-current">
                   {t("leaf")} {leaf.leaf} · {t("face")} {leaf.pageFace}
                 </h2>
+                <CraftSpeechButton
+                  identity={g.sequenceHash + ":" + step}
+                  locale={locale}
+                  text={
+                    bookText(baseLocale(locale), "leaf") +
+                    " " +
+                    craftNumber(locale, leaf.leaf) +
+                    ". " +
+                    (leaf.band
+                      ? `${bookText(baseLocale(locale), "top")} ${craftNumber(locale, leaf.band[0])}. ${bookText(baseLocale(locale), "bottom")} ${craftNumber(locale, leaf.band[1])}. ${bookText(baseLocale(locale), "edge")} ${craftNumber(locale, g.params.pageWidthMm - leaf.top!.crease[1][0])}. ${craftNumber(locale, g.params.pageWidthMm - leaf.bottom!.crease[1][0])}.`
+                      : bookText(baseLocale(locale), "blank") +
+                        " " +
+                        craftNumber(locale, g.params.insetMm)) +
+                    " " +
+                    (baseLocale(locale) === "uz"
+                      ? "millimetr"
+                      : locale === "ru"
+                        ? "миллиметров"
+                        : "millimetres")
+                  }
+                />
                 {leaf.band ? (
                   <>
                     <p>
@@ -371,7 +395,16 @@ export default function BookStudio({ locale }: { locale: Locale }) {
             {p.guide.sequenceHash.slice(0, 8)} · {p.confirmed}/
             {p.guide.leaves.length}
           </span>
-          <button disabled={busy} onClick={() => open(p)}>
+          <button
+            disabled={busy}
+            onClick={() =>
+              void run(async () => {
+                const fresh = await store.load(p.id);
+                setLibrary(fresh.all);
+                open(fresh.project);
+              })
+            }
+          >
             {t("open")}
           </button>
           <button

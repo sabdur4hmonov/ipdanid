@@ -266,7 +266,16 @@ export default function QrCraftStudio({ locale }: { locale: Locale }) {
             {p.guide.sequenceHash.slice(0, 8)} · {p.confirmed}/
             {p.guide.moves.length}
           </span>
-          <button disabled={busy} onClick={() => open(p)}>
+          <button
+            disabled={busy}
+            onClick={() =>
+              void run(async () => {
+                const fresh = await store.load(p.id);
+                setLibrary(fresh.all);
+                open(fresh.project);
+              })
+            }
+          >
             {t("open")}
           </button>
           <button

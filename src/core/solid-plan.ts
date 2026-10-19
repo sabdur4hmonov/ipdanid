@@ -321,6 +321,25 @@ export function solidPartMesh(
 export function solidTemplateSvg(plan: SolidPlan, step: number) {
   const part = plan.parts[step - 1];
   if (!part) throw Error("solid/step");
+  return solidPolygonsSvg(
+    plan.sequenceHash,
+    part,
+    `${part.id} / Z=${part.zMm} mm / H=${part.heightMm} mm`,
+  );
+}
+export function solidLayoutSvg(plan: SolidPlan) {
+  if (plan.source.kind === "spindle") throw Error("solid/layout");
+  return solidPolygonsSvg(
+    plan.sequenceHash,
+    { id: "assembly", polygons: plan.parts.flatMap((p) => p.polygons) },
+    "assembly / XY (mm)",
+  );
+}
+function solidPolygonsSvg(
+  hash: string,
+  part: Pick<SolidPart, "id" | "polygons">,
+  title: string,
+) {
   const points = part.polygons.flat(2),
     xs = points.map((p) => p[0]),
     ys = points.map((p) => p[1]),
@@ -347,5 +366,5 @@ export function solidTemplateSvg(plan: SolidPlan, step: number) {
         .join(""),
     )
     .join("");
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}mm" height="${h}mm" data-solid-hash="${plan.sequenceHash}" data-part="${part.id}"><rect width="100%" height="100%" fill="white"/><text x="10" y="10" font-family="sans-serif" font-size="3.5">${part.id} / Z=${part.zMm} mm / H=${part.heightMm} mm</text><path d="${path}" fill="none" stroke="#222" stroke-width=".2"/><path d="M10,${h - 10}h50m-50,-2v4m50,-4v4" fill="none" stroke="#222" stroke-width=".3"/><text x="10" y="${h - 3}" font-size="3.5" font-family="sans-serif">50 mm - 100%</text></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}mm" height="${h}mm" data-solid-hash="${hash}" data-part="${part.id}"><rect width="100%" height="100%" fill="white"/><text x="10" y="10" font-family="sans-serif" font-size="3.5">${title}</text><path d="${path}" fill="none" stroke="#222" stroke-width=".2"/><path d="M10,${h - 10}h50m-50,-2v4m50,-4v4" fill="none" stroke="#222" stroke-width=".3"/><text x="10" y="${h - 3}" font-size="3.5" font-family="sans-serif">50 mm - 100%</text></svg>`;
 }

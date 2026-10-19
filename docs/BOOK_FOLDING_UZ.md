@@ -9,3 +9,5 @@
 7. «Shu varaqqacha bukladim» jarayonni saqlaydi. Ilovani qayta ochib saqlangan loyihani tanlang: keyingi qadamdan davom etadi. Bir nechta oynani bir paytda ishlatsangiz, eskirgan oynadagi yozuv rad etiladi; loyihani qayta oching. JSON nusxasi importda yangi loyiha sifatida saqlanadi; noto‘g‘ri buklama belgisi qabul qilinmaydi.
 
 Avval bir nechta sinov varag‘ida tekshiring. Qog‘oz yirtilishi, muqova ochilishi, yonma-yon varaqlarning oralig‘i va uzoqdan naqsh ko‘rinishi dasturiy test bilan tasdiqlanmaydi. Fizik sinov OWNER ro‘yxatida qoladi; dasturiy ish uni kutmaydi.
+
+«Qadamni aytish» hozirgi varaq va buklash belgilarini qurilmadagi mahalliy UZ/RU/EN ovozida o‘qiydi. Ovoz o‘rnatilmagan bo‘lsa matn qoladi. Boshqa qadam/tilga o‘tish yoki «Ovozni to‘xtatish» eski nutqni to‘xtatadi; ovoz hech qachon o‘zi tasdiqlamaydi. Inson yozgan yangi ovozlar bor deb ko‘rsatilmaydi. Eskirgan oyna xatosidan keyin «Buklash loyihasini ochish» eng yangi saqlangan jarayonni oladi.

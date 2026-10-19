@@ -44,8 +44,10 @@ it("durably resumes the exact guide, serializes writes and refuses stale confirm
   expect(results.map((r) => r.status)).toEqual(["fulfilled", "rejected"]);
   await expect(fresh.remove(p.id, 0)).rejects.toThrow("craft/conflict");
   expect((await fresh.read())[0].confirmed).toBe(1);
+  expect((await fresh.load(p.id)).project).toEqual(next);
   await fresh.remove(p.id, 1);
   expect(await fresh.read()).toEqual([]);
+  await expect(store.load(p.id)).rejects.toThrow("craft/conflict");
   await expect(store.save({ ...next, revision: 2 }, 1)).rejects.toThrow(
     "craft/conflict",
   );

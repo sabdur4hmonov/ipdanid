@@ -27,7 +27,36 @@ export async function unlockKitGuide(page: Page) {
   await gate
     .getByRole("button", { name: "Sign in with kit code", exact: true })
     .click();
-  await expect(page.getByTestId("kit-credits")).toContainText(String(batch.codes[0].quota));
+  await expect(page.getByTestId("kit-credits")).toContainText(
+    String(batch.codes[0].quota),
+  );
   await page.getByTestId("unlock-build").click();
   await expect(gate).toHaveCount(0);
+}
+export async function unlockCraftGuide(page: Page) {
+  const gate = page.getByTestId("craft-build-gate");
+  await expect(gate).toBeVisible();
+  const issued = await page.request.post(
+    process.env.IP_RASM_TEST_API_URL + "/api/admin/kits/batch",
+    {
+      headers: { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN}` },
+      data: { profile: "craft-e2e", count: 1, requestKey: crypto.randomUUID() },
+    },
+  );
+  expect(issued.ok()).toBe(true);
+  const batch = await issued.json();
+  await gate
+    .getByLabel("Kit code for sign-in", { exact: true })
+    .fill(batch.codes[0].code);
+  await gate
+    .getByRole("button", { name: "Sign in with kit code", exact: true })
+    .click();
+  await expect(page.getByTestId("craft-credits")).toContainText(
+    String(batch.codes[0].quota),
+  );
+  await gate
+    .getByRole("button", { name: "Use 1 credit and unlock", exact: true })
+    .click();
+  await expect(gate).toHaveCount(0);
+  return batch.codes[0].quota as number;
 }

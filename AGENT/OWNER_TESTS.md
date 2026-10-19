@@ -284,3 +284,7 @@ Natija → Batafsil → Ipdan video → Video yuklab olish yoki GIF yuklab olish
 ## Phase15 — 3D geometriya oraliq holat
 
 Ramka, qatlamli shakl va yozuvning STL geometriyasi5avtomatik testdan o‘tdi; fayllar mustaqil tekshirildi. Bo‘lim hali menyuga ulanmagan, PDF va yig‘ish oynasi keyingi ish. Hozir egasidan qo‘lda sinov kerak emas; agent davom etadi. Haqiqiy printer o‘lchami, material, ramka yelimi va tayoqcha mosligi keyin alohida tekshiriladi.
+
+## Phase15 — 3D ramka, qatlamli haykal va yozuv (avtomatik tekshirildi)
+
+Mutaxassis rejimi → Menyu → katakli ishlar → 3D shakllar. O‘lchamlarni kiriting, yarating, barmoq bilan aylantiring; slayder/qaytarish/bitta detal ko‘rinishi ishlasin. Kit kodi → 1 kredit aynan shu rejaning hamma detalini ochadi. STL bitta detal, PDF/SVG 100% va 50 mm belgili; yozuv/ramka uchun umumiy yig‘ish joylashuvi ham bor. Jarayonni tasdiqlab, oflayn qayta oching. Boshqa oynada o‘zgarsa rad etilsin, keyin Ochish eng yangi jarayonni olsin. Kitob/3D Qadamni aytish mahalliy UZ/RU/EN ovoziga mos; qadam yoki til almashganda eski ovoz to‘xtasin. Aniq qadamlar docs/SOLID_MODELS_UZ.md va BOOK_FOLDING_UZ.md.22unit/16so‘nggi desktop-mobil holat,176PDFsahifa va haqiqiySTLfayllar tekshirildi. Hozir egasining qo‘lda sinovi kutilmaydi; printer maydoni/material/rod/telefon keyingi shaxsiy tekshiruv.
