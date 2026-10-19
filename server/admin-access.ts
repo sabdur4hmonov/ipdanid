@@ -190,6 +190,14 @@ export function adminRoutePermission(
   path: string,
 ): AdminPermission | null {
   if (
+    (method === "GET" && path === "/api/admin/gallery") ||
+    (method === "GET" &&
+      /^\/api\/admin\/gallery\/[a-f0-9-]{36}\/image$/.test(path)) ||
+    (method === "POST" &&
+      /^\/api\/admin\/gallery\/[a-f0-9-]{36}\/moderate$/.test(path))
+  )
+    return "support";
+  if (
     (method === "GET" && path === "/api/admin/push/status") ||
     (method === "POST" && path === "/api/admin/push/enqueue")
   )

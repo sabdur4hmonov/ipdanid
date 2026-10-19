@@ -1,5 +1,6 @@
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
+import { galleryText } from "./gallery-i18n";
 const words = {
   uz: [
     "Kit kodlari",
@@ -40,6 +41,16 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
           </button>
         ),
       )}
+      <button
+        className="outline"
+        onClick={() =>
+          document
+            .getElementById("admin-gallery")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+      >
+        {galleryText(locale, "moderation")}
+      </button>
     </nav>
   );
 }

@@ -10,7 +10,13 @@ import { PushSettings } from "./PushSettings";
 import { useBusiness } from "./BusinessContext";
 import { businessText } from "./business-i18n";
 import type { OrderCommerce } from "./business-types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { galleryText } from "./gallery-i18n";
+import { customerHealthSandbox } from "./customer-health";
+const GalleryStudio = lazy(() => import("./GalleryStudio"));
+const GalleryModeration = lazy(() =>
+  import("./GalleryStudio").then((m) => ({ default: m.GalleryModeration })),
+);
 import type { Instruction, Locale, Progress, Project } from "./core/types";
 import { validateInstruction } from "./core/validation";
 import {
@@ -58,7 +64,7 @@ type Ticket = {
   replies: { id: string; body: string; created_at: string }[];
 };
 type Remote = { id: string; sequence_hash: string; name: string };
-type Pane = "account" | "shop" | "sync" | "support" | "admin";
+type Pane = "account" | "shop" | "sync" | "support" | "admin" | "gallery";
 const freshProduct = (): Product => ({
   id: "",
   name: "",
@@ -196,13 +202,18 @@ export function CustomerHub({
       }[]
     >([]);
   const [adminMode, setAdminMode] = useState<"password" | "token">();
+  const [sandboxMode, setSandboxMode] = useState<boolean>();
   useEffect(() => {
     let live = true;
     void api
-      .request<{ adminAuth?: string }>("/health")
+      .request<{ adminAuth?: string; sandbox: boolean; apiVersion?: string }>(
+        "/health",
+      )
       .then((h) => {
-        if (live)
+        if (live) {
+          setSandboxMode(customerHealthSandbox(h));
           setAdminMode(h.adminAuth === "password" ? "password" : "token");
+        }
       })
       .catch(() => {});
     return () => {
@@ -252,8 +263,8 @@ export function CustomerHub({
     }
   }
   async function refresh() {
-    const health = await api.request<{ sandbox: boolean }>("/health");
-    if (!health.sandbox) throw new Error("Unexpected service");
+    const health = await api.request<unknown>("/health");
+    setSandboxMode(customerHealthSandbox(health));
     const [m, c, o, s, r] = await Promise.all([
       api.request<{ email: string | null; credits: number }>("/account"),
       api.request<{ products: Product[] }>("/catalog"),
@@ -407,27 +418,29 @@ export function CustomerHub({
 
   return (
     <div className="customer-hub">
-      <p className="sandbox-notice" role="note">
-        {t("sandbox")}
-      </p>
+      {sandboxMode && (
+        <p className="sandbox-notice" role="note">
+          {t("sandbox")}
+        </p>
+      )}
       <PromotionPreference locale={locale} />
       <PushSettings locale={locale} />
       <div className="customer-tabs" role="group" aria-label={t("customer")}>
-        {(["account", "shop", "sync", "support", "admin"] as Pane[]).map(
-          (p) => (
-            <button
-              key={p}
-              className={pane === p ? "active" : "outline"}
-              aria-pressed={pane === p}
-              onClick={() => {
-                setPane(p);
-                setError("");
-              }}
-            >
-              {t(p)}
-            </button>
-          ),
-        )}
+        {(
+          ["account", "shop", "gallery", "sync", "support", "admin"] as Pane[]
+        ).map((p) => (
+          <button
+            key={p}
+            className={pane === p ? "active" : "outline"}
+            aria-pressed={pane === p}
+            onClick={() => {
+              setPane(p);
+              setError("");
+            }}
+          >
+            {p === "gallery" ? galleryText(locale, "title") : t(p)}
+          </button>
+        ))}
       </div>
       {error && (
         <p role="alert" className="customer-error">
@@ -476,6 +489,14 @@ export function CustomerHub({
               </button>
             )}
           </div>
+        )}
+        {pane === "gallery" && (
+          <Suspense fallback={<p role="status">…</p>}>
+            <GalleryStudio
+              locale={locale}
+              onAccount={() => setPane("account")}
+            />
+          </Suspense>
         )}
         {pane === "account" && (
           <div className="customer-grid">
@@ -1198,6 +1219,11 @@ export function CustomerHub({
                   messagesAllowed={can("messages")}
                   run={run}
                 />
+                {can("support") && (
+                  <Suspense fallback={<p role="status">…</p>}>
+                    <GalleryModeration locale={locale} token={adminToken} />
+                  </Suspense>
+                )}
                 {can("access") && (
                   <StaffAccessPanel
                     locale={locale}

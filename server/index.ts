@@ -13,6 +13,7 @@ import { validateInstruction } from "../src/core/validation.ts";
 import { Payments } from "./payments.ts";
 import { pushAdapter } from "./fcm-adapter.ts";
 import { PushStore } from "./push-store.ts";
+import { GalleryStore } from "./gallery-store.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
 const adminToken = production
@@ -32,6 +33,7 @@ const store = new KitStore(
 );
 if (!production) store.seed();
 const business = new BusinessStore(store);
+const gallery = new GalleryStore(store);
 const push = new PushStore(store, pepper, notificationAdapter, (id) =>
   business.announcements(true).find((a) => a.id === id),
 );
@@ -102,8 +104,20 @@ const server = createServer(async (req, res) => {
     budgets.set(budgetKey, budget);
     if (budget.count > (req.method === "GET" ? 600 : 120))
       throw new DomainError("Rate limit exceeded; retry after one minute", 429);
-    const path = new URL(req.url ?? "/", "http://127.0.0.1").pathname,
+    const url = new URL(req.url ?? "/", "http://127.0.0.1"),
+      path = url.pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
+    if (req.method === "GET" && path === "/api/gallery") {
+      send(200, gallery.page(url.searchParams.get("after") ?? undefined));
+      return;
+    }
+    const publicGalleryImage = path.match(
+      /^\/api\/gallery\/([a-f0-9-]{36})\/image$/,
+    );
+    if (req.method === "GET" && publicGalleryImage) {
+      send(200, gallery.publicImage(publicGalleryImage[1]));
+      return;
+    }
     if (req.method === "GET" && path === "/api/storefront") {
       send(200, {
         settings: business.settings(),
@@ -268,6 +282,30 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (path === "/api/admin/gallery" && req.method === "GET") {
+        send(
+          200,
+          gallery.moderation(
+            url.searchParams.get("state") ?? "pending",
+            url.searchParams.get("after") ?? undefined,
+          ),
+        );
+        return;
+      }
+      const adminGalleryImage = path.match(
+        /^\/api\/admin\/gallery\/([a-f0-9-]{36})\/image$/,
+      );
+      if (adminGalleryImage && req.method === "GET") {
+        send(200, gallery.moderatorImage(adminGalleryImage[1]));
+        return;
+      }
+      const moderateGallery = path.match(
+        /^\/api\/admin\/gallery\/([a-f0-9-]{36})\/moderate$/,
+      );
+      if (moderateGallery && req.method === "POST") {
+        send(200, gallery.moderate(actor, moderateGallery[1], body));
+        return;
+      }
       if (path === "/api/admin/push/status" && req.method === "GET") {
         send(200, push.status());
         return;
@@ -409,6 +447,30 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/gallery/mine" && req.method === "GET") {
+      send(200, gallery.mine(user));
+      return;
+    }
+    if (path === "/api/gallery/submit" && req.method === "POST") {
+      send(201, gallery.submit(user, body));
+      return;
+    }
+    const ownGalleryImage = path.match(
+      /^\/api\/gallery\/mine\/([a-f0-9-]{36})\/image$/,
+    );
+    if (ownGalleryImage && req.method === "GET") {
+      send(200, gallery.ownImage(user, ownGalleryImage[1]));
+      return;
+    }
+    const withdrawGallery = path.match(
+      /^\/api\/gallery\/([a-f0-9-]{36})\/withdraw$/,
+    );
+    if (withdrawGallery && req.method === "POST") {
+      if (!body || Object.keys(body).join(",") !== "revision")
+        throw new DomainError("gallery/fields");
+      send(200, gallery.withdraw(user, withdrawGallery[1], body.revision));
+      return;
+    }
     if (path === "/api/push/devices" && req.method === "GET") {
       send(200, push.list(user));
       return;
@@ -639,6 +701,7 @@ server.listen(
 const cleanup = setInterval(() => {
   store.expireReservations();
   store.expireGifts();
+  gallery.prune();
 }, 60_000);
 cleanup.unref();
 process.on("SIGINT", () =>

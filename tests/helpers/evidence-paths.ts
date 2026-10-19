@@ -36,6 +36,7 @@ function checked(root: string, output: string, results: string) {
       "solid-core",
       "solid",
       "tutorial",
+      "gallery",
     ].includes(parts[1])
   )
     throw Error("Completed Phase15 checkpoint evidence is frozen");

@@ -79,6 +79,18 @@ it("all staff roles exclude credential management, reject forged roles/durations
   ).toBeTruthy();
 });
 it("route permissions are bound to methods and operations instead of editable frontend role names", () => {
+  const galleryId = "12345678-1234-1234-1234-123456789abc";
+  expect(adminRoutePermission("GET", "/api/admin/gallery")).toBe("support");
+  expect(
+    adminRoutePermission("GET", `/api/admin/gallery/${galleryId}/image`),
+  ).toBe("support");
+  expect(
+    adminRoutePermission("POST", `/api/admin/gallery/${galleryId}/moderate`),
+  ).toBe("support");
+  expect(adminRoutePermission("POST", "/api/admin/gallery")).toBeNull();
+  expect(
+    adminRoutePermission("GET", `/api/admin/gallery/${galleryId}/moderate`),
+  ).toBeNull();
   expect(adminRoutePermission("GET", "/api/admin/orders")).toBe("orders");
   expect(adminRoutePermission("POST", "/api/admin/orders/abc/refund")).toBe(
     "finance",
