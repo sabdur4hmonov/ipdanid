@@ -7,10 +7,12 @@ import { letteringText } from "./lettering-i18n";
 import { qrCraftText } from "./qr-craft-i18n";
 import { bookText } from "./book-i18n";
 import { solidText } from "./solid-i18n";
+import { tutorialText } from "./tutorial-i18n";
 const TextStudio = lazy(() => import("./TextStudio"));
 const QrCraftStudio = lazy(() => import("./QrCraftStudio"));
 const BookStudio = lazy(() => import("./BookStudio"));
 const SolidStudio = lazy(() => import("./SolidStudio"));
+const TutorialStudio = lazy(() => import("./TutorialStudio"));
 export function CraftStudio({
   locale,
   onGuide,
@@ -21,7 +23,7 @@ export function CraftStudio({
   onPreset: (kind: "animal" | "object") => void;
 }) {
   const [mode, setMode] = useState<
-    "grid" | "paint" | "text" | "qr" | "book" | "solid"
+    "grid" | "paint" | "text" | "qr" | "book" | "solid" | "tutorial"
   >("grid");
   return (
     <>
@@ -65,8 +67,18 @@ export function CraftStudio({
         >
           {solidText(locale, "title")}
         </button>
+        <button
+          aria-pressed={mode === "tutorial"}
+          onClick={() => setMode("tutorial")}
+        >
+          {tutorialText(locale, "title")}
+        </button>
       </div>
-      {mode === "solid" ? (
+      {mode === "tutorial" ? (
+        <Suspense fallback={<p role="status">…</p>}>
+          <TutorialStudio locale={locale} />
+        </Suspense>
+      ) : mode === "solid" ? (
         <Suspense fallback={<p role="status">…</p>}>
           <SolidStudio locale={locale} />
         </Suspense>

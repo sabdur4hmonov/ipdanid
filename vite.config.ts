@@ -4,6 +4,7 @@ import { offlineShellSource } from "./src/core/offline-shell";
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { availableRecordedVoices } from "./src/core/recorded-voices";
+import { tutorialMediaManifest } from "./src/core/tutorial-media";
 const segmentationFiles = [
   "vision_bundle.js",
   "wasm/vision_wasm_internal.js",
@@ -126,6 +127,21 @@ export default defineConfig({
               ),
             ),
           ];
+        const media = tutorialMediaManifest(
+            JSON.parse(readFileSync("public/tutorials/manifest.json", "utf8")),
+          ),
+          tutorialFiles = [
+            "/tutorials/manifest.json",
+            ...media.map((a) => {
+              const bytes = readFileSync("public" + a.path);
+              if (
+                bytes.length !== a.bytes ||
+                createHash("sha256").update(bytes).digest("hex") !== a.sha256
+              )
+                throw Error("Tutorial asset integrity mismatch");
+              return a.path;
+            }),
+          ];
         const files = [
           "/",
           "/index.html",
@@ -134,6 +150,7 @@ export default defineConfig({
           ...fontFiles,
           ...segmentationFiles,
           ...voiceFiles,
+          ...tutorialFiles,
           ...Object.keys(bundle)
             .filter((f) => !f.endsWith(".map"))
             .map((f) => "/" + f),
@@ -141,7 +158,7 @@ export default defineConfig({
         const version =
           Object.keys(bundle).sort().join("|") +
           "|" +
-          [...segmentationFiles, ...fontFiles, ...voiceFiles]
+          [...segmentationFiles, ...fontFiles, ...voiceFiles, ...tutorialFiles]
             .map((f) =>
               createHash("sha256")
                 .update(readFileSync("public" + f))

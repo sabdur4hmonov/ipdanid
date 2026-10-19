@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { solidPartMesh, type SolidPlan } from "./core/solid-plan";
-import { cross3, type Point3 } from "./core/solid-geometry";
+import { cross3, type Point3, type Triangle } from "./core/solid-geometry";
 import { solidText } from "./solid-i18n";
 import type { Locale } from "./core/types";
 export function SolidPreview({
@@ -12,6 +12,43 @@ export function SolidPreview({
   step: number;
   locale: Locale;
 }) {
+  const faces = useMemo(
+    () =>
+      plan.parts.flatMap((_, i) =>
+        solidPartMesh(plan, i + 1, true).map((triangle) => ({
+          triangle,
+          part: i + 1,
+        })),
+      ),
+    [plan.sequenceHash],
+  );
+  return (
+    <MeshPreview
+      faces={faces}
+      step={step}
+      locale={locale}
+      identity={plan.sequenceHash}
+      title={solidText(locale, "title")}
+    />
+  );
+}
+export function MeshPreview({
+  faces: sourceFaces,
+  step,
+  locale,
+  identity,
+  title,
+  testId = "solid-view",
+  allowPartOnly = true,
+}: {
+  faces: { triangle: Triangle; part: number }[];
+  step: number;
+  locale: Locale;
+  identity: string;
+  title: string;
+  testId?: string;
+  allowPartOnly?: boolean;
+}) {
   const canvas = useRef<HTMLCanvasElement>(null),
     drag = useRef<{ x: number; y: number; angle: number; tilt: number }>(
       undefined,
@@ -21,16 +58,8 @@ export function SolidPreview({
     [partOnly, setPartOnly] = useState(false);
   const t = (key: Parameters<typeof solidText>[1]) => solidText(locale, key);
   const faces = useMemo(
-    () =>
-      plan.parts.flatMap((_, i) =>
-        partOnly && i + 1 !== step
-          ? []
-          : solidPartMesh(plan, i + 1, !partOnly).map((triangle) => ({
-              triangle,
-              part: i + 1,
-            })),
-      ),
-    [plan.sequenceHash, partOnly, step],
+    () => sourceFaces.filter((f) => !partOnly || f.part === step),
+    [sourceFaces, partOnly, step],
   );
   useEffect(() => {
     const ctx = canvas.current?.getContext("2d");
@@ -106,14 +135,14 @@ export function SolidPreview({
     drag.current = undefined;
   };
   return (
-    <div data-testid="solid-view">
+    <div data-testid={testId}>
       <canvas
         ref={canvas}
         width={600}
         height={420}
         role="img"
-        aria-label={t("title")}
-        data-solid-hash={plan.sequenceHash}
+        aria-label={title}
+        data-solid-hash={identity}
         data-yaw={angle}
         data-tilt={tilt}
         style={{ width: "100%", height: "auto", touchAction: "none" }}
@@ -156,14 +185,16 @@ export function SolidPreview({
             onChange={(e) => setTilt(Number(e.target.value))}
           />
         </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={partOnly}
-            onChange={(e) => setPartOnly(e.target.checked)}
-          />
-          {t("partOnly")}
-        </label>
+        {allowPartOnly && (
+          <label>
+            <input
+              type="checkbox"
+              checked={partOnly}
+              onChange={(e) => setPartOnly(e.target.checked)}
+            />
+            {t("partOnly")}
+          </label>
+        )}
         <button
           onClick={() => {
             setAngle(335);
