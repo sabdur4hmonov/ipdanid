@@ -280,3 +280,7 @@ Mutaxassis rejimi → Menyu → donali hunarmandchilik → Kitob buklash. Yurak 
 ## Phase15 — ipdan video/GIF (avtomatik tekshirildi)
 
 Natija → Batafsil → Ipdan video → Video yuklab olish yoki GIF yuklab olish. Shu oynani ochiq qoldiring; bekor qilish darhol to‘xtatsin. Yig‘ish oynasidagi Animatsiya orqali ham olinadi. Video ovozsiz, haqiqiy ip tartibidan; original surat qo‘shilmaydi. GIF kichikroq, ranglari soddalashtiriladi; video yo‘q qurilmada shu tugma ishlaydi. Internet uzilganda oldingi qo‘llanmaning GIFini ham olish mumkin. Aniq cheklovlar docs/SEQUENCE_VIDEO_UZ.md.9unit va4desktop/mobil test o‘tdi, haqiqiy fayllar mustaqil dekoderda ochildi; telefon kodek/ulashish sinovi keyin, agent uni kutmaydi.
+
+## Phase15 — 3D geometriya oraliq holat
+
+Ramka, qatlamli shakl va yozuvning STL geometriyasi5avtomatik testdan o‘tdi; fayllar mustaqil tekshirildi. Bo‘lim hali menyuga ulanmagan, PDF va yig‘ish oynasi keyingi ish. Hozir egasidan qo‘lda sinov kerak emas; agent davom etadi. Haqiqiy printer o‘lchami, material, ramka yelimi va tayoqcha mosligi keyin alohida tekshiriladi.

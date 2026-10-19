@@ -32,6 +32,10 @@ const fontFiles = [
     "/licenses/require-from-string.txt",
     "/licenses/capacitor-firebase-messaging.txt",
     "/licenses/firebase-sdk.txt",
+    "/licenses/poly2tri.txt",
+    "/licenses/polygon-clipping.txt",
+    "/licenses/splaytree.txt",
+    "/licenses/robust-predicates.txt",
   ]);
 export default defineConfig({
   // Native build caches and private evidence are served on demand, never source watched.

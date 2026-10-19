@@ -33,6 +33,7 @@ function checked(root: string, output: string, results: string) {
       "animation",
       "animation-candidate-v1",
       "animation-candidate-v2",
+      "solid-core",
     ].includes(parts[1])
   )
     throw Error("Completed Phase15 checkpoint evidence is frozen");
