@@ -190,6 +190,15 @@ export function adminRoutePermission(
   path: string,
 ): AdminPermission | null {
   if (
+    (method === "GET" &&
+      ["/api/admin/offers", "/api/admin/offers/report"].includes(path)) ||
+    (method === "POST" &&
+      ["/api/admin/offers/codes", "/api/admin/offers/policy"].includes(path)) ||
+    (method === "POST" &&
+      /^\/api\/admin\/orders\/[a-f0-9-]{36}\/costs$/.test(path))
+  )
+    return "finance";
+  if (
     (method === "GET" && path === "/api/admin/gallery") ||
     (method === "GET" &&
       /^\/api\/admin\/gallery\/[a-f0-9-]{36}\/image$/.test(path)) ||

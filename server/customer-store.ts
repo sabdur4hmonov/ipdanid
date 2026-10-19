@@ -7,6 +7,7 @@ import {
 } from "node:crypto";
 import { Store, DomainError } from "./store.ts";
 import type { Progress } from "../src/core/types";
+import type { OrderQuote } from "../src/offer-types";
 
 type Account = {
   user_id: string;
@@ -303,7 +304,7 @@ export class CustomerStore extends Store {
       deliveryMethod?: string;
     },
     key: string,
-    quote?: { totalMinor: number; settingsRevision: number },
+    quote?: OrderQuote,
   ) {
     if (
       !address ||
@@ -341,6 +342,21 @@ export class CustomerStore extends Store {
           paymentDetails: config.paymentDetails,
           pickupAddress: config.pickupAddress,
           settingsRevision: config.revision,
+          ...(quote?.offerQuoteId
+            ? {
+                offer: (() => {
+                  if (!this.orderOffers)
+                    throw new DomainError("Offers unavailable", 409);
+                  return this.orderOffers.resolve(
+                    user,
+                    items,
+                    address.deliveryMethod as "courier" | "pickup",
+                    config.revision,
+                    quote.offerQuoteId,
+                  );
+                })(),
+              }
+            : {}),
         };
       },
       quote,

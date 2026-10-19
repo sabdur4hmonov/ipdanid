@@ -14,6 +14,7 @@ import { Payments } from "./payments.ts";
 import { pushAdapter } from "./fcm-adapter.ts";
 import { PushStore } from "./push-store.ts";
 import { GalleryStore } from "./gallery-store.ts";
+import { OfferStore } from "./offer-store.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
 const adminToken = production
@@ -34,6 +35,7 @@ const store = new KitStore(
 if (!production) store.seed();
 const business = new BusinessStore(store);
 const gallery = new GalleryStore(store);
+const offers = new OfferStore(store);
 const push = new PushStore(store, pepper, notificationAdapter, (id) =>
   business.announcements(true).find((a) => a.id === id),
 );
@@ -282,6 +284,29 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (path === "/api/admin/offers" && req.method === "GET") {
+        send(200, { codes: offers.codes(), policy: offers.policy() });
+        return;
+      }
+      if (path === "/api/admin/offers/codes" && req.method === "POST") {
+        send(200, offers.saveCode(actor, body));
+        return;
+      }
+      if (path === "/api/admin/offers/policy" && req.method === "POST") {
+        send(200, offers.savePolicy(actor, body));
+        return;
+      }
+      if (path === "/api/admin/offers/report" && req.method === "GET") {
+        send(200, offers.report());
+        return;
+      }
+      const actualCostPath = path.match(
+        /^\/api\/admin\/orders\/([a-f0-9-]{36})\/costs$/,
+      );
+      if (actualCostPath && req.method === "POST") {
+        send(200, offers.saveCosts(actor, actualCostPath[1], body));
+        return;
+      }
       if (path === "/api/admin/gallery" && req.method === "GET") {
         send(
           200,
@@ -447,6 +472,21 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/offers/quote" && req.method === "POST") {
+      if (!body || Object.keys(body).sort().join(",") !== "code,items,method")
+        throw new DomainError("Invalid offer fields");
+      send(200, offers.quote(user, body.items, body.method, body.code));
+      return;
+    }
+    if (
+      path === "/api/referrals" &&
+      ["GET", "POST"].includes(req.method ?? "")
+    ) {
+      if (req.method === "POST" && Object.keys(body).length)
+        throw new DomainError("Invalid referral fields");
+      send(200, offers.referral(user, req.method === "POST"));
+      return;
+    }
     if (path === "/api/gallery/mine" && req.method === "GET") {
       send(200, gallery.mine(user));
       return;
@@ -702,6 +742,7 @@ const cleanup = setInterval(() => {
   store.expireReservations();
   store.expireGifts();
   gallery.prune();
+  offers.prune();
 }, 60_000);
 cleanup.unref();
 process.on("SIGINT", () =>

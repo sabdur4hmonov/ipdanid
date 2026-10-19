@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-19 — Phase15 promo/referral asosi (hozir sinash shart emas)
+
+Server hisobi avtomatik sinaldi: chegirma faqat mahsulotga qo‘llanadi, dostavkaga emas; bir buyurtmani qaytarish ikkinchi to‘lov yoki kredit yaratmaydi. Referral o‘z hisobida va avval to‘lagan xaridorda ishlamaydi; haqiqiy to‘lovdan keyin hisoblanadi, qaytarilganda bekor bo‘ladi. Hozir interfeys ulanishi davom etmoqda; eski4200sahifasida bu funksiyani izlamang. Avtomatik mukofot/pul berilmaydi. Admin xarajatlarni kiritmaguncha foyda o‘ylab topilmaydi. Yakuniy Phase15manzili va ekran yo‘riqnomasi keyingi checkpointda qo‘shiladi.
+
 ## 2026-10-18 — Phase15 bildirishnomalar (egasi hozir sinashi shart emas)
 
 Mozaika ham avtomatik sinaldi: yangi Phase15 da Menyu → Mutaxassis rejimi → Mozaika, haqiqiy rang/dona/zaxira va taglik o‘lchamlarini kiriting. “Tagliklar rejasi” har qadamning tagligi va mahalliy koordinatasini ko‘rsatadi. Saqlab, oflayn qayta ochish hamda JSON/PDF/SVG ishlaydi. PDF chizmasi masshtabli emas; SVGdagi 50 mm belgini 100% bosmada tekshirish egasiga qoladi. Batafsil: [MOSAIC_UZ.md](../docs/MOSAIC_UZ.md). Hozir qo‘lda sinashni kutmaymiz.

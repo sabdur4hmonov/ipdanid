@@ -1,3 +1,4 @@
+import type { OrderOffer, OrderQuote } from "./offer-types";
 export type StorefrontSettings = {
   revision: number;
   brandName: string;
@@ -38,5 +39,6 @@ export type OrderCommerce = {
   paymentDetails: string;
   pickupAddress: string;
   settingsRevision: number;
-  acceptedQuote?: { totalMinor: number; settingsRevision: number };
+  acceptedQuote?: OrderQuote;
+  offer?: OrderOffer;
 };

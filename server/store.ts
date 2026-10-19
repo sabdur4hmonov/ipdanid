@@ -8,6 +8,17 @@ import {
 } from "node:crypto";
 import { readFileSync } from "node:fs";
 import type { OrderCommerce } from "../src/business-types";
+import type { OrderOffer, OrderQuote } from "../src/offer-types";
+export interface OrderOfferProvider {
+  resolve(
+    user: string,
+    items: { productId: string; quantity: number }[],
+    method: "pickup" | "courier",
+    settingsRevision: number,
+    quoteId: unknown,
+  ): OrderOffer;
+  attach(user: string, orderId: string, offer: OrderOffer): void;
+}
 import type { Instruction, Progress } from "../src/core/types";
 
 export class DomainError extends Error {
@@ -43,6 +54,7 @@ type Product = {
 };
 export class Store {
   db: DatabaseSync;
+  orderOffers?: OrderOfferProvider;
   constructor(
     path: string,
     private pepper: string,
@@ -379,8 +391,30 @@ export class Store {
     },
     key: string,
     commerce?: OrderCommerce | (() => OrderCommerce),
-    quote?: { totalMinor: number; settingsRevision: number },
+    quote?: OrderQuote,
   ) {
+    if (
+      quote &&
+      (typeof quote !== "object" ||
+        Array.isArray(quote) ||
+        Object.keys(quote).some(
+          (field) =>
+            !["totalMinor", "settingsRevision", "offerQuoteId"].includes(field),
+        ) ||
+        !Number.isSafeInteger(quote.totalMinor) ||
+        quote.totalMinor < 0 ||
+        !Number.isSafeInteger(quote.settingsRevision) ||
+        quote.settingsRevision < 0)
+    )
+      throw new DomainError("Invalid order quote");
+    if (
+      quote?.offerQuoteId !== undefined &&
+      (typeof quote.offerQuoteId !== "string" ||
+        !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(
+          quote.offerQuoteId,
+        ))
+    )
+      throw new DomainError("Invalid offer reference");
     if (
       typeof key !== "string" ||
       !key.trim() ||
@@ -437,6 +471,17 @@ export class Store {
             normalizedAddress(address)
         )
           throw new DomainError("Order retry parameters differ", 409);
+        const previousCommerce = this.db
+            .prepare("SELECT data FROM order_commerce WHERE order_id=?")
+            .get(previous.id),
+          previousAccepted =
+            previousCommerce &&
+            JSON.parse(String(previousCommerce.data)).acceptedQuote;
+        if (
+          previousAccepted?.offerQuoteId &&
+          previousAccepted.offerQuoteId !== quote?.offerQuoteId
+        )
+          throw new DomainError("Order retry parameters differ", 409);
         if (quote) {
           const old = this.db
             .prepare("SELECT data FROM order_commerce WHERE order_id=?")
@@ -445,7 +490,8 @@ export class Store {
           if (
             !accepted ||
             accepted.totalMinor !== quote.totalMinor ||
-            accepted.settingsRevision !== quote.settingsRevision
+            accepted.settingsRevision !== quote.settingsRevision ||
+            (accepted.offerQuoteId ?? null) !== (quote.offerQuoteId ?? null)
           )
             throw new DomainError("Order retry parameters differ", 409);
         }
@@ -485,6 +531,20 @@ export class Store {
         )
           throw new DomainError("Invalid delivery fee");
         total += commerceSnapshot.feeMinor;
+      }
+      if (commerceSnapshot?.offer) {
+        const offer = commerceSnapshot.offer;
+        if (
+          !this.orderOffers ||
+          offer.version !== "checkout-offer/1" ||
+          !Number.isSafeInteger(offer.discountMinor) ||
+          offer.discountMinor < 0 ||
+          offer.subtotalMinor !== total - commerceSnapshot.feeMinor ||
+          offer.discountMinor >= offer.subtotalMinor ||
+          quote?.offerQuoteId !== offer.quoteId
+        )
+          throw new DomainError("Invalid order offer");
+        total -= offer.discountMinor;
       }
       if (
         quote &&
@@ -531,6 +591,8 @@ export class Store {
             ...(quote ? { acceptedQuote: quote } : {}),
           }),
         );
+      if (commerceSnapshot?.offer)
+        this.orderOffers!.attach(user, id, commerceSnapshot.offer);
       this.audit(user, "order.create", id);
       return this.order(user, id);
     });
