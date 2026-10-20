@@ -10,6 +10,7 @@ import type { Progress } from "../src/core/types";
 import type { OrderQuote } from "../src/offer-types";
 import { isCommerceCurrency } from "../src/commerce-regions";
 import type { CatalogSku } from "../src/catalog-types";
+import type { OrderCommerce } from "../src/business-types";
 
 type Account = {
   user_id: string;
@@ -456,6 +457,34 @@ export class CustomerStore extends Store {
       quote,
     );
   }
+  createDigitalOrder(
+    user: string,
+    productId: string,
+    name: string,
+    key: string,
+    quote: OrderQuote,
+  ) {
+    return super.createOrder(
+      user,
+      [{ productId, quantity: 1 }],
+      { name, city: "", street: "", deliveryMethod: "online" },
+      key,
+      () => {
+        const b = new BusinessStore(this).settings();
+        return {
+          method: "online",
+          feeMinor: 0,
+          currency: quote.currency,
+          sellerName: b.sellerName,
+          sellerPhone: b.sellerPhone,
+          paymentDetails: b.paymentDetails,
+          pickupAddress: "",
+          settingsRevision: b.revision,
+        } satisfies OrderCommerce;
+      },
+      quote,
+    );
+  }
   requestReturn(user: string, id: string) {
     return this.transaction(() => {
       const o = this.order(user, id);
@@ -500,6 +529,7 @@ export class CustomerStore extends Store {
       if (o.status === "refunded") return this.order(o.user_id, id);
       if (o.status !== "return_requested")
         throw new DomainError("Return request required", 409);
+      this.orderLifecycle?.beforeRefund(id);
       const lines = this.db
         .prepare(
           "SELECT product_id,quantity,credits FROM order_lines WHERE order_id=?",
@@ -548,6 +578,14 @@ export class CustomerStore extends Store {
       if (!o) throw new DomainError("Order not found", 404);
       if (o.status !== "paid")
         throw new DomainError("Only paid orders can be fulfilled", 409);
+      const commerce = this.db
+        .prepare("SELECT data FROM order_commerce WHERE order_id=?")
+        .get(id);
+      if (commerce && JSON.parse(String(commerce.data)).method === "online")
+        throw new DomainError(
+          "This order is delivered in the app; no physical shipment",
+          409,
+        );
       this.db
         .prepare("INSERT INTO fulfillments VALUES(?,?,?,'recorded')")
         .run(randomUUID(), id, tracking.trim());

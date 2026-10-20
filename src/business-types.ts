@@ -35,7 +35,7 @@ export type OrderCommerce = {
   currency?: import("./commerce-regions").CommerceCurrency;
   country?: import("./commerce-regions").CommerceCountry;
   shippingRevision?: number;
-  method: "courier" | "pickup";
+  method: "courier" | "pickup" | "online";
   feeMinor: number;
   sellerName: string;
   sellerPhone: string;

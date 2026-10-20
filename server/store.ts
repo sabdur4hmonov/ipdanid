@@ -25,6 +25,14 @@ export interface OrderOfferProvider {
   ): OrderOffer;
   attach(user: string, orderId: string, offer: OrderOffer): void;
 }
+export interface OrderLifecycle {
+  assertItems(
+    items: { productId: string; quantity: number }[],
+    method: string | undefined,
+  ): void;
+  paid(orderId: string): void;
+  beforeRefund(orderId: string): void;
+}
 import type { Instruction, Progress } from "../src/core/types";
 
 export class DomainError extends Error {
@@ -63,6 +71,7 @@ export class Store {
   orderOffers?: OrderOfferProvider;
   inventory?: CatalogInventory;
   regions?: RegionalCommerce;
+  orderLifecycle?: OrderLifecycle;
   constructor(
     path: string,
     private pepper: string,
@@ -110,14 +119,20 @@ export class Store {
   close() {
     this.db.close();
   }
+  private storeSavepoint = 0;
   private tx<T>(fn: () => T): T {
-    this.db.exec("BEGIN IMMEDIATE");
+    const nested = this.db.isTransaction,
+      point = "store_nested_" + ++this.storeSavepoint;
+    this.db.exec(nested ? "SAVEPOINT " + point : "BEGIN IMMEDIATE");
     try {
       const result = fn();
-      this.db.exec("COMMIT");
+      this.db.exec(nested ? "RELEASE SAVEPOINT " + point : "COMMIT");
       return result;
     } catch (e) {
-      this.db.exec("ROLLBACK");
+      if (nested) {
+        this.db.exec("ROLLBACK TO SAVEPOINT " + point);
+        this.db.exec("RELEASE SAVEPOINT " + point);
+      } else this.db.exec("ROLLBACK");
       throw e;
     }
   }
@@ -216,6 +231,7 @@ export class Store {
     credits: number,
     expiresAt: number,
     requestKey: string,
+    purchased = false,
   ) {
     if (
       !Number.isInteger(credits) ||
@@ -226,7 +242,8 @@ export class Store {
       expiresAt > Date.now() + 366 * 86400_000 ||
       typeof requestKey !== "string" ||
       !requestKey.trim() ||
-      requestKey.length > 100
+      requestKey.length > 100 ||
+      (!purchased && requestKey.startsWith("purchase-gift:"))
     )
       throw new DomainError("Invalid gift parameters");
     return this.tx(() => {
@@ -273,6 +290,22 @@ export class Store {
   }
   private giftToken(id: string, buyer: string) {
     return `${id}.${this.digest(`gift-claim:${id}:${buyer}`)}`;
+  }
+  purchasedGift(buyer: string, id: string) {
+    const g = this.db
+      .prepare(
+        "SELECT id,credits,expires_at,status FROM gifts WHERE id=? AND buyer_id=?",
+      )
+      .get(id, buyer);
+    if (!g) throw new DomainError("Gift not found", 404);
+    const active = g.status === "active" && Number(g.expires_at) > Date.now();
+    return {
+      id: String(g.id),
+      credits: Number(g.credits),
+      expiresAt: Number(g.expires_at),
+      status: g.status === "active" && !active ? "expired" : String(g.status),
+      ...(active ? { claimToken: this.giftToken(id, buyer) } : {}),
+    };
   }
   redeemGift(user: string, token: string) {
     if (typeof token !== "string" || token.length > 200)
@@ -455,7 +488,8 @@ export class Store {
       items.length > 20 ||
       !address ||
       !(
-        address.deliveryMethod === "pickup"
+        address.deliveryMethod === "pickup" ||
+        address.deliveryMethod === "online"
           ? [address.name]
           : [address.name, address.city, address.street]
       ).every(
@@ -568,6 +602,7 @@ export class Store {
       this.inventory?.assertOrder(items, quote?.catalogRevision);
       const commerceSnapshot =
         typeof commerce === "function" ? commerce() : commerce;
+      this.orderLifecycle?.assertItems(items, commerceSnapshot?.method);
       if (
         (currency !== "UZS" || quote?.currency !== undefined) &&
         quote?.currency !== currency
@@ -751,6 +786,7 @@ export class Store {
         );
         if (credits)
           this.grant(o.user_id, credits, "sandbox-order", `order:${o.id}`);
+        this.orderLifecycle?.paid(o.id);
         this.db
           .prepare("INSERT INTO messages VALUES(?,?,?,?,?,?,?)")
           .run(

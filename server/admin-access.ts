@@ -191,7 +191,9 @@ export function adminRoutePermission(
 ): AdminPermission | null {
   if (
     (path === "/api/admin/catalog" && method === "GET") ||
-    (path === "/api/admin/catalog/sku" && method === "POST")
+    (path === "/api/admin/catalog/sku" && method === "POST") ||
+    (path === "/api/admin/journeys/products" &&
+      ["GET", "POST"].includes(method))
   )
     return "catalog";
   if (

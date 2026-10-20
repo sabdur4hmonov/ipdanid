@@ -332,3 +332,7 @@ Avtomatik tekshirildi: USD narxli to‘plam, mamlakatga mos dostavka, asl buyurt
 Hozir qo‘lda test qilish shart emas: desktop va mobil oqimlar avtomatik tekshirildi. Ko‘rmoqchi bo‘lsangiz, lokal hisobot: output/phase15/catalog/report.html. Yangi owner preview va APK yakuniy C26da beriladi; 4194–4200 eski ilovalari saqlangan.
 
 Keyin sinash: Menu → Hisob / Admin → Admin → “To‘plam turlari va materiallar”. To‘plam yoki qo‘shimcha material yarating, material/narx/valyuta/tarkibini saqlang. “Mamlakatlar va dostavka”da faqat haqiqiy xizmat ko‘rsatiladigan joyni yoqing. Do‘konda mamlakatga mos mahsulot/narx ko‘rinadi. Valyuta aylantirilmaydi; Click/Payme faqat UZS uchun. Javob uzilib qolgan buyurtma qayta tekshirilganda asl narx/tarkib saqlanadi. Hisobdagi “Kit kreditining muddati” va chop etilgan kartochkada kredit muddati ko‘rinadi. To‘liq yo‘riqnoma: docs/CATALOG_UZ.md.
+
+### Phase15 C15a — ilova krediti va sovg‘a xaridi serveri
+
+Avtomatik sinov o‘tdi: ilova krediti va sovg‘a faqat tasdiqlangan sinov to‘lovidan keyin yaratiladi. Sovg‘ani bitta hisob oladi; qayta urinishda ikki marta kredit berilmaydi. Sovg‘ani olish muddati to‘lovdan keyin 30 kun; oluvchiga berilgan oddiy kredit muddatsiz. Olinmagan sovg‘aning qaytarilishi va xatoda butun tranzaksiyaning bekor bo‘lishi tekshirildi. Hozir qo‘lda test qilish shart emas: boshqaruv/xarid ekranlari va tayyor asar buyurtmasi keyingi C15 bosqichlarida ulanadi. Haqiqiy to‘lov yoki xabar yuborilmadi.

@@ -18,6 +18,7 @@ import { OfferStore } from "./offer-store.ts";
 import { PartnerStore } from "./partner-store.ts";
 import { CatalogStore } from "./catalog-store.ts";
 import { RegionsStore } from "./regions-store.ts";
+import { JourneyStore } from "./journey-store.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
 const adminToken = production
@@ -41,6 +42,7 @@ const gallery = new GalleryStore(store);
 const offers = new OfferStore(store);
 const catalog = new CatalogStore(store);
 const regions = new RegionsStore(store);
+const journeys = new JourneyStore(store);
 const partners = new PartnerStore(store);
 const push = new PushStore(store, pepper, notificationAdapter, (id) =>
   business.announcements(true).find((a) => a.id === id),
@@ -146,6 +148,7 @@ const server = createServer(async (req, res) => {
         products,
         catalogRevision: catalog.revision(),
         regions: regions.policy(),
+        journeys: journeys.publicPolicies(),
         contents: Object.fromEntries(
           catalog
             .all()
@@ -322,6 +325,18 @@ const server = createServer(async (req, res) => {
         send(
           200,
           req.method === "GET" ? regions.policy() : regions.save(actor, body),
+        );
+        return;
+      }
+      if (
+        path === "/api/admin/journeys/products" &&
+        ["GET", "POST"].includes(req.method ?? "")
+      ) {
+        send(
+          200,
+          req.method === "GET"
+            ? { products: store.products(), policies: journeys.policies() }
+            : journeys.save(actor, body),
         );
         return;
       }
@@ -729,6 +744,25 @@ const server = createServer(async (req, res) => {
     const getProgress = path.match(/^\/api\/instructions\/([^/]+)\/progress$/);
     if (getProgress && req.method === "GET") {
       send(200, store.progress(user, getProgress[1]));
+      return;
+    }
+    if (
+      path === "/api/digital/purchases" &&
+      ["GET", "POST"].includes(req.method ?? "")
+    ) {
+      send(
+        req.method === "GET" ? 200 : 201,
+        req.method === "GET"
+          ? journeys.list(user)
+          : journeys.purchase(user, body),
+      );
+      return;
+    }
+    const digitalPurchase = path.match(
+      /^\/api\/digital\/purchases\/([a-f0-9-]{36})$/,
+    );
+    if (digitalPurchase && req.method === "GET") {
+      send(200, journeys.get(user, digitalPurchase[1]));
       return;
     }
     if (path === "/api/gifts" && req.method === "POST") {
