@@ -25,6 +25,17 @@ import {
 } from "./catalog-checkout";
 import type { CatalogSku } from "./catalog-types";
 import type { CommerceRegions } from "./commerce-regions";
+import type { JourneyProduct } from "./journey-types";
+import { journeyText } from "./journey-i18n";
+const DigitalAdmin = lazy(() =>
+  import("./DigitalPanels").then((m) => ({ default: m.DigitalAdmin })),
+);
+const DigitalStudio = lazy(() =>
+  import("./DigitalPanels").then((m) => ({ default: m.DigitalStudio })),
+);
+const GiftClaimPanel = lazy(() =>
+  import("./DigitalPanels").then((m) => ({ default: m.GiftClaimPanel })),
+);
 const CatalogAdmin = lazy(() =>
   import("./CatalogAdmin").then((m) => ({ default: m.CatalogAdmin })),
 );
@@ -113,6 +124,8 @@ export function CustomerHub({
   onApplyProfile,
   kitClaim,
   onClaimHandled,
+  giftClaim,
+  onGiftHandled,
 }: {
   locale: Locale;
   projects: Project[];
@@ -121,6 +134,8 @@ export function CustomerHub({
   onApplyProfile: (profile: string) => void | Promise<void>;
   kitClaim?: string | null;
   onClaimHandled?: () => void;
+  giftClaim?: string | null;
+  onGiftHandled?: () => void;
 }) {
   const { settings: storefront, refresh: refreshStorefront } = useBusiness();
   const ct = (key: CatalogWord) => catalogText(locale, key);
@@ -130,9 +145,22 @@ export function CustomerHub({
   const [pane, setPane] = useState<Pane>("account"),
     [connected, setConnected] = useState(false),
     [busy, setBusy] = useState(false);
+  const requestScope = useRef({ alive: true, life: 0, customer: 0, admin: 0 });
   useEffect(() => {
-    if (kitClaim) setPane("account");
-  }, [kitClaim]);
+    const s = requestScope.current;
+    s.alive = true;
+    api.sessionChanged.add(resetCustomer);
+    return () => {
+      s.alive = false;
+      ++s.life;
+      ++s.customer;
+      ++s.admin;
+      api.sessionChanged.delete(resetCustomer);
+    };
+  }, []);
+  useEffect(() => {
+    if (kitClaim || giftClaim) setPane("account");
+  }, [kitClaim, giftClaim]);
   const [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [email, setEmail] = useState(""),
@@ -142,6 +170,7 @@ export function CustomerHub({
   const [me, setMe] = useState<{
       email: string | null;
       credits: number;
+      durable?: boolean;
     } | null>(null),
     [products, setProducts] = useState<Product[]>([]),
     [skus, setSkus] = useState<Record<string, CatalogSku>>({}),
@@ -150,6 +179,8 @@ export function CustomerHub({
     >({}),
     [catalogRevision, setCatalogRevision] = useState<number>(),
     [regions, setRegions] = useState<CommerceRegions>(),
+    [journeyPolicies, setJourneyPolicies] = useState<JourneyProduct[]>([]),
+    [publicClaimOrigin, setPublicClaimOrigin] = useState<string | null>(null),
     [orders, setOrders] = useState<Order[]>([]),
     [tickets, setTickets] = useState<Ticket[]>([]),
     [remote, setRemote] = useState<Remote[]>([]);
@@ -228,12 +259,12 @@ export function CustomerHub({
     orderRequest.current = attempt;
     setPendingCheckout(Boolean(attempt));
   }
-  async function restoreCheckout() {
+  async function restoreCheckout(valid = () => true) {
     const key = checkoutKey(),
       raw = Capacitor.isNativePlatform()
         ? (await Preferences.get({ key })).value
         : localStorage.getItem(key);
-    if (!raw) return;
+    if (!valid() || !raw) return;
     const attempt = JSON.parse(raw);
     if (!validCheckoutAttempt(attempt))
       throw Error("Invalid saved checkout; original orders remain available");
@@ -332,22 +363,41 @@ export function CustomerHub({
     }
   }
   async function refresh() {
-    const health = await api.request<unknown>("/health");
-    setSandboxMode(customerHealthSandbox(health));
-    const [m, c, o, s, r] = await Promise.all([
-      api.request<{ email: string | null; credits: number }>("/account"),
-      api.request<ShopCatalog>("/catalog"),
-      api.request<Order[]>("/orders"),
-      api.request<Ticket[]>("/support"),
-      api.request<Remote[]>("/instructions"),
+    const scope = requestScope.current,
+      ticket = ++scope.customer,
+      life = scope.life,
+      token = api.session?.token;
+    const valid = () =>
+      scope.alive &&
+      scope.life === life &&
+      scope.customer === ticket &&
+      token === api.session?.token;
+    if (!token) throw new ApiError(401, "Account required");
+    const [health, m, c, o, s, r] = await Promise.all([
+      api.request<unknown>("/health", undefined, ""),
+      api.request<{ email: string | null; credits: number; durable?: boolean }>(
+        "/account",
+        undefined,
+        token,
+      ),
+      api.request<ShopCatalog>("/catalog", undefined, ""),
+      api.request<Order[]>("/orders", undefined, token),
+      api.request<Ticket[]>("/support", undefined, token),
+      api.request<Remote[]>("/instructions", undefined, token),
     ]);
+    if (!valid()) return;
+    const sandbox = customerHealthSandbox(health);
+    if (!orderRequest.current) await restoreCheckout(valid);
+    if (!valid()) return;
+    setSandboxMode(sandbox);
     setMe(m);
-    if (!orderRequest.current) await restoreCheckout();
     setProducts(c.products);
     setSkus(c.skus ?? {});
     setContents(c.contents ?? {});
     setCatalogRevision(c.catalogRevision);
     setRegions(c.regions);
+    setJourneyPolicies(c.journeys ?? []);
+    setPublicClaimOrigin(c.claimOrigin ?? null);
     setOrders(o);
     setTickets(s);
     setRemote(r);
@@ -382,6 +432,7 @@ export function CustomerHub({
     await refresh();
   }
   function resetCustomer() {
+    ++requestScope.current.customer;
     offer.clear();
     setConnected(false);
     setMe(null);
@@ -410,38 +461,52 @@ export function CustomerHub({
     setPendingCheckout(false);
   }
   async function adminRefresh(credential = adminToken) {
-    setUnlocked(false);
-    const session = await api.request<AdminSession>(
-      "/admin/session",
-      undefined,
-      credential,
-    );
-    const allowed = (permission: AdminPermission) =>
-      session.permissions.includes(permission);
-    const [p, o, s, a, c] = await Promise.all([
-      allowed("catalog")
-        ? api.request<Product[]>("/admin/products", undefined, credential)
-        : [],
-      allowed("orders")
-        ? api.request<Order[]>("/admin/orders", undefined, credential)
-        : [],
-      allowed("support")
-        ? api.request<Ticket[]>("/admin/support", undefined, credential)
-        : [],
-      allowed("audit")
-        ? api.request<typeof audit>("/admin/audit", undefined, credential)
-        : [],
-      allowed("codes")
-        ? api.request<typeof codes>("/admin/codes", undefined, credential)
-        : [],
-    ]);
-    setAdminProducts(p);
-    setAdminOrders(o);
-    setAdminTickets(s);
-    setAudit(a);
-    setCodes(c);
-    setAdminSession(session);
-    setUnlocked(true);
+    const scope = requestScope.current,
+      ticket = ++scope.admin,
+      life = scope.life,
+      valid = () =>
+        scope.alive && scope.life === life && scope.admin === ticket;
+    try {
+      const session = await api.request<AdminSession>(
+        "/admin/session",
+        undefined,
+        credential,
+      );
+      if (!valid()) throw new ApiError(409, "Admin session changed");
+      const allowed = (permission: AdminPermission) =>
+        session.permissions.includes(permission);
+      const [p, o, s, a, c] = await Promise.all([
+        allowed("catalog")
+          ? api.request<Product[]>("/admin/products", undefined, credential)
+          : [],
+        allowed("orders")
+          ? api.request<Order[]>("/admin/orders", undefined, credential)
+          : [],
+        allowed("support")
+          ? api.request<Ticket[]>("/admin/support", undefined, credential)
+          : [],
+        allowed("audit")
+          ? api.request<typeof audit>("/admin/audit", undefined, credential)
+          : [],
+        allowed("codes")
+          ? api.request<typeof codes>("/admin/codes", undefined, credential)
+          : [],
+      ]);
+      if (!valid()) throw new ApiError(409, "Admin session changed");
+      setAdminProducts(p);
+      setAdminOrders(o);
+      setAdminTickets(s);
+      setAudit(a);
+      setCodes(c);
+      setAdminSession(session);
+      setUnlocked(true);
+    } catch (error) {
+      if (valid()) {
+        setUnlocked(false);
+        setAdminSession(null);
+      }
+      throw error;
+    }
   }
   const money = (
     v: number,
@@ -579,6 +644,24 @@ export function CustomerHub({
         )}
         {pane === "account" && (
           <div className="customer-grid">
+            {giftClaim && (
+              <Suspense fallback={<p role="status">…</p>}>
+                <GiftClaimPanel
+                  locale={locale}
+                  code={giftClaim}
+                  durable={!!me?.durable}
+                  onDismiss={() => onGiftHandled?.()}
+                  onAccepted={async () => {
+                    const token = api.session?.token;
+                    await refresh();
+                    if (token !== api.session?.token)
+                      throw new ApiError(409, "Gift account changed");
+                    onGiftHandled?.();
+                    setNotice(journeyText(locale, "accepted"));
+                  }}
+                />
+              </Suspense>
+            )}
             {kitClaim && (
               <Suspense fallback={<p role="status">…</p>}>
                 <KitClaimPanel
@@ -813,6 +896,20 @@ export function CustomerHub({
         )}
         {pane === "shop" && connected && (
           <>
+            {(journeyPolicies.length > 0 || me?.durable) && (
+              <Suspense fallback={<p role="status">…</p>}>
+                <DigitalStudio
+                  locale={locale}
+                  products={products}
+                  policies={journeyPolicies}
+                  catalogRevision={catalogRevision}
+                  settingsRevision={storefront.revision}
+                  durable={!!me?.durable}
+                  claimOrigin={publicClaimOrigin}
+                  onUpdated={refresh}
+                />
+              </Suspense>
+            )}
             {regions && !regions.usesLegacy && (
               <section className="card">
                 <label>
@@ -854,7 +951,12 @@ export function CustomerHub({
             {!region?.enabled && <p role="status">{ct("notServed")}</p>}
             <div className="customer-grid">
               {products
-                .filter((p) => region?.enabled && p.currency === currency)
+                .filter(
+                  (p) =>
+                    p.family !== "digital" &&
+                    region?.enabled &&
+                    p.currency === currency,
+                )
                 .map((p) => (
                   <section className="card" key={p.id}>
                     <span className="eyebrow">{p.family}</span>
@@ -1171,75 +1273,79 @@ export function CustomerHub({
             <section className="card">
               <h2>{t("orders")}</h2>
               {!orders.length && <p>{t("noOrders")}</p>}
-              {orders.map((o) => (
-                <article className="customer-item" key={o.id}>
-                  <code>{o.id}</code>
-                  <p>
-                    {state(o.status)} · {money(o.total_minor, o.currency)}
-                  </p>
-                  {o.commerce && (
-                    <div data-testid="order-seller-snapshot">
-                      <p>
-                        {bt(
-                          o.commerce.method === "pickup" ? "pickup" : "courier",
-                        )}{" "}
-                        · {money(o.commerce.feeMinor, o.currency)}
-                      </p>
-                      <p>
-                        {o.commerce.sellerName} · {o.commerce.sellerPhone}
-                      </p>
-                      <p>{o.commerce.paymentDetails}</p>
-                      {o.commerce.method === "pickup" && (
-                        <p>{o.commerce.pickupAddress}</p>
-                      )}
-                    </div>
-                  )}
-                  {o.items.map((l, k) => (
-                    <p key={k}>
-                      {l.name} × {l.quantity}
+              {orders
+                .filter((o) => o.commerce?.method !== "online")
+                .map((o) => (
+                  <article className="customer-item" key={o.id}>
+                    <code>{o.id}</code>
+                    <p>
+                      {state(o.status)} · {money(o.total_minor, o.currency)}
                     </p>
-                  ))}
-                  {o.fulfillments.map((f, k) => (
-                    <p key={k}>
-                      {t("tracking")}: {f.tracking}
-                    </p>
-                  ))}
-                  {o.status === "pending" && (
-                    <PaymentOptions
-                      orderId={o.id}
-                      currency={o.currency}
-                      locale={locale}
-                      onUpdated={refresh}
-                    />
-                  )}
-                  {o.status === "pending" && (
-                    <button
-                      className="outline"
-                      onClick={() =>
-                        void run(async () => {
-                          await api.request(`/orders/${o.id}/cancel`, {});
-                          await refresh();
-                        })
-                      }
-                    >
-                      {t("cancel")}
-                    </button>
-                  )}
-                  {["paid", "fulfilled"].includes(o.status) && (
-                    <button
-                      className="outline"
-                      onClick={() =>
-                        void run(async () => {
-                          await api.request(`/orders/${o.id}/return`, {});
-                          await refresh();
-                        })
-                      }
-                    >
-                      {t("return")}
-                    </button>
-                  )}
-                </article>
-              ))}
+                    {o.commerce && (
+                      <div data-testid="order-seller-snapshot">
+                        <p>
+                          {bt(
+                            o.commerce.method === "pickup"
+                              ? "pickup"
+                              : "courier",
+                          )}{" "}
+                          · {money(o.commerce.feeMinor, o.currency)}
+                        </p>
+                        <p>
+                          {o.commerce.sellerName} · {o.commerce.sellerPhone}
+                        </p>
+                        <p>{o.commerce.paymentDetails}</p>
+                        {o.commerce.method === "pickup" && (
+                          <p>{o.commerce.pickupAddress}</p>
+                        )}
+                      </div>
+                    )}
+                    {o.items.map((l, k) => (
+                      <p key={k}>
+                        {l.name} × {l.quantity}
+                      </p>
+                    ))}
+                    {o.fulfillments.map((f, k) => (
+                      <p key={k}>
+                        {t("tracking")}: {f.tracking}
+                      </p>
+                    ))}
+                    {o.status === "pending" && (
+                      <PaymentOptions
+                        orderId={o.id}
+                        currency={o.currency}
+                        locale={locale}
+                        onUpdated={refresh}
+                      />
+                    )}
+                    {o.status === "pending" && (
+                      <button
+                        className="outline"
+                        onClick={() =>
+                          void run(async () => {
+                            await api.request(`/orders/${o.id}/cancel`, {});
+                            await refresh();
+                          })
+                        }
+                      >
+                        {t("cancel")}
+                      </button>
+                    )}
+                    {["paid", "fulfilled"].includes(o.status) && (
+                      <button
+                        className="outline"
+                        onClick={() =>
+                          void run(async () => {
+                            await api.request(`/orders/${o.id}/return`, {});
+                            await refresh();
+                          })
+                        }
+                      >
+                        {t("return")}
+                      </button>
+                    )}
+                  </article>
+                ))}
             </section>
           </>
         )}
@@ -1419,6 +1525,7 @@ export function CustomerHub({
                     setAdminToken(token);
                   }}
                   onLogout={() => {
+                    ++requestScope.current.admin;
                     setAdminToken("");
                     setUnlocked(false);
                     setAdminSession(null);
@@ -1439,6 +1546,7 @@ export function CustomerHub({
                       autoComplete="off"
                       value={adminToken}
                       onChange={(e) => {
+                        ++requestScope.current.admin;
                         setAdminToken(e.target.value);
                         setUnlocked(false);
                         setAdminSession(null);
@@ -1487,6 +1595,11 @@ export function CustomerHub({
                 {can("catalog") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <CatalogAdmin locale={locale} token={adminToken} />
+                  </Suspense>
+                )}
+                {can("catalog") && (
+                  <Suspense fallback={<p role="status">…</p>}>
+                    <DigitalAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
                 {can("settings") && (
@@ -1748,37 +1861,41 @@ export function CustomerHub({
                           {t("refund")}
                         </button>
                       )}
-                      {o.status === "paid" && can("fulfill") && (
-                        <>
-                          <label>
-                            {t("tracking")}
-                            <input
-                              value={tracking[o.id] ?? ""}
-                              onChange={(e) =>
-                                setTracking((v) => ({
-                                  ...v,
-                                  [o.id]: e.target.value,
-                                }))
+                      {o.status === "paid" &&
+                        o.commerce?.method !== "online" &&
+                        can("fulfill") && (
+                          <>
+                            <label>
+                              {t("tracking")}
+                              <input
+                                value={tracking[o.id] ?? ""}
+                                onChange={(e) =>
+                                  setTracking((v) => ({
+                                    ...v,
+                                    [o.id]: e.target.value,
+                                  }))
+                                }
+                              />
+                            </label>
+                            <button
+                              disabled={
+                                (tracking[o.id] ?? "").trim().length < 2
                               }
-                            />
-                          </label>
-                          <button
-                            disabled={(tracking[o.id] ?? "").trim().length < 2}
-                            onClick={() =>
-                              void run(async () => {
-                                await api.request(
-                                  `/admin/orders/${o.id}/fulfill`,
-                                  { tracking: tracking[o.id] },
-                                  adminToken,
-                                );
-                                await adminRefresh();
-                              })
-                            }
-                          >
-                            {t("fulfill")}
-                          </button>
-                        </>
-                      )}
+                              onClick={() =>
+                                void run(async () => {
+                                  await api.request(
+                                    `/admin/orders/${o.id}/fulfill`,
+                                    { tracking: tracking[o.id] },
+                                    adminToken,
+                                  );
+                                  await adminRefresh();
+                                })
+                              }
+                            >
+                              {t("fulfill")}
+                            </button>
+                          </>
+                        )}
                     </article>
                   ))}
                 </section>

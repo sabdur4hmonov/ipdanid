@@ -288,14 +288,16 @@ export class JourneyStore implements OrderLifecycle {
   get(user: string, id: string): DigitalPurchase {
     const row = this.store.db
       .prepare(
-        "SELECT d.snapshot,o.status,o.total_minor,o.currency FROM digital_purchases d JOIN orders o ON o.id=d.order_id WHERE d.order_id=? AND d.buyer_id=?",
+        "SELECT d.snapshot,d.request_key,o.status,o.total_minor,o.currency,c.data commerce FROM digital_purchases d JOIN orders o ON o.id=d.order_id LEFT JOIN order_commerce c ON c.order_id=o.id WHERE d.order_id=? AND d.buyer_id=?",
       )
       .get(id, user);
     if (!row) throw new DomainError("Purchase not found", 404);
     const s = JSON.parse(String(row.snapshot)) as Snapshot;
+    const commerce = row.commerce ? JSON.parse(String(row.commerce)) : {};
     return {
       version: "digital-purchase/1",
       orderId: id,
+      requestKey: String(row.request_key),
       kind: s.kind,
       productId: s.productId,
       name: s.name,
@@ -303,6 +305,11 @@ export class JourneyStore implements OrderLifecycle {
       currency: String(row.currency),
       totalMinor: Number(row.total_minor),
       status: String(row.status),
+      seller: {
+        name: String(commerce.sellerName ?? ""),
+        phone: String(commerce.sellerPhone ?? ""),
+        paymentDetails: String(commerce.paymentDetails ?? ""),
+      },
       gift: s.giftId ? this.store.purchasedGift(user, s.giftId) : null,
     };
   }

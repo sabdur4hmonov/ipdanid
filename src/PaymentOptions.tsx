@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 import { customerApi as api } from "./customer-api";
+import { journeyText } from "./journey-i18n";
 type Provider = "click" | "payme";
 type Invoice = {
   id: string;
@@ -53,11 +54,13 @@ export function PaymentOptions({
   locale,
   onUpdated,
   currency = "UZS",
+  online = false,
 }: {
   orderId: string;
   locale: Locale;
   onUpdated: () => Promise<void>;
   currency?: string;
+  online?: boolean;
 }) {
   const [config, setConfig] = useState<{
       providers: Provider[];
@@ -99,6 +102,8 @@ export function PaymentOptions({
       setBusy(false);
     }
   }
+  if (currency !== "UZS" && online)
+    return <p>{journeyText(locale, "manualPayment")}</p>;
   if (currency !== "UZS")
     return (
       <p>

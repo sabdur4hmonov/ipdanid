@@ -336,3 +336,7 @@ Keyin sinash: Menu → Hisob / Admin → Admin → “To‘plam turlari va mater
 ### Phase15 C15a — ilova krediti va sovg‘a xaridi serveri
 
 Avtomatik sinov o‘tdi: ilova krediti va sovg‘a faqat tasdiqlangan sinov to‘lovidan keyin yaratiladi. Sovg‘ani bitta hisob oladi; qayta urinishda ikki marta kredit berilmaydi. Sovg‘ani olish muddati to‘lovdan keyin 30 kun; oluvchiga berilgan oddiy kredit muddatsiz. Olinmagan sovg‘aning qaytarilishi va xatoda butun tranzaksiyaning bekor bo‘lishi tekshirildi. Hozir qo‘lda test qilish shart emas: boshqaruv/xarid ekranlari va tayyor asar buyurtmasi keyingi C15 bosqichlarida ulanadi. Haqiqiy to‘lov yoki xabar yuborilmadi.
+
+## Phase15 C15b — ilova krediti va sovg‘a (avtomatik tekshirildi)
+
+Hozir qo‘lda sinash shart emas. Keyingi yangi ko‘rishda: Admin → ilova/sovg‘a mahsulotini yoqing; ro‘yxatdan o‘tgan hisob → Do‘kon → ilova krediti yoki sovg‘a. Lokal sinov to‘lovi bir marta kredit beradi. Sovg‘ani boshqa doimiy hisobda havola/kod bilan ochib, qabul qilish tugmasini bosing; takroran boshqa oluvchi ola olmaydi. Sovg‘a kodi dastlab yashirin, olingach ko‘rsatilmaydi. USD/RUBda Click/Payme chiqmaydi, asl sotuvchi rekvizitlari saqlanadi. Bu haqiqiy bank tasdig‘i emas. docs/JOURNEYS_UZ.md. Desktop/mobil va hisobdan chiqish sinovlari o‘tdi; tayyor asar buyurtmasi keyingi qismda.

@@ -19,6 +19,7 @@ import { PartnerStore } from "./partner-store.ts";
 import { CatalogStore } from "./catalog-store.ts";
 import { RegionsStore } from "./regions-store.ts";
 import { JourneyStore } from "./journey-store.ts";
+import { claimOrigin } from "../src/kit-claim-link.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
 const adminToken = production
@@ -43,6 +44,19 @@ const offers = new OfferStore(store);
 const catalog = new CatalogStore(store);
 const regions = new RegionsStore(store);
 const journeys = new JourneyStore(store);
+const giftLinkOrigin = (() => {
+  const value =
+    process.env.APP_ORIGIN ??
+    (process.env.IP_RASM_TEST_SERVER === "1"
+      ? process.env.IP_RASM_TEST_ORIGIN
+      : undefined);
+  if (!value) return null;
+  try {
+    return claimOrigin(value).origin;
+  } catch {
+    return null;
+  }
+})();
 const partners = new PartnerStore(store);
 const push = new PushStore(store, pepper, notificationAdapter, (id) =>
   business.announcements(true).find((a) => a.id === id),
@@ -149,6 +163,7 @@ const server = createServer(async (req, res) => {
         catalogRevision: catalog.revision(),
         regions: regions.policy(),
         journeys: journeys.publicPolicies(),
+        claimOrigin: giftLinkOrigin,
         contents: Object.fromEntries(
           catalog
             .all()

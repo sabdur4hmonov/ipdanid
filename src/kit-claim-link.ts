@@ -1,5 +1,4 @@
-export function kitClaimLink(origin: string, code: string) {
-  if (!/^[-\w]{32}$/.test(code)) throw Error("Invalid kit claim");
+export function claimOrigin(origin: string) {
   const url = new URL(origin),
     loopback = ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname);
   if (
@@ -11,6 +10,11 @@ export function kitClaimLink(origin: string, code: string) {
     url.pathname !== "/"
   )
     throw Error("Invalid claim origin");
+  return url;
+}
+export function kitClaimLink(origin: string, code: string) {
+  if (!/^[-\w]{32}$/.test(code)) throw Error("Invalid kit claim");
+  const url = claimOrigin(origin);
   url.hash = "kit=" + code;
   return url.href;
 }

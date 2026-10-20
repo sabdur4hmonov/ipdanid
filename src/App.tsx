@@ -5,6 +5,8 @@ import { CustomerStudio } from "./CustomerStudio";
 import { customerFlowText } from "./customer-flow-i18n";
 import { standardText } from "./standard-kit-i18n";
 import { takeKitClaim, kitClaimCode } from "./kit-claim-link";
+import { giftClaimCode, takeGiftClaim } from "./gift-claim-link";
+import { startDigitalPendingLifecycle } from "./digital-pending";
 import { standardKitRevision } from "./standard-kit-settings";
 import type { StandardKitConfig } from "./core/standard-kit";
 const StandardKitStudio = lazy(() =>
@@ -22,9 +24,14 @@ export default function App() {
     kitClaimCode(window.location.hash),
   );
   const [claimedKit, setClaimedKit] = useState<StandardKitConfig>();
+  const [giftClaim, setGiftClaim] = useState(() =>
+    giftClaimCode(window.location.hash),
+  );
   const [standard, setStandard] = useState(true);
   const [customerFlow, setCustomerFlow] = useState(true);
-  const context = useAppController(kitClaim ? "customer" : "create");
+  const context = useAppController(
+    kitClaim || giftClaim ? "customer" : "create",
+  );
   const {
     Announcements,
     Check,
@@ -81,8 +88,20 @@ export default function App() {
   } = context;
   useEffect(() => startPushRuntime(locale), [locale]);
   useEffect(() => {
+    startDigitalPendingLifecycle();
+  }, []);
+  useEffect(() => {
     takeKitClaim();
+    takeGiftClaim();
     const claim = () => {
+      if (window.location.hash.startsWith("#gift=")) {
+        const token = takeGiftClaim();
+        if (token) {
+          setGiftClaim(token);
+          setView("customer");
+        }
+        return;
+      }
       if (!window.location.hash.startsWith("#kit=")) return;
       const code = takeKitClaim();
       if (code) {
@@ -240,6 +259,8 @@ export default function App() {
           {view === "customer" && (
             <CustomerHub
               kitClaim={kitClaim}
+              giftClaim={giftClaim}
+              onGiftHandled={() => setGiftClaim(null)}
               onClaimHandled={() => setKitClaim(null)}
               locale={locale}
               projects={projects.filter((p) => canBuild(p.instruction))}

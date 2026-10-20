@@ -317,6 +317,7 @@ export class Store {
         | {
             id: string;
             buyer_id: string;
+            request_key: string | null;
             credits: number;
             redeemed_by: string | null;
             expires_at: number;
@@ -324,6 +325,12 @@ export class Store {
           }
         | undefined;
       if (!g || !g.id) throw new DomainError("Gift unavailable", 404);
+      if (
+        g.request_key?.startsWith("purchase-gift:") &&
+        this.db.prepare("SELECT role FROM users WHERE id=?").get(user)?.role !==
+          "maker"
+      )
+        throw new DomainError("A durable account is required", 403);
       if (g.status === "redeemed" && g.redeemed_by === user)
         return { id: g.id, credits: g.credits, alreadyRedeemed: true };
       if (g.status !== "active" || g.expires_at <= Date.now())

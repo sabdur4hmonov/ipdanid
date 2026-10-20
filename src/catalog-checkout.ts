@@ -14,6 +14,8 @@ export type CommerceProduct = {
   active: number;
 };
 export type ShopCatalog = {
+  journeys?: import("./journey-types").JourneyProduct[];
+  claimOrigin?: string | null;
   contents?: Record<string, { name: string; quantity: number }[]>;
   products: CommerceProduct[];
   skus?: Record<string, CatalogSku>;

@@ -154,6 +154,9 @@ export class CustomerStore extends Store {
       .get(user) as { email: string } | undefined;
     return {
       id: user,
+      durable:
+        this.db.prepare("SELECT role FROM users WHERE id=?").get(user)?.role ===
+        "maker",
       email: account?.email ?? null,
       credits: this.balance(user),
       sandbox: true,

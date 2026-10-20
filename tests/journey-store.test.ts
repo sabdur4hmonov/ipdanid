@@ -226,3 +226,35 @@ it("digital delivery cannot be recorded as a physical shipment", () => {
   );
   expect(f.j.get(f.user, p.orderId).status).toBe("paid");
 });
+
+it("purchased gift requires a durable recipient account without consuming a guest claim", () => {
+  const f = setup("gift"),
+    p = f.j.purchase(f.user, f.body());
+  f.s.recordTestPayment(p.orderId);
+  const token = f.j.get(f.user, p.orderId).gift!.claimToken!,
+    guest = f.s.createGuest().id;
+  expect(() => f.s.redeemGift(guest, token)).toThrow(/durable account/);
+  expect(f.j.get(f.user, p.orderId).gift!.status).toBe("active");
+  expect(f.s.balance(guest)).toBe(0);
+});
+
+it("digital purchase preserves the reviewed seller details after later business edits", () => {
+  const f = setup();
+  f.b.saveSettings("owner", {
+    ...f.b.settings(),
+    sellerName: "Original synthetic seller",
+    sellerPhone: "901234567",
+    paymentDetails: "Original synthetic payment notes",
+  });
+  const p = f.j.purchase(f.user, f.body());
+  f.b.saveSettings("owner", {
+    ...f.b.settings(),
+    sellerName: "Changed seller",
+    paymentDetails: "Changed later notes",
+  });
+  expect(f.j.get(f.user, p.orderId).seller).toEqual({
+    name: "Original synthetic seller",
+    phone: "901234567",
+    paymentDetails: "Original synthetic payment notes",
+  });
+});
