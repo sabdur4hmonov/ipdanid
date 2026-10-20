@@ -16,6 +16,7 @@ import { PushStore } from "./push-store.ts";
 import { GalleryStore } from "./gallery-store.ts";
 import { OfferStore } from "./offer-store.ts";
 import { PartnerStore } from "./partner-store.ts";
+import { CatalogStore } from "./catalog-store.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
 const adminToken = production
@@ -37,6 +38,7 @@ if (!production) store.seed();
 const business = new BusinessStore(store);
 const gallery = new GalleryStore(store);
 const offers = new OfferStore(store);
+const catalog = new CatalogStore(store);
 const partners = new PartnerStore(store);
 const push = new PushStore(store, pepper, notificationAdapter, (id) =>
   business.announcements(true).find((a) => a.id === id),
@@ -131,10 +133,19 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (req.method === "GET" && path === "/api/catalog") {
+      const products = store.catalog(),
+        visible = new Set(products.map((p) => String(p.id)));
       send(200, {
         sandbox: true,
         developmentPrices: !production,
-        products: store.catalog(),
+        products,
+        catalogRevision: catalog.revision(),
+        skus: Object.fromEntries(
+          catalog
+            .all()
+            .filter((s) => s.sellable && visible.has(s.productId))
+            .map((s) => [s.productId, s]),
+        ),
       });
       return;
     }
@@ -286,6 +297,18 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (path === "/api/admin/catalog" && req.method === "GET") {
+        send(200, {
+          products: store.products(),
+          skus: catalog.all(),
+          revision: catalog.revision(),
+        });
+        return;
+      }
+      if (path === "/api/admin/catalog/sku" && req.method === "POST") {
+        send(200, catalog.save(actor, body));
+        return;
+      }
       if (path === "/api/admin/partners" && req.method === "GET") {
         send(200, partners.list());
         return;

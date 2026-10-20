@@ -27,6 +27,7 @@ type QuoteRow = {
   order_id: string | null;
 };
 type QuoteData = {
+  catalogRevision?: number;
   items: {
     productId: string;
     quantity: number;
@@ -298,6 +299,9 @@ export class OfferStore implements OrderOfferProvider {
       })
       .sort((a, b) => a.productId.localeCompare(b.productId));
     const subtotal = lines.reduce((s, l) => s + l.quantity * l.price, 0);
+    this.store.inventory?.assertAvailable(
+      lines.map((l) => ({ productId: l.productId, quantity: l.quantity })),
+    );
     if (!Number.isSafeInteger(subtotal) || subtotal < 1)
       throw new DomainError("Invalid offer total");
     return { lines, subtotal };
@@ -369,6 +373,9 @@ export class OfferStore implements OrderOfferProvider {
           offer,
         },
         data: QuoteData = {
+          ...(this.store.inventory?.requiredRevision(lines) !== undefined
+            ? { catalogRevision: this.store.inventory!.revision() }
+            : {}),
           items: lines,
           method: method as "pickup" | "courier",
           ruleRevision: revision,
@@ -408,6 +415,7 @@ export class OfferStore implements OrderOfferProvider {
       JSON.stringify(lines) !== JSON.stringify(data.items) ||
       data.method !== method ||
       data.quote.settingsRevision !== settingsRevision ||
+      data.catalogRevision !== this.store.inventory?.requiredRevision(lines) ||
       data.ruleRevision !== this.effective(row).revision
     )
       throw new DomainError("Offer quote changed", 409);

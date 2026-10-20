@@ -42,6 +42,9 @@ export function validCheckoutAttempt(value: unknown): value is CheckoutAttempt {
       Number.isSafeInteger(p.quote?.totalMinor) &&
       p.quote.totalMinor >= 0 &&
       Number.isSafeInteger(p.quote.settingsRevision) &&
+      (p.quote.catalogRevision === undefined ||
+        (Number.isSafeInteger(p.quote.catalogRevision) &&
+          p.quote.catalogRevision >= 0)) &&
       (p.quote.offerQuoteId === undefined ||
         (typeof p.quote.offerQuoteId === "string" &&
           /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(

@@ -128,7 +128,7 @@ export class PartnerStore {
       name: p.name,
       profile_id: p.profile_id,
       price_minor: Number(p.price_minor),
-      stock: Number(p.stock),
+      stock: this.store.inventory?.available(p.id) ?? Number(p.stock),
       credits: Number(p.credits),
       revision: Number(p.revision),
     };
@@ -293,6 +293,11 @@ export class PartnerStore {
       productRevision: product.revision,
       codeDays: t.codeDays,
       creditDays: t.creditDays,
+      ...(this.store.inventory?.requiredRevision([
+        { productId: product.id, quantity: count },
+      ]) !== undefined
+        ? { catalogRevision: this.store.inventory!.revision() }
+        : {}),
     };
   }
   quote(user: string, input: { count?: unknown; requestKey?: unknown }) {
@@ -471,6 +476,9 @@ export class PartnerStore {
         .run(q.count, q.productId, q.count);
       if (Number(stock.changes) !== 1)
         throw new DomainError("Partner stock unavailable", 409);
+      this.store.inventory?.reserve("partner:" + id, [
+        { productId: q.productId, quantity: q.count },
+      ]);
       this.store.db
         .prepare(
           "UPDATE partner_campaigns SET status='approved',revision=revision+1,reserved_until=? WHERE id=?",
@@ -527,10 +535,12 @@ export class PartnerStore {
         !["pending", "approved", "issued"].includes(r.status)
       )
         throw new DomainError("Campaign changed", 409);
-      if (r.status === "approved")
+      if (r.status === "approved") {
         this.store.db
           .prepare("UPDATE products SET stock=stock+? WHERE id=?")
           .run(q.count, q.productId);
+        this.store.inventory?.restore("partner:" + id);
+      }
       if (r.status === "issued") this.store.revokeKitBatch(actor, r.batch_id!);
       this.store.db
         .prepare(
@@ -557,10 +567,12 @@ export class PartnerStore {
             : Number(r.reserved_until) > this.clock()
         )
           continue;
-        if (r.status === "approved")
+        if (r.status === "approved") {
           this.store.db
             .prepare("UPDATE products SET stock=stock+? WHERE id=?")
             .run(q.count, q.productId);
+          this.store.inventory?.restore("partner:" + r.id);
+        }
         this.store.db
           .prepare(
             "UPDATE partner_campaigns SET status='expired',revision=revision+1,reserved_until=NULL WHERE id=?",

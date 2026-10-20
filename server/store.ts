@@ -9,6 +9,7 @@ import {
 import { readFileSync } from "node:fs";
 import type { OrderCommerce } from "../src/business-types";
 import type { OrderOffer, OrderQuote } from "../src/offer-types";
+import type { CatalogInventory } from "../src/catalog-types";
 export interface OrderOfferProvider {
   resolve(
     user: string,
@@ -55,6 +56,7 @@ type Product = {
 export class Store {
   db: DatabaseSync;
   orderOffers?: OrderOfferProvider;
+  inventory?: CatalogInventory;
   constructor(
     path: string,
     private pepper: string,
@@ -399,12 +401,20 @@ export class Store {
         Array.isArray(quote) ||
         Object.keys(quote).some(
           (field) =>
-            !["totalMinor", "settingsRevision", "offerQuoteId"].includes(field),
+            ![
+              "totalMinor",
+              "settingsRevision",
+              "offerQuoteId",
+              "catalogRevision",
+            ].includes(field),
         ) ||
         !Number.isSafeInteger(quote.totalMinor) ||
         quote.totalMinor < 0 ||
         !Number.isSafeInteger(quote.settingsRevision) ||
-        quote.settingsRevision < 0)
+        quote.settingsRevision < 0 ||
+        (quote.catalogRevision !== undefined &&
+          (!Number.isSafeInteger(quote.catalogRevision) ||
+            quote.catalogRevision < 0)))
     )
       throw new DomainError("Invalid order quote");
     if (
@@ -478,6 +488,11 @@ export class Store {
             previousCommerce &&
             JSON.parse(String(previousCommerce.data)).acceptedQuote;
         if (
+          previousAccepted?.catalogRevision !== undefined &&
+          previousAccepted.catalogRevision !== quote?.catalogRevision
+        )
+          throw new DomainError("Order retry parameters differ", 409);
+        if (
           previousAccepted?.offerQuoteId &&
           previousAccepted.offerQuoteId !== quote?.offerQuoteId
         )
@@ -491,6 +506,8 @@ export class Store {
             !accepted ||
             accepted.totalMinor !== quote.totalMinor ||
             accepted.settingsRevision !== quote.settingsRevision ||
+            (accepted.catalogRevision ?? null) !==
+              (quote.catalogRevision ?? null) ||
             (accepted.offerQuoteId ?? null) !== (quote.offerQuoteId ?? null)
           )
             throw new DomainError("Order retry parameters differ", 409);
@@ -521,6 +538,7 @@ export class Store {
         total += product.price_minor * item.quantity;
         lines.push({ product, quantity: item.quantity });
       }
+      this.inventory?.assertOrder(items, quote?.catalogRevision);
       const commerceSnapshot =
         typeof commerce === "function" ? commerce() : commerce;
       if (commerceSnapshot) {
@@ -593,6 +611,7 @@ export class Store {
         );
       if (commerceSnapshot?.offer)
         this.orderOffers!.attach(user, id, commerceSnapshot.offer);
+      this.inventory?.reserve("order:" + id, items);
       this.audit(user, "order.create", id);
       return this.order(user, id);
     });
@@ -614,6 +633,7 @@ export class Store {
       if (o.status !== "pending")
         throw new DomainError("Use a return request for a paid order", 409);
       beforeCancel?.();
+      this.inventory?.restore("order:" + id);
       for (const l of this.db
         .prepare("SELECT product_id,quantity FROM order_lines WHERE order_id=?")
         .all(id) as { product_id: string; quantity: number }[])

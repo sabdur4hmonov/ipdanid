@@ -318,3 +318,7 @@ Hozir qo‘lda sinash shart emas.24unit,8brauzer va2HTTP holati o‘tdi; haqiqiy
 Yakuniy Phase15da Hisob → “Hamkor uchun”dan hisob raqamingizni oling. Egasi Admin → “Hamkorlar va partiyalar”da hisob/mahsulot/narx/miqdor/muddatni saqlaydi. Hamkor narx hisoblab partiyani yuboradi; egasi alohida ruxsat beradi; keyin hamkor PDF/QR va oluvchi havolalarini bir marta chiqarib saqlaydi. Havola kitni oluvchining bitta hisobiga biriktiradi. “Materialni yaratuvchiga qo‘llash” eski kitning aynan o‘z andozasini tanlaydi, keyin v3 va oflayn yig‘ish ishlaydi. Haqiqiy pul yoki xabar yuborilmadi. Aniq yo‘riqnoma: [PARTNERS_UZ.md](../docs/PARTNERS_UZ.md). Telefon/domen/bosilgan QR keyinchalik egasi ulaydigan ish; kutib qolmadik.
 
 Desktopda ism/sana maydonidan keyin Yaratish tugmasi kesilib qolishi ham avtomatik topilib tuzatildi. Asl “to‘liq ko‘rinsin” testi saqlanib, desktop/mobil2/2o‘tdi; suratning500px hisobi va eski qo‘llanmalar o‘zgarmagan.
+
+## 2026-10-20 — Phase15 katalog zaxirasi asosi
+
+46unit va2HTTP sinovi o‘tdi. To‘plamdagi umumiy detal alohida sotilsa ham bir zaxiradan to‘g‘ri ayriladi; refund yoki bekor qilish avvalgi tarkibni faqat bir marta qaytaradi. Refill yangi yig‘ish krediti bermaydi, ichki ombor detali do‘konda alohida sotilmaydi. Hozir katalog, hudud, valyuta va dostavka ekranlari davom etmoqda — egasi qo‘lda sinashini kutmaymiz. Haqiqiy to‘lov yoki yetkazish yo‘q. Texnik dalil: [CATALOG_CHECKPOINT.md](../docs/CATALOG_CHECKPOINT.md).

@@ -27,6 +27,7 @@ export type PartnerQuote = {
   quota: number;
   termsRevision: number;
   productRevision: number;
+  catalogRevision?: number;
   expiresAt: number;
   codeDays: number;
   creditDays: number;

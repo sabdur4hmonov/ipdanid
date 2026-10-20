@@ -2,6 +2,7 @@ export type OrderQuote = {
   totalMinor: number;
   settingsRevision: number;
   offerQuoteId?: string;
+  catalogRevision?: number;
 };
 export type OrderOffer = {
   version: "checkout-offer/1";

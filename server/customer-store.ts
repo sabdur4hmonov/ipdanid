@@ -30,14 +30,20 @@ export class CustomerStore extends Store {
       INSERT OR IGNORE INTO migrations VALUES(4,datetime('now'));
     `);
   }
+  private customerSavepoint = 0;
   private transaction<T>(fn: () => T): T {
-    this.db.exec("BEGIN IMMEDIATE");
+    const nested = this.db.isTransaction,
+      point = "customer_nested_" + ++this.customerSavepoint;
+    this.db.exec(nested ? "SAVEPOINT " + point : "BEGIN IMMEDIATE");
     try {
       const v = fn();
-      this.db.exec("COMMIT");
+      this.db.exec(nested ? "RELEASE SAVEPOINT " + point : "COMMIT");
       return v;
     } catch (e) {
-      this.db.exec("ROLLBACK");
+      if (nested) {
+        this.db.exec("ROLLBACK TO SAVEPOINT " + point);
+        this.db.exec("RELEASE SAVEPOINT " + point);
+      } else this.db.exec("ROLLBACK");
       throw e;
     }
   }
@@ -151,11 +157,18 @@ export class CustomerStore extends Store {
     };
   }
   override catalog() {
-    return this.db
+    const rows = this.db
       .prepare(
         "SELECT p.*,COALESCE(d.revision,1) AS revision,COALESCE(d.description,'') AS description FROM products p LEFT JOIN product_details d ON d.id=p.id WHERE p.active=1",
       )
       .all();
+    return rows
+      .filter((row) => this.inventory?.sku(String(row.id))?.sellable !== false)
+      .map((row) => {
+        row.stock =
+          this.inventory?.available(String(row.id)) ?? Number(row.stock);
+        return row;
+      });
   }
   products() {
     return this.db
@@ -271,7 +284,25 @@ export class CustomerStore extends Store {
         .prepare(
           "SELECT l.*,p.name FROM order_lines l JOIN products p ON p.id=l.product_id WHERE order_id=?",
         )
-        .all(o.id),
+        .all(o.id)
+        .map((line) => {
+          const snapshot = this.inventory
+            ?.snapshot("order:" + o.id)
+            ?.find((s) => s.productId === line.product_id);
+          return snapshot
+            ? {
+                ...line,
+                product_id: line.product_id,
+                order_id: line.order_id,
+                quantity: line.quantity,
+                unit_price_minor: line.unit_price_minor,
+                credits: line.credits,
+                name: snapshot.name,
+                sku: snapshot.sku,
+                profile_id: snapshot.profileId,
+              }
+            : line;
+        }),
       fulfillments: this.db
         .prepare("SELECT tracking,state FROM fulfillments WHERE order_id=?")
         .all(o.id),
@@ -435,6 +466,7 @@ export class CustomerStore extends Store {
         this.db
           .prepare("UPDATE products SET stock=stock+? WHERE id=?")
           .run(l.quantity, l.product_id);
+      this.inventory?.restore("order:" + id);
       this.db.prepare("UPDATE orders SET status='refunded' WHERE id=?").run(id);
       this.log(actor, "order.refund-sandbox", id);
       return this.order(o.user_id, id);
