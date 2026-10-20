@@ -326,3 +326,9 @@ Desktopda ism/sana maydonidan keyin Yaratish tugmasi kesilib qolishi ham avtomat
 ### Phase15 C14b — hudud va valyuta serveri (UI hali keyingi bosqich)
 
 Avtomatik tekshirildi: USD narxli to‘plam, mamlakatga mos dostavka, asl buyurtmani ayni so‘rov bilan qaytarish, eski dostavka narxini yangi buyurtmaga qo‘llashni rad etish. UZS/USD/RUB o‘z narxida saqlanadi; valyuta avtomatik aylantirilmaydi. Click/Payme faqat UZS uchun. Hozir qo‘lda sinash shart emas: keyingi checkpointda do‘kon/Admin boshqaruvlari va to‘plam kreditining haqiqiy amal muddati ko‘rinadi.
+
+### Phase15 C14 — to‘plam, hudud, valyuta va kredit muddati tayyor
+
+Hozir qo‘lda test qilish shart emas: desktop va mobil oqimlar avtomatik tekshirildi. Ko‘rmoqchi bo‘lsangiz, lokal hisobot: output/phase15/catalog/report.html. Yangi owner preview va APK yakuniy C26da beriladi; 4194–4200 eski ilovalari saqlangan.
+
+Keyin sinash: Menu → Hisob / Admin → Admin → “To‘plam turlari va materiallar”. To‘plam yoki qo‘shimcha material yarating, material/narx/valyuta/tarkibini saqlang. “Mamlakatlar va dostavka”da faqat haqiqiy xizmat ko‘rsatiladigan joyni yoqing. Do‘konda mamlakatga mos mahsulot/narx ko‘rinadi. Valyuta aylantirilmaydi; Click/Payme faqat UZS uchun. Javob uzilib qolgan buyurtma qayta tekshirilganda asl narx/tarkib saqlanadi. Hisobdagi “Kit kreditining muddati” va chop etilgan kartochkada kredit muddati ko‘rinadi. To‘liq yo‘riqnoma: docs/CATALOG_UZ.md.

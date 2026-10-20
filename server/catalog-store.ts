@@ -42,6 +42,12 @@ export class CatalogStore implements CatalogInventory {
       throw e;
     }
   }
+  productChanged(id: string) {
+    if (this.sku(id))
+      this.store.db
+        .prepare("UPDATE catalog_state SET revision=revision+1 WHERE id=1")
+        .run();
+  }
   revision() {
     return Number(
       this.store.db
@@ -176,7 +182,7 @@ export class CatalogStore implements CatalogInventory {
         ) >= 1000
       )
         throw new DomainError("Catalog SKU limit", 409);
-      this.store.updateProduct(actor, product);
+      this.store.updateProduct(actor, product, s.kind);
       const p = this.product(s.productId);
       if (s.kind === "refill" && p.credits !== 0)
         throw new DomainError("Refills cannot silently grant build credits");

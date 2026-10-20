@@ -12,7 +12,7 @@ const batch: KitBatch = {
     code: ("FAKE-KIT-PDF-" + String(k).padStart(3, "0") + "-").padEnd(32, "X"),
     quota: k === 6 ? 4 : 3,
     expiresAt: null,
-    creditDays: 0,
+    creditDays: [0, 30, 3650][k % 3],
   })),
 };
 test("kit inserts are paginated A4 PDFs with actual vector QR and embedded four-locale text", async () => {

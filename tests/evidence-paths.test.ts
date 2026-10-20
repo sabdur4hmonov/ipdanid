@@ -26,6 +26,7 @@ test("current evidence cannot overwrite historical reports, served builds or esc
     "output/phase15/gallery/mobile-browser",
     "output/phase15/offers/mobile-browser",
     "output/phase15/partners/mobile-browser",
+    "output/phase15/catalog/mobile-browser",
     "output/current/../phase10",
     "dist",
     "src",

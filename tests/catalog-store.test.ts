@@ -380,3 +380,31 @@ it("a pre-SKU imported order identifier still cancels exactly once without an in
   s.cancelOrder(buyer.id, id);
   expect(stock(s, "dev-circle")).toBe(8);
 });
+
+it("ordinary product editor cannot give refill credits and invalidates reviewed SKU terms", () => {
+  const f = composition(),
+    p = f.s.products().find((p) => p.id === "black-thread")!,
+    before = f.c.revision();
+  expect(() =>
+    f.s.updateProduct("owner", {
+      ...p,
+      expectedRevision: p.revision,
+      credits: 1,
+    }),
+  ).toThrow(/Refills/);
+  expect(f.c.revision()).toBe(before);
+  f.s.updateProduct("owner", {
+    ...p,
+    expectedRevision: p.revision,
+    description: "Changed material terms",
+  });
+  expect(f.c.revision()).toBeGreaterThan(before);
+  expect(() => order(f, undefined, randomUUID(), before)).toThrow(/changed/);
+});
+
+it("atomic SKU editor can deliberately change refill type while ordinary product edits remain guarded", () => {
+  const f = composition();
+  put(f.s, f.c, "black-thread", "kit", [], { credits: 3 });
+  expect(f.c.sku("black-thread")!.kind).toBe("kit");
+  expect(f.s.products().find((p) => p.id === "black-thread")!.credits).toBe(3);
+});

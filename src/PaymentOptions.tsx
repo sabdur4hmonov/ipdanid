@@ -52,10 +52,12 @@ export function PaymentOptions({
   orderId,
   locale,
   onUpdated,
+  currency = "UZS",
 }: {
   orderId: string;
   locale: Locale;
   onUpdated: () => Promise<void>;
+  currency?: string;
 }) {
   const [config, setConfig] = useState<{
       providers: Provider[];
@@ -69,6 +71,11 @@ export function PaymentOptions({
     scriptText(words[baseLocale(locale)][k], locale);
   useEffect(() => {
     let live = true;
+    if (currency !== "UZS") {
+      setConfig(undefined);
+      setInvoice(undefined);
+      return;
+    }
     void api
       .request<{ providers: Provider[]; mockCheckout: boolean }>(
         "/payments/config",
@@ -80,7 +87,7 @@ export function PaymentOptions({
     return () => {
       live = false;
     };
-  }, []);
+  }, [currency]);
   async function run(fn: () => Promise<void>) {
     setBusy(true);
     setError(false);
@@ -92,6 +99,19 @@ export function PaymentOptions({
       setBusy(false);
     }
   }
+  if (currency !== "UZS")
+    return (
+      <p>
+        {scriptText(
+          {
+            uz: "Naqd yoki olib ketish. Click va Payme faqat UZS buyurtmalarida ishlaydi.",
+            ru: "Наличные или самовывоз. Click и Payme доступны только для заказов в UZS.",
+            en: "Cash or pickup. Click and Payme are available for UZS orders only.",
+          }[baseLocale(locale)],
+          locale,
+        )}
+      </p>
+    );
   if (!config?.providers.length) return null;
   return (
     <section data-testid="payment-options">

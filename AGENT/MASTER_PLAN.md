@@ -10,6 +10,8 @@ Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQL
 
 ## 1. Working protocol (read every session)
 
+2026-10-20 latest human-supplied AGENTS instructions explicitly prohibit push/reset/force. This supersedes the earlier Phase14/15 feature-push authorization below. Continue tested local milestone commits autonomously; do not push until the owner changes this newer constraint. Old preview/data protection remains unchanged.
+
 1. Start of EVERY session (including after "continue"):
    - Read `AGENT/PROGRESS.md` → find the current phase and the exact next step.
    - Read the last entries of `AGENT/LOG.md`.

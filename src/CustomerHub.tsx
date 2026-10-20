@@ -16,6 +16,24 @@ import { customerHealthSandbox } from "./customer-health";
 import { CheckoutOffer, useCheckoutOffer } from "./CheckoutOffer";
 import { offersText } from "./offers-i18n";
 import { partnerText } from "./partner-i18n";
+import { catalogText, countryName, type CatalogWord } from "./catalog-i18n";
+import {
+  checkoutRegion,
+  cartMatchesCurrency,
+  type CommerceProduct,
+  type ShopCatalog,
+} from "./catalog-checkout";
+import type { CatalogSku } from "./catalog-types";
+import type { CommerceRegions } from "./commerce-regions";
+const CatalogAdmin = lazy(() =>
+  import("./CatalogAdmin").then((m) => ({ default: m.CatalogAdmin })),
+);
+const RegionsAdmin = lazy(() =>
+  import("./CatalogAdmin").then((m) => ({ default: m.RegionsAdmin })),
+);
+const KitCreditTerms = lazy(() =>
+  import("./KitCreditTerms").then((m) => ({ default: m.KitCreditTerms })),
+);
 const PartnerPortal = lazy(() =>
   import("./PartnerPanels").then((m) => ({ default: m.PartnerPortal })),
 );
@@ -54,22 +72,12 @@ import "./customer.css";
 import { StaffAccessPanel } from "./StaffAccessPanel";
 import type { AdminSession, AdminPermission } from "./admin-types";
 
-type Product = {
-  id: string;
-  name: string;
-  family: string;
-  price_minor: number;
-  stock: number;
-  credits: number;
-  revision: number;
-  description: string;
-  profile_id: string;
-  active: number;
-};
+type Product = CommerceProduct;
 type Order = {
   id: string;
   status: string;
   total_minor: number;
+  currency: string;
   commerce?: OrderCommerce;
   items: { name: string; quantity: number }[];
   fulfillments: { tracking: string; state: string }[];
@@ -88,6 +96,7 @@ const freshProduct = (): Product => ({
   name: "",
   family: "string",
   price_minor: 0,
+  currency: "UZS",
   stock: 0,
   credits: 0,
   revision: 0,
@@ -113,7 +122,8 @@ export function CustomerHub({
   kitClaim?: string | null;
   onClaimHandled?: () => void;
 }) {
-  const { settings: storefront } = useBusiness();
+  const { settings: storefront, refresh: refreshStorefront } = useBusiness();
+  const ct = (key: CatalogWord) => catalogText(locale, key);
   const bt = (key: Parameters<typeof businessText>[1]) =>
     businessText(locale, key);
   const t = (key: CustomerWord) => customerText(locale, key);
@@ -134,6 +144,12 @@ export function CustomerHub({
       credits: number;
     } | null>(null),
     [products, setProducts] = useState<Product[]>([]),
+    [skus, setSkus] = useState<Record<string, CatalogSku>>({}),
+    [contents, setContents] = useState<
+      Record<string, { name: string; quantity: number }[]>
+    >({}),
+    [catalogRevision, setCatalogRevision] = useState<number>(),
+    [regions, setRegions] = useState<CommerceRegions>(),
     [orders, setOrders] = useState<Order[]>([]),
     [tickets, setTickets] = useState<Ticket[]>([]),
     [remote, setRemote] = useState<Remote[]>([]);
@@ -158,17 +174,25 @@ export function CustomerHub({
       city: "",
       street: "",
       deliveryMethod: "pickup",
+      country: "UZ",
     });
+  const region = checkoutRegion(regions, address.country ?? "UZ", storefront);
+  const currency = region?.currency ?? "UZS";
   const subtotal = Object.entries(cart).reduce(
     (sum, [id, q]) =>
       sum + q * (products.find((p) => p.id === id)?.price_minor ?? 0),
     0,
   );
   const deliveryFee =
-    address.deliveryMethod === "courier" && storefront.deliveryEnabled
-      ? storefront.deliveryFeeMinor
+    address.deliveryMethod === "courier" && region?.courierEnabled
+      ? region.courierFeeMinor
       : 0;
   const checkoutTotal = subtotal + deliveryFee;
+  const offerEnabled =
+    currency === "UZS" &&
+    (address.country ?? "UZ") === "UZ" &&
+    deliveryFee ===
+      (address.deliveryMethod === "courier" ? storefront.deliveryFeeMinor : 0);
   const checkoutItems = Object.entries(cart).map(([productId, quantity]) => ({
     productId,
     quantity,
@@ -181,6 +205,10 @@ export function CustomerHub({
         product: products.find((p) => p.id === i.productId),
       })),
       address.deliveryMethod,
+      address.country,
+      currency,
+      catalogRevision,
+      regions?.revision,
       storefront.revision,
       deliveryFee,
     ]),
@@ -220,7 +248,7 @@ export function CustomerHub({
         ]),
       ),
     );
-    setAddress(body.address);
+    setAddress({ ...body.address, country: body.address.country ?? "UZ" });
   }
   const [subject, setSubject] = useState(""),
     [body, setBody] = useState("");
@@ -308,7 +336,7 @@ export function CustomerHub({
     setSandboxMode(customerHealthSandbox(health));
     const [m, c, o, s, r] = await Promise.all([
       api.request<{ email: string | null; credits: number }>("/account"),
-      api.request<{ products: Product[] }>("/catalog"),
+      api.request<ShopCatalog>("/catalog"),
       api.request<Order[]>("/orders"),
       api.request<Ticket[]>("/support"),
       api.request<Remote[]>("/instructions"),
@@ -316,10 +344,15 @@ export function CustomerHub({
     setMe(m);
     if (!orderRequest.current) await restoreCheckout();
     setProducts(c.products);
+    setSkus(c.skus ?? {});
+    setContents(c.contents ?? {});
+    setCatalogRevision(c.catalogRevision);
+    setRegions(c.regions);
     setOrders(o);
     setTickets(s);
     setRemote(r);
     setConnected(true);
+    await refreshStorefront();
   }
   useEffect(() => {
     let alive = true;
@@ -364,6 +397,7 @@ export function CustomerHub({
       city: "",
       street: "",
       deliveryMethod: "pickup",
+      country: "UZ",
     });
     setClaim("");
     setGift(null);
@@ -409,8 +443,11 @@ export function CustomerHub({
     setAdminSession(session);
     setUnlocked(true);
   }
-  const money = (v: number) =>
-    `${(v / 100).toLocaleString(locale, { maximumFractionDigits: 2 })} UZS`;
+  const money = (
+    v: number,
+    unit = orderRequest.current?.display?.currency ?? currency,
+  ) =>
+    `${(v / 100).toLocaleString(locale, { maximumFractionDigits: 2 })} ${unit}`;
   const state = (v: string) =>
     t(
       (
@@ -562,6 +599,11 @@ export function CustomerHub({
               </Suspense>
             )}
             <KitLogin locale={locale} onLogin={refresh} />
+            {connected && (
+              <Suspense fallback={<p role="status">…</p>}>
+                <KitCreditTerms locale={locale} />
+              </Suspense>
+            )}
             {connected && (
               <Suspense fallback={<p role="status">…</p>}>
                 <PartnerPortal locale={locale} />
@@ -771,34 +813,92 @@ export function CustomerHub({
         )}
         {pane === "shop" && connected && (
           <>
-            <div className="customer-grid">
-              {products.map((p) => (
-                <section className="card" key={p.id}>
-                  <span className="eyebrow">{p.family}</span>
-                  <h2>{p.name}</h2>
-                  <p>{p.description}</p>
-                  <p>
-                    {t("price")}: {money(p.price_minor)}
-                  </p>
-                  <p>
-                    {t("stock")}: {p.stock} · {t("credits")}: {p.credits}
-                  </p>
-                  <button
-                    disabled={
-                      pendingCheckout ||
-                      busy ||
-                      p.stock < 1 ||
-                      (cart[p.id] ?? 0) >= Math.min(10, p.stock)
-                    }
-                    onClick={() => {
-                      setCart((v) => ({ ...v, [p.id]: (v[p.id] ?? 0) + 1 }));
-                      orderRequest.current = null;
+            {regions && !regions.usesLegacy && (
+              <section className="card">
+                <label>
+                  {ct("country")}
+                  <select
+                    disabled={busy || pendingCheckout}
+                    value={address.country ?? "UZ"}
+                    onChange={(e) => {
+                      setAddress((v) => ({
+                        ...v,
+                        country: e.target.value,
+                        deliveryMethod: "pickup",
+                      }));
+                      setCart({});
+                      offer.clear();
                     }}
                   >
-                    {t("add")}
-                  </button>
-                </section>
-              ))}
+                    {!regions.regions.some(
+                      (r) =>
+                        r.enabled && r.country === (address.country ?? "UZ"),
+                    ) && (
+                      <option value={address.country ?? "UZ"} disabled>
+                        {countryName(locale, address.country ?? "UZ")}
+                      </option>
+                    )}
+                    {regions.regions
+                      .filter((r) => r.enabled)
+                      .map((r) => (
+                        <option key={r.country} value={r.country}>
+                          {countryName(locale, r.country)} · {r.currency}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+                <p>{ct("changeCountry")}</p>
+                <p>{ct("noFx")}</p>
+              </section>
+            )}
+            {!region?.enabled && <p role="status">{ct("notServed")}</p>}
+            <div className="customer-grid">
+              {products
+                .filter((p) => region?.enabled && p.currency === currency)
+                .map((p) => (
+                  <section className="card" key={p.id}>
+                    <span className="eyebrow">{p.family}</span>
+                    <h2>{p.name}</h2>
+                    <p>{p.description}</p>
+                    {skus[p.id] && (
+                      <>
+                        <p>
+                          {skus[p.id].label} · {ct("material")}:{" "}
+                          {skus[p.id].material}
+                        </p>
+                        {skus[p.id].parts.length > 0 && (
+                          <p>
+                            {ct("contents")}:{" "}
+                            {(contents[p.id] ?? [])
+                              .map((part) => part.name + " × " + part.quantity)
+                              .join(", ")}
+                          </p>
+                        )}
+                      </>
+                    )}
+                    <p>
+                      {t("price")}: {money(p.price_minor, p.currency)}
+                    </p>
+                    {p.credits > 0 && <p>{ct("creditTerms")}</p>}
+                    <p>
+                      {t("stock")}: {p.stock} · {t("credits")}: {p.credits}
+                    </p>
+                    <button
+                      disabled={
+                        pendingCheckout ||
+                        busy ||
+                        p.stock < 1 ||
+                        (cart[p.id] ?? 0) >= Math.min(10, p.stock)
+                      }
+                      onClick={() => {
+                        setCart((v) => ({ ...v, [p.id]: (v[p.id] ?? 0) + 1 }));
+                        orderRequest.current = null;
+                      }}
+                    >
+                      {t("add")}
+                    </button>
+                  </section>
+                ))}
             </div>
             <section className="card">
               <h2>{t("cart")}</h2>
@@ -809,7 +909,25 @@ export function CustomerHub({
                 {Object.entries(cart).map(([id, q]) => (
                   <div className="customer-row" key={id}>
                     <span>
-                      {products.find((p) => p.id === id)?.name ?? id} × {q}
+                      {orderRequest.current?.display?.items?.find(
+                        (p) => p.productId === id,
+                      )?.name ??
+                        products.find((p) => p.id === id)?.name ??
+                        id}{" "}
+                      × {q}
+                      {orderRequest.current?.display?.items?.find(
+                        (p) => p.productId === id,
+                      )?.sku?.material && (
+                        <span>
+                          {" "}
+                          ·{" "}
+                          {
+                            orderRequest.current.display.items.find(
+                              (p) => p.productId === id,
+                            )!.sku!.material
+                          }
+                        </span>
+                      )}
                     </span>
                     <button
                       className="text-button"
@@ -845,14 +963,11 @@ export function CustomerHub({
                   >
                     <option
                       value="pickup"
-                      disabled={!storefront.pickupAddress.trim()}
+                      disabled={!region?.pickupAddress.trim()}
                     >
                       {bt("pickup")}
                     </option>
-                    <option
-                      value="courier"
-                      disabled={!storefront.deliveryEnabled}
-                    >
+                    <option value="courier" disabled={!region?.courierEnabled}>
                       {bt("courier")}
                     </option>
                   </select>
@@ -900,13 +1015,15 @@ export function CustomerHub({
                     orderRequest.current?.display?.feeMinor ?? deliveryFee,
                   )}
                 </p>
-                <CheckoutOffer
-                  locale={locale}
-                  offer={offer}
-                  items={checkoutItems}
-                  method={address.deliveryMethod}
-                  money={money}
-                />
+                {offerEnabled && (
+                  <CheckoutOffer
+                    locale={locale}
+                    offer={offer}
+                    items={checkoutItems}
+                    method={address.deliveryMethod}
+                    money={money}
+                  />
+                )}
                 {pendingCheckout &&
                   orderRequest.current?.display?.offerCode && (
                     <p data-testid="pending-offer">
@@ -922,7 +1039,9 @@ export function CustomerHub({
                       pendingCheckout
                         ? JSON.parse(orderRequest.current!.payload).quote
                             .totalMinor
-                        : (offer.quote?.totalMinor ?? checkoutTotal),
+                        : ((offerEnabled
+                            ? offer.quote?.totalMinor
+                            : undefined) ?? checkoutTotal),
                     )}
                   </strong>
                 </p>
@@ -944,7 +1063,7 @@ export function CustomerHub({
                   {address.deliveryMethod === "pickup" && (
                     <p>
                       {orderRequest.current?.display?.pickupAddress ??
-                        storefront.pickupAddress}
+                        region?.pickupAddress}
                     </p>
                   )}
                 </div>
@@ -953,15 +1072,17 @@ export function CustomerHub({
               <button
                 disabled={
                   !pendingCheckout &&
-                  (offer.blocked ||
+                  ((offerEnabled && offer.blocked) ||
+                    !region?.enabled ||
+                    !cartMatchesCurrency(products, cart, currency) ||
                     !Object.keys(cart).length ||
                     address.name.trim().length < 2 ||
                     address.phone.replace(/\D/g, "").length < 7 ||
                     (address.deliveryMethod === "courier"
-                      ? !storefront.deliveryEnabled ||
+                      ? !region?.courierEnabled ||
                         address.city.trim().length < 2 ||
                         address.street.trim().length < 2
-                      : !storefront.pickupAddress.trim()))
+                      : !region?.pickupAddress.trim()))
                 }
                 onClick={() =>
                   void run(async () => {
@@ -969,10 +1090,22 @@ export function CustomerHub({
                       ([productId, quantity]) => ({ productId, quantity }),
                     );
                     const quote = {
-                      totalMinor: offer.quote?.totalMinor ?? checkoutTotal,
+                      totalMinor:
+                        (offerEnabled ? offer.quote?.totalMinor : undefined) ??
+                        checkoutTotal,
                       settingsRevision:
-                        offer.quote?.settingsRevision ?? storefront.revision,
-                      ...(offer.quote ? { offerQuoteId: offer.quote.id } : {}),
+                        (offerEnabled
+                          ? offer.quote?.settingsRevision
+                          : undefined) ?? storefront.revision,
+                      ...(offerEnabled && offer.quote
+                        ? { offerQuoteId: offer.quote.id }
+                        : {}),
+                      ...(checkoutItems.some((i) => skus[i.productId])
+                        ? { catalogRevision }
+                        : {}),
+                      ...(regions
+                        ? { currency, shippingRevision: regions.revision }
+                        : {}),
                     };
                     const payload = JSON.stringify({ items, address, quote });
                     if (!orderRequest.current)
@@ -981,12 +1114,28 @@ export function CustomerHub({
                         payload,
                         display: {
                           subtotal,
+                          currency,
+                          items: checkoutItems.map((i) => {
+                            const p = products.find(
+                              (p) => p.id === i.productId,
+                            )!;
+                            return {
+                              productId: p.id,
+                              quantity: i.quantity,
+                              name: p.name,
+                              priceMinor: p.price_minor,
+                              currency: p.currency,
+                              profileId: p.profile_id,
+                              credits: p.credits,
+                              sku: skus[p.id] ?? null,
+                            };
+                          }),
                           feeMinor: deliveryFee,
                           sellerName: storefront.sellerName,
                           sellerPhone: storefront.sellerPhone,
                           paymentDetails: storefront.paymentDetails,
-                          pickupAddress: storefront.pickupAddress,
-                          ...(offer.quote
+                          pickupAddress: region?.pickupAddress ?? "",
+                          ...(offerEnabled && offer.quote
                             ? {
                                 discountMinor: offer.quote.discountMinor,
                                 offerCode: offer.quote.offer.code,
@@ -1026,7 +1175,7 @@ export function CustomerHub({
                 <article className="customer-item" key={o.id}>
                   <code>{o.id}</code>
                   <p>
-                    {state(o.status)} · {money(o.total_minor)}
+                    {state(o.status)} · {money(o.total_minor, o.currency)}
                   </p>
                   {o.commerce && (
                     <div data-testid="order-seller-snapshot">
@@ -1034,7 +1183,7 @@ export function CustomerHub({
                         {bt(
                           o.commerce.method === "pickup" ? "pickup" : "courier",
                         )}{" "}
-                        · {money(o.commerce.feeMinor)}
+                        · {money(o.commerce.feeMinor, o.currency)}
                       </p>
                       <p>
                         {o.commerce.sellerName} · {o.commerce.sellerPhone}
@@ -1058,6 +1207,7 @@ export function CustomerHub({
                   {o.status === "pending" && (
                     <PaymentOptions
                       orderId={o.id}
+                      currency={o.currency}
                       locale={locale}
                       onUpdated={refresh}
                     />
@@ -1334,6 +1484,16 @@ export function CustomerHub({
                     <PartnerAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
+                {can("catalog") && (
+                  <Suspense fallback={<p role="status">…</p>}>
+                    <CatalogAdmin locale={locale} token={adminToken} />
+                  </Suspense>
+                )}
+                {can("settings") && (
+                  <Suspense fallback={<p role="status">…</p>}>
+                    <RegionsAdmin locale={locale} token={adminToken} />
+                  </Suspense>
+                )}
                 {can("access") && (
                   <StaffAccessPanel
                     locale={locale}
@@ -1428,6 +1588,9 @@ export function CustomerHub({
                       />
                     </label>
                   ))}
+                  <p>
+                    {ct("currency")}: {product.currency ?? "UZS"}
+                  </p>
                   <label className="check-label">
                     <input
                       type="checkbox"
@@ -1551,7 +1714,7 @@ export function CustomerHub({
                     <article className="customer-item" key={o.id}>
                       <code>{o.id}</code>
                       <p>
-                        {state(o.status)} · {money(o.total_minor)}
+                        {state(o.status)} · {money(o.total_minor, o.currency)}
                       </p>
                       {o.status === "pending" && can("finance") && (
                         <button

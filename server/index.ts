@@ -136,6 +136,9 @@ const server = createServer(async (req, res) => {
     }
     if (req.method === "GET" && path === "/api/catalog") {
       const products = store.catalog(),
+        productNames = new Map(
+          store.products().map((p) => [p.id, String(p.name)]),
+        ),
         visible = new Set(products.map((p) => String(p.id)));
       send(200, {
         sandbox: true,
@@ -143,6 +146,18 @@ const server = createServer(async (req, res) => {
         products,
         catalogRevision: catalog.revision(),
         regions: regions.policy(),
+        contents: Object.fromEntries(
+          catalog
+            .all()
+            .filter((s) => s.sellable && visible.has(s.productId))
+            .map((s) => [
+              s.productId,
+              s.parts.map((p) => ({
+                name: productNames.get(p.productId) ?? "",
+                quantity: p.quantity,
+              })),
+            ]),
+        ),
         skus: Object.fromEntries(
           catalog
             .all()

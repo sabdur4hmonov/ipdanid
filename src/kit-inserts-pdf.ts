@@ -5,6 +5,7 @@ import { kitClaimLink } from "./kit-claim-link";
 import type { KitBatch } from "./kit-inserts";
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
+import { catalogText } from "./catalog-i18n";
 const words = {
   uz: {
     code: "Kit kodi",
@@ -50,6 +51,9 @@ export async function kitInsertsPdf(
         !Number.isInteger(c.quota) ||
         c.quota < 1 ||
         c.quota > 100 ||
+        !Number.isSafeInteger(c.creditDays) ||
+        c.creditDays < 0 ||
+        c.creditDays > 3650 ||
         (c.expiresAt !== null &&
           (!Number.isFinite(c.expiresAt) || c.expiresAt < 0)),
     )
@@ -155,9 +159,14 @@ export async function kitInsertsPdf(
             ": " +
             new Date(item.expiresAt).toISOString().slice(0, 10);
       centre(expiry, qy - 12 * mm, 7);
+      const duration =
+        item.creditDays === 0
+          ? catalogText(locale, "creditUnlimited")
+          : item.creditDays + " " + catalogText(locale, "afterActivation");
+      centre(duration, qy - 16 * mm, 7);
       const lines = wrap(t("help"), w - 10 * mm, 7);
       for (let j = 0; j < lines.length; j++)
-        centre(lines[j], qy - 17 * mm - j * 9, 7);
+        centre(lines[j], qy - 21 * mm - j * 9, 7);
     }
     page.drawText(pageIndex + 1 + " / " + count, {
       x: 100 * mm,

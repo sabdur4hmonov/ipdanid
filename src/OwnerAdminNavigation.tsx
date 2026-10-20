@@ -3,6 +3,7 @@ import { baseLocale, scriptText } from "./uzbek-script";
 import { galleryText } from "./gallery-i18n";
 import { offersText } from "./offers-i18n";
 import { partnerText } from "./partner-i18n";
+import { catalogText } from "./catalog-i18n";
 const words = {
   uz: [
     "Kit kodlari",
@@ -53,6 +54,19 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
       >
         {partnerText(locale, "admin")}
       </button>
+      {(["catalog", "regions"] as const).map((id) => (
+        <button
+          key={id}
+          className="outline"
+          onClick={() =>
+            document
+              .getElementById("admin-" + id)
+              ?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+        >
+          {catalogText(locale, id === "catalog" ? "admin" : "regions")}
+        </button>
+      ))}
       <button
         className="outline"
         onClick={() =>

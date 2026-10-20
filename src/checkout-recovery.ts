@@ -1,3 +1,5 @@
+import { isCommerceCurrency, isCommerceCountry } from "./commerce-regions";
+import type { CatalogItemSnapshot } from "./catalog-types";
 export type CheckoutAttempt = {
   key: string;
   payload: string;
@@ -10,6 +12,8 @@ export type CheckoutAttempt = {
     sellerPhone: string;
     discountMinor?: number;
     offerCode?: string;
+    currency?: string;
+    items?: CatalogItemSnapshot[];
   };
 };
 export function validCheckoutAttempt(value: unknown): value is CheckoutAttempt {
@@ -42,6 +46,38 @@ export function validCheckoutAttempt(value: unknown): value is CheckoutAttempt {
       Number.isSafeInteger(p.quote?.totalMinor) &&
       p.quote.totalMinor >= 0 &&
       Number.isSafeInteger(p.quote.settingsRevision) &&
+      (p.address.country === undefined ||
+        isCommerceCountry(p.address.country)) &&
+      (p.quote.currency === undefined ||
+        isCommerceCurrency(p.quote.currency)) &&
+      (p.quote.shippingRevision === undefined ||
+        (Number.isSafeInteger(p.quote.shippingRevision) &&
+          p.quote.shippingRevision >= 0)) &&
+      (v.display?.currency === undefined ||
+        isCommerceCurrency(v.display.currency)) &&
+      (v.display?.items === undefined ||
+        (Array.isArray(v.display.items) &&
+          v.display.items.length <= 20 &&
+          v.display.items.every(
+            (i) =>
+              i &&
+              typeof i.productId === "string" &&
+              typeof i.name === "string" &&
+              typeof i.profileId === "string" &&
+              isCommerceCurrency(i.currency) &&
+              Number.isSafeInteger(i.quantity) &&
+              i.quantity > 0 &&
+              i.quantity <= 10 &&
+              Number.isSafeInteger(i.priceMinor) &&
+              i.priceMinor >= 0 &&
+              Number.isSafeInteger(i.credits) &&
+              i.credits >= 0 &&
+              (i.sku === null ||
+                (i.sku &&
+                  typeof i.sku === "object" &&
+                  i.sku.version === "catalog-sku/1" &&
+                  typeof i.sku.material === "string")),
+          ))) &&
       (p.quote.catalogRevision === undefined ||
         (Number.isSafeInteger(p.quote.catalogRevision) &&
           p.quote.catalogRevision >= 0)) &&

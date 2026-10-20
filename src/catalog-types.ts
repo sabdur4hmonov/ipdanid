@@ -20,6 +20,7 @@ export type CatalogItemSnapshot = {
   sku: CatalogSku | null;
 };
 export interface CatalogInventory {
+  productChanged(id: string): void;
   revision(): number;
   sku(id: string): CatalogSku | null;
   available(id: string): number;

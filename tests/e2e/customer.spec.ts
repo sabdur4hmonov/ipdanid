@@ -5,6 +5,7 @@ import { generate } from "../../src/core/engine";
 import { createProfile } from "../../src/core/geometry";
 import { DEFAULT_EDITS } from "../../src/core/types";
 import { progressFor } from "../../src/core/validation";
+import {newEvidenceRoot} from '../helpers/evidence-paths';
 
 test("customer account, code, gift, order, administrator fulfillment and support survive reload", async ({
   page,
@@ -180,9 +181,9 @@ test("customer account, code, gift, order, administrator fulfillment and support
     ),
   ).toBe(true);
   expect(errors).toEqual([]);
-  mkdirSync("output/product-evidence", { recursive: true });
+  const evidence=newEvidenceRoot('output/current-customer/'+testInfo.project.name);mkdirSync(evidence,{recursive:true});
   await page.screenshot({
-    path: `output/product-evidence/${testInfo.project.name}-customer.png`,
+    path: `${evidence}/customer.png`,
     fullPage: true,
   });
 });
@@ -332,9 +333,9 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  mkdirSync("output/product-evidence", { recursive: true });
+  const evidence=newEvidenceRoot('output/current-customer/'+testInfo.project.name);mkdirSync(evidence,{recursive:true});
   await page.screenshot({
-    path: `output/product-evidence/${testInfo.project.name}-guide.png`,
+    path: `${evidence}/guide.png`,
     fullPage: true,
   });
   await context.setOffline(false);

@@ -9,6 +9,7 @@ import { Store, DomainError } from "./store.ts";
 import type { Progress } from "../src/core/types";
 import type { OrderQuote } from "../src/offer-types";
 import { isCommerceCurrency } from "../src/commerce-regions";
+import type { CatalogSku } from "../src/catalog-types";
 
 type Account = {
   user_id: string;
@@ -178,7 +179,11 @@ export class CustomerStore extends Store {
       )
       .all();
   }
-  updateProduct(actor: string, p: Record<string, unknown>) {
+  updateProduct(
+    actor: string,
+    p: Record<string, unknown>,
+    skuKind?: CatalogSku["kind"],
+  ) {
     const {
       id,
       name,
@@ -224,6 +229,11 @@ export class CustomerStore extends Store {
       const existing = this.db
         .prepare("SELECT currency FROM products WHERE id=?")
         .get(id);
+      if (
+        (skuKind ?? this.inventory?.sku(id)?.kind) === "refill" &&
+        Number(credits) !== 0
+      )
+        throw new DomainError("Refills cannot silently grant build credits");
       const revision = existing
         ? Number(
             (
@@ -256,6 +266,7 @@ export class CustomerStore extends Store {
           "INSERT INTO product_details VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET revision=excluded.revision,description=excluded.description",
         )
         .run(id, revision + 1, description);
+      this.inventory?.productChanged(id);
       this.log(actor, "product.update", id);
       return this.products().find((row) => row.id === id);
     });

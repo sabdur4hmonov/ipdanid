@@ -1,4 +1,8 @@
-# Phase14 — mahsulot kodi tayyor, 2026-10-17
+# Phase15 davom etmoqda — 2026-10-20
+
+C01–C14 bajarildi. C15–C26, umumiy yakuniy sinovlar va yangi APK hali qolgan; quyidagi Phase14 hisobotini Phase15 tayyor degan ma’noda qabul qilmang. Eng oxirgi holat: AGENT/PROGRESS.md va docs/REMAINING_WORK.md. Oxirgi AGENTS ko‘rsatmasiga ko‘ra yangi commitlar lokalda qoladi, push qilinmaydi.
+
+# Tarixiy Phase14 — mahsulot kodi tayyor, 2026-10-17
 
 Ilova: **http://127.0.0.1:4200/**. Uchta yig‘ish uchun yangi, ishlatilmagan kod va lokal Admin kirishi: `output/phase14/manual-testing.txt`. APK: `output/mobile/ip-rasm-phase14-20261017-04f92e0d8c1d-debug.apk`. Kod `feat/full-roadmap` branchiga oddiy push qilindi; main/force/merge/PR yo‘q.
 
