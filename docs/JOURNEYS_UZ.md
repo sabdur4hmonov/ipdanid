@@ -29,4 +29,3 @@ Olinmagan sovg‘a qaytarilsa, ajratilgan kredit va asl xarid bir marta bekor qi
 ## Maxfiylik va sinov
 
 Sovg‘a kodi qurilmaning doimiy xarid qoralamasiga yozilmaydi. Ilova/sovg‘a ekranida hisobdan chiqish va keyingi hisobga kirishda eski xarid/javoblar ko‘rinmaydi. Surat avtomatik yuborilmaydi. Sinovlar sun’iy hisoblar va lokal serverda bajarilgan; egasining hisoblari, suratlari va eski ilova serverlariga tegilmagan. Hozir qo‘lda tekshirish talab qilinmaydi. Tayyor asar buyurtmasining rozilik/kuzatuv yo‘li C15ning keyingi qismida qo‘shiladi.
-

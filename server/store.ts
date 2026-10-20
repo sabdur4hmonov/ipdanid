@@ -32,6 +32,7 @@ export interface OrderLifecycle {
   ): void;
   paid(orderId: string): void;
   beforeRefund(orderId: string): void;
+  beforeFulfill?(orderId: string): void;
 }
 import type { Instruction, Progress } from "../src/core/types";
 

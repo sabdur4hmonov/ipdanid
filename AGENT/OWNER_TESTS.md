@@ -340,3 +340,7 @@ Avtomatik sinov o‘tdi: ilova krediti va sovg‘a faqat tasdiqlangan sinov to�
 ## Phase15 C15b — ilova krediti va sovg‘a (avtomatik tekshirildi)
 
 Hozir qo‘lda sinash shart emas. Keyingi yangi ko‘rishda: Admin → ilova/sovg‘a mahsulotini yoqing; ro‘yxatdan o‘tgan hisob → Do‘kon → ilova krediti yoki sovg‘a. Lokal sinov to‘lovi bir marta kredit beradi. Sovg‘ani boshqa doimiy hisobda havola/kod bilan ochib, qabul qilish tugmasini bosing; takroran boshqa oluvchi ola olmaydi. Sovg‘a kodi dastlab yashirin, olingach ko‘rsatilmaydi. USD/RUBda Click/Payme chiqmaydi, asl sotuvchi rekvizitlari saqlanadi. Bu haqiqiy bank tasdig‘i emas. docs/JOURNEYS_UZ.md. Desktop/mobil va hisobdan chiqish sinovlari o‘tdi; tayyor asar buyurtmasi keyingi qismda.
+
+## Phase15 C15c1 — tayyor asar serveri
+
+Server sinovlari avtomatik o‘tdi. Chizma mijozning o‘z saqlangan qo‘llanmasi bo‘lishi kerak; surat yuborilmaydi. Egasining chizma/narx tasdig‘idan keyin mijoz alohida qabul qiladi. To‘lovsiz ishlab chiqarish va tayyor bo‘lmasdan jo‘natish bloklanadi. Hozircha yangi ekranlar keyingi qismda; eski serverlardan tekshirish talab qilinmaydi.

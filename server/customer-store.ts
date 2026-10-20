@@ -581,6 +581,7 @@ export class CustomerStore extends Store {
       if (!o) throw new DomainError("Order not found", 404);
       if (o.status !== "paid")
         throw new DomainError("Only paid orders can be fulfilled", 409);
+      this.orderLifecycle?.beforeFulfill?.(id);
       const commerce = this.db
         .prepare("SELECT data FROM order_commerce WHERE order_id=?")
         .get(id);

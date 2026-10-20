@@ -19,6 +19,7 @@ import { PartnerStore } from "./partner-store.ts";
 import { CatalogStore } from "./catalog-store.ts";
 import { RegionsStore } from "./regions-store.ts";
 import { JourneyStore } from "./journey-store.ts";
+import { CommissionStore } from "./commission-store.ts";
 import { claimOrigin } from "../src/kit-claim-link.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
@@ -44,6 +45,7 @@ const offers = new OfferStore(store);
 const catalog = new CatalogStore(store);
 const regions = new RegionsStore(store);
 const journeys = new JourneyStore(store);
+const commissions = new CommissionStore(store);
 const giftLinkOrigin = (() => {
   const value =
     process.env.APP_ORIGIN ??
@@ -163,6 +165,7 @@ const server = createServer(async (req, res) => {
         catalogRevision: catalog.revision(),
         regions: regions.policy(),
         journeys: journeys.publicPolicies(),
+        commissions: commissions.policies(true),
         claimOrigin: giftLinkOrigin,
         contents: Object.fromEntries(
           catalog
@@ -333,6 +336,20 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (path === "/api/admin/commissions/products" && ["GET", "POST"].includes(req.method ?? "")) {
+        send(200, req.method === "GET" ? { products: store.products(), policies: commissions.policies() } : commissions.save(actor, body)); return;
+      }
+      if (path === "/api/admin/commissions" && req.method === "GET") {
+        send(200, commissions.list()); return;
+      }
+      const commissionAdmin = path.match(/^\/api\/admin\/commissions\/([a-f0-9-]{36})\/(guide|review|production)$/);
+      if (commissionAdmin) {
+        if (commissionAdmin[2] === "guide" && req.method === "GET") send(200, commissions.guide(undefined, commissionAdmin[1]));
+        else if (commissionAdmin[2] === "review" && req.method === "POST") send(200, commissions.review(actor, commissionAdmin[1], body));
+        else if (commissionAdmin[2] === "production" && req.method === "POST") send(200, commissions.produce(actor, commissionAdmin[1], body));
+        else throw new DomainError("Unknown commission operation", 404);
+        return;
+      }
       if (
         path === "/api/admin/regions" &&
         ["GET", "POST"].includes(req.method ?? "")
@@ -749,6 +766,19 @@ const server = createServer(async (req, res) => {
     }
     if (path === "/api/instructions" && req.method === "GET") {
       send(200, store.instructions(user));
+      return;
+    }
+    if (path === "/api/commissions" && ["GET", "POST"].includes(req.method ?? "")) {
+      send(req.method === "GET" ? 200 : 201, req.method === "GET" ? commissions.list(user) : commissions.request(user, body)); return;
+    }
+    const commissionPath = path.match(/^\/api\/commissions\/([a-f0-9-]{36})(?:\/(guide|accept|cancel))?$/);
+    if (commissionPath) {
+      const [, id, op] = commissionPath;
+      if (req.method === "GET" && op === "guide") send(200, commissions.guide(user, id));
+      else if (req.method === "GET" && !op) send(200, commissions.get(user, id));
+      else if (req.method === "POST" && op === "accept") send(200, commissions.accept(user, id, body));
+      else if (req.method === "POST" && op === "cancel" && Object.keys(body).join() === "revision") send(200, commissions.cancel(user, id, body.revision));
+      else throw new DomainError("Unknown commission operation", 404);
       return;
     }
     const returnOrder = path.match(/^\/api\/orders\/([^/]+)\/return$/);

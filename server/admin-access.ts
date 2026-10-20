@@ -189,6 +189,9 @@ export function adminRoutePermission(
   method: string,
   path: string,
 ): AdminPermission | null {
+  if (path === "/api/admin/commissions/products" && ["GET", "POST"].includes(method)) return "catalog";
+  if (method === "GET" && (path === "/api/admin/commissions" || /^\/api\/admin\/commissions\/[a-f0-9-]{36}\/guide$/.test(path))) return "orders";
+  if (method === "POST" && /^\/api\/admin\/commissions\/[a-f0-9-]{36}\/(review|production)$/.test(path)) return "fulfill";
   if (
     (path === "/api/admin/catalog" && method === "GET") ||
     (path === "/api/admin/catalog/sku" && method === "POST") ||
