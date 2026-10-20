@@ -344,3 +344,7 @@ Hozir qo‘lda sinash shart emas. Keyingi yangi ko‘rishda: Admin → ilova/sov
 ## Phase15 C15c1 — tayyor asar serveri
 
 Server sinovlari avtomatik o‘tdi. Chizma mijozning o‘z saqlangan qo‘llanmasi bo‘lishi kerak; surat yuborilmaydi. Egasining chizma/narx tasdig‘idan keyin mijoz alohida qabul qiladi. To‘lovsiz ishlab chiqarish va tayyor bo‘lmasdan jo‘natish bloklanadi. Hozircha yangi ekranlar keyingi qismda; eski serverlardan tekshirish talab qilinmaydi.
+
+## Phase15 C15 tayyor asar — avtomatik sinovlar o‘tdi
+
+Qo‘lda sinash hozir shart emas. Keyin docs/JOURNEYS_UZ.mddagi “Tayyor asar buyurtmasi”ni bajaring: o‘z ochilgan/saqlangan qo‘llanmangizni yuborish → Do‘konda alohida rozilik → Admin chizma va narxni ko‘rib tasdiqlash → mijoz aynan shu chizma/jami narxni qabul qilish → sinov to‘lovi → Admin tayyorlash/tayyor/jo‘natish → mijoz kuzatuvi. Asl surat yuborilmaydi. Hisobot output/phase15/commissions/report.html; ikki haqiqiy PDFning barcha40qadami chizma bilan teng tekshirildi. Bu real pul yoki taxta sifati tasdig‘i emas.

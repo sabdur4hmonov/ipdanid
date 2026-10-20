@@ -77,6 +77,7 @@ async function setup() {
       artHash: r.artHash,
       decision: "approve",
       note: "Exact art and board reviewed",
+      quote: c.reviewQuote(r.id),
     });
   const acceptBody = (r: Commission) => ({
     revision: r.revision,
@@ -215,6 +216,7 @@ it("stale art, product, catalog, settings and retired policy refuse acceptance w
       artHash: a.artHash,
       decision: "reject",
       note: "",
+      quote: null,
     }),
   ).toThrow(/changed/);
   f.b.saveSettings("owner", {
@@ -297,6 +299,39 @@ it("failure after order insertion rolls back stock, order, acceptance and audit 
       )
       .get()?.n,
   ).toBe(0);
+});
+it("workshop must approve the displayed exact price, not silently a concurrent new price", async () => {
+  const f = await setup(),
+    r = f.submit(),
+    quote = f.c.reviewQuote(r.id)!;
+  const p = f.s.products().find((p) => p.id === "ready-art")!;
+  f.s.updateProduct("owner", {
+    ...p,
+    price_minor: 12000,
+    expectedRevision: p.revision,
+  });
+  expect(() =>
+    f.c.review("owner", r.id, {
+      revision: r.revision,
+      artHash: r.artHash,
+      decision: "approve",
+      note: "",
+      quote,
+    }),
+  ).toThrow(/Price changed/);
+  expect(f.c.get(f.user, r.id).state).toBe("requested");
+  expect(f.s.orders(f.user)).toHaveLength(0);
+  const fresh = f.c.reviewQuote(r.id)!;
+  expect(fresh.priceMinor).toBe(12000);
+  expect(
+    f.c.review("owner", r.id, {
+      revision: r.revision,
+      artHash: r.artHash,
+      decision: "approve",
+      note: "",
+      quote: fresh,
+    }).approval?.priceMinor,
+  ).toBe(12000);
 });
 it("commission roles are explicit and production hooks preserve existing digital gift settlement", async () => {
   const f = await setup();

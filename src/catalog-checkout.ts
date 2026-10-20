@@ -14,6 +14,7 @@ export type CommerceProduct = {
   active: number;
 };
 export type ShopCatalog = {
+  commissions?: import("./commission-types").CommissionPolicy[];
   journeys?: import("./journey-types").JourneyProduct[];
   claimOrigin?: string | null;
   contents?: Record<string, { name: string; quantity: number }[]>;

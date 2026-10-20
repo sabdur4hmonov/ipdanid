@@ -153,7 +153,9 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (req.method === "GET" && path === "/api/catalog") {
-      const products = store.catalog(),
+      const publicCommissions = commissions.policies(true),
+        offeredCommissions = new Set(publicCommissions.map(p=>p.productId)),
+        products = store.catalog().filter(p => !commissions.policy(String(p.id)) || offeredCommissions.has(String(p.id))),
         productNames = new Map(
           store.products().map((p) => [p.id, String(p.name)]),
         ),
@@ -165,7 +167,7 @@ const server = createServer(async (req, res) => {
         catalogRevision: catalog.revision(),
         regions: regions.policy(),
         journeys: journeys.publicPolicies(),
-        commissions: commissions.policies(true),
+        commissions: publicCommissions,
         claimOrigin: giftLinkOrigin,
         contents: Object.fromEntries(
           catalog

@@ -21,6 +21,13 @@ export type Commission = {
   state: "requested" | "approved" | "rejected" | "accepted" | "cancelled";
   production: "queued" | "making" | "ready";
   note: string;
+  reviewQuote?: null | {
+    productRevision: number;
+    catalogRevision: number;
+    settingsRevision: number;
+    currency: "UZS" | "USD" | "RUB";
+    priceMinor: number;
+  };
   approval: null | {
     productRevision: number;
     catalogRevision: number;

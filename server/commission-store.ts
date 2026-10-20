@@ -222,7 +222,31 @@ export class CommissionStore {
               "SELECT data FROM commissions WHERE buyer_id=? ORDER BY created_at DESC,id DESC LIMIT 100",
             )
             .all(user);
-    return rows.map((r) => this.dto(JSON.parse(String(r.data))));
+    return rows.map((r) => {
+      const row = JSON.parse(String(r.data)) as Saved;
+      return {
+        ...this.dto(row),
+        ...(user === undefined
+          ? { reviewQuote: this.reviewQuote(row.id) }
+          : {}),
+      };
+    });
+  }
+  reviewQuote(id: string): Commission["reviewQuote"] {
+    const row = this.read(id);
+    try {
+      if (!this.policy(row.productId)?.enabled) return null;
+      const p = this.product(row.productId);
+      return {
+        productRevision: Number(p.revision),
+        catalogRevision: this.store.inventory?.revision() ?? 0,
+        settingsRevision: new BusinessStore(this.store).settings().revision,
+        currency: p.currency as "UZS" | "USD" | "RUB",
+        priceMinor: Number(p.price_minor),
+      };
+    } catch {
+      return null;
+    }
   }
   guide(user: string | undefined, id: string) {
     const v = this.read(id, user);
@@ -310,12 +334,13 @@ export class CommissionStore {
     });
   }
   review(actor: string, id: string, input: unknown): Commission {
-    exact(input, "artHash,decision,note,revision");
+    exact(input, "artHash,decision,note,quote,revision");
     const v = input as {
       artHash: string;
       decision: string;
       note: string;
       revision: number;
+      quote: Commission["reviewQuote"];
     };
     if (
       !["approve", "reject"].includes(v.decision) ||
@@ -337,6 +362,21 @@ export class CommissionStore {
         if (!this.policy(row.productId)?.enabled)
           throw new DomainError("Commission unavailable", 409);
         const p = this.product(row.productId);
+        const current = this.reviewQuote(id);
+        exact(
+          v.quote,
+          "catalogRevision,currency,priceMinor,productRevision,settingsRevision",
+        );
+        if (
+          !current ||
+          Object.entries(current).some(
+            ([k, value]) => v.quote?.[k as keyof typeof current] !== value,
+          )
+        )
+          throw new DomainError(
+            "Price changed; refresh the workshop quote",
+            409,
+          );
         if (p.profile_id !== row.guide.profile.id || Number(p.stock) < 1)
           throw new DomainError("Board unavailable", 409);
         row.approval = {

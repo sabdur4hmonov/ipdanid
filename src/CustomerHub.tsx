@@ -27,6 +27,10 @@ import type { CatalogSku } from "./catalog-types";
 import type { CommerceRegions } from "./commerce-regions";
 import type { JourneyProduct } from "./journey-types";
 import { journeyText } from "./journey-i18n";
+import type { CommissionPolicy } from "./commission-types";
+const CommissionStudio = lazy(() => import("./CommissionPanels").then(m => ({default:m.CommissionStudio})));
+const CommissionPolicyAdmin = lazy(() => import("./CommissionPanels").then(m => ({default:m.CommissionPolicyAdmin})));
+const CommissionOrdersAdmin = lazy(() => import("./CommissionPanels").then(m => ({default:m.CommissionOrdersAdmin})));
 const DigitalAdmin = lazy(() =>
   import("./DigitalPanels").then((m) => ({ default: m.DigitalAdmin })),
 );
@@ -180,6 +184,7 @@ export function CustomerHub({
     [catalogRevision, setCatalogRevision] = useState<number>(),
     [regions, setRegions] = useState<CommerceRegions>(),
     [journeyPolicies, setJourneyPolicies] = useState<JourneyProduct[]>([]),
+    [commissionPolicies, setCommissionPolicies] = useState<CommissionPolicy[]>([]),
     [publicClaimOrigin, setPublicClaimOrigin] = useState<string | null>(null),
     [orders, setOrders] = useState<Order[]>([]),
     [tickets, setTickets] = useState<Ticket[]>([]),
@@ -397,6 +402,7 @@ export function CustomerHub({
     setCatalogRevision(c.catalogRevision);
     setRegions(c.regions);
     setJourneyPolicies(c.journeys ?? []);
+    setCommissionPolicies(c.commissions ?? []);
     setPublicClaimOrigin(c.claimOrigin ?? null);
     setOrders(o);
     setTickets(s);
@@ -896,6 +902,7 @@ export function CustomerHub({
         )}
         {pane === "shop" && connected && (
           <>
+            {(commissionPolicies.length > 0 || me?.durable) && <Suspense fallback={<p role="status">…</p>}><CommissionStudio locale={locale} products={products} policies={commissionPolicies} regions={regions} durable={!!me?.durable} archives={remote} onUpdated={refresh}/></Suspense>}
             {(journeyPolicies.length > 0 || me?.durable) && (
               <Suspense fallback={<p role="status">…</p>}>
                 <DigitalStudio
@@ -954,6 +961,7 @@ export function CustomerHub({
                 .filter(
                   (p) =>
                     p.family !== "digital" &&
+                    !commissionPolicies.some(c => c.productId === p.id) &&
                     region?.enabled &&
                     p.currency === currency,
                 )
@@ -1602,6 +1610,8 @@ export function CustomerHub({
                     <DigitalAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
+                {can("catalog") && <Suspense fallback={<p role="status">…</p>}><CommissionPolicyAdmin locale={locale} token={adminToken}/></Suspense>}
+                {can("orders") && <Suspense fallback={<p role="status">…</p>}><CommissionOrdersAdmin locale={locale} token={adminToken} canFulfill={can("fulfill")}/></Suspense>}
                 {can("settings") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <RegionsAdmin locale={locale} token={adminToken} />

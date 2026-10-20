@@ -12,7 +12,7 @@ import {
   startDigitalPendingLifecycle,
 } from "./digital-pending";
 import type { DigitalAttempt } from "./digital-attempt";
-function useJourneyRun(
+export function useJourneyRun(
   locale: Locale,
   credential?: string,
   onReset?: () => void,
