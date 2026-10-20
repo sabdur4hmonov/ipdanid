@@ -20,6 +20,7 @@ import { CatalogStore } from "./catalog-store.ts";
 import { RegionsStore } from "./regions-store.ts";
 import { JourneyStore } from "./journey-store.ts";
 import { CommissionStore } from "./commission-store.ts";
+import { FinanceStore } from "./finance-store.ts";
 import { claimOrigin } from "../src/kit-claim-link.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
@@ -95,6 +96,7 @@ const payments = new Payments(store, {
     : {}),
 });
 const budgets = new Map<string, { start: number; count: number }>();
+const finance = new FinanceStore(store);
 const authBudgets = new Map<string, { start: number; count: number }>();
 const server = createServer(async (req, res) => {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -133,6 +135,7 @@ const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://127.0.0.1"),
       path = url.pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
+    if (production && (path === "/api/sandbox/callback" || path === "/api/admin/sandbox/sign" || /^\/api\/admin\/orders\/[^/]+\/(test-payment|refund)$/.test(path))) throw new DomainError("Sandbox finance actions are disabled in production",403);
     if (req.method === "GET" && path === "/api/gallery") {
       send(200, gallery.page(url.searchParams.get("after") ?? undefined));
       return;
@@ -338,6 +341,10 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if(path === "/api/admin/finance/reconciliation" && req.method === "GET"){send(200,finance.reconciliation());return;}
+      if(path === "/api/admin/finance/statement" && req.method === "POST"){send(200,finance.compare(actor,body));return;}
+      const manualFinance=path.match(/^\/api\/admin\/finance\/orders\/([a-f0-9-]{36})\/(receipt|refund)$/);
+      if(manualFinance && req.method === "POST"){send(200,manualFinance[2] === "receipt" ? finance.receipt(actor,manualFinance[1],body) : finance.refund(actor,manualFinance[1],body));return;}
       if (path === "/api/admin/commissions/products" && ["GET", "POST"].includes(req.method ?? "")) {
         send(200, req.method === "GET" ? { products: store.products(), policies: commissions.policies() } : commissions.save(actor, body)); return;
       }

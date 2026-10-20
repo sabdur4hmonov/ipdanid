@@ -727,7 +727,7 @@ export class Store {
   signSandbox(raw: string) {
     return createHmac("sha256", this.paymentKey).update(raw).digest("hex");
   }
-  payment(raw: string, signature: string, accepted?: () => void) {
+  payment(raw: string, signature: string, accepted?: () => void, source?: {kind:"manual";actor:string}) {
     if (
       !/^[a-f0-9]{64}$/.test(signature) ||
       !timingSafeEqual(
@@ -756,7 +756,7 @@ export class Store {
       if (existing) {
         if (existing.payload_hash !== payloadHash)
           throw new DomainError("Reused event ID with changed payload", 409);
-        return { sandbox: true, duplicate: true };
+        return { sandbox: !source, duplicate: true };
       }
       const o = this.db
         .prepare("SELECT * FROM orders WHERE id=?")
@@ -773,7 +773,7 @@ export class Store {
         .run(
           e.eventId,
           o.id,
-          "sandbox",
+          source ? "manual" : "sandbox",
           "paid",
           e.amountMinor,
           new Date().toISOString(),
@@ -793,7 +793,7 @@ export class Store {
           ).value,
         );
         if (credits)
-          this.grant(o.user_id, credits, "sandbox-order", `order:${o.id}`);
+          this.grant(o.user_id, credits, source ? "manual-order" : "sandbox-order", `order:${o.id}`);
         this.orderLifecycle?.paid(o.id);
         this.db
           .prepare("INSERT INTO messages VALUES(?,?,?,?,?,?,?)")
@@ -801,15 +801,15 @@ export class Store {
             randomUUID(),
             o.user_id,
             "order-confirmation",
-            JSON.stringify({ orderId: o.id, sandbox: true }),
+            JSON.stringify({ orderId: o.id, sandbox: !source }),
             "queued",
             0,
             null,
           );
       }
-      this.audit("sandbox-provider", "payment.accept", o.id);
+      this.audit(source?.actor ?? "sandbox-provider", source ? "payment.manual-receipt" : "payment.accept", o.id);
       accepted?.();
-      return { sandbox: true, duplicate: false };
+      return { sandbox: !source, duplicate: false };
     });
   }
   reserveGeneration(user: string, requestKey: string, sequenceHash: string) {

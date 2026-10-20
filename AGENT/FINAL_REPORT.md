@@ -1,6 +1,6 @@
 # Phase15 davom etmoqda — 2026-10-20
 
-C01–C15 bajarildi. C16–C26, umumiy yakuniy sinovlar va yangi APK hali qolgan; quyidagi Phase14 hisobotini Phase15 tayyor degan ma’noda qabul qilmang. Eng oxirgi holat: AGENT/PROGRESS.md va docs/REMAINING_WORK.md. Oxirgi AGENTS ko‘rsatmasiga ko‘ra yangi commitlar lokalda qoladi, push qilinmaydi.
+C01–C15 bajarildi. C16–C26, umumiy yakuniy sinovlar va yangi APK hali qolgan; quyidagi Phase14 hisobotini Phase15 tayyor degan ma’noda qabul qilmang. Eng oxirgi holat: AGENT/PROGRESS.md va docs/REMAINING_WORK.md. 21-oktabrdagi yangi topshiriq tekshirilgan commitlarni faqat feat/full-roadmapga push qilish va yakunda PR ochishga ruxsat berdi; main/force/merge yo‘q.
 
 # Tarixiy Phase14 — mahsulot kodi tayyor, 2026-10-17
 

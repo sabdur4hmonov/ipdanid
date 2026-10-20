@@ -10,7 +10,7 @@ Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQL
 
 ## 1. Working protocol (read every session)
 
-2026-10-20 latest human-supplied AGENTS instructions explicitly prohibit push/reset/force. This supersedes the earlier Phase14/15 feature-push authorization below. Continue tested local milestone commits autonomously; do not push until the owner changes this newer constraint. Old preview/data protection remains unchanged.
+2026-10-21 latest owner request in attachments/303b7c70-0818-4d31-b676-734009d69df2/Pasted text.txt explicitly restores normal milestone push on feat/full-roadmap and the final feature→main PR. This supersedes the2026-10-20 no-push restriction for that feature branch only. Exact origin previously owner-confirmed: https://github.com/sabdur4hmonov/ipdanid.git. No main/force/reset/rewrite/merge; all protected previews/data remain frozen.
 
 1. Start of EVERY session (including after "continue"):
    - Read `AGENT/PROGRESS.md` → find the current phase and the exact next step.
@@ -52,7 +52,7 @@ Sequential milestones: 1 quality (versioned axis artifact and chin crop, v3 peop
 
 ## 2. Hard rules
 
-- Git: work on branch `feat/full-roadmap` (create it from `feat/r1-r2-subjects` if it does not exist). Commit per milestone. NO push, reset, rebase, `git clean`, force, or history rewrite. Never commit `tmp/`, `output/`, photos, secrets, DB files.
+- Git: work on branch `feat/full-roadmap` (create it from `feat/r1-r2-subjects` if it does not exist). Commit per milestone. Normal push is allowed only to origin feat/full-roadmap by the latest2026-10-21 owner request; NO main push, reset, rebase, `git clean`, force, or history rewrite. Never commit `tmp/`, `output/`, photos, secrets, DB files.
 - Never touch `tmp/data` or the owner database (`tmp/data/iprasm.sqlite`, `tmp/data/local-secrets.json`). Tests always use an isolated temp DB, isolated ports and a separate `IP_RASM_TEST_ARTIFACTS` folder.
 - Never stop the owner's server on port 4194. Stop only processes you started yourself.
 - Owner preview4195 serves `output/phase9-dist` (additive asset union). New reference preview4196/API4478 serves `output/phase10-dist`; that directory is now FROZEN/live and matches the verified APK. Never build/empty either live directory or dist/4194. Future work must build a new clean directory such as `output/phase10-next-dist`; preserve customer/test sessions and all old hashed assets.

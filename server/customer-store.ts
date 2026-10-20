@@ -524,7 +524,7 @@ export class CustomerStore extends Store {
     this.log(actor, "order.test-payment", id);
     return result;
   }
-  refund(actor: string, id: string) {
+  refund(actor: string, id: string, source: "sandbox" | "manual" = "sandbox") {
     return this.transaction(() => {
       const o = this.db.prepare("SELECT * FROM orders WHERE id=?").get(id) as
         { status: string; user_id: string } | undefined;
@@ -554,7 +554,7 @@ export class CustomerStore extends Store {
             randomUUID(),
             o.user_id,
             -credits,
-            "sandbox-refund",
+            source === "manual" ? "manual-refund" : "sandbox-refund",
             `order-refund:${id}`,
             new Date().toISOString(),
           );
@@ -564,7 +564,7 @@ export class CustomerStore extends Store {
           .run(l.quantity, l.product_id);
       this.inventory?.restore("order:" + id);
       this.db.prepare("UPDATE orders SET status='refunded' WHERE id=?").run(id);
-      this.log(actor, "order.refund-sandbox", id);
+      this.log(actor, source === "manual" ? "order.refund-manual" : "order.refund-sandbox", id);
       return this.order(o.user_id, id);
     });
   }

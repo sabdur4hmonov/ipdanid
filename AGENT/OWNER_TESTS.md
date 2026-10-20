@@ -348,3 +348,7 @@ Server sinovlari avtomatik o‘tdi. Chizma mijozning o‘z saqlangan qo‘llanma
 ## Phase15 C15 tayyor asar — avtomatik sinovlar o‘tdi
 
 Qo‘lda sinash hozir shart emas. Keyin docs/JOURNEYS_UZ.mddagi “Tayyor asar buyurtmasi”ni bajaring: o‘z ochilgan/saqlangan qo‘llanmangizni yuborish → Do‘konda alohida rozilik → Admin chizma va narxni ko‘rib tasdiqlash → mijoz aynan shu chizma/jami narxni qabul qilish → sinov to‘lovi → Admin tayyorlash/tayyor/jo‘natish → mijoz kuzatuvi. Asl surat yuborilmaydi. Hisobot output/phase15/commissions/report.html; ikki haqiqiy PDFning barcha40qadami chizma bilan teng tekshirildi. Bu real pul yoki taxta sifati tasdig‘i emas.
+
+## Phase15 C16a — to‘lovni qayd qilish serveri
+
+Avtomatik sinov o‘tdi: prod rejimida sinov to‘lovini imzolash/qabul qilish yopiq. Moliya xodimi keyinchalik tashqarida olingan yoki qaytarilgan pulning aniq summa/valyuta va kvitansiya raqamini alohida tasdiqlab qayd qiladi; ilova bankdan pul yechmaydi va bank tasdig‘ini o‘zi da’vo qilmaydi. Bir so‘rov ikki marta kredit bermaydi. Boshlangan provider to‘lovi bilan naqd qaydi to‘qnashsa, avval u hal qilinishi kerak. Ekranlar keyingi C16 qismida, hozir qo‘lda tekshirish talab qilinmaydi.
