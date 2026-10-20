@@ -13,6 +13,14 @@ import type { OrderCommerce } from "./business-types";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { galleryText } from "./gallery-i18n";
 import { customerHealthSandbox } from "./customer-health";
+import { CheckoutOffer, useCheckoutOffer } from "./CheckoutOffer";
+import { offersText } from "./offers-i18n";
+const ReferralPanel = lazy(() =>
+  import("./OfferPanels").then((m) => ({ default: m.ReferralPanel })),
+);
+const OfferAdmin = lazy(() =>
+  import("./OfferPanels").then((m) => ({ default: m.OfferAdmin })),
+);
 const GalleryStudio = lazy(() => import("./GalleryStudio"));
 const GalleryModeration = lazy(() =>
   import("./GalleryStudio").then((m) => ({ default: m.GalleryModeration })),
@@ -144,6 +152,22 @@ export function CustomerHub({
       ? storefront.deliveryFeeMinor
       : 0;
   const checkoutTotal = subtotal + deliveryFee;
+  const checkoutItems = Object.entries(cart).map(([productId, quantity]) => ({
+    productId,
+    quantity,
+  }));
+  const offer = useCheckoutOffer(
+    JSON.stringify([
+      api.session?.id,
+      checkoutItems.map((i) => ({
+        ...i,
+        product: products.find((p) => p.id === i.productId),
+      })),
+      address.deliveryMethod,
+      storefront.revision,
+      deliveryFee,
+    ]),
+  );
   const orderRequest = useRef<CheckoutAttempt | null>(null);
   const [pendingCheckout, setPendingCheckout] = useState(false);
   const checkoutKey = () =>
@@ -308,6 +332,7 @@ export function CustomerHub({
     await refresh();
   }
   function resetCustomer() {
+    offer.clear();
     setConnected(false);
     setMe(null);
     setRemote([]);
@@ -501,6 +526,11 @@ export function CustomerHub({
         {pane === "account" && (
           <div className="customer-grid">
             <KitLogin locale={locale} onLogin={refresh} />
+            {connected && (
+              <Suspense fallback={<p role="status">…</p>}>
+                <ReferralPanel locale={locale} />
+              </Suspense>
+            )}
             <section className="card">
               <h2>{t("account")}</h2>
               <label>
@@ -825,6 +855,21 @@ export function CustomerHub({
                     orderRequest.current?.display?.feeMinor ?? deliveryFee,
                   )}
                 </p>
+                <CheckoutOffer
+                  locale={locale}
+                  offer={offer}
+                  items={checkoutItems}
+                  method={address.deliveryMethod}
+                  money={money}
+                />
+                {pendingCheckout &&
+                  orderRequest.current?.display?.offerCode && (
+                    <p data-testid="pending-offer">
+                      {orderRequest.current.display.offerCode} ·{" "}
+                      {offersText(locale, "discount")}:{" "}
+                      {money(orderRequest.current.display.discountMinor ?? 0)}
+                    </p>
+                  )}
                 <p data-testid="checkout-total">
                   <strong>
                     {bt("total")}:{" "}
@@ -832,7 +877,7 @@ export function CustomerHub({
                       pendingCheckout
                         ? JSON.parse(orderRequest.current!.payload).quote
                             .totalMinor
-                        : checkoutTotal,
+                        : (offer.quote?.totalMinor ?? checkoutTotal),
                     )}
                   </strong>
                 </p>
@@ -863,7 +908,8 @@ export function CustomerHub({
               <button
                 disabled={
                   !pendingCheckout &&
-                  (!Object.keys(cart).length ||
+                  (offer.blocked ||
+                    !Object.keys(cart).length ||
                     address.name.trim().length < 2 ||
                     address.phone.replace(/\D/g, "").length < 7 ||
                     (address.deliveryMethod === "courier"
@@ -878,8 +924,10 @@ export function CustomerHub({
                       ([productId, quantity]) => ({ productId, quantity }),
                     );
                     const quote = {
-                      totalMinor: checkoutTotal,
-                      settingsRevision: storefront.revision,
+                      totalMinor: offer.quote?.totalMinor ?? checkoutTotal,
+                      settingsRevision:
+                        offer.quote?.settingsRevision ?? storefront.revision,
+                      ...(offer.quote ? { offerQuoteId: offer.quote.id } : {}),
                     };
                     const payload = JSON.stringify({ items, address, quote });
                     if (!orderRequest.current)
@@ -893,6 +941,12 @@ export function CustomerHub({
                           sellerPhone: storefront.sellerPhone,
                           paymentDetails: storefront.paymentDetails,
                           pickupAddress: storefront.pickupAddress,
+                          ...(offer.quote
+                            ? {
+                                discountMinor: offer.quote.discountMinor,
+                                offerCode: offer.quote.offer.code,
+                              }
+                            : {}),
                         },
                       });
                     try {
@@ -909,6 +963,7 @@ export function CustomerHub({
                         await retainCheckout(null);
                       throw error;
                     }
+                    offer.clear();
                     setCart({});
                     await retainCheckout(null);
                     await refresh();
@@ -1222,6 +1277,11 @@ export function CustomerHub({
                 {can("support") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <GalleryModeration locale={locale} token={adminToken} />
+                  </Suspense>
+                )}
+                {can("finance") && (
+                  <Suspense fallback={<p role="status">…</p>}>
+                    <OfferAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
                 {can("access") && (

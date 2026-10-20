@@ -300,3 +300,9 @@ Kod sinovlari avtomatik bajarildi; hozir sizdan javob kerak emas. Yakuniy yangi 
 ## Phase15 — mijozlar galereyasi (keyinroq)
 
 Avtomatik sinovlar alohida bazada, o‘zimiz chizgan rasm bilan bajarildi. Hozir haqiqiy fotosurat yuborishingiz kerak emas. Yakuniy yangi ilovada Menyu → Hisob va do‘kon → Mijozlar galereyasi. Kit kodi yoki ro‘yxatdan o‘tgan hisob bilan kiring, tayyor buyum rasmini tanlang, nom/taxallus/fikrni yozing va uchta rozilikni belgilang. Dastlab Tekshirilmoqda bo‘lsin; boshqaga ko‘rinmasin. Admin → Galereyani tekshirish orqali kattalashtirib ko‘ring va ruxsat bering; keyin ommaviy ro‘yxatda chiqsin. Mening yuborgan ishlarim ichidan o‘chiring: ommadan yo‘qolsin. Ilovaning dastlabki portretini bu yerga yubormang. To‘liq yo‘l, huquqlar, o‘chirish va saqlash muddatlari: docs/GALLERY_UZ.md. Eski4194–4200versiyalarda yangi galereya yo‘q; yakuniy yangi preview/APKni kutib tekshiriladi.
+
+## 2026-10-20 — Phase15 chegirma va do‘st kodi tayyor
+
+Hozir qo‘lda sinash shart emas:42unit,14brauzer va2HTTP holati avtomatik o‘tdi. Yakuniy Phase15manzilida Menyu → Hisob va do‘kon → Do‘kon: mahsulot qo‘shing, kod yozing, “Qo‘llash”ni bosing va chegirma/jami narxni ko‘ring. Savat o‘zgarsa qayta qo‘llash kerak. Javob yo‘qolsa avvalgi buyurtma ayni kalit bilan davom etadi.
+
+Admin → “Chegirmalar va xarajatlar”da yangi kod/foiz/summa/muddat/limitni saqlang. Do‘st dasturi dastlab o‘chiq; yoqqach Hisob → “Do‘stni taklif qilish”dan kod oling. O‘z hisobingizda ishlamaydi, avtomatik mukofot yo‘q. Haqiqiy xarajatlar kiritilmaguncha qolgan summa o‘ylab topilmaydi. Aniq yo‘riqnoma: [OFFERS_UZ.md](../docs/OFFERS_UZ.md). Hisobot: `output/phase15/offers/report.html`. Eski4200sahifasi o‘zgarmagan; yangi manzil yakuniy qo‘llanmada beriladi.

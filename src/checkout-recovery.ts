@@ -8,6 +8,8 @@ export type CheckoutAttempt = {
     paymentDetails: string;
     pickupAddress: string;
     sellerPhone: string;
+    discountMinor?: number;
+    offerCode?: string;
   };
 };
 export function validCheckoutAttempt(value: unknown): value is CheckoutAttempt {
@@ -39,7 +41,18 @@ export function validCheckoutAttempt(value: unknown): value is CheckoutAttempt {
       ["pickup", "courier"].includes(p.address.deliveryMethod) &&
       Number.isSafeInteger(p.quote?.totalMinor) &&
       p.quote.totalMinor >= 0 &&
-      Number.isSafeInteger(p.quote.settingsRevision),
+      Number.isSafeInteger(p.quote.settingsRevision) &&
+      (p.quote.offerQuoteId === undefined ||
+        (typeof p.quote.offerQuoteId === "string" &&
+          /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(
+            p.quote.offerQuoteId,
+          ))) &&
+      (v.display?.discountMinor === undefined ||
+        (Number.isSafeInteger(v.display.discountMinor) &&
+          v.display.discountMinor >= 0)) &&
+      (v.display?.offerCode === undefined ||
+        (typeof v.display.offerCode === "string" &&
+          /^[A-Z0-9][A-Z0-9-]{3,23}$/.test(v.display.offerCode))),
     );
   } catch {
     return false;
