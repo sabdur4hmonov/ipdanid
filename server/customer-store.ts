@@ -8,6 +8,7 @@ import {
 import { Store, DomainError } from "./store.ts";
 import type { Progress } from "../src/core/types";
 import type { OrderQuote } from "../src/offer-types";
+import { isCommerceCurrency } from "../src/commerce-regions";
 
 type Account = {
   user_id: string;
@@ -215,12 +216,13 @@ export class CustomerStore extends Store {
       Number(price_minor) > 100000000 ||
       ![0, 1].includes(Number(active)) ||
       typeof profile_id !== "string" ||
-      profile_id.length > 100
+      profile_id.length > 100 ||
+      (p.currency !== undefined && !isCommerceCurrency(p.currency))
     )
       throw new DomainError("Invalid product");
     return this.transaction(() => {
       const existing = this.db
-        .prepare("SELECT 1 FROM products WHERE id=?")
+        .prepare("SELECT currency FROM products WHERE id=?")
         .get(id);
       const revision = existing
         ? Number(
@@ -235,14 +237,14 @@ export class CustomerStore extends Store {
         throw new DomainError("Product changed; reload before updating", 409);
       this.db
         .prepare(
-          "INSERT INTO products VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,family=excluded.family,price_minor=excluded.price_minor,profile_id=excluded.profile_id,stock=excluded.stock,credits=excluded.credits,active=excluded.active",
+          "INSERT INTO products VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,family=excluded.family,price_minor=excluded.price_minor,currency=excluded.currency,profile_id=excluded.profile_id,stock=excluded.stock,credits=excluded.credits,active=excluded.active",
         )
         .run(
           id,
           name.trim(),
           String(family),
           Number(price_minor),
-          "UZS",
+          (p.currency as string) ?? existing?.currency ?? "UZS",
           profile_id,
           Number(stock),
           Number(credits),
@@ -317,6 +319,7 @@ export class CustomerStore extends Store {
       street: string;
       phone?: string;
       deliveryMethod?: string;
+      country?: string;
     },
     key: string,
   ) {
@@ -333,6 +336,7 @@ export class CustomerStore extends Store {
       street: string;
       phone?: string;
       deliveryMethod?: string;
+      country?: string;
     },
     key: string,
     quote?: OrderQuote,
@@ -360,24 +364,72 @@ export class CustomerStore extends Store {
       key,
       () => {
         const config = new BusinessStore(this).settings();
-        if (address.deliveryMethod === "courier" && !config.deliveryEnabled)
+        const shipping = this.regions?.quote(
+          items,
+          address.country ?? "UZ",
+          address.deliveryMethod,
+          quote?.shippingRevision,
+        );
+        if (
+          !shipping &&
+          address.country !== undefined &&
+          address.country !== "UZ"
+        )
+          throw new DomainError("Unsupported destination", 409);
+        if (
+          !shipping &&
+          address.deliveryMethod === "courier" &&
+          !config.deliveryEnabled
+        )
           throw new DomainError("Delivery unavailable", 409);
-        if (address.deliveryMethod === "pickup" && !config.pickupAddress.trim())
+        if (
+          !shipping &&
+          address.deliveryMethod === "pickup" &&
+          !config.pickupAddress.trim()
+        )
           throw new DomainError("Pickup unavailable", 409);
         return {
+          ...(shipping &&
+          (shipping.shippingRevision > 0 ||
+            quote?.shippingRevision !== undefined ||
+            quote?.currency !== undefined)
+            ? {
+                country: shipping.country,
+                currency: shipping.currency,
+                shippingRevision: shipping.shippingRevision,
+              }
+            : {}),
           method: address.deliveryMethod as "courier" | "pickup",
           feeMinor:
-            address.deliveryMethod === "courier" ? config.deliveryFeeMinor : 0,
+            shipping?.feeMinor ??
+            (address.deliveryMethod === "courier"
+              ? config.deliveryFeeMinor
+              : 0),
           sellerName: config.sellerName,
           sellerPhone: config.sellerPhone,
           paymentDetails: config.paymentDetails,
-          pickupAddress: config.pickupAddress,
+          pickupAddress: shipping?.pickupAddress ?? config.pickupAddress,
           settingsRevision: config.revision,
           ...(quote?.offerQuoteId
             ? {
                 offer: (() => {
                   if (!this.orderOffers)
                     throw new DomainError("Offers unavailable", 409);
+                  // Existing offer quotes bind the legacy UZS shipping policy.
+                  // Never silently apply them to a different regional fee.
+                  if (
+                    shipping &&
+                    (shipping.currency !== "UZS" ||
+                      shipping.country !== "UZ" ||
+                      shipping.feeMinor !==
+                        (address.deliveryMethod === "courier"
+                          ? config.deliveryFeeMinor
+                          : 0))
+                  )
+                    throw new DomainError(
+                      "Offers unavailable for this shipping region",
+                      409,
+                    );
                   return this.orderOffers.resolve(
                     user,
                     items,
@@ -411,7 +463,7 @@ export class CustomerStore extends Store {
   }
   recordTestPayment(id: string, actor = "local-admin") {
     const o = this.db.prepare("SELECT * FROM orders WHERE id=?").get(id) as
-      { status: string; total_minor: number } | undefined;
+      { status: string; total_minor: number; currency: string } | undefined;
     if (!o) throw new DomainError("Order not found", 404);
     if (["paid", "fulfilled", "return_requested"].includes(o.status))
       return { sandbox: true, duplicate: true };
@@ -421,7 +473,7 @@ export class CustomerStore extends Store {
       eventId: `admin-test-${id}`,
       orderId: id,
       amountMinor: o.total_minor,
-      currency: "UZS",
+      currency: o.currency,
       status: "paid",
       timestamp: Date.now(),
     });

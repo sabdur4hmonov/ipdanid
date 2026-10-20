@@ -566,7 +566,7 @@ export class OfferStore implements OrderOfferProvider {
   report() {
     const rows = this.store.db
       .prepare(
-        "SELECT o.id,o.status,o.total_minor,r.snapshot,r.referrer_id,c.data costs,c.revision cost_revision,EXISTS(SELECT 1 FROM payments p WHERE p.order_id=o.id AND p.status='paid' AND p.amount_minor=o.total_minor) settled FROM orders o LEFT JOIN offer_redemptions r ON r.order_id=o.id LEFT JOIN order_actual_costs c ON c.order_id=o.id ORDER BY o.created_at DESC,o.id DESC LIMIT 200",
+        "SELECT o.id,o.status,o.total_minor,o.currency,r.snapshot,r.referrer_id,c.data costs,c.revision cost_revision,EXISTS(SELECT 1 FROM payments p WHERE p.order_id=o.id AND p.status='paid' AND p.amount_minor=o.total_minor) settled FROM orders o LEFT JOIN offer_redemptions r ON r.order_id=o.id LEFT JOIN order_actual_costs c ON c.order_id=o.id ORDER BY o.created_at DESC,o.id DESC LIMIT 200",
       )
       .all();
     return rows.map((row) => {
@@ -584,6 +584,7 @@ export class OfferStore implements OrderOfferProvider {
           : null;
       return {
         orderId: String(row.id),
+        currency: String(row.currency),
         status: String(row.status),
         totalMinor: Number(row.total_minor),
         recognizedRevenueMinor: recognized,

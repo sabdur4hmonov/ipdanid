@@ -10,6 +10,11 @@ import { readFileSync } from "node:fs";
 import type { OrderCommerce } from "../src/business-types";
 import type { OrderOffer, OrderQuote } from "../src/offer-types";
 import type { CatalogInventory } from "../src/catalog-types";
+import {
+  isCommerceCurrency,
+  type RegionalCommerce,
+  type CommerceCurrency,
+} from "../src/commerce-regions";
 export interface OrderOfferProvider {
   resolve(
     user: string,
@@ -34,7 +39,7 @@ export interface PaymentEvent {
   eventId: string;
   orderId: string;
   amountMinor: number;
-  currency: "UZS";
+  currency: CommerceCurrency;
   status: "paid";
   timestamp: number;
 }
@@ -57,6 +62,7 @@ export class Store {
   db: DatabaseSync;
   orderOffers?: OrderOfferProvider;
   inventory?: CatalogInventory;
+  regions?: RegionalCommerce;
   constructor(
     path: string,
     private pepper: string,
@@ -390,6 +396,7 @@ export class Store {
       street: string;
       phone?: string;
       deliveryMethod?: string;
+      country?: string;
     },
     key: string,
     commerce?: OrderCommerce | (() => OrderCommerce),
@@ -406,12 +413,18 @@ export class Store {
               "settingsRevision",
               "offerQuoteId",
               "catalogRevision",
+              "currency",
+              "shippingRevision",
             ].includes(field),
         ) ||
         !Number.isSafeInteger(quote.totalMinor) ||
         quote.totalMinor < 0 ||
         !Number.isSafeInteger(quote.settingsRevision) ||
         quote.settingsRevision < 0 ||
+        (quote.currency !== undefined && !isCommerceCurrency(quote.currency)) ||
+        (quote.shippingRevision !== undefined &&
+          (!Number.isSafeInteger(quote.shippingRevision) ||
+            quote.shippingRevision < 0)) ||
         (quote.catalogRevision !== undefined &&
           (!Number.isSafeInteger(quote.catalogRevision) ||
             quote.catalogRevision < 0)))
@@ -488,6 +501,13 @@ export class Store {
             previousCommerce &&
             JSON.parse(String(previousCommerce.data)).acceptedQuote;
         if (
+          (previousAccepted?.currency !== undefined &&
+            previousAccepted.currency !== quote?.currency) ||
+          (previousAccepted?.shippingRevision !== undefined &&
+            previousAccepted.shippingRevision !== quote?.shippingRevision)
+        )
+          throw new DomainError("Order retry parameters differ", 409);
+        if (
           previousAccepted?.catalogRevision !== undefined &&
           previousAccepted.catalogRevision !== quote?.catalogRevision
         )
@@ -508,6 +528,9 @@ export class Store {
             accepted.settingsRevision !== quote.settingsRevision ||
             (accepted.catalogRevision ?? null) !==
               (quote.catalogRevision ?? null) ||
+            (accepted.currency ?? null) !== (quote.currency ?? null) ||
+            (accepted.shippingRevision ?? null) !==
+              (quote.shippingRevision ?? null) ||
             (accepted.offerQuoteId ?? null) !== (quote.offerQuoteId ?? null)
           )
             throw new DomainError("Order retry parameters differ", 409);
@@ -517,6 +540,7 @@ export class Store {
       const seen = new Set<string>(),
         lines: { product: Product; quantity: number }[] = [];
       let total = 0;
+      let currency: CommerceCurrency | undefined;
       for (const item of items) {
         if (
           !Number.isInteger(item.quantity) ||
@@ -532,15 +556,25 @@ export class Store {
         if (
           !product ||
           product.stock < item.quantity ||
-          product.currency !== "UZS"
+          !isCommerceCurrency(product.currency)
         )
           throw new DomainError("Unavailable stock", 409);
+        if (currency !== undefined && currency !== product.currency)
+          throw new DomainError("Mixed currencies are not converted", 409);
+        currency = product.currency as CommerceCurrency;
         total += product.price_minor * item.quantity;
         lines.push({ product, quantity: item.quantity });
       }
       this.inventory?.assertOrder(items, quote?.catalogRevision);
       const commerceSnapshot =
         typeof commerce === "function" ? commerce() : commerce;
+      if (
+        (currency !== "UZS" || quote?.currency !== undefined) &&
+        quote?.currency !== currency
+      )
+        throw new DomainError("Currency changed; review checkout", 409);
+      if (commerceSnapshot?.currency && commerceSnapshot.currency !== currency)
+        throw new DomainError("Shipping currency mismatch", 409);
       if (commerceSnapshot) {
         if (
           !Number.isSafeInteger(commerceSnapshot.feeMinor) ||
@@ -582,7 +616,7 @@ export class Store {
           user,
           "pending",
           total,
-          "UZS",
+          currency!,
           JSON.stringify(address),
           new Date().toISOString(),
           key,
@@ -664,7 +698,7 @@ export class Store {
       !e.eventId ||
       e.eventId.length > 100 ||
       !e.orderId ||
-      e.currency !== "UZS" ||
+      !isCommerceCurrency(e.currency) ||
       e.status !== "paid" ||
       !Number.isSafeInteger(e.amountMinor) ||
       !Number.isSafeInteger(e.timestamp) ||

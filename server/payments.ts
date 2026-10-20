@@ -144,6 +144,11 @@ export class Payments {
       throw new DomainError("Invalid invoice request");
     return this.transaction(() => {
       const order = this.store.order(user, orderId);
+      if (order.currency !== "UZS")
+        throw new DomainError(
+          "Click and Payme require UZS; no currency conversion",
+          409,
+        );
       const existing = this.store.db
         .prepare(
           "SELECT * FROM payment_invoices WHERE owner_id=? AND provider=? AND request_key=?",

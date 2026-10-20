@@ -111,6 +111,7 @@ export class PartnerStore {
     if (
       !p ||
       p.active !== 1 ||
+      p.currency !== "UZS" ||
       typeof p.id !== "string" ||
       typeof p.name !== "string" ||
       typeof p.profile_id !== "string" ||

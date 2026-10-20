@@ -1,4 +1,16 @@
-# Phase15 C14a — actual SKU component inventory core
+# Phase15 C14 — SKU inventory and regional commerce checkpoints
+
+## C14b regional core — executed2026-10-20
+
+C14 is still ACTIVE: owner/customer controls and actual kit-credit lifetime disclosure remain C14c. Added `commerce-regions/1`, owner-settings-scoped revisioned configuration for UZ/US/RU/KZ/KG/TJ/TR/AE and explicit UZS/USD/RUB product prices. All three selected currencies have two minor-unit digits in the official [SIX ISO4217 list](https://www.six-group.com/en/products-services/financial-information/data-services/currency-data.html); the authoritative list-one.xml was checked directly. There are no exchange rates or automatic conversions. Country availability is configured by the owner, not a claim of real international fulfillment. Empty rules retain the existing dynamic UZ/UZS business pickup/courier settings; published rule changes require a fresh reviewed shipping revision.
+
+The order transaction reads the actual country, currency, courier availability, fee and pickup address. Mixed currencies, unsupported/disabled destinations, stale rules, missing non-UZS currency review and wrong totals fail before stock/payment effects. Original accepted currency/shipping snapshots and same-body/key retries survive later policy changes. Existing old product editors preserve an omitted currency; explicit unsupported currencies and array-coerced values are refused. A failing regression caught a temporal-dead-zone in the in-progress retry patch before release and it was fixed.
+
+Click/Payme refuse non-UZS invoices before storing anything. Partner volume contracts remain explicitly UZS-only. Existing promo quotes are UZS/legacy-shipping contracts; checkout refuses to apply one to a different country/currency/fee instead of silently reusing it. Mock manual settlement signs the order's actual currency, and the cost/contribution report returns/displays each order's own currency without aggregating currencies. No live charge, provider call or shipment occurred.
+
+Evidence: six new tests initially failed before integration; final62/62 focused units across region/catalog/customer/business/offer/partner/payment/kit passed. TypeScript and isolated build2081modules19.06s passed. First HTTP run2failed on an incorrect test expectation401 vs actual safe403 for a customer accessing Admin; corrected the assertion. Final2/2 pure HTTP cases6.8s at4418/API4562 verified actual USD SKU, regional catalog, immutable order/fee/retry, stale new-order rejection, Click/Payme rejection, real mock settlement and currency-bearing financial report. These are not browser UI acceptance. C14c must wire catalogRevision/region/currency into ordinary checkout and pending recovery, provide owner SKU/region controls, and disclose real kit credit expiry. Last owned4418/API4562 ended; next4419/API4563. C15–C26/full-suite/APK/4201/PR remain open.
+
+## Historical C14a core
 
 C14 ACTIVE. This checkpoint implements tested SKU inventory and immutable order composition. Regional/currency/shipping policy, owner/customer SKU controls and credit-lifetime disclosures remain C14b; no finished UI or international checkout claim.
 

@@ -17,6 +17,7 @@ import { GalleryStore } from "./gallery-store.ts";
 import { OfferStore } from "./offer-store.ts";
 import { PartnerStore } from "./partner-store.ts";
 import { CatalogStore } from "./catalog-store.ts";
+import { RegionsStore } from "./regions-store.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
 const adminToken = production
@@ -39,6 +40,7 @@ const business = new BusinessStore(store);
 const gallery = new GalleryStore(store);
 const offers = new OfferStore(store);
 const catalog = new CatalogStore(store);
+const regions = new RegionsStore(store);
 const partners = new PartnerStore(store);
 const push = new PushStore(store, pepper, notificationAdapter, (id) =>
   business.announcements(true).find((a) => a.id === id),
@@ -140,6 +142,7 @@ const server = createServer(async (req, res) => {
         developmentPrices: !production,
         products,
         catalogRevision: catalog.revision(),
+        regions: regions.policy(),
         skus: Object.fromEntries(
           catalog
             .all()
@@ -297,6 +300,16 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (
+        path === "/api/admin/regions" &&
+        ["GET", "POST"].includes(req.method ?? "")
+      ) {
+        send(
+          200,
+          req.method === "GET" ? regions.policy() : regions.save(actor, body),
+        );
+        return;
+      }
       if (path === "/api/admin/catalog" && req.method === "GET") {
         send(200, {
           products: store.products(),

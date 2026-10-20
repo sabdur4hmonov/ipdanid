@@ -133,6 +133,7 @@ type Code = { id: string; code: string; kind: "promo"; rule: OfferRule };
 type Settings = { codes: Code[]; policy: OfferRule };
 type FinanceRow = {
   orderId: string;
+  currency: string;
   status: string;
   totalMinor: number;
   recognizedRevenueMinor: number;
@@ -425,8 +426,10 @@ export function OfferAdmin({
   }, [token]);
   const selected = settings?.codes.find((c) => c.id === selection),
     row = rows.find((r) => r.orderId === order),
-    money = (n: number) =>
-      (n / 100).toLocaleString(locale, { maximumFractionDigits: 2 }) + " UZS";
+    money = (n: number, currency: string) =>
+      (n / 100).toLocaleString(locale, { maximumFractionDigits: 2 }) +
+      " " +
+      currency;
   return (
     <section
       className="card"
@@ -516,23 +519,25 @@ export function OfferAdmin({
               <option value="">—</option>
               {rows.map((r) => (
                 <option key={r.orderId} value={r.orderId}>
-                  {r.orderId} · {money(r.totalMinor)}
+                  {r.orderId} · {money(r.totalMinor, r.currency)}
                 </option>
               ))}
             </select>
             {row && (
               <div data-testid="order-costs">
                 <p>
-                  {t("revenue")}: {money(row.recognizedRevenueMinor)}
+                  {t("revenue")}:{" "}
+                  {money(row.recognizedRevenueMinor, row.currency)}
                 </p>
                 <p>
-                  {t("discount")}: {money(row.discountMinor)} {row.offerCode}
+                  {t("discount")}: {money(row.discountMinor, row.currency)}{" "}
+                  {row.offerCode}
                 </p>
                 <p data-testid="order-contribution">
                   {t("contribution")}:{" "}
                   {row.netContributionMinor === null
                     ? t("unknown")
-                    : money(row.netContributionMinor)}
+                    : money(row.netContributionMinor, row.currency)}
                 </p>
                 <CostForm
                   key={`${row.orderId}:${row.costRevision}`}

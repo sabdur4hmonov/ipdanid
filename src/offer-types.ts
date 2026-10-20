@@ -1,4 +1,6 @@
 export type OrderQuote = {
+  currency?: import("./commerce-regions").CommerceCurrency;
+  shippingRevision?: number;
   totalMinor: number;
   settingsRevision: number;
   offerQuoteId?: string;

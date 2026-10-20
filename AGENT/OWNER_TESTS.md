@@ -322,3 +322,7 @@ Desktopda ism/sana maydonidan keyin Yaratish tugmasi kesilib qolishi ham avtomat
 ## 2026-10-20 — Phase15 katalog zaxirasi asosi
 
 46unit va2HTTP sinovi o‘tdi. To‘plamdagi umumiy detal alohida sotilsa ham bir zaxiradan to‘g‘ri ayriladi; refund yoki bekor qilish avvalgi tarkibni faqat bir marta qaytaradi. Refill yangi yig‘ish krediti bermaydi, ichki ombor detali do‘konda alohida sotilmaydi. Hozir katalog, hudud, valyuta va dostavka ekranlari davom etmoqda — egasi qo‘lda sinashini kutmaymiz. Haqiqiy to‘lov yoki yetkazish yo‘q. Texnik dalil: [CATALOG_CHECKPOINT.md](../docs/CATALOG_CHECKPOINT.md).
+
+### Phase15 C14b — hudud va valyuta serveri (UI hali keyingi bosqich)
+
+Avtomatik tekshirildi: USD narxli to‘plam, mamlakatga mos dostavka, asl buyurtmani ayni so‘rov bilan qaytarish, eski dostavka narxini yangi buyurtmaga qo‘llashni rad etish. UZS/USD/RUB o‘z narxida saqlanadi; valyuta avtomatik aylantirilmaydi. Click/Payme faqat UZS uchun. Hozir qo‘lda sinash shart emas: keyingi checkpointda do‘kon/Admin boshqaruvlari va to‘plam kreditining haqiqiy amal muddati ko‘rinadi.

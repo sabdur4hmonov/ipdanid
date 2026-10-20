@@ -238,7 +238,10 @@ export function adminRoutePermission(
       ].includes(path))
   )
     return "codes";
-  if (path === "/api/admin/settings" && ["GET", "POST"].includes(method))
+  if (
+    ["/api/admin/settings", "/api/admin/regions"].includes(path) &&
+    ["GET", "POST"].includes(method)
+  )
     return "settings";
   if (path === "/api/admin/announcements" && ["GET", "POST"].includes(method))
     return "messages";

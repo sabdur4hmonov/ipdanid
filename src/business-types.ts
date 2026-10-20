@@ -32,6 +32,9 @@ export type Announcement = {
   revision: number;
 };
 export type OrderCommerce = {
+  currency?: import("./commerce-regions").CommerceCurrency;
+  country?: import("./commerce-regions").CommerceCountry;
+  shippingRevision?: number;
   method: "courier" | "pickup";
   feeMinor: number;
   sellerName: string;

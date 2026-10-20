@@ -234,7 +234,7 @@ it("warehouse supplies work in bundles but not direct checkout; malformed refill
   ).toThrow("cannot silently grant");
   expect(f.s.products().some((p) => p.id === "bad-refill")).toBe(false);
   expect(() =>
-    put(f.s, f.c, "bad-currency", "kit", [], { currency: "USD" }),
+    put(f.s, f.c, "bad-currency", "kit", [], { currency: ["USD"] }),
   ).toThrow("product fields");
 });
 it("SKU cycles, missing parts and ancestor depth violations roll back all nested product metadata writes", () => {

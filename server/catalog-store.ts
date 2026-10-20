@@ -160,7 +160,9 @@ export class CatalogStore implements CatalogInventory {
       ) ||
       typeof product.family !== "string" ||
       typeof product.active !== "number" ||
-      (product.currency !== undefined && product.currency !== "UZS")
+      (product.currency !== undefined &&
+        (typeof product.currency !== "string" ||
+          !["UZS", "USD", "RUB"].includes(product.currency)))
     )
       throw new DomainError("Invalid SKU product fields");
     return this.tx(() => {
