@@ -15,6 +15,7 @@ import { pushAdapter } from "./fcm-adapter.ts";
 import { PushStore } from "./push-store.ts";
 import { GalleryStore } from "./gallery-store.ts";
 import { OfferStore } from "./offer-store.ts";
+import { PartnerStore } from "./partner-store.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
 const adminToken = production
@@ -36,6 +37,7 @@ if (!production) store.seed();
 const business = new BusinessStore(store);
 const gallery = new GalleryStore(store);
 const offers = new OfferStore(store);
+const partners = new PartnerStore(store);
 const push = new PushStore(store, pepper, notificationAdapter, (id) =>
   business.announcements(true).find((a) => a.id === id),
 );
@@ -284,6 +286,34 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if (path === "/api/admin/partners" && req.method === "GET") {
+        send(200, partners.list());
+        return;
+      }
+      if (path === "/api/admin/partners" && req.method === "POST") {
+        send(200, partners.save(actor, body));
+        return;
+      }
+      const partnerCampaigns = path.match(
+        /^\/api\/admin\/partners\/([a-f0-9-]{36})\/campaigns$/,
+      );
+      if (partnerCampaigns && req.method === "GET") {
+        send(200, partners.campaigns(partnerCampaigns[1]));
+        return;
+      }
+      const campaignAction = path.match(
+        /^\/api\/admin\/partners\/campaigns\/([a-f0-9-]{36})\/(approve|cancel)$/,
+      );
+      if (campaignAction && req.method === "POST") {
+        if (campaignAction[2] === "approve")
+          send(200, partners.approve(actor, campaignAction[1], body));
+        else {
+          if (Object.keys(body).join(",") !== "revision")
+            throw new DomainError("Invalid campaign fields");
+          send(200, partners.cancel(actor, campaignAction[1], body.revision));
+        }
+        return;
+      }
       if (path === "/api/admin/offers" && req.method === "GET") {
         send(200, { codes: offers.codes(), policy: offers.policy() });
         return;
@@ -472,6 +502,34 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/partner" && req.method === "GET") {
+      send(200, partners.portal(user));
+      return;
+    }
+    if (path === "/api/partner/quotes" && req.method === "POST") {
+      send(200, partners.quote(user, body));
+      return;
+    }
+    if (path === "/api/partner/campaigns" && req.method === "POST") {
+      send(200, partners.request(user, body));
+      return;
+    }
+    const scopedCampaign = path.match(
+      /^\/api\/partner\/campaigns\/([a-f0-9-]{36})\/(issue|cancel)$/,
+    );
+    if (scopedCampaign && req.method === "POST") {
+      if (scopedCampaign[2] === "issue")
+        send(200, partners.issue(user, scopedCampaign[1], body));
+      else {
+        if (Object.keys(body).join(",") !== "revision")
+          throw new DomainError("Invalid campaign fields");
+        send(
+          200,
+          partners.cancel(user, scopedCampaign[1], body.revision, user),
+        );
+      }
+      return;
+    }
     if (path === "/api/offers/quote" && req.method === "POST") {
       if (!body || Object.keys(body).sort().join(",") !== "code,items,method")
         throw new DomainError("Invalid offer fields");
@@ -743,6 +801,7 @@ const cleanup = setInterval(() => {
   store.expireGifts();
   gallery.prune();
   offers.prune();
+  partners.prune();
 }, 60_000);
 cleanup.unref();
 process.on("SIGINT", () =>

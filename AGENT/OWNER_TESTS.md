@@ -306,3 +306,7 @@ Avtomatik sinovlar alohida bazada, o‘zimiz chizgan rasm bilan bajarildi. Hozir
 Hozir qo‘lda sinash shart emas:42unit,14brauzer va2HTTP holati avtomatik o‘tdi. Yakuniy Phase15manzilida Menyu → Hisob va do‘kon → Do‘kon: mahsulot qo‘shing, kod yozing, “Qo‘llash”ni bosing va chegirma/jami narxni ko‘ring. Savat o‘zgarsa qayta qo‘llash kerak. Javob yo‘qolsa avvalgi buyurtma ayni kalit bilan davom etadi.
 
 Admin → “Chegirmalar va xarajatlar”da yangi kod/foiz/summa/muddat/limitni saqlang. Do‘st dasturi dastlab o‘chiq; yoqqach Hisob → “Do‘stni taklif qilish”dan kod oling. O‘z hisobingizda ishlamaydi, avtomatik mukofot yo‘q. Haqiqiy xarajatlar kiritilmaguncha qolgan summa o‘ylab topilmaydi. Aniq yo‘riqnoma: [OFFERS_UZ.md](../docs/OFFERS_UZ.md). Hisobot: `output/phase15/offers/report.html`. Eski4200sahifasi o‘zgarmagan; yangi manzil yakuniy qo‘llanmada beriladi.
+
+## 2026-10-20 — Phase15 hamkor partiyasi asosi
+
+B2B server sinovlari17unit va2HTTP holatida o‘tdi. Hamkor faqat o‘z partiyasini ko‘radi; egasi ruxsat bermaguncha kod chiqarilmaydi. Tasdiqlash haqiqiy mahsulot zaxirasini band qiladi, tarqatilgan kodni bekor qilish esa taxta qaytdi degani emas. Kit kodlari faqat bir hisobga bog‘lanadi. Hozir portal/claim/PDF ekranlari ulanishi davom etmoqda; qo‘lda sinashni kutmaymiz. Haqiqiy to‘lov yoki xabar yuborilmadi. Keyingi checkpointda aniq ekran yo‘riqnomasi beriladi.

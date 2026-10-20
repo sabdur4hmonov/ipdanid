@@ -66,14 +66,20 @@ export class KitStore extends CustomerStore {
       }
     });
   }
+  private kitSavepoint = 0;
   private ktx<T>(fn: () => T): T {
-    this.db.exec("BEGIN IMMEDIATE");
+    const nested = this.db.isTransaction,
+      point = "kit_nested_" + ++this.kitSavepoint;
+    this.db.exec(nested ? "SAVEPOINT " + point : "BEGIN IMMEDIATE");
     try {
       const result = fn();
-      this.db.exec("COMMIT");
+      this.db.exec(nested ? "RELEASE SAVEPOINT " + point : "COMMIT");
       return result;
     } catch (e) {
-      this.db.exec("ROLLBACK");
+      if (nested) {
+        this.db.exec("ROLLBACK TO SAVEPOINT " + point);
+        this.db.exec("RELEASE SAVEPOINT " + point);
+      } else this.db.exec("ROLLBACK");
       throw e;
     }
   }
@@ -188,6 +194,7 @@ export class KitStore extends CustomerStore {
     profile: unknown,
     count: unknown,
     requestKey: unknown,
+    terms?: Pick<KitPolicy, "quota" | "creditDays" | "codeDays">,
   ) {
     if (
       typeof profile !== "string" ||
@@ -211,7 +218,9 @@ export class KitStore extends CustomerStore {
           "Batch already issued; plaintext codes cannot be recovered. Inspect and revoke that batch before reissuing.",
           409,
         );
-      const p = this.kitPolicy(),
+      const p = terms
+          ? this.policy({ ...this.kitPolicy(), ...terms })
+          : this.kitPolicy(),
         now = Date.now(),
         codes = [];
       this.db
