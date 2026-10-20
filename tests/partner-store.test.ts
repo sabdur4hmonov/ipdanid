@@ -403,3 +403,28 @@ it("an owner can disable a partner even after its catalog product has been retir
   ).toBe(false);
   expect(() => p.portal(a.id)).toThrow("unavailable");
 });
+
+it("partner templates must have a reachable supported physical profile and volume totals must stay exact", () => {
+  const { s, p, a, first } = setup();
+  s.db
+    .prepare("INSERT INTO profiles VALUES('unreachable-custom',1,'{}',0)")
+    .run();
+  s.db
+    .prepare(
+      "UPDATE products SET profile_id='unreachable-custom' WHERE id='partner-kit'",
+    )
+    .run();
+  expect(() =>
+    p.save("owner", { accountId: a.id, terms: first.terms }),
+  ).toThrow("profile unavailable");
+  expect(() =>
+    p.save("owner", {
+      accountId: a.id,
+      terms: {
+        ...first.terms,
+        enabled: false,
+        tiers: [{ minCount: 2, unitMinor: Number.MAX_SAFE_INTEGER }],
+      },
+    }),
+  ).toThrow("price tiers");
+});

@@ -301,6 +301,9 @@
   min-width: 240px;
   margin-inline: auto;
 }
+.customer-flow[data-screen="adjust"][data-kind="people"] .customer-photo {
+  width: min(100%, calc(100dvh - 460px));
+}
 .customer-flow [data-testid="customer-thread-result"] {
   max-height: calc(100dvh - 370px);
   width: auto;

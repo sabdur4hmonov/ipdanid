@@ -15,6 +15,16 @@ import { galleryText } from "./gallery-i18n";
 import { customerHealthSandbox } from "./customer-health";
 import { CheckoutOffer, useCheckoutOffer } from "./CheckoutOffer";
 import { offersText } from "./offers-i18n";
+import { partnerText } from "./partner-i18n";
+const PartnerPortal = lazy(() =>
+  import("./PartnerPanels").then((m) => ({ default: m.PartnerPortal })),
+);
+const PartnerAdmin = lazy(() =>
+  import("./PartnerPanels").then((m) => ({ default: m.PartnerAdmin })),
+);
+const KitClaimPanel = lazy(() =>
+  import("./PartnerPanels").then((m) => ({ default: m.KitClaimPanel })),
+);
 const ReferralPanel = lazy(() =>
   import("./OfferPanels").then((m) => ({ default: m.ReferralPanel })),
 );
@@ -92,12 +102,16 @@ export function CustomerHub({
   onImport,
   onProgress,
   onApplyProfile,
+  kitClaim,
+  onClaimHandled,
 }: {
   locale: Locale;
   projects: Project[];
   onImport: (instruction: Instruction, progress: Progress) => void;
   onProgress: (id: string, progress: Progress) => void;
-  onApplyProfile: (profile: string) => void;
+  onApplyProfile: (profile: string) => void | Promise<void>;
+  kitClaim?: string | null;
+  onClaimHandled?: () => void;
 }) {
   const { settings: storefront } = useBusiness();
   const bt = (key: Parameters<typeof businessText>[1]) =>
@@ -106,6 +120,9 @@ export function CustomerHub({
   const [pane, setPane] = useState<Pane>("account"),
     [connected, setConnected] = useState(false),
     [busy, setBusy] = useState(false);
+  useEffect(() => {
+    if (kitClaim) setPane("account");
+  }, [kitClaim]);
   const [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [email, setEmail] = useState(""),
@@ -525,7 +542,31 @@ export function CustomerHub({
         )}
         {pane === "account" && (
           <div className="customer-grid">
+            {kitClaim && (
+              <Suspense fallback={<p role="status">…</p>}>
+                <KitClaimPanel
+                  key={kitClaim}
+                  locale={locale}
+                  code={kitClaim}
+                  onDismiss={() => onClaimHandled?.()}
+                  onClaim={async (profile) => {
+                    const credential = api.session?.token;
+                    await refresh();
+                    if (!credential || credential !== api.session?.token)
+                      throw new ApiError(409, "Claim account changed");
+                    setMaterial(profile);
+                    setNotice(partnerText(locale, "claimedNotice"));
+                    onClaimHandled?.();
+                  }}
+                />
+              </Suspense>
+            )}
             <KitLogin locale={locale} onLogin={refresh} />
+            {connected && (
+              <Suspense fallback={<p role="status">…</p>}>
+                <PartnerPortal locale={locale} />
+              </Suspense>
+            )}
             {connected && (
               <Suspense fallback={<p role="status">…</p>}>
                 <ReferralPanel locale={locale} />
@@ -633,7 +674,11 @@ export function CustomerHub({
                     </p>
                     <button
                       className="outline"
-                      onClick={() => onApplyProfile(material)}
+                      onClick={() =>
+                        void run(async () => {
+                          await onApplyProfile(material);
+                        })
+                      }
                     >
                       {t("apply")}
                     </button>
@@ -1282,6 +1327,11 @@ export function CustomerHub({
                 {can("finance") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <OfferAdmin locale={locale} token={adminToken} />
+                  </Suspense>
+                )}
+                {can("access") && (
+                  <Suspense fallback={<p role="status">…</p>}>
+                    <PartnerAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
                 {can("access") && (

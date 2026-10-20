@@ -37,7 +37,11 @@ import { loadPhoto } from "./core/image";
 import { hash } from "./core/engine";
 import { preparePersonPhoto, type PhotoAnalysis } from "./photo-prepare";
 import { classicPins } from "./core/classic-reference";
-import { DEFAULT_STANDARD_KIT, standardProfiles } from "./core/standard-kit";
+import {
+  DEFAULT_STANDARD_KIT,
+  standardProfiles,
+  type StandardKitConfig,
+} from "./core/standard-kit";
 import { currentStandardKit } from "./standard-kit-settings";
 import { renderInstruction } from "./core/render";
 import { HEART_POLYGON } from "./core/geometry";
@@ -56,6 +60,7 @@ import "./customer-flow.css";
 const SequenceAnimation = lazy(() => import("./SequenceAnimation"));
 
 type Props = {
+  kitConfig?: StandardKitConfig;
   active: boolean;
   locale: Locale;
   setLocale: (l: Locale) => void;
@@ -65,6 +70,7 @@ type Props = {
   onPersist: (i: Instruction) => void;
 };
 export function CustomerStudio({
+  kitConfig,
   active,
   locale,
   setLocale,
@@ -201,13 +207,15 @@ export function CustomerStudio({
   const allowed = useBuildAccess(result ? [result] : []);
   useEffect(() => {
     let live = true;
-    void currentStandardKit().then((c) => {
-      if (live) setConfig(c);
-    });
+    void (kitConfig ? Promise.resolve(kitConfig) : currentStandardKit()).then(
+      (c) => {
+        if (live) setConfig(c);
+      },
+    );
     return () => {
       live = false;
     };
-  }, []);
+  }, [kitConfig]);
   useEffect(
     () => () => {
       upload.current++;
@@ -581,6 +589,7 @@ export function CustomerStudio({
       className="customer-flow"
       data-testid="customer-flow"
       data-screen={step}
+      data-kind={kind}
     >
       <header className="customer-toolbar">
         {step !== "start" ? (

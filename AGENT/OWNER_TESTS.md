@@ -310,3 +310,11 @@ Admin → “Chegirmalar va xarajatlar”da yangi kod/foiz/summa/muddat/limitni 
 ## 2026-10-20 — Phase15 hamkor partiyasi asosi
 
 B2B server sinovlari17unit va2HTTP holatida o‘tdi. Hamkor faqat o‘z partiyasini ko‘radi; egasi ruxsat bermaguncha kod chiqarilmaydi. Tasdiqlash haqiqiy mahsulot zaxirasini band qiladi, tarqatilgan kodni bekor qilish esa taxta qaytdi degani emas. Kit kodlari faqat bir hisobga bog‘lanadi. Hozir portal/claim/PDF ekranlari ulanishi davom etmoqda; qo‘lda sinashni kutmaymiz. Haqiqiy to‘lov yoki xabar yuborilmadi. Keyingi checkpointda aniq ekran yo‘riqnomasi beriladi.
+
+## 2026-10-20 — Phase15 hamkor portali va QR tayyor
+
+Hozir qo‘lda sinash shart emas.24unit,8brauzer va2HTTP holati o‘tdi; haqiqiy PDFdagi10QR mustaqil dekoderda aniq CSV havolasiga mos keldi. Hisobot: `output/phase15/partners/report.html`; haqiqiy kodlar rasmda yopilgan.
+
+Yakuniy Phase15da Hisob → “Hamkor uchun”dan hisob raqamingizni oling. Egasi Admin → “Hamkorlar va partiyalar”da hisob/mahsulot/narx/miqdor/muddatni saqlaydi. Hamkor narx hisoblab partiyani yuboradi; egasi alohida ruxsat beradi; keyin hamkor PDF/QR va oluvchi havolalarini bir marta chiqarib saqlaydi. Havola kitni oluvchining bitta hisobiga biriktiradi. “Materialni yaratuvchiga qo‘llash” eski kitning aynan o‘z andozasini tanlaydi, keyin v3 va oflayn yig‘ish ishlaydi. Haqiqiy pul yoki xabar yuborilmadi. Aniq yo‘riqnoma: [PARTNERS_UZ.md](../docs/PARTNERS_UZ.md). Telefon/domen/bosilgan QR keyinchalik egasi ulaydigan ish; kutib qolmadik.
+
+Desktopda ism/sana maydonidan keyin Yaratish tugmasi kesilib qolishi ham avtomatik topilib tuzatildi. Asl “to‘liq ko‘rinsin” testi saqlanib, desktop/mobil2/2o‘tdi; suratning500px hisobi va eski qo‘llanmalar o‘zgarmagan.

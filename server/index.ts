@@ -503,7 +503,12 @@ const server = createServer(async (req, res) => {
     }
     const user = store.authenticate(token);
     if (path === "/api/partner" && req.method === "GET") {
-      send(200, partners.portal(user));
+      send(200, {
+        ...partners.portal(user),
+        claimOrigin: production
+          ? process.env.APP_ORIGIN
+          : (process.env.IP_RASM_TEST_ORIGIN ?? process.env.APP_ORIGIN ?? null),
+      });
       return;
     }
     if (path === "/api/partner/quotes" && req.method === "POST") {

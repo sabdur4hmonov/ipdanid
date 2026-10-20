@@ -19,6 +19,8 @@ function checked(root: string, output: string, results: string) {
   const parts = relative(output, root)
     .split(sep)
     .map((p) => p.toLowerCase());
+  if (parts[0] === "pdf" && parts[1] === "phase14")
+    throw Error("Historical PDF evidence is frozen");
   if (
     parts[0] === "phase15" &&
     [
@@ -38,6 +40,7 @@ function checked(root: string, output: string, results: string) {
       "tutorial",
       "gallery",
       "offers",
+      "partners",
     ].includes(parts[1])
   )
     throw Error("Completed Phase15 checkpoint evidence is frozen");

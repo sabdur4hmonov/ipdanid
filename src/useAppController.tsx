@@ -189,7 +189,7 @@ export type View =
   "create" | "assemble" | "library" | "materials" | "customer" | "crafts";
 
 import { Supply, Preview, ResultSubject } from "./screens/GuidePreview";
-export function useAppController() {
+export function useAppController(initialView: View = "create") {
   const { settings: storefront } = useBusiness();
   const [locale, setLocale] = useState<Locale>(() => {
     const stored = localStorage.getItem("iprasm.locale");
@@ -203,7 +203,7 @@ export function useAppController() {
   const [moreOpen, setMoreOpen] = useState(false);
   const simple = (key: Parameters<typeof simpleText>[1]) =>
     simpleText(locale, key);
-  const [view, setView] = useState<View>("create"),
+  const [view, setView] = useState<View>(initialView),
     [image, setImage] = useState<
       (CanvasImageSource & { width: number; height: number }) | null
     >(null),

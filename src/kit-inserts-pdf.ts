@@ -1,6 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import QRCode from "qrcode";
+import { kitClaimLink } from "./kit-claim-link";
 import type { KitBatch } from "./kit-inserts";
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
@@ -34,6 +35,7 @@ export async function kitInsertsPdf(
   batch: KitBatch,
   locale: Locale,
   fontBytes?: Uint8Array,
+  claimOrigin?: string,
 ) {
   if (
     !batch ||
@@ -123,9 +125,12 @@ export async function kitInsertsPdf(
       };
       centre("Ip Rasm", y + h - 7 * mm, 15);
       centre(t("code"), y + h - 12 * mm, 8);
-      const matrix = QRCode.create(item.code, {
-          errorCorrectionLevel: "M",
-        }).modules,
+      const matrix = QRCode.create(
+          claimOrigin ? kitClaimLink(claimOrigin, item.code) : item.code,
+          {
+            errorCorrectionLevel: "M",
+          },
+        ).modules,
         quiet = 4,
         qrSide = 40 * mm,
         unit = qrSide / (matrix.size + quiet * 2),

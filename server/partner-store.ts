@@ -139,7 +139,13 @@ export class PartnerStore {
       this.store.standardKit(Number(match[1]));
       return;
     }
+    const legacy = id.match(
+      /^dev-(circle|rectangle|heart)-(\d+)-(dark|light|color)$/,
+    );
     if (
+      !legacy ||
+      Number(legacy[2]) < 24 ||
+      Number(legacy[2]) > 240 ||
       !this.store.db
         .prepare("SELECT id FROM profiles WHERE id=? LIMIT 1")
         .get(id)

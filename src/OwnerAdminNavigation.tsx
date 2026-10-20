@@ -2,6 +2,7 @@ import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 import { galleryText } from "./gallery-i18n";
 import { offersText } from "./offers-i18n";
+import { partnerText } from "./partner-i18n";
 const words = {
   uz: [
     "Kit kodlari",
@@ -42,6 +43,16 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
           </button>
         ),
       )}
+      <button
+        className="outline"
+        onClick={() =>
+          document
+            .getElementById("admin-partners")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+      >
+        {partnerText(locale, "admin")}
+      </button>
       <button
         className="outline"
         onClick={() =>

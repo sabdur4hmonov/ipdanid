@@ -4,6 +4,9 @@ import { startPushRuntime } from "./push-client";
 import { CustomerStudio } from "./CustomerStudio";
 import { customerFlowText } from "./customer-flow-i18n";
 import { standardText } from "./standard-kit-i18n";
+import { takeKitClaim, kitClaimCode } from "./kit-claim-link";
+import { standardKitRevision } from "./standard-kit-settings";
+import type { StandardKitConfig } from "./core/standard-kit";
 const StandardKitStudio = lazy(() =>
   import("./StandardKitStudio").then((m) => ({ default: m.StandardKitStudio })),
 );
@@ -15,9 +18,13 @@ import { AssembleScreen } from "./screens/AssembleScreen";
 import { LibraryScreen } from "./screens/LibraryScreen";
 import { MoreScreen } from "./screens/MoreScreen";
 export default function App() {
+  const [kitClaim, setKitClaim] = useState(() =>
+    kitClaimCode(window.location.hash),
+  );
+  const [claimedKit, setClaimedKit] = useState<StandardKitConfig>();
   const [standard, setStandard] = useState(true);
   const [customerFlow, setCustomerFlow] = useState(true);
-  const context = useAppController();
+  const context = useAppController(kitClaim ? "customer" : "create");
   const {
     Announcements,
     Check,
@@ -73,6 +80,19 @@ export default function App() {
     view,
   } = context;
   useEffect(() => startPushRuntime(locale), [locale]);
+  useEffect(() => {
+    takeKitClaim();
+    const claim = () => {
+      if (!window.location.hash.startsWith("#kit=")) return;
+      const code = takeKitClaim();
+      if (code) {
+        setKitClaim(code);
+        setView("customer");
+      }
+    };
+    window.addEventListener("hashchange", claim);
+    return () => window.removeEventListener("hashchange", claim);
+  }, []);
   return (
     <div
       className={customerFlow && view === "create" ? "app customer-app" : "app"}
@@ -219,6 +239,8 @@ export default function App() {
           )}
           {view === "customer" && (
             <CustomerHub
+              kitClaim={kitClaim}
+              onClaimHandled={() => setKitClaim(null)}
               locale={locale}
               projects={projects.filter((p) => canBuild(p.instruction))}
               onImport={(i, p) => {
@@ -247,8 +269,15 @@ export default function App() {
                   ),
                 );
               }}
-              onApplyProfile={(id) => {
-                if (/^standard-/.test(id)) {
+              onApplyProfile={async (id) => {
+                const standardRevision = id.match(
+                  /^standard-(?:base|circle|rectangle|heart)-r([1-9]\d*)(?:-classic[23](?:-polished)?)?$/,
+                );
+                if (standardRevision) {
+                  setClaimedKit(
+                    await standardKitRevision(Number(standardRevision[1])),
+                  );
+                  setCustomerFlow(true);
                   setStandard(true);
                   nav("create");
                   return;
@@ -261,6 +290,8 @@ export default function App() {
                   return;
                 }
                 setShape(match[1] as Shape);
+                setCustomerFlow(false);
+                setStandard(false);
                 setPinCount(Number(match[2]));
                 setMode(match[3] as "dark" | "light" | "color");
                 setWidthMm(400);
@@ -273,6 +304,7 @@ export default function App() {
           {customerFlow && (
             <div className="customer-entry" hidden={view !== "create"}>
               <CustomerStudio
+                kitConfig={claimedKit}
                 active={view === "create"}
                 locale={locale}
                 setLocale={setLocale}
