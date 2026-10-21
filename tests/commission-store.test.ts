@@ -7,6 +7,8 @@ import { CatalogStore } from "../server/catalog-store";
 import { RegionsStore } from "../server/regions-store";
 import { BusinessStore } from "../server/business-store";
 import { adminRoutePermission } from "../server/admin-access";
+import {TransactionalOutbox} from '../server/transactional-outbox';
+import {emailAdapter} from '../server/email-adapter';
 import { generate } from "../src/core/engine";
 import { createProfile } from "../src/core/geometry";
 import type { Commission } from "../src/commission-types";
@@ -16,6 +18,7 @@ async function setup() {
   const s = new KitStore(":memory:", "p".repeat(32), "k".repeat(32));
   stores.push(s);
   s.seed();
+  new TransactionalOutbox(s,'p'.repeat(32),emailAdapter({}));
   const cat = new CatalogStore(s),
     b = new BusinessStore(s);
   new RegionsStore(s);

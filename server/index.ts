@@ -21,9 +21,13 @@ import { RegionsStore } from "./regions-store.ts";
 import { JourneyStore } from "./journey-store.ts";
 import { CommissionStore } from "./commission-store.ts";
 import { FinanceStore } from "./finance-store.ts";
+import { emailAdapter } from "./email-adapter.ts";
+import { TransactionalOutbox } from "./transactional-outbox.ts";
+import type {Locale} from "../src/core/types.ts";
 import { claimOrigin } from "../src/kit-claim-link.ts";
 const production = process.env.NODE_ENV === "production";
 const notificationAdapter = pushAdapter(process.env);
+const transactionalAdapter = emailAdapter(process.env);
 const adminToken = production
   ? randomBytes(32).toString("base64url")
   : (process.env.LOCAL_ADMIN_TOKEN ?? randomBytes(32).toString("base64url"));
@@ -47,6 +51,8 @@ const catalog = new CatalogStore(store);
 const regions = new RegionsStore(store);
 const journeys = new JourneyStore(store);
 const commissions = new CommissionStore(store);
+const outbox = new TransactionalOutbox(store,pepper,transactionalAdapter);
+const mailTimer=transactionalAdapter.mode!=='disabled'?setInterval(()=>{void outbox.drain().catch(()=>{});},2000).unref():undefined;
 const giftLinkOrigin = (() => {
   const value =
     process.env.APP_ORIGIN ??
@@ -198,7 +204,7 @@ const server = createServer(async (req, res) => {
         sandbox: !production,
         adminAuth: production ? "password" : "token",
         livePayments: false,
-        liveMessages: notificationAdapter.mode === "fcm",
+        liveMessages: notificationAdapter.mode === "fcm" || transactionalAdapter.mode === 'resend',
         apiVersion: production ? "product-api/3" : "business-sandbox/2",
       });
       return;
@@ -341,6 +347,9 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if(path === '/api/admin/mail' && req.method === 'GET'){send(200,outbox.admin());return;}
+      const mailRetry=path.match(/^\/api\/admin\/mail\/([a-f0-9-]{36})\/retry$/);
+      if(mailRetry && req.method === 'POST'){send(200,outbox.retry(mailRetry[1],Date.now(),actor));return;}
       if(path === "/api/admin/finance/reconciliation" && req.method === "GET"){send(200,finance.reconciliation());return;}
       if(path === "/api/admin/finance/statement" && req.method === "POST"){send(200,finance.compare(actor,body));return;}
       const manualFinance=path.match(/^\/api\/admin\/finance\/orders\/([a-f0-9-]{36})\/(receipt|refund)$/);
@@ -609,6 +618,10 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if(path === '/api/inbox/preferences' && ['GET','POST'].includes(req.method??'')){send(200,req.method==='GET'?outbox.preferences(user):outbox.savePreferences(user,body));return;}
+    if(path === '/api/inbox' && req.method === 'GET'){send(200,outbox.inbox(user,(url.searchParams.get('locale')??'uz') as Locale));return;}
+    const inboxRead=path.match(/^\/api\/inbox\/([a-f0-9-]{36})\/read$/);
+    if(inboxRead && req.method === 'POST'){send(200,outbox.read(user,inboxRead[1]));return;}
     if (path === "/api/partner" && req.method === "GET") {
       send(200, {
         ...partners.portal(user),
@@ -946,12 +959,18 @@ const cleanup = setInterval(() => {
   gallery.prune();
   offers.prune();
   partners.prune();
+  outbox.prune();
 }, 60_000);
 cleanup.unref();
-process.on("SIGINT", () =>
+const shutdown=()=>{
+  outbox.stop();
+  if(mailTimer)clearInterval(mailTimer);
+  if(pushTimer)clearInterval(pushTimer);
+  clearInterval(cleanup);
   server.close(() => {
-    if (pushTimer) clearInterval(pushTimer);
     store.close();
     process.exit(0);
-  }),
-);
+  });
+};
+process.on('SIGINT',shutdown);
+process.on('SIGTERM',shutdown);

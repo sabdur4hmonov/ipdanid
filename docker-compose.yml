@@ -28,9 +28,13 @@ services:
       FCM_WEB_APP_ID: ${FCM_WEB_APP_ID:-}
       FCM_SENDER_ID: ${FCM_SENDER_ID:-}
       FCM_VAPID_PUBLIC_KEY: ${FCM_VAPID_PUBLIC_KEY:-}
+      TRANSACTIONAL_EMAIL_MODE: ${TRANSACTIONAL_EMAIL_MODE:-disabled}
+      TRANSACTIONAL_EMAIL_FROM: ${TRANSACTIONAL_EMAIL_FROM:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
     volumes:
       - sqlite:/data
-    networks: [backend]
+    # Outbound HTTPS for explicitly configured push/mail providers; no host API port.
+    networks: [backend, public]
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4311/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s

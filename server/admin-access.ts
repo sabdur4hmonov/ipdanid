@@ -232,6 +232,7 @@ export function adminRoutePermission(
     (method === "POST" && path === "/api/admin/push/enqueue")
   )
     return "messages";
+  if((method==='GET'&&path==='/api/admin/mail')||(method==='POST'&&/^\/api\/admin\/mail\/[a-f0-9-]{36}\/retry$/.test(path)))return 'messages';
   if (
     (method === "GET" && path === "/api/admin/kits") ||
     (method === "POST" &&

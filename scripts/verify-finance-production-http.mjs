@@ -35,6 +35,7 @@ const secret = randomBytes(32).toString("base64url"),
       PAYMENTS_SANDBOX: "0",
       IP_RASM_TEST_SERVER: "1",
       FCM_MODE: "disabled",
+      TRANSACTIONAL_EMAIL_MODE: "disabled",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

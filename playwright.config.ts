@@ -74,6 +74,7 @@ export default defineConfig({
         SANDBOX_PAYMENT_KEY: process.env.SANDBOX_PAYMENT_KEY!,
         PAYMENTS_SANDBOX: "1",
         FCM_MODE: "mock",
+        TRANSACTIONAL_EMAIL_MODE: "mock",
         CLICK_SERVICE_ID: "12345",
         CLICK_SECRET_KEY: process.env.CLICK_SECRET_KEY!,
         PAYME_LOGIN: "Paycom-test",

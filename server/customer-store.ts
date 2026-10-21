@@ -501,6 +501,7 @@ export class CustomerStore extends Store {
         .prepare("UPDATE orders SET status='return_requested' WHERE id=?")
         .run(id);
       this.log(user, "order.return-request", id);
+      this.transactionalEvent?.("order-return-requested",id);
       return this.order(user, id);
     });
   }
@@ -565,6 +566,7 @@ export class CustomerStore extends Store {
       this.inventory?.restore("order:" + id);
       this.db.prepare("UPDATE orders SET status='refunded' WHERE id=?").run(id);
       this.log(actor, source === "manual" ? "order.refund-manual" : "order.refund-sandbox", id);
+      this.transactionalEvent?.("order-refunded",id);
       return this.order(o.user_id, id);
     });
   }
@@ -597,6 +599,7 @@ export class CustomerStore extends Store {
         .prepare("UPDATE orders SET status='fulfilled' WHERE id=?")
         .run(id);
       this.log(actor, "order.fulfill-sandbox", id);
+      this.transactionalEvent?.("order-sent",id);
       return this.order(o.user_id, id);
     });
   }
@@ -630,13 +633,15 @@ export class CustomerStore extends Store {
     return this.transaction(() => {
       if (!this.db.prepare("SELECT 1 FROM tickets WHERE id=?").get(id))
         throw new DomainError("Ticket not found", 404);
+      const replyId=randomUUID();
       this.db
         .prepare("INSERT INTO ticket_replies VALUES(?,?,?,?,?)")
-        .run(randomUUID(), id, actor, body.trim(), new Date().toISOString());
+        .run(replyId, id, actor, body.trim(), new Date().toISOString());
       this.db
         .prepare("UPDATE tickets SET state=? WHERE id=?")
         .run(String(state), id);
       this.log(actor, "ticket.reply", id);
+      this.transactionalEvent?.("support-replied",replyId);
       return { id, state };
     });
   }

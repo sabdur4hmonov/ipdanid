@@ -5,11 +5,14 @@ import { JourneyStore } from "../server/journey-store";
 import { BusinessStore } from "../server/business-store";
 import { CatalogStore } from "../server/catalog-store";
 import { adminRoutePermission } from "../server/admin-access";
+import {TransactionalOutbox} from '../server/transactional-outbox';
+import {emailAdapter} from '../server/email-adapter';
 const stores: KitStore[] = [];
 afterEach(() => stores.splice(0).forEach((s) => s.close()));
 function setup(kind: "app" | "gift" = "app") {
   const s = new KitStore(":memory:", "p".repeat(32), "k".repeat(32));
   s.seed();
+  new TransactionalOutbox(s,'p'.repeat(32),emailAdapter({}));
   stores.push(s);
   new CatalogStore(s);
   const b = new BusinessStore(s),

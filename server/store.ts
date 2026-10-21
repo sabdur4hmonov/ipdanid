@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import type { OrderCommerce } from "../src/business-types";
 import type { OrderOffer, OrderQuote } from "../src/offer-types";
 import type { CatalogInventory } from "../src/catalog-types";
+import type { TransactionalKind } from "../src/transactional-types";
 import {
   isCommerceCurrency,
   type RegionalCommerce,
@@ -73,6 +74,7 @@ export class Store {
   inventory?: CatalogInventory;
   regions?: RegionalCommerce;
   orderLifecycle?: OrderLifecycle;
+  transactionalEvent?: (kind:TransactionalKind,id:string,revision?:number)=>void;
   constructor(
     path: string,
     private pepper: string,
@@ -690,6 +692,7 @@ export class Store {
         this.orderOffers!.attach(user, id, commerceSnapshot.offer);
       this.inventory?.reserve("order:" + id, items);
       this.audit(user, "order.create", id);
+      this.transactionalEvent?.("order-created",id);
       return this.order(user, id);
     });
   }
@@ -721,6 +724,7 @@ export class Store {
         .prepare("UPDATE orders SET status=? WHERE id=?")
         .run("cancelled", id);
       this.audit(user, "order.cancel", id);
+      this.transactionalEvent?.("order-cancelled",id);
       return this.order(user, id);
     });
   }
@@ -795,6 +799,7 @@ export class Store {
         if (credits)
           this.grant(o.user_id, credits, source ? "manual-order" : "sandbox-order", `order:${o.id}`);
         this.orderLifecycle?.paid(o.id);
+        this.transactionalEvent?.("order-paid",o.id);
         this.db
           .prepare("INSERT INTO messages VALUES(?,?,?,?,?,?,?)")
           .run(

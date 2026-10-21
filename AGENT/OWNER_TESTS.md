@@ -356,3 +356,7 @@ Avtomatik sinov o‘tdi: prod rejimida sinov to‘lovini imzolash/qabul qilish y
 ## Phase15 C16b — Moliya ekrani avtomatik tekshirildi
 
 Hozir qo‘lda sinash shart emas. Keyin Admin → **To‘lov qaydlari**: aynan olingan summani kvitansiya raqami va alohida belgi bilan qayd qilish, mijoz qaytarish so‘ragach haqiqatan qaytarilgan pulni qayd qilish. Ilova bankdan pul olmaydi/qaytarmaydi. **Mahalliy to‘lov yozuvlarini olish** va **Hisobot fayli (JSON)** faqat mahalliy moslikni tekshiradi; bank tasdig‘i emas. Qo‘llanma: docs/FINANCE_UZ.md. Desktop/mobil6holat, qayta urinish, ruxsat almashish va to‘rt til o‘tdi; dalillar output/phase15/finance/report.html. Yangi umumiy preview/APK C26da, eski4194–4200ga tegilmadi.
+
+## 2026-10-21 — Phase15 xabarlar asosi (hozir sinash shart emas)
+
+Xabarlar navbati alohida baza va soxta xizmat bilan avtomatik sinaldi; haqiqiy email yuborilmadi. Hisobning email roziligi, boshqa hisobga ko‘rinmaslik, to‘lov bilan birga saqlanish, qayta ishga tushganda takroriy yubormaslik va yetkazilishning noma’lum holati tekshirildi. Ko‘rish/boshqarish ekranlari keyingi checkpointda ulanadi; eski4194–4200sahifasida izlamang. Keyin haqiqiy email ulash uchun [TRANSACTIONAL_MESSAGES_UZ.md](../docs/TRANSACTIONAL_MESSAGES_UZ.md): VPSdagi maxfiy joyga yuboruvchi domen va Resend kaliti kerak. Hozir buni kutmaymiz.

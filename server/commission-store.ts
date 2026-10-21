@@ -395,6 +395,7 @@ export class CommissionStore {
       ++row.revision;
       this.write(row);
       this.log(actor, v.decision, id);
+      this.store.transactionalEvent?.(v.decision==="approve"?"commission-approved":"commission-declined",id,row.revision);
       return this.dto(row);
     });
   }
@@ -522,6 +523,7 @@ export class CommissionStore {
       ++row.revision;
       this.write(row);
       this.log(actor, v.state, id);
+      this.store.transactionalEvent?.(v.state==="making"?"commission-making":"commission-ready",id,row.revision);
       return this.dto(row);
     });
   }
