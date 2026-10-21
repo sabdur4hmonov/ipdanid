@@ -1,10 +1,11 @@
 import { AssemblyFocus } from "../AssemblyFocus";
-import {recordManualMilestone} from '../analytics-client';
+import { recordManualMilestone } from "../analytics-client";
 import { lazy, Suspense } from "react";
 const SequenceAnimation = lazy(() => import("../SequenceAnimation"));
 import type { AppScreenContext } from "../useAppController";
 import { pinLabel, sectorPin } from "../core/standard-kit";
 import { recordedVoiceText } from "../recorded-voice-i18n";
+import { assemblyAudioText } from "../assembly-audio-i18n";
 type ScreenContext = Pick<
   AppScreenContext,
   | "ArrowRight"
@@ -20,6 +21,7 @@ type ScreenContext = Pick<
   | "Supply"
   | "active"
   | "assemblyEffort"
+  | "backgroundAudio"
   | "businessText"
   | "canBuild"
   | "chosenVoice"
@@ -40,7 +42,8 @@ type ScreenContext = Pick<
   | "pace"
   | "pan"
   | "paper"
-  | "pause"
+  | "pausePlayback"
+  | "startPlayback"
   | "pdf"
   | "pdfBusy"
   | "pinQuery"
@@ -57,7 +60,6 @@ type ScreenContext = Pick<
   | "setPaper"
   | "setPinQuery"
   | "setPins"
-  | "setPlaying"
   | "setProjects"
   | "setSound"
   | "setSpeechRate"
@@ -93,6 +95,7 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
     Supply,
     active,
     assemblyEffort,
+    backgroundAudio,
     businessText,
     canBuild,
     chosenVoice,
@@ -113,7 +116,8 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
     pace,
     pan,
     paper,
-    pause,
+    pausePlayback,
+    startPlayback,
     pdf,
     pdfBusy,
     pinQuery,
@@ -130,7 +134,6 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
     setPaper,
     setPinQuery,
     setPins,
-    setPlaying,
     setProjects,
     setSound,
     setSpeechRate,
@@ -317,12 +320,10 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
             <button
               className="primary icon-only"
               aria-label={playing ? t("pause") : t("play")}
+              disabled={backgroundAudio.busy}
               onClick={() => {
-                if (playing) pause();
-                else {
-                  setPlaying(true);
-                  speak();
-                }
+                if (playing) pausePlayback();
+                else startPlayback();
               }}
             >
               {playing ? <Pause /> : <Play />}
@@ -355,7 +356,15 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
             disabled={confirmedUndo === null}
             onClick={() => {
               if (confirmedUndo !== null) {
-                recordManualMilestone(project.instruction,{...project.progress,confirmed:confirmedUndo,revision:project.progress.revision+1},true);
+                recordManualMilestone(
+                  project.instruction,
+                  {
+                    ...project.progress,
+                    confirmed: confirmedUndo,
+                    revision: project.progress.revision + 1,
+                  },
+                  true,
+                );
                 setProjects((ps) =>
                   ps.map((p) =>
                     p.id === project.id
@@ -473,10 +482,35 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
               ? `: ${matchingVoices.filter((v) => v.recorded).length}`
               : ""}
           </p>
+          <div data-testid="assembly-background-audio">
+            <label className="check-label">
+              <input
+                type="checkbox"
+                checked={backgroundAudio.enabled}
+                disabled={!backgroundAudio.eligible}
+                onChange={(e) => {
+                  setSound(false);
+                  backgroundAudio.enable(e.target.checked);
+                }}
+              />
+              {assemblyAudioText(locale, "enable")}
+            </label>
+            <p className="fineprint">
+              {assemblyAudioText(
+                locale,
+                !backgroundAudio.supported
+                  ? "unsupported"
+                  : !backgroundAudio.eligible
+                    ? "needVoice"
+                    : "hint",
+              )}
+            </p>
+          </div>
           <label className="check-label">
             <input
               type="checkbox"
               checked={sound}
+              disabled={backgroundAudio.enabled}
               onChange={(e) => setSound(e.target.checked)}
             />
             {t("sound")}

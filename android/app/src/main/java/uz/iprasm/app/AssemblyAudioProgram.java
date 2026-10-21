@@ -24,7 +24,7 @@ final class AssemblyAudioProgram {
             if(!path.matches("/voices/"+language+"/instructor-[ab]/[a-z0-9-]+\\.wav") || !sha.matches("[a-f0-9]{64}")) throw new Exception();
         }
     }
-    final String session, hash, language, uiLocale, voice;
+    final String session, hash, projectId, language, uiLocale, voice;
     final double rate;
     final long pace;
     final int current;
@@ -44,11 +44,12 @@ final class AssemblyAudioProgram {
     }
     AssemblyAudioProgram(JSONObject o) throws Exception {
         if(o.toString().length()>12000000)throw new Exception();
-        keys(o,"version","session","sequenceHash","language","uiLocale","voiceId","rate","pace","current","advance","clips","steps");
+        keys(o,"version","session","sequenceHash","projectId","language","uiLocale","voiceId","rate","pace","current","advance","clips","steps");
         if(!"assembly-audio/1".equals(o.getString("version")))throw new Exception();
         session=o.getString("session");hash=o.getString("sequenceHash");language=o.getString("language");uiLocale=o.getString("uiLocale");voice=o.getString("voiceId");
         if(!Arrays.asList("uz","uz-Cyrl","ru","en").contains(uiLocale))throw new Exception();
-        if(!session.matches("[a-f0-9-]{36}")||!hash.matches("[a-f0-9]{64}")||!Arrays.asList("uz","ru","en").contains(language)||voice.length()>200)throw new Exception();
+        projectId=o.getString("projectId");if(projectId.trim().isEmpty()||projectId.length()>200||projectId.matches("(?s).*[\\x00-\\x1f\\x7f].*"))throw new Exception();
+        if(!session.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}")||!hash.matches("[a-f0-9]{64}")||!Arrays.asList("uz","ru","en").contains(language)||voice.length()>200)throw new Exception();
         rate=o.getDouble("rate");double seconds=o.getDouble("pace");
         if(!Double.isFinite(rate)||rate<.5||rate>1.5||!Double.isFinite(seconds)||seconds<2||seconds>120)throw new Exception();
         pace=(long)(seconds*1000);advance=o.getBoolean("advance");

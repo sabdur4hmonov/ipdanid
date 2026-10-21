@@ -3,6 +3,13 @@ import {
   writeAssemblySession,
   validAssemblySession,
 } from "./assembly-session";
+import { useAssemblyAudio } from "./useAssemblyAudio";
+import {
+  assemblyAudioAvailable,
+  assemblyAudioNative,
+} from "./assembly-audio-client";
+import { newerAudioPosition } from "./assembly-audio-resume";
+import { assemblyStepText } from "./assembly-audio-program";
 import { SubjectChooser } from "./SubjectChooser";
 import { recordedClipPlayer } from "./recorded-player";
 import { recordedStepEntries } from "./core/recorded-voices";
@@ -143,15 +150,14 @@ import {
   type Pin,
   type PortraitSettings,
 } from "./core/types";
-import { spokenPin, translate } from "./i18n";
-import { spokenKitPin } from "./sector-speech";
+import { translate } from "./i18n";
 import { readProjects, writeProjects, StorageConflictError } from "./storage";
 import { download } from "./download";
 import { PRODUCT_NAME } from "./config";
 import { CustomerHub } from "./CustomerHub";
 import { customerText } from "./customer-i18n";
 import { guideText } from "./guide-i18n";
-import {recordManualMilestone} from './analytics-client';
+import { recordManualMilestone } from "./analytics-client";
 import { AssemblyNavigator } from "./AssemblyNavigator";
 import {
   readOptimizerRecovery,
@@ -425,16 +431,39 @@ export function useAppController(initialView: View = "create") {
     steps = instruction && canBuild(instruction) ? flatten(instruction) : [],
     active = steps[current - 1];
   const assemblyRestored = useRef(false);
+  const restorationScope = useRef({ view, projects });
+  restorationScope.current = { view, projects };
   useEffect(() => {
     if (!loaded || assemblyRestored.current) return;
     assemblyRestored.current = true;
     let live = true;
-    void readAssemblySession().then((raw) => {
+    void readAssemblySession().then(async (raw) => {
       if (!live) return;
       const saved = validAssemblySession(raw, projects);
       if (saved && view === "create") {
+        let restored = saved.current;
+        if (assemblyAudioAvailable())
+          try {
+            const native = await assemblyAudioNative.checkpoint({
+              projectId: saved.projectId,
+              sequenceHash: saved.sequenceHash,
+            });
+            restored =
+              newerAudioPosition(
+                saved,
+                native,
+                projects.find((p) => p.id === saved.projectId)!.instruction
+                  .metrics.lines,
+              ) ?? restored;
+          } catch {}
+        if (
+          !live ||
+          restorationScope.current.view !== "create" ||
+          !validAssemblySession(saved, restorationScope.current.projects)
+        )
+          return;
         setSelected(saved.projectId);
-        setCurrent(saved.current);
+        setCurrent(restored);
         setPace(saved.pace);
         setView("assemble");
       }
@@ -464,6 +493,24 @@ export function useAppController(initialView: View = "create") {
     v.lang.toLowerCase().startsWith(guideLocale),
   );
   const chosenVoice = matchingVoices[voiceIndex] ?? matchingVoices[0];
+  const backgroundAudio = useAssemblyAudio({
+    active:
+      loaded && view === "assemble" && !!instruction && canBuild(instruction),
+    projectId: project?.id,
+    instruction,
+    voice: chosenVoice,
+    voiceEnabled,
+    language: guideLocale,
+    locale,
+    rate: speechRate,
+    pace,
+    onState: (s) => {
+      setCurrent(s.current);
+      setPlaying(s.playing);
+    },
+    onPlaying: setPlaying,
+    onError: setError,
+  });
   const [analysis, setAnalysis] = useState<ReturnType<
     typeof suitability
   > | null>(null);
@@ -474,21 +521,49 @@ export function useAppController(initialView: View = "create") {
   const [adviceResult, setAdviceResult] = useState<SubjectAdviceResult | null>(
     null,
   );
-  const stopSpeech = cancelGuideSpeech;
+  const speechEpoch = useRef(0);
+  const stopSpeech = () => {
+    speechEpoch.current++;
+    cancelGuideSpeech();
+  };
   const pause = () => {
     setPlaying(false);
+    backgroundAudio.stop();
     stopSpeech();
     setSound(false);
   };
   const speak = () => {
     stopSpeech();
-    if (view !== "assemble" || !active || !chosenVoice || !voiceEnabled) return;
-    const guideT = translate(guideLocale);
-    const text = `${guideT("pdfStep")} ${spokenPin(guideLocale, current)}. ${spokenKitPin(guideLocale, project!.instruction.profile, active.from)} ${guideT("from")}, ${spokenKitPin(guideLocale, project!.instruction.profile, active.to)} ${guideT("to")}.${active.segmentStart ? " " + guideT(active.segment === 0 ? "startKnot" : "colorChange") : ""}`;
+    if (backgroundAudio.enabled) {
+      void backgroundAudio.start(current, false);
+      return;
+    }
+    const speechJob = speechEpoch.current;
+    if (
+      document.hidden ||
+      view !== "assemble" ||
+      !active ||
+      !chosenVoice ||
+      !voiceEnabled
+    )
+      return;
+    const text = assemblyStepText(
+      project!.instruction,
+      current,
+      guideLocale,
+      active,
+    );
     const fallback = (voice: GuideVoice) => {
+      if (
+        speechJob !== speechEpoch.current ||
+        document.hidden ||
+        backgroundAudio.owns()
+      )
+        return;
       if (voice.native) {
         void nativeGuideSpeech(text, voice, guideLocale, speechRate).catch(
           () => {
+            if (speechJob !== speechEpoch.current) return;
             setVoiceEnabled(false);
             setError(t("noVoice"));
           },
@@ -502,7 +577,8 @@ export function useAppController(initialView: View = "create") {
       u.volume = 1;
       if (gain.current) gain.current.gain.value = volume * 0.15;
       u.onend = () => {
-        if (gain.current) gain.current.gain.value = volume;
+        if (speechJob === speechEpoch.current && gain.current)
+          gain.current.gain.value = volume;
       };
       window.speechSynthesis.speak(u);
     };
@@ -525,9 +601,11 @@ export function useAppController(initialView: View = "create") {
           speechRate,
         )
         .then((played) => {
-          if (played && gain.current) gain.current.gain.value = volume;
+          if (speechJob === speechEpoch.current && played && gain.current)
+            gain.current.gain.value = volume;
         })
         .catch(() => {
+          if (speechJob !== speechEpoch.current) return;
           setNotice(recordedVoiceText(locale, "fallback"));
           const voice = matchingVoices.find((v) => !v.recorded);
           if (voice) fallback(voice);
@@ -705,7 +783,7 @@ export function useAppController(initialView: View = "create") {
     };
   }, [image, view, edits, aspect, resolution, portrait]);
   useEffect(() => {
-    speak();
+    if (!backgroundAudio.enabled) speak();
     return stopSpeech;
   }, [
     current,
@@ -715,9 +793,10 @@ export function useAppController(initialView: View = "create") {
     speechRate,
     selected,
     view,
+    backgroundAudio.enabled,
   ]);
   useEffect(() => {
-    if (!playing) return;
+    if (!playing || backgroundAudio.enabled) return;
     const timer = setInterval(() => {
       setCurrent((c) => {
         if (c >= steps.length) {
@@ -728,10 +807,12 @@ export function useAppController(initialView: View = "create") {
       });
     }, pace * 1000);
     return () => clearInterval(timer);
-  }, [playing, pace, steps.length]);
+  }, [playing, pace, steps.length, backgroundAudio.enabled]);
   useEffect(() => {
     const fn = () => {
-      if (document.hidden) pause();
+      if (document.hidden) {
+        if (!backgroundAudio.owns()) pause();
+      } else void backgroundAudio.refresh();
     };
     document.addEventListener("visibilitychange", fn);
     return () => document.removeEventListener("visibilitychange", fn);
@@ -741,7 +822,9 @@ export function useAppController(initialView: View = "create") {
     const lifecycle = NativeApp.addListener(
       "appStateChange",
       ({ isActive }) => {
-        if (!isActive) pause();
+        if (!isActive) {
+          if (!backgroundAudio.owns()) pause();
+        } else void backgroundAudio.refresh();
       },
     );
     const back = NativeApp.addListener("backButton", () => {
@@ -1678,12 +1761,23 @@ export function useAppController(initialView: View = "create") {
           : p,
       ),
     );
-    recordManualMilestone(project.instruction,{...project.progress,confirmed:current,revision:project.progress.revision+1});
-    if (current < steps.length) setCurrent(current + 1);
+    recordManualMilestone(project.instruction, {
+      ...project.progress,
+      confirmed: current,
+      revision: project.progress.revision + 1,
+    });
+    if (current < steps.length) {
+      setCurrent(current + 1);
+      if (backgroundAudio.enabled)
+        void backgroundAudio.start(current + 1, playing);
+    }
   }
   const jump = (v: number) => {
     pause();
-    if (Number.isInteger(v) && v >= 1 && v <= steps.length) setCurrent(v);
+    if (Number.isInteger(v) && v >= 1 && v <= steps.length) {
+      setCurrent(v);
+      if (backgroundAudio.enabled) void backgroundAudio.start(v, false);
+    }
   };
   async function pdf() {
     if (!instruction || !canBuild(instruction)) return;
@@ -1828,6 +1922,7 @@ export function useAppController(initialView: View = "create") {
     applySettings,
     aspect,
     assemblyEffort,
+    backgroundAudio,
     backgroundBusy,
     backgroundOptions,
     backgroundText,
@@ -1897,6 +1992,19 @@ export function useAppController(initialView: View = "create") {
     pan,
     paper,
     pause,
+    pausePlayback: () => {
+      if (backgroundAudio.enabled) backgroundAudio.pause();
+      else pause();
+    },
+    startPlayback: () => {
+      if (backgroundAudio.enabled) {
+        setSound(false);
+        void backgroundAudio.start(current);
+      } else {
+        setPlaying(true);
+        speak();
+      }
+    },
     pdf,
     pdfBusy,
     peopleFitUndo,

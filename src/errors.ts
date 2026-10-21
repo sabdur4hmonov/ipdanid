@@ -1,4 +1,5 @@
 import { subjectText } from "./subject-i18n";
+import { assemblyAudioText } from "./assembly-audio-i18n";
 import { capabilityMessage, type CapabilityProblem } from "./core/capabilities";
 import { baseLocale, scriptText } from "./uzbek-script";
 import type { Locale } from "./core/types";
@@ -168,6 +169,8 @@ const messages: [RegExp, Record<Exclude<Locale, "uz-Cyrl">, string>][] = [
   ],
 ];
 export function customerError(message: string, locale: Locale): string {
+  if (message === "assembly-audio/unavailable")
+    return assemblyAudioText(locale, "failed");
   const subjectProblem =
     /^(Error: )?subject-fit\/(review|combination|clipped)$/.exec(message);
   if (subjectProblem)

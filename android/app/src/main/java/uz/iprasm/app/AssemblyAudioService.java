@@ -35,6 +35,7 @@ public final class AssemblyAudioService extends Service {
         stop(authority);authority=lease;observer=listener;last=empty();
     }
     static boolean owns(String lease){return authority.equals(lease);}
+    static void release(String lease){if(owns(lease)){stop(lease);observer=null;authority="";}}
     static JSObject snapshot(){return instance!=null&&instance.program!=null?instance.state():last;}
     static void prepare(Context context,String lease,AssemblyAudioProgram program,Reply reply){
         if(!owns(lease)){reply.failure();return;}
@@ -229,6 +230,7 @@ public final class AssemblyAudioService extends Service {
     }
     private void publish(){
         if(program==null)return;revision++;last=state();
+        getSharedPreferences("iprasm-assembly-audio-v1",MODE_PRIVATE).edit().putString("projectId",program.projectId).putString("sequenceHash",program.hash).putInt("current",current).putLong("updatedAt",System.currentTimeMillis()).apply();
         long actions=PlaybackState.ACTION_PLAY|PlaybackState.ACTION_PAUSE|PlaybackState.ACTION_STOP|PlaybackState.ACTION_SKIP_TO_NEXT|PlaybackState.ACTION_SKIP_TO_PREVIOUS;
         media.setPlaybackState(new PlaybackState.Builder().setActions(actions).setState(closed?PlaybackState.STATE_STOPPED:playing?PlaybackState.STATE_PLAYING:PlaybackState.STATE_PAUSED,(current-1)*program.pace,playing?1:0).build());
         media.setMetadata(new MediaMetadata.Builder().putString(MediaMetadata.METADATA_KEY_TITLE,program.steps.get(current-1).route).putString(MediaMetadata.METADATA_KEY_ARTIST,"Ip Rasm").putLong(MediaMetadata.METADATA_KEY_DURATION,program.steps.size()*program.pace).build());

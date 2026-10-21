@@ -47,6 +47,7 @@ const make = (
 ) =>
   assemblyAudioProgram({
     instruction,
+    projectId: "audio-project",
     voice,
     language: "en",
     current: 17,
@@ -106,8 +107,9 @@ describe("native assembly program", () => {
         "version",
         "session",
         "sequenceHash",
+        "projectId",
         "language",
-          "uiLocale",
+        "uiLocale",
         "voiceId",
         "rate",
         "pace",

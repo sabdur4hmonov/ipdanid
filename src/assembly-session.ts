@@ -8,6 +8,7 @@ export type AssemblySession = {
   sequenceHash: string;
   current: number;
   pace: number;
+  updatedAt?: number;
 };
 export function validAssemblySession(
   raw: unknown,
@@ -25,7 +26,9 @@ export function validAssemblySession(
     s.current > p.instruction.metrics.lines ||
     !Number.isFinite(s.pace) ||
     s.pace < 2 ||
-    s.pace > 120
+    s.pace > 120 ||
+    (s.updatedAt !== undefined &&
+      (!Number.isSafeInteger(s.updatedAt) || s.updatedAt < 0))
   )
     return;
   return {
@@ -34,6 +37,7 @@ export function validAssemblySession(
     sequenceHash: s.sequenceHash,
     current: s.current,
     pace: s.pace,
+    ...(s.updatedAt !== undefined ? { updatedAt: s.updatedAt } : {}),
   };
 }
 export async function readAssemblySession() {
@@ -48,10 +52,11 @@ export async function readAssemblySession() {
 }
 let queue = Promise.resolve();
 export function writeAssemblySession(s: AssemblySession) {
+  const snapshot = { ...s, updatedAt: Date.now() };
   queue = queue
     .catch(() => {})
     .then(async () => {
-      const value = JSON.stringify(s);
+      const value = JSON.stringify(snapshot);
       if (Capacitor.isNativePlatform())
         await Preferences.set({ key: KEY, value });
       else localStorage.setItem(KEY, value);

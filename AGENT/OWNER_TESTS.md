@@ -2,6 +2,18 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-21 — C18 fon ovozi kodi tayyor (telefon sinovini kutmaymiz)
+
+23ta unit,3ta Java testi, desktop/mobil6ta yangi oqim va4ta eski regressiya o‘tdi. Android kodi oflayn kompilyatsiya qilindi; bu haqiqiy telefonda sinov o‘tkazildi degani emas. Yakuniy Phase15 APK chiqqanda [ASSEMBLY_AUDIO_UZ.md](../docs/ASSEMBLY_AUDIO_UZ.md) bo‘yicha:
+
+1. Kit bilan yo‘riqnomani oching → **Yig‘ish** → **Ovozli qo‘llanma** va kerakli til/ovozni tanlang.
+2. **Ekran qulflanganda ham ovozni davom ettirish**ni yoqing → **Ijro**. Qulf ekranida sektorlar va Play/Pause/oldingi/keyingi/yopish boshqaruvi chiqsin.
+3. Qadamni ovoz yoki oldingi/keyingi bilan almashtirish bajarilgan progressni oshirmasin; faqat **Qadamni tasdiqlash** oshirsin.
+4. Internetni o‘chirib, qulflash/ochish, quloqchinni uzish va qo‘ng‘iroqdan keyin davom ettirishni keyin telefonda tekshiring. Pauzadan o‘zi davom etmasin. Ikki daqiqalik pauzada boshqaruv yopilishi mumkin.
+5. Ilovani qayta ochganda aynan o‘sha yo‘riqnomaning eng yangi aytilgan qadami tiklansin, ovoz/fon rejimi o‘chiq qolsin. Til/ovoz/tezlik/loyiha almashtirilsa yana o‘zingiz yoqing.
+
+Hozirgi4210rasm sahifasi muzlatilgan oldingi build; unda yangi native tugmani izlamang. Hisobot `output/phase15/assembly-audio/report.html` — avtomatik native ko‘prik taqlidi ochiq ko‘rsatilgan. Qolgan kod ishlari davom etadi.
+
 ## 2026-10-21 — Fondagi ovoz asosi (hozir qo‘lda sinash shart emas)
 
 Androidning oflayn ovoz xizmati va qulf ekranidagi boshqaruv asosi avtomatik sinaldi:18ta JS va3ta Java testi o‘tdi, Android kodi oflayn kompilyatsiyadan o‘tdi. Tugma va foydalanuvchi oqimiga ulanishi hali davom etmoqda; eski4200 yoki rasmlar uchun4210sahifasida bu yangi tugmani izlamang. Ovozning o‘zi qadamni bajarildi deb belgilamaydi. Tayyor bo‘lgach yangi APK va aniq o‘zbekcha sinov qadamlari beriladi. Telefon/o‘zingizning ovoz yozuvingizni kutib ish to‘xtamaydi.

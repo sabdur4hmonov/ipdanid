@@ -11,6 +11,7 @@ export type AssemblyAudioProgram = {
   version: "assembly-audio/1";
   session: string;
   sequenceHash: string;
+  projectId: string;
   language: AudioLanguage;
   uiLocale: Locale;
   voiceId: string;
@@ -33,6 +34,7 @@ export function assemblyStepText(
 }
 export function assemblyAudioProgram(options: {
   instruction: Instruction;
+  projectId: string;
   voice: GuideVoice;
   language: AudioLanguage;
   locale?: Locale;
@@ -45,6 +47,10 @@ export function assemblyAudioProgram(options: {
     flat = flatten(instruction);
   if (
     !/^[a-f0-9]{64}$/.test(instruction.sequenceHash) ||
+    typeof options.projectId !== "string" ||
+    !options.projectId.trim() ||
+    options.projectId.length > 200 ||
+    /[\x00-\x1f\x7f]/.test(options.projectId) ||
     !["uz", "ru", "en"].includes(language) ||
     !["uz", "uz-Cyrl", "ru", "en"].includes(options.locale ?? language) ||
     !voice.lang.toLowerCase().startsWith(language) ||
@@ -123,6 +129,7 @@ export function assemblyAudioProgram(options: {
     version: "assembly-audio/1",
     session: crypto.randomUUID(),
     sequenceHash: instruction.sequenceHash,
+    projectId: options.projectId,
     language,
     uiLocale: options.locale ?? language,
     voiceId: voice.recorded ? "" : voice.id,

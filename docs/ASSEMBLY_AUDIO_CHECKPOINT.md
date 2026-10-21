@@ -1,8 +1,27 @@
-# Opt-in background assembly audio — C18 ACTIVE
+# Opt-in background assembly audio — C18 DONE (code/mocks/compile)
+
+## C18b customer integration accepted — 2026-10-21
+
+The actual four-locale assembly control is wired to the registered Android bridge and native driver. It defaults off, requires an installed matching voice/complete recorded voice and explicit Play, cancels foreground speech/sound, and suppresses duplicate foreground speech/JS autoplay while native owns playback. Browser/iOS show a plain unsupported explanation and retain default background pause. Voice/language/pace/project/view/unlock changes retire the native session; native pause alone preserves the opt-in for explicit resume.
+
+The exact announced index/playing state reconciles on foreground return. Native private checkpoints bind project ID+sequence hash+current+timestamp, expire at read after7days and expose an erasure hook for C21. Additive optional `updatedAt` preserves version1 assembly sessions; only a newer, valid same-project/hash native cursor may override the foreground cursor. App restart restores position with voice/background mode off. Neither path writes confirmed progress. Global account erasure remains C21.
+
+Actual delayed-foreground-speech red test found an old TTS initialization failure disabling an already-started native session. A controller speech epoch now drops old native failures, recorded fallback/completion and browser completion; hidden foreground fallback is refused. The red run is retained at `test-results/phase15-assembly-audio-stale-foreground-red/report.json`. The earlier generic-error UI failure also exposed global error sanitization swallowing the new recovery text; a fixed `assembly-audio/unavailable` code now maps through the safe four-locale error mapper, with unknown bodies still hidden.
+
+Final acceptance:
+
+- **23/23 focused JS unit +1 frozen-evidence guard**, `phase15-assembly-audio-final-unit.json` and `phase15-assembly-audio-evidence-guard.json` beneath test-results. Program/ownership, version1 compatibility, newer cursor/expiry/wrong guide/invalid position, four locales and safe error mapping are covered.
+- **Desktop3/3 passed23.312s**, fresh4471/API4614; **mobile3/3 passed25.971s**, fresh4472/API4615. `test-results/phase15-assembly-audio-{desktop,mobile}-final/report.json`. Real isolated kit sign-in/unlock plus injected native bridge, offline native cursor/resume, default hidden pause, manual confirmation only, app restart/no autoplay, four locales/overflow, retired late start, config changes, delayed old TTS error and current engine failure/no automatic restart.
+- Old offline assembly/native API regression **4/4 passed47.1s**, fresh4473/API4616, `test-results/phase15-assembly-audio-legacy-final/report.json`. Earlier4/4 pre-speech-epoch run is separate.
+- Final TypeScript and isolated build: **2108modules/38.61s**, `test-results/phase15-c18-client-final-build.log`; phase15-dist only/native4483/debug1. Earlier client builds and desktop2/2/6prefinal UI cases are not the latest claim. Main chunk warning remains C23/C25.
+- Latest native source/3actual JVM guards/instrumentation-source compilation: **offline BUILD SUCCESSFUL,73s,131tasks**, `test-results/phase15-c18-client-native-final.log`. The final cleanup releases the old Activity/WebView observer and native authority. No phone/emulator test or new APK assembly was performed.
+- Frozen `output/phase15/assembly-audio/report.html`:10safe PNGs+2fixed mock-result JSONs+HTML and SHA manifest. EN/Cyrillic mobile control captures reviewed/readable; actual overwrite refusal tested. Future runs use `output/current-assembly-audio`, never replace this accepted report. No owner photo/audio/credential is included.
+
+Owner guide: [ASSEMBLY_AUDIO_UZ.md](ASSEMBLY_AUDIO_UZ.md). Real device/lock-screen/headset/voice/noisy-room/six-hour acceptance remains O04/O07. Existing owner previews/APIs/live assets/91archived APKs remain preserved; final Phase15 APK remains C26. C19–C26 remain open.
 
 ## C18a native/core milestone — 2026-10-21
 
-The native/core implementation exists. **Customer controls, real bridge integration, lifecycle/browser acceptance and durable native announced-position reconciliation are still C18b. C18 is not complete.** The customer application continues to use its existing foreground voice/default background pause until that integration is accepted. No old preview or guide has changed.
+Historical C18a checkpoint: the native/core existed before customer controls and bridge integration were accepted. C18b above supersedes that incomplete state. No old preview or guide changed.
 
 `assembly-audio/1` is an ephemeral, bounded program derived from the exact validated instruction: all ordered sector routes and localized step text, current announced index, pace/rate, installed offline voice ID, or a deduplicated manifest of exact local recorded clips. It carries no photo/target, caption, customer/account credential, confirmation progress or write capability. The sequence hash and per-start random session bind native state. Speech language is separate from four-locale notification text.
 
@@ -30,7 +49,7 @@ Guards and cleanup:
 - Historical APK preservation snapshot:91archives still bound to SHA256, `output/mobile/phase15-c18-old-apks.json`. These compile tasks did not assemble/publish a new APK. Final Phase15 assets/APK/signature/PR remain C26.
 - Final TypeScript and isolated web build passed:2102modules/19.75seconds, `test-results/phase15-c18-core-build.log`, only output/phase15-dist with native4483/debug1. The new core is intentionally not yet imported by customer playback; default behavior stays unchanged until C18b acceptance. The main-chunk warning remains C23/C25.
 
-No real device/lock-screen/TTS/noisy-room/six-hour acceptance claim is made. Owner recordings/phone remain O04/O07; they do not block implementing C18b with native bridge mocks.
+No real device/lock-screen/TTS/noisy-room/six-hour acceptance claim is made. Owner recordings/phone remain O04/O07; code acceptance uses the actual native bridge mocks and compilation above.
 
 ## Platform references
 
@@ -38,4 +57,4 @@ No real device/lock-screen/TTS/noisy-room/six-hour acceptance claim is made. Own
 
 ## Exact next implementation step
 
-Commit/scan/normal feature push this core after the isolated web build. Then wire the actual opt-in control in four locales, cancel ordinary speech when native owns playback, suppress foreground timer/duplicate speech during native playback, preserve default pause, resume/reconcile the latest native state, bind all navigation/voice/profile/unlock changes and manual-only confirmation. Add durable local announced-position checkpoints with project/hash/time guards; app restart defaults background mode to off. Test actual desktop/mobile native bridge mocks and legacy offline assembly, seal evidence, run fresh build and preserved Android compile/APK checks before C18 DONE. Continue C19–C26 autonomously afterward.
+Commit/scan/normal feature push C18b, then implement C19 experimental local-only exact speech commands per the ledger. C21 must wire the existing `clearCheckpoint` hook into global private account/storage erasure; C26 must package/verify the final APK and PR. Do not wait for owner phone/recordings.
