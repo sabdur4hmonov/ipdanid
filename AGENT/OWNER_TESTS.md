@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-21 — C19 ovozli buyruqlar asosi (hali interfeysga ulanmagan)
+
+40ta avtomatik test, TypeScript/build va oflayn Android kompilyatsiyasi o‘tdi. Haqiqiy mikrofon yoki ovoz yozuvi ishlatilmadi. Qurilmadagi tayyor modelga mo‘ljallangan “keyingi/oldingi/takrorla/pauza/davom et” buyruqlari bor; “tasdiqla” bajarilmaydi. Ixtiyoriy Expert interfeysi va ruxsat/shovqin/bekor qilish sinovlari keyingi qadam. Hozir bu tugmani4210sahifasida izlamang; sinashingizni kutib kod ishlari to‘xtamaydi.
+
 ## 2026-10-21 — C18 fon ovozi kodi tayyor (telefon sinovini kutmaymiz)
 
 23ta unit,3ta Java testi, desktop/mobil6ta yangi oqim va4ta eski regressiya o‘tdi. Android kodi oflayn kompilyatsiya qilindi; bu haqiqiy telefonda sinov o‘tkazildi degani emas. Yakuniy Phase15 APK chiqqanda [ASSEMBLY_AUDIO_UZ.md](../docs/ASSEMBLY_AUDIO_UZ.md) bo‘yicha:
