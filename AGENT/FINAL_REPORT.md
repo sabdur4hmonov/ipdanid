@@ -1,5 +1,7 @@
 # Phase15 davom etmoqda — 2026-10-21
 
+Namunaviy rasm bilan sinash tayyor: **http://127.0.0.1:4210/photo-test/**. “Rasmni saqlash” → “Ilovani ochish” → “Galereyadan tanlash” → “Yaratish”. Doira/Kvadrat/Yurak kompyuter va mobil brauzerda6/6o‘tdi; hisoblash3.3–4.5soniya. Bu hozir sinash uchun alohida sahifa, yakuniy Phase15/APK emas. Yig‘ish kodi faqat `output/phase15/photo-trial/manual-testing.txt`da, uchta yig‘ish hali ishlatilmagan.
+
 C01–C17 bajarildi. C18–C26, umumiy yakuniy sinovlar va yangi APK hali qolgan; quyidagi Phase14 hisobotini Phase15 tayyor degan ma’noda qabul qilmang. Eng oxirgi holat: AGENT/PROGRESS.md va docs/REMAINING_WORK.md. 21-oktabrdagi yangi topshiriq tekshirilgan commitlarni faqat feat/full-roadmapga push qilish va yakunda PR ochishga ruxsat berdi; main/force/merge yo‘q.
 
 # Tarixiy Phase14 — mahsulot kodi tayyor, 2026-10-17

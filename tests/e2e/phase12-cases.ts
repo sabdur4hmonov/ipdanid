@@ -91,6 +91,7 @@ export async function gallery(page: Page, c: (typeof photoCases)[number]) {
   await expect(
     page.getByRole("button", { name: /^(Yaratish|Create)$/, exact: true }),
   ).toBeEnabled();
+  return Buffer.from(jpg, "base64");
 }
 export async function english(page: Page) {
   await page.getByTestId("customer-menu").locator("summary").click();

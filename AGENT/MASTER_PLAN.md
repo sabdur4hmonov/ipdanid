@@ -52,6 +52,8 @@ Sequential milestones: 1 quality (versioned axis artifact and chin crop, v3 peop
 
 ## 2. Hard rules
 
+- Interim2026-10-21 owner photo trial http://127.0.0.1:4210/ API4650 serves FROZEN output/phase15-photo-trial-dist (87exactC17appassets+44explicit synthetic trial files). Preserve launcher7780/child6884, fresh owner-photo-trial-C8Z6Bp test DB and unused kit. Never rebuild that snapshot; normal Phase15 builds remain output/phase15-dist. Final4201/API4483 stays reserved for C26. Trial report/download at /photo-test/, credentials only ignored output/phase15/photo-trial/manual-testing.txt. docs/PHOTO_TRIAL_CHECKPOINT.md. C18–C26 remain required; do not wait for optional owner feedback.
+
 - Git: work on branch `feat/full-roadmap` (create it from `feat/r1-r2-subjects` if it does not exist). Commit per milestone. Normal push is allowed only to origin feat/full-roadmap by the latest2026-10-21 owner request; NO main push, reset, rebase, `git clean`, force, or history rewrite. Never commit `tmp/`, `output/`, photos, secrets, DB files.
 - Never touch `tmp/data` or the owner database (`tmp/data/iprasm.sqlite`, `tmp/data/local-secrets.json`). Tests always use an isolated temp DB, isolated ports and a separate `IP_RASM_TEST_ARTIFACTS` folder.
 - Never stop the owner's server on port 4194. Stop only processes you started yourself.

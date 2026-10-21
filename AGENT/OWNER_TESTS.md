@@ -2,6 +2,16 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-21 — Bitta namunaviy rasm bilan hozir sinash
+
+1. **http://127.0.0.1:4210/photo-test/** ni oching. Asl namuna, tayyorlangan surat va ipli natijani yonma-yon ko‘ring; uchala shaklning kompyuter/telefon ko‘rinishi bor.
+2. **“1. Rasmni saqlash”**ni bosing. **“2. Ilovani ochish”** → **“Galereyadan tanlash”** orqali yuklangan `namuna-portret.jpg`ni tanlang. O‘z suratingizni ham tanlashingiz mumkin.
+3. **Doira / Kvadrat / Yurak**dan tanlang. Suratni suring, kattalashtiring; **“Burish”**, **“Qaytarish”**, **“Oldin / Keyin”**ni sinang. Yelka odatda ko‘rinmaydi.
+4. **“Yaratish”**ni bosing. 3000ipli natija chiqsin; namuna avtomatik sinovda taxminan3.3–4.5soniyada hisoblandi. **“Qayta moslash”**ga qaytganda joylashuv saqlansin.
+5. Yig‘ishni yoki PDFni sinamoqchi bo‘lsangiz, **“Yig‘ishni boshlash”** / **“PDF yuklab olish”**ni bosing. Uchta yig‘ish uchun ishlatilmagan sinov kodi `output/phase15/photo-trial/manual-testing.txt`da. Bu kodni boshqa odamga yubormang.
+
+Eski4194–4200sahifalari saqlandi. Yangi sahifa alohida sinov; Phase15ning qolgan kodi va yakuniy APK hali davom etadi. Namuna sun’iy yaratilgan; shaxsiy suratingiz ishlatilmagan. Hozir qo‘lda sinashingizni kutib ish to‘xtamaydi.
+
 ## 2026-10-19 — Phase15 promo/referral asosi (hozir sinash shart emas)
 
 Server hisobi avtomatik sinaldi: chegirma faqat mahsulotga qo‘llanadi, dostavkaga emas; bir buyurtmani qaytarish ikkinchi to‘lov yoki kredit yaratmaydi. Referral o‘z hisobida va avval to‘lagan xaridorda ishlamaydi; haqiqiy to‘lovdan keyin hisoblanadi, qaytarilganda bekor bo‘ladi. Hozir interfeys ulanishi davom etmoqda; eski4200sahifasida bu funksiyani izlamang. Avtomatik mukofot/pul berilmaydi. Admin xarajatlarni kiritmaguncha foyda o‘ylab topilmaydi. Yakuniy Phase15manzili va ekran yo‘riqnomasi keyingi checkpointda qo‘shiladi.
