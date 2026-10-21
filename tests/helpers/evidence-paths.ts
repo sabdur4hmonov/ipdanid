@@ -44,6 +44,7 @@ function checked(root: string, output: string, results: string) {
       "catalog",
       "digital",
       "commissions",
+      "finance",
     ].includes(parts[1])
   )
     throw Error("Completed Phase15 checkpoint evidence is frozen");

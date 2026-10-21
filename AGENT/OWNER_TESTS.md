@@ -352,3 +352,7 @@ Qo‘lda sinash hozir shart emas. Keyin docs/JOURNEYS_UZ.mddagi “Tayyor asar b
 ## Phase15 C16a — to‘lovni qayd qilish serveri
 
 Avtomatik sinov o‘tdi: prod rejimida sinov to‘lovini imzolash/qabul qilish yopiq. Moliya xodimi keyinchalik tashqarida olingan yoki qaytarilgan pulning aniq summa/valyuta va kvitansiya raqamini alohida tasdiqlab qayd qiladi; ilova bankdan pul yechmaydi va bank tasdig‘ini o‘zi da’vo qilmaydi. Bir so‘rov ikki marta kredit bermaydi. Boshlangan provider to‘lovi bilan naqd qaydi to‘qnashsa, avval u hal qilinishi kerak. Ekranlar keyingi C16 qismida, hozir qo‘lda tekshirish talab qilinmaydi.
+
+## Phase15 C16b — Moliya ekrani avtomatik tekshirildi
+
+Hozir qo‘lda sinash shart emas. Keyin Admin → **To‘lov qaydlari**: aynan olingan summani kvitansiya raqami va alohida belgi bilan qayd qilish, mijoz qaytarish so‘ragach haqiqatan qaytarilgan pulni qayd qilish. Ilova bankdan pul olmaydi/qaytarmaydi. **Mahalliy to‘lov yozuvlarini olish** va **Hisobot fayli (JSON)** faqat mahalliy moslikni tekshiradi; bank tasdig‘i emas. Qo‘llanma: docs/FINANCE_UZ.md. Desktop/mobil6holat, qayta urinish, ruxsat almashish va to‘rt til o‘tdi; dalillar output/phase15/finance/report.html. Yangi umumiy preview/APK C26da, eski4194–4200ga tegilmadi.

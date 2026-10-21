@@ -6,6 +6,7 @@ import { partnerText } from "./partner-i18n";
 import { catalogText } from "./catalog-i18n";
 import { journeyText } from "./journey-i18n";
 import { commissionText } from "./commission-i18n";
+import { financeText } from "./finance-i18n";
 const words = {
   uz: [
     "Kit kodlari",
@@ -69,6 +70,7 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
           {catalogText(locale, id === "catalog" ? "admin" : "regions")}
         </button>
       ))}
+      <button className="outline" onClick={()=>document.getElementById("admin-finance")?.scrollIntoView({behavior:"smooth",block:"start"})}>{financeText(locale,"title")}</button>
       <button className="outline" onClick={()=>document.getElementById("admin-commissions")?.scrollIntoView({behavior:"smooth",block:"start"})}>{commissionText(locale,"orders")}</button>
       <button
         className="outline"

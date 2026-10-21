@@ -34,6 +34,7 @@ const CommissionOrdersAdmin = lazy(() => import("./CommissionPanels").then(m => 
 const DigitalAdmin = lazy(() =>
   import("./DigitalPanels").then((m) => ({ default: m.DigitalAdmin })),
 );
+const FinancePanel = lazy(() => import("./FinancePanel"));
 const DigitalStudio = lazy(() =>
   import("./DigitalPanels").then((m) => ({ default: m.DigitalStudio })),
 );
@@ -1595,6 +1596,7 @@ export function CustomerHub({
                     <OfferAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
+                {can("finance") && <Suspense fallback={<p role="status">…</p>}><FinancePanel locale={locale} token={adminToken}/></Suspense>}
                 {can("access") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <PartnerAdmin locale={locale} token={adminToken} />
