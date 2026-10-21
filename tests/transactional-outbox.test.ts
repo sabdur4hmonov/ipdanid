@@ -116,8 +116,10 @@ it("accepted and delivered are distinct; status polling never sends a second mes
     polls: 0,
     cipher: "",
   });
+  expect(x.out.admin().messages[0].canRetry).toBe(true);
   expect(await x.out.drain(now + 60000)).toEqual({ processed: 1 });
   expect(x.job()).toMatchObject({ state: "delivered", attempts: 1, polls: 1 });
+  expect(x.out.admin().messages[0].canRetry).toBe(false);
   expect(() => x.out.retry(x.job().id)).toThrow(/checked again/);
 });
 it("retries a lost acceptance using exactly the original encrypted envelope and stable key", async () => {

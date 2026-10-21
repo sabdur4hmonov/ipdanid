@@ -37,3 +37,14 @@ export type MailPreferences = {
   configured: boolean;
   mock: boolean;
 };
+export type MailDeliveryReport = {
+  mode: "disabled" | "mock" | "resend";
+  counts: { state: string; count: number }[];
+  messages: (InboxMessage & {
+    attempts: number;
+    polls: number;
+    dueAt: number;
+    error: string;
+    canRetry: boolean;
+  })[];
+};

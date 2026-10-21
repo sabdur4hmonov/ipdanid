@@ -1,0 +1,147 @@
+import type { Locale } from "./core/types";
+import { baseLocale, scriptText } from "./uzbek-script";
+const en = {
+  title: "Messages",
+  admin: "Message delivery",
+  empty: "No messages yet",
+  refresh: "Refresh",
+  read: "Mark as read",
+  seen: "Read",
+  email: "Order and support email",
+  consent: "Email me order updates and support replies",
+  privacy:
+    "No photos, drawings, kit codes, addresses or support text are included in email.",
+  language: "Email language",
+  save: "Save email choice",
+  saved: "Saved",
+  register:
+    "Register an email account to enable email. Messages remain available here.",
+  disabled: "Email is not connected. Messages remain available in the app.",
+  mock: "Test service: no real email is sent.",
+  configured: "Email service connected",
+  retry: "Retry safely or check status",
+  attempts: "Send attempts",
+  polls: "Status checks",
+  retention:
+    "Messages are kept for 90 days. Accepted email cannot be recalled. Delivery means the recipient mail server accepted it; it does not mean the person read it.",
+  in_app: "In the app",
+  queued: "Waiting to send",
+  sending: "Sending",
+  accepted: "Service accepted",
+  checking: "Checking delivery",
+  delivered: "Mail server accepted",
+  failed: "Not delivered",
+  cancelled: "Cancelled",
+  unknown: "Delivery unknown",
+  uz: "Uzbek (Latin)",
+  cyrl: "Uzbek (Cyrillic)",
+  ru: "Russian",
+  en: "English",
+  serviceDisabled: "Email off",
+  serviceMock: "Test email service",
+  serviceResend: "Email service connected",
+};
+export type MailWord = keyof typeof en;
+const uz: Record<MailWord, string> = {
+  title: "Xabarlar",
+  admin: "Xabar yetkazilishi",
+  empty: "Hozircha xabar yo‘q",
+  refresh: "Yangilash",
+  read: "O‘qildi deb belgilash",
+  seen: "O‘qildi",
+  email: "Buyurtma va yordam emaili",
+  consent: "Buyurtma holati va yordam javoblari emailimga kelsin",
+  privacy:
+    "Emailda surat, chizma, kit kodi, manzil yoki yordam matni bo‘lmaydi.",
+  language: "Email tili",
+  save: "Email tanlovini saqlash",
+  saved: "Saqlandi",
+  register:
+    "Emailni yoqish uchun email bilan ro‘yxatdan o‘ting. Xabarlar shu yerda qoladi.",
+  disabled: "Email ulanmagan. Xabarlar ilovada qoladi.",
+  mock: "Sinov xizmati: haqiqiy email yuborilmaydi.",
+  configured: "Email xizmati ulangan",
+  retry: "Xavfsiz qayta urinish yoki holatni tekshirish",
+  attempts: "Yuborish urinishlari",
+  polls: "Holat tekshiruvlari",
+  retention:
+    "Xabarlar 90 kun saqlanadi. Qabul qilingan emailni qaytarib bo‘lmaydi. Yetkazilish — pochta serveri qabul qilgani; odam o‘qiganini bildirmaydi.",
+  in_app: "Ilovada",
+  queued: "Yuborish kutilmoqda",
+  sending: "Yuborilmoqda",
+  accepted: "Xizmat qabul qildi",
+  checking: "Yetkazilish tekshirilmoqda",
+  delivered: "Pochta serveri qabul qildi",
+  failed: "Yetkazilmadi",
+  cancelled: "Bekor qilindi",
+  unknown: "Yetkazilish noma’lum",
+  uz: "O‘zbekcha (lotin)",
+  cyrl: "O‘zbekcha (kirill)",
+  ru: "Ruscha",
+  en: "Inglizcha",
+  serviceDisabled: "Email o‘chiq",
+  serviceMock: "Email sinov xizmati",
+  serviceResend: "Email xizmati ulangan",
+};
+const ru: Record<MailWord, string> = {
+  title: "Сообщения",
+  admin: "Доставка сообщений",
+  empty: "Сообщений пока нет",
+  refresh: "Обновить",
+  read: "Отметить прочитанным",
+  seen: "Прочитано",
+  email: "Письма о заказах и поддержке",
+  consent: "Присылать мне изменения заказов и ответы поддержки",
+  privacy:
+    "Письма не содержат фото, рисунков, кодов наборов, адресов или текста обращений.",
+  language: "Язык писем",
+  save: "Сохранить выбор писем",
+  saved: "Сохранено",
+  register:
+    "Зарегистрируйте аккаунт с почтой для включения писем. Сообщения остаются здесь.",
+  disabled: "Почта не подключена. Сообщения остаются в приложении.",
+  mock: "Тестовый сервис: реальные письма не отправляются.",
+  configured: "Почтовый сервис подключён",
+  retry: "Безопасный повтор или проверка статуса",
+  attempts: "Попытки отправки",
+  polls: "Проверки статуса",
+  retention:
+    "Сообщения хранятся 90 дней. Принятые письма отозвать нельзя. Доставка означает приём почтовым сервером, а не прочтение человеком.",
+  in_app: "В приложении",
+  queued: "Ожидает отправки",
+  sending: "Отправляется",
+  accepted: "Сервис принял",
+  checking: "Проверка доставки",
+  delivered: "Почтовый сервер принял",
+  failed: "Не доставлено",
+  cancelled: "Отменено",
+  unknown: "Доставка неизвестна",
+  uz: "Узбекский (латиница)",
+  cyrl: "Узбекский (кириллица)",
+  ru: "Русский",
+  en: "Английский",
+  serviceDisabled: "Почта выключена",
+  serviceMock: "Тестовый почтовый сервис",
+  serviceResend: "Почтовый сервис подключён",
+};
+export function mailText(locale: Locale, key: MailWord) {
+  return scriptText({ en, uz, ru }[baseLocale(locale)][key], locale);
+}
+export function mailState(locale: Locale, state: string) {
+  return mailText(
+    locale,
+    ([
+      "in_app",
+      "queued",
+      "sending",
+      "accepted",
+      "checking",
+      "delivered",
+      "failed",
+      "cancelled",
+      "unknown",
+    ].includes(state)
+      ? state
+      : "unknown") as MailWord,
+  );
+}

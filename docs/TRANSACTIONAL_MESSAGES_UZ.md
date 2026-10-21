@@ -6,6 +6,10 @@ Email uchun ro‘yxatdan o‘tgan mijoz o‘z hisobida alohida rozilik beradi. U
 
 ## Keyin haqiqiy emailni ulash
 
+Ilovada: Menyu → Hisob/Boshqaruv → hisobga kirish → **Xabarlar**. Rozilik belgisi va email tilini tanlab **Email tanlovini saqlash** ni bosing. Yangilash va o‘qildi deb belgilash tugmalari shu yerda. Rozilikni olib tashlab qayta saqlash hali yuborilmagan emaillarni bekor qiladi; keyingi xabar ilovada qoladi. Kirishdan chiqilganda shaxsiy ro‘yxat tozalanadi; yangi hisobga eski javob qaytib ko‘rinmaydi.
+
+Egasi yoki xabar ruxsati bor xodim: Boshqaruv → **Xabar yetkazilishi**. Yangilashdan keyin holat va urinishlar ko‘rinadi. **Xavfsiz qayta urinish yoki holatni tekshirish** faqat server xavfsiz deb ruxsat berganda chiqadi. Xizmat qabul qilgan xatda u faqat holatni tekshiradi. Yuborish chegarasi tugagan yoki yakuniy holatdagi xat uchun tugma yo‘q. Soxta sinovda “haqiqiy email yuborilmaydi” degan yozuv ko‘rinadi.
+
 1. Resend hisobida o‘zingizga tegishli yuboruvchi domenni tasdiqlang va faqat server uchun API kalitini oling.
 2. VPS dagi maxfiy `.env.production` fayliga `TRANSACTIONAL_EMAIL_MODE=resend`, `TRANSACTIONAL_EMAIL_FROM=orders@SIZNING_DOMENINGIZ` va `RESEND_API_KEY=...` kiriting. Kalitni Git, skrinshot, chat yoki `VITE_*` ga yozmang.
 3. O‘sha fayl bilan Docker Compose API xizmatini qayta yarating; umumiy joylashtirish tartibi [DEPLOY_VPS_UZ.md](DEPLOY_VPS_UZ.md) da. API tashqi HTTPS ga chiqishi kerak; unda hostga ochiq API porti yo‘q. `.env.example` faqat bo‘sh joylarni ko‘rsatadi.

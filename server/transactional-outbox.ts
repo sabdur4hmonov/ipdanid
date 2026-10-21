@@ -383,6 +383,28 @@ export class TransactionalOutbox {
       .run(Date.now(), id, user);
     return { read: true };
   }
+  private canRetry(r: Job, now = Date.now()) {
+    if (this.adapter.mode === "disabled" || r.mode !== this.adapter.mode)
+      return false;
+    if (r.provider_id)
+      return (
+        ["accepted", "unknown"].includes(r.state) &&
+        r.polls < 20 &&
+        now - r.created_at < 48 * 3600000
+      );
+    const p = this.pref(r.user_id);
+    return (
+      ["queued", "unknown"].includes(r.state) &&
+      !!r.cipher &&
+      r.attempts < 5 &&
+      p?.email_opt_in === 1 &&
+      p.consent_revision === r.consent_revision &&
+      now - (r.first_attempt || r.created_at) < 23 * 3600000 &&
+      !this.store.db
+        .prepare("SELECT 1 FROM notification_blocks WHERE user_id=?")
+        .get(r.user_id)
+    );
+  }
   admin() {
     return {
       mode: this.adapter.mode,
@@ -403,6 +425,7 @@ export class TransactionalOutbox {
         polls: job.polls,
         dueAt: job.due_at,
         error: job.error_code,
+        canRetry: this.canRetry(job),
       })),
     };
   }
@@ -415,6 +438,13 @@ export class TransactionalOutbox {
       if (!r) throw new DomainError("Message not found", 404);
       if (this.adapter.mode === "disabled" || r.mode !== this.adapter.mode)
         throw new DomainError("Email service unavailable", 409);
+      if (!this.canRetry(r, now))
+        throw new DomainError(
+          r.provider_id
+            ? "Delivery cannot be checked again"
+            : "Safe retry window or consent is no longer valid; use the in-app inbox",
+          409,
+        );
       if (r.provider_id) {
         if (!["accepted", "unknown"].includes(r.state) || r.polls >= 20)
           throw new DomainError("Delivery cannot be checked again", 409);

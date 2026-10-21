@@ -7,6 +7,7 @@ import { KitAdmin } from "./KitAdmin";
 import { KitLogin } from "./KitLogin";
 import { PromotionPreference } from "./Announcements";
 import { PushSettings } from "./PushSettings";
+import {mailText} from './mail-i18n';
 import { useBusiness } from "./BusinessContext";
 import { businessText } from "./business-i18n";
 import type { OrderCommerce } from "./business-types";
@@ -35,6 +36,8 @@ const DigitalAdmin = lazy(() =>
   import("./DigitalPanels").then((m) => ({ default: m.DigitalAdmin })),
 );
 const FinancePanel = lazy(() => import("./FinancePanel"));
+const InboxPanel=lazy(()=>import('./MailPanels').then(m=>({default:m.InboxPanel})));
+const MailAdmin=lazy(()=>import('./MailPanels').then(m=>({default:m.MailAdmin})));
 const DigitalStudio = lazy(() =>
   import("./DigitalPanels").then((m) => ({ default: m.DigitalStudio })),
 );
@@ -106,7 +109,7 @@ type Ticket = {
   replies: { id: string; body: string; created_at: string }[];
 };
 type Remote = { id: string; sequence_hash: string; name: string };
-type Pane = "account" | "shop" | "sync" | "support" | "admin" | "gallery";
+type Pane = "account" | "shop" | "sync" | "support" | "admin" | "gallery" | 'inbox';
 const freshProduct = (): Product => ({
   id: "",
   name: "",
@@ -578,7 +581,7 @@ export function CustomerHub({
       <PushSettings locale={locale} />
       <div className="customer-tabs" role="group" aria-label={t("customer")}>
         {(
-          ["account", "shop", "gallery", "sync", "support", "admin"] as Pane[]
+          ["account", "shop", "gallery", "sync", "support", "inbox", "admin"] as Pane[]
         ).map((p) => (
           <button
             key={p}
@@ -589,7 +592,7 @@ export function CustomerHub({
               setError("");
             }}
           >
-            {p === "gallery" ? galleryText(locale, "title") : t(p)}
+            {p === 'inbox'?mailText(locale,'title'):p === "gallery" ? galleryText(locale, "title") : t(p)}
           </button>
         ))}
       </div>
@@ -649,6 +652,7 @@ export function CustomerHub({
             />
           </Suspense>
         )}
+        {pane==='inbox'&&connected&&<Suspense fallback={<p role="status">…</p>}><InboxPanel key={locale+api.session?.token} locale={locale}/></Suspense>}
         {pane === "account" && (
           <div className="customer-grid">
             {giftClaim && (
@@ -1597,6 +1601,7 @@ export function CustomerHub({
                   </Suspense>
                 )}
                 {can("finance") && <Suspense fallback={<p role="status">…</p>}><FinancePanel locale={locale} token={adminToken}/></Suspense>}
+                {can('messages')&&<Suspense fallback={<p role="status">…</p>}><MailAdmin key={locale+adminToken} locale={locale} token={adminToken}/></Suspense>}
                 {can("access") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <PartnerAdmin locale={locale} token={adminToken} />
