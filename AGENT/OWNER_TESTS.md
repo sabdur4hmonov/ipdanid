@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-21 — Fondagi ovoz asosi (hozir qo‘lda sinash shart emas)
+
+Androidning oflayn ovoz xizmati va qulf ekranidagi boshqaruv asosi avtomatik sinaldi:18ta JS va3ta Java testi o‘tdi, Android kodi oflayn kompilyatsiyadan o‘tdi. Tugma va foydalanuvchi oqimiga ulanishi hali davom etmoqda; eski4200 yoki rasmlar uchun4210sahifasida bu yangi tugmani izlamang. Ovozning o‘zi qadamni bajarildi deb belgilamaydi. Tayyor bo‘lgach yangi APK va aniq o‘zbekcha sinov qadamlari beriladi. Telefon/o‘zingizning ovoz yozuvingizni kutib ish to‘xtamaydi.
+
 ## 2026-10-21 — Bitta namunaviy rasm bilan hozir sinash
 
 1. **http://127.0.0.1:4210/photo-test/** ni oching. Asl namuna, tayyorlangan surat va ipli natijani yonma-yon ko‘ring; uchala shaklning kompyuter/telefon ko‘rinishi bor.
