@@ -23,6 +23,7 @@ import { CommissionStore } from "./commission-store.ts";
 import { FinanceStore } from "./finance-store.ts";
 import { emailAdapter } from "./email-adapter.ts";
 import { TransactionalOutbox } from "./transactional-outbox.ts";
+import {AnalyticsStore} from './analytics-store.ts';
 import type {Locale} from "../src/core/types.ts";
 import { claimOrigin } from "../src/kit-claim-link.ts";
 const production = process.env.NODE_ENV === "production";
@@ -52,6 +53,7 @@ const regions = new RegionsStore(store);
 const journeys = new JourneyStore(store);
 const commissions = new CommissionStore(store);
 const outbox = new TransactionalOutbox(store,pepper,transactionalAdapter);
+const analytics=new AnalyticsStore(store);
 const mailTimer=transactionalAdapter.mode!=='disabled'?setInterval(()=>{void outbox.drain().catch(()=>{});},2000).unref():undefined;
 const giftLinkOrigin = (() => {
   const value =
@@ -347,6 +349,7 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if(path==='/api/admin/analytics'&&req.method==='GET'){send(200,analytics.report());return;}
       if(path === '/api/admin/mail' && req.method === 'GET'){send(200,outbox.admin());return;}
       const mailRetry=path.match(/^\/api\/admin\/mail\/([a-f0-9-]{36})\/retry$/);
       if(mailRetry && req.method === 'POST'){send(200,outbox.retry(mailRetry[1],Date.now(),actor));return;}
@@ -618,6 +621,10 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if(path==='/api/analytics/preferences'&&['GET','POST'].includes(req.method??'')){send(200,req.method==='GET'?analytics.preferences(user):analytics.save(user,body));return;}
+    if(path==='/api/analytics/events'&&req.method==='POST'){send(201,analytics.record(user,body));return;}
+    if(path==='/api/analytics/export'&&req.method==='GET'){send(200,analytics.export(user));return;}
+    if(path==='/api/analytics/erase'&&req.method==='POST'){send(200,analytics.erase(user,body));return;}
     if(path === '/api/inbox/preferences' && ['GET','POST'].includes(req.method??'')){send(200,req.method==='GET'?outbox.preferences(user):outbox.savePreferences(user,body));return;}
     if(path === '/api/inbox' && req.method === 'GET'){send(200,outbox.inbox(user,(url.searchParams.get('locale')??'uz') as Locale));return;}
     const inboxRead=path.match(/^\/api\/inbox\/([a-f0-9-]{36})\/read$/);
@@ -960,6 +967,7 @@ const cleanup = setInterval(() => {
   offers.prune();
   partners.prune();
   outbox.prune();
+  analytics.prune();
 }, 60_000);
 cleanup.unref();
 const shutdown=()=>{

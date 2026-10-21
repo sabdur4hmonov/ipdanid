@@ -364,3 +364,7 @@ Xabarlar navbati alohida baza va soxta xizmat bilan avtomatik sinaldi; haqiqiy e
 ## 2026-10-21 — Phase15 Xabarlar tayyor (hozir qo‘lda sinash shart emas)
 
 Desktop va mobil oqimlar avtomatik sinaldi. Keyingi yakuniy Phase15 manzilida Menyu → Hisob/Boshqaruv → hisobga kirish → Xabarlar. Email bilan ro‘yxatdan o‘tganda rozilik va tilni tanlab saqlash mumkin; o‘chirib saqlansa keyingi xabar ilovada qoladi. O‘qildi belgisi va tanlov qayta ochilganda saqlanadi. Boshqaruv → Xabar yetkazilishi: “Xizmat qabul qildi” hali “Pochta serveri qabul qildi” degani emas. Xavfsiz qayta urinish qabul qilingan xatni yangidan yubormaydi; faqat holatni tekshiradi. Sinovda haqiqiy email yuborilmasligi yozilgan. Kirishdan chiqish yoki xodimni almashtirish eski shaxsiy javobni qaytarmaydi. 12 skrinshot: output/phase15/messages/report.html. Haqiqiy ulanish keyin [TRANSACTIONAL_MESSAGES_UZ.md](../docs/TRANSACTIONAL_MESSAGES_UZ.md) bo‘yicha; hozir kalit yoki qo‘lda sinov kutilmaydi. Eski4194–4200sahifalarini o‘zgartirmang.
+
+## 2026-10-21 — Phase15 ixtiyoriy statistika asosi (hozir sinash shart emas)
+
+Rozilik, faqat o‘z hisobidan eksport, o‘chirish va eski so‘rovning qayta yozilmasligi alohida bazalarda avtomatik sinaldi. Oddiy ilovadagi boshqaruv ekranlari keyingi checkpointda ulanadi; hozir sukut bo‘yicha yig‘ish o‘chiq. Jismoniy tayyor asar deb avtomatik xulosa qilinmaydi. [ANALYTICS_UZ.md](../docs/ANALYTICS_UZ.md) ma’lumot chegaralarini tushuntiradi. Eski4194–4200sahifalarini bu sinov uchun ishlatmang; qo‘lda tekshirish kutilmaydi.
