@@ -151,6 +151,7 @@ import { PRODUCT_NAME } from "./config";
 import { CustomerHub } from "./CustomerHub";
 import { customerText } from "./customer-i18n";
 import { guideText } from "./guide-i18n";
+import {recordManualMilestone} from './analytics-client';
 import { AssemblyNavigator } from "./AssemblyNavigator";
 import {
   readOptimizerRecovery,
@@ -1677,6 +1678,7 @@ export function useAppController(initialView: View = "create") {
           : p,
       ),
     );
+    recordManualMilestone(project.instruction,{...project.progress,confirmed:current,revision:project.progress.revision+1});
     if (current < steps.length) setCurrent(current + 1);
   }
   const jump = (v: number) => {

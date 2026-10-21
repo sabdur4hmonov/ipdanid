@@ -1,4 +1,5 @@
 import { AssemblyFocus } from "../AssemblyFocus";
+import {recordManualMilestone} from '../analytics-client';
 import { lazy, Suspense } from "react";
 const SequenceAnimation = lazy(() => import("../SequenceAnimation"));
 import type { AppScreenContext } from "../useAppController";
@@ -354,6 +355,7 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
             disabled={confirmedUndo === null}
             onClick={() => {
               if (confirmedUndo !== null) {
+                recordManualMilestone(project.instruction,{...project.progress,confirmed:confirmedUndo,revision:project.progress.revision+1},true);
                 setProjects((ps) =>
                   ps.map((p) =>
                     p.id === project.id

@@ -212,3 +212,59 @@ it("private export and terminal account erasure cannot leak or resurrect another
   expect(x.s.orders(x.user)).toHaveLength(0);
   expect(x.s.balance(x.user)).toBe(0);
 });
+it("failed erasure and failed milestone insertion roll back the consent and latest summary atomically", () => {
+  const x = setup();
+  x.a.save(x.user, { revision: 0, enabled: true }, now);
+  x.a.record(x.user, event(), now);
+  x.s.db.exec(
+    "CREATE TRIGGER reject_metrics_choice BEFORE UPDATE ON analytics_preferences BEGIN SELECT RAISE(ABORT,'injected consent failure'); END;",
+  );
+  expect(() =>
+    x.a.erase(x.user, { revision: 1, erase: true }, now + 1),
+  ).toThrow(/injected/);
+  expect(x.a.preferences(x.user)).toMatchObject({ enabled: true, revision: 1 });
+  expect(x.a.export(x.user).events).toHaveLength(1);
+  x.s.db.exec("DROP TRIGGER reject_metrics_choice");
+  const code = x.s.issueCode("dev-circle", 1, Date.now() + 60000, "owner");
+  x.s.redeemCode(x.user, code.code);
+  const sequenceHash = "e".repeat(64);
+  x.s.unlockBuild(
+    x.user,
+    sequenceHash,
+    crypto.randomUUID(),
+    crypto.randomUUID(),
+  );
+  x.s.db.exec(
+    "CREATE TRIGGER reject_metric BEFORE INSERT ON analytics_events BEGIN SELECT RAISE(ABORT,'injected event failure'); END;",
+  );
+  expect(() =>
+    x.a.record(
+      x.user,
+      {
+        kind: "assembly-confirmed",
+        requestKey: randomUUID(),
+        consentRevision: 1,
+        sequenceHash,
+        revision: 1,
+        confirmed: 3000,
+        total: 3000,
+      },
+      now + 2,
+    ),
+  ).toThrow(/injected/);
+  expect(x.a.report(now + 2).assembly.guidesCompleted).toBe(0);
+  expect(x.a.export(x.user).events).toHaveLength(1);
+});
+it("the global retained-event cap refuses only telemetry without mutating orders, balance or progress", () => {
+  const x = setup();
+  x.a.save(x.user, { revision: 0, enabled: true }, now);
+  x.s.db
+    .prepare(
+      "WITH RECURSIVE counts(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM counts WHERE n<50000) INSERT INTO analytics_events SELECT 'quota-'||n,?,'quota-'||n,'hash','preview-ready','{}',? FROM counts",
+    )
+    .run(x.other, now);
+  expect(() => x.a.record(x.user, event(), now)).toThrow(/limit/);
+  expect(x.a.export(x.user).events).toHaveLength(0);
+  expect(x.s.orders(x.user)).toHaveLength(0);
+  expect(x.s.balance(x.user)).toBe(0);
+});

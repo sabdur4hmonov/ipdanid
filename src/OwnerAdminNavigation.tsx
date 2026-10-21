@@ -8,6 +8,7 @@ import { journeyText } from "./journey-i18n";
 import { commissionText } from "./commission-i18n";
 import { financeText } from "./finance-i18n";
 import {mailText} from './mail-i18n';
+import {analyticsText} from './analytics-i18n';
 const words = {
   uz: [
     "Kit kodlari",
@@ -73,6 +74,7 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
       ))}
       <button className="outline" onClick={()=>document.getElementById("admin-finance")?.scrollIntoView({behavior:"smooth",block:"start"})}>{financeText(locale,"title")}</button>
       <button className="outline" onClick={()=>document.getElementById('admin-mail')?.scrollIntoView({behavior:'smooth',block:'start'})}>{mailText(locale,'admin')}</button>
+      <button className="outline" onClick={()=>document.getElementById('admin-analytics')?.scrollIntoView({behavior:'smooth',block:'start'})}>{analyticsText(locale,'admin')}</button>
       <button className="outline" onClick={()=>document.getElementById("admin-commissions")?.scrollIntoView({behavior:"smooth",block:"start"})}>{commissionText(locale,"orders")}</button>
       <button
         className="outline"

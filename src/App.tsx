@@ -7,6 +7,7 @@ import { standardText } from "./standard-kit-i18n";
 import { takeKitClaim, kitClaimCode } from "./kit-claim-link";
 import { giftClaimCode, takeGiftClaim } from "./gift-claim-link";
 import { startDigitalPendingLifecycle } from "./digital-pending";
+import {startAnalyticsRuntime} from './analytics-client';
 import { standardKitRevision } from "./standard-kit-settings";
 import type { StandardKitConfig } from "./core/standard-kit";
 const StandardKitStudio = lazy(() =>
@@ -87,6 +88,7 @@ export default function App() {
     view,
   } = context;
   useEffect(() => startPushRuntime(locale), [locale]);
+  useEffect(()=>startAnalyticsRuntime(),[]);
   useEffect(() => {
     startDigitalPendingLifecycle();
   }, []);

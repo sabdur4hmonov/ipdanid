@@ -38,6 +38,8 @@ const DigitalAdmin = lazy(() =>
 const FinancePanel = lazy(() => import("./FinancePanel"));
 const InboxPanel=lazy(()=>import('./MailPanels').then(m=>({default:m.InboxPanel})));
 const MailAdmin=lazy(()=>import('./MailPanels').then(m=>({default:m.MailAdmin})));
+const AnalyticsSettings=lazy(()=>import('./AnalyticsPanels').then(m=>({default:m.AnalyticsSettings})));
+const AnalyticsAdmin=lazy(()=>import('./AnalyticsPanels').then(m=>({default:m.AnalyticsAdmin})));
 const DigitalStudio = lazy(() =>
   import("./DigitalPanels").then((m) => ({ default: m.DigitalStudio })),
 );
@@ -655,6 +657,7 @@ export function CustomerHub({
         {pane==='inbox'&&connected&&<Suspense fallback={<p role="status">…</p>}><InboxPanel key={locale+api.session?.token} locale={locale}/></Suspense>}
         {pane === "account" && (
           <div className="customer-grid">
+            {connected&&<Suspense fallback={<p role="status">…</p>}><AnalyticsSettings key={locale+api.session?.token} locale={locale}/></Suspense>}
             {giftClaim && (
               <Suspense fallback={<p role="status">…</p>}>
                 <GiftClaimPanel
@@ -1602,6 +1605,7 @@ export function CustomerHub({
                 )}
                 {can("finance") && <Suspense fallback={<p role="status">…</p>}><FinancePanel locale={locale} token={adminToken}/></Suspense>}
                 {can('messages')&&<Suspense fallback={<p role="status">…</p>}><MailAdmin key={locale+adminToken} locale={locale} token={adminToken}/></Suspense>}
+                {can('audit')&&<Suspense fallback={<p role="status">…</p>}><AnalyticsAdmin key={locale+adminToken} locale={locale} token={adminToken}/></Suspense>}
                 {can("access") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <PartnerAdmin locale={locale} token={adminToken} />
