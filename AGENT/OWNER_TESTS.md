@@ -405,3 +405,15 @@ Desktop/mobil hamda oflayn yig‘ish avtomatik sinaldi. Yakuniy yangi Phase15 ma
 
 ## 2026-10-22 — Talab aniqlashtirildi
 4211 hali avtomatik yuz joylashuvini ko‘rsatadi, yangi erkin moslash emas. Keyingi sinov: surat → shakl → oq fonda faqat fon qirqimi → erkin joylashuv → ipli natija → ovozli yig‘ish va “Dam olish”dan aniq qadamga qaytish. Hozir sizdan qo‘lda sinov talab qilinmaydi.
+
+## 2026-10-22 — Erkin surat moslash tayyor
+Ilova: http://127.0.0.1:4212/ . Namuna va tekshiruvlar: http://127.0.0.1:4212/free-photo/ . Sinov kit kodi: output/phase15/free-photo/manual-testing.txt (3ta yig‘ish; eski kodlar o‘zgarmagan).
+1. “Galereyadan tanlash” bilan suratni yuklang. Shakllar surat tagida chiqadi.
+2. Doira/Kvadrat/Yurakni tanlang. Faqat fon qirqiladi; yuz, soch, yelka va odamlar orasidagi joylashuv o‘zicha qoladi.
+3. Surib joylashtiring, ikki barmoq/g‘ildirak/slayder bilan kattalashtiring, “Burish” yoki “Qaytarish”dan foydalaning.
+4. Qirqim yoqmasa “Fonni qayta qirqish”; kerak bo‘lsa “Qirqimni tuzatish” → “O‘chirish” / “Qismini qaytarish”. Bu tahrir butun suratda ishlaydi. “Tuzatish tugadi”ni bosing.
+5. “Yaratish” → haqiqiy ipli natija. “Qayta moslash” oldingi joylashuvni saqlaydi.
+6. “Yig‘ishni boshlash”, kit kodi bilan oching. Ovoz va sektorlar bo‘yicha yuring. “Dam olish”ni bosib “qadam saqlandi” xabarini kuting. Qayta ochilganda aynan o‘sha qadam turadi, ovoz o‘zidan boshlanmaydi. Bajarilgan ipni alohida tasdiqlang.
+Avtomatik sinovlar bajarildi, hozir sizdan majburiy sinov talab qilinmaydi. Ipli tiniqlik va haqiqiy taxta sifati hali alohida qabul qilinadi.
+
+Sayt → app, hisoblar, dostavka/to‘lov va Instagram sinov aksiyasi rejasi: docs/WEB_FIRST_UZ.md. Click/Payme hozir sinov; haqiqiy pul/xabar yuborilmadi.

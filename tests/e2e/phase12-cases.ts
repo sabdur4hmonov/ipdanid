@@ -103,3 +103,29 @@ export async function png(page: Page, id: string) {
     .getByTestId(id)
     .evaluate((c: HTMLCanvasElement) => c.toDataURL().split(",")[1]);
 }
+
+// Observe the actual worker input, not the colour placement preview. Test only.
+export async function captureStudioTarget(page: Page) {
+  await page.addInitScript(() => {
+    const original = Worker.prototype.postMessage;
+    Worker.prototype.postMessage = function (data: any, ...args: any[]) {
+      if (data?.strategy === "classic3" && data.pixels) {
+        const c = document.createElement("canvas");
+        c.width = c.height = data.resolution;
+        const ctx = c.getContext("2d")!,
+          d = ctx.createImageData(c.width, c.height);
+        for (let k = 0; k < data.pixels.length / 3; k++) {
+          for (let ch = 0; ch < 3; ch++)
+            d.data[k * 4 + ch] = data.pixels[k * 3 + ch];
+          d.data[k * 4 + 3] = 255;
+        }
+        ctx.putImageData(d, 0, 0);
+        (window as any).__studioTarget = c.toDataURL().split(",")[1];
+      }
+      return original.apply(this, [data, ...args] as any);
+    };
+  });
+}
+export async function studioTargetPng(page: Page): Promise<string> {
+  return page.evaluate(() => (window as any).__studioTarget);
+}

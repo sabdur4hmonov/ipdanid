@@ -11,6 +11,9 @@ const native = registerPlugin<{
 }>("IpRasmAwake");
 const words = {
   uz: {
+    rest: "Dam olish",
+    resume: "Davom etish",
+    restSaved: "Dam olish uchun qadam saqlandi",
     previous: "Oldingi qadam",
     next: "Keyingi qadam",
     confirm: "Qadamni tasdiqlash",
@@ -21,6 +24,9 @@ const words = {
     hours: "soat",
   },
   ru: {
+    rest: "Отдохнуть",
+    resume: "Продолжить",
+    restSaved: "Шаг сохранён для перерыва",
     previous: "Предыдущий шаг",
     next: "Следующий шаг",
     confirm: "Подтвердить шаг",
@@ -31,6 +37,9 @@ const words = {
     hours: "ч",
   },
   en: {
+    rest: "Take a break",
+    resume: "Resume",
+    restSaved: "Step saved for your break",
     previous: "Previous step",
     next: "Next step",
     confirm: "Confirm step",
@@ -51,6 +60,10 @@ export function AssemblyFocus({
   saveState,
   onJump,
   onConfirm,
+  resting,
+  restSaveState,
+  onRest,
+  onResume,
 }: {
   instruction: Instruction;
   current: number;
@@ -61,6 +74,10 @@ export function AssemblyFocus({
   saveState: "saved" | "saving" | "failed";
   onJump: (n: number) => void;
   onConfirm: () => void;
+  resting: boolean;
+  restSaveState: "saving" | "saved" | "failed";
+  onRest: () => Promise<void>;
+  onResume: () => void;
 }) {
   const [awake, setAwake] = useState<"on" | "off" | "unavailable">("off");
   const t = (k: keyof typeof words.en) =>
@@ -80,7 +97,8 @@ export function AssemblyFocus({
         if (live) setAwake(s);
       },
     );
-    const update = () => void lease.set(document.visibilityState === "visible");
+    const update = () =>
+      void lease.set(!resting && document.visibilityState === "visible");
     update();
     document.addEventListener("visibilitychange", update);
     return () => {
@@ -88,7 +106,7 @@ export function AssemblyFocus({
       document.removeEventListener("visibilitychange", update);
       void lease.set(false);
     };
-  }, []);
+  }, [resting]);
   const steps = flatten(instruction),
     step = steps[current - 1],
     hours = Math.max(0, ((steps.length - confirmed) * pace) / 3600),
@@ -151,6 +169,30 @@ export function AssemblyFocus({
           ›
         </button>
       </div>
+      <button
+        data-testid="assembly-rest"
+        className="outline"
+        disabled={disabled || (resting && restSaveState === "saving")}
+        onClick={() =>
+          resting && restSaveState === "saved" ? onResume() : void onRest()
+        }
+      >
+        {t(resting && restSaveState === "saved" ? "resume" : "rest")}
+      </button>
+      {resting && (
+        <p
+          role="status"
+          data-testid="assembly-rest-status"
+          data-state={restSaveState}
+        >
+          {restSaveState === "saved"
+            ? `${t("restSaved")}: ${current} · ${pinLabel(instruction.profile, step.from)} → ${pinLabel(instruction.profile, step.to)}`
+            : guideText(
+                locale,
+                restSaveState === "failed" ? "saveFailed" : "saving",
+              )}
+        </p>
+      )}
       <small data-testid="assembly-save-state" data-state={saveState}>
         {guideText(locale, saveState === "failed" ? "saveFailed" : saveState)}
       </small>

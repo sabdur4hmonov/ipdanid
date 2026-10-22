@@ -94,8 +94,8 @@ test("real photo preview unlock and manual-only assembly milestones obey opt-in,
     .getByRole("navigation", { name: "Main", exact: true })
     .getByRole("button", { name: "Create", exact: true })
     .click();
-  await page.getByRole("button", { name: "Square", exact: true }).click();
   await gallery(page, photoCases[0]);
+  await page.getByRole("button", { name: "Square", exact: true }).click();
   await page
     .getByTestId("customer-flow")
     .getByRole("button", { name: "Create", exact: true })
@@ -111,7 +111,7 @@ test("real photo preview unlock and manual-only assembly milestones obey opt-in,
       return data.events.length;
     })
     .toBe(2);
-  expect(records.map((r) => r.shape)).toEqual(["square", "square"]);
+  expect(records.map((r) => r.shape)).toEqual(["circle", "square"]);
   await page
     .getByRole("button", { name: "Start assembling", exact: true })
     .click();

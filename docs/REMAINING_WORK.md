@@ -4,6 +4,10 @@ Written before Phase15 implementation. Sources: AGENT/MASTER_PLAN.md; all curren
 
 Status: **IMPLEMENTING. C01–C18 DONE; C19–C26 OPEN. Opt-in native assembly audio/UI/durable position/default pause accepted, ASSEMBLY_AUDIO_CHECKPOINT.md. Latest2026-10-21 owner request authorizes normal feature-only milestone push and final PR; no main/force/reset/merge. Full release candidate C26 remains OPEN.** Every CODE row stays open until implementation and actual tests exist.
 
+## 2026-10-22 owner priority override
+
+Website first; preserve one account/API/database for later app login and data continuity. Finish new free-photo composition, then bounded actual-string likeness review, promote C21 sync completeness and customer checkout/delivery/payment/follower-trial closure before experimental native C19b/C20. Detailed existing-vs-open audit and acceptance: WEB_FIRST_LAUNCH_PLAN.md. Source-photo backup and full cross-client paused-position migration are still CODE, not already complete. Existing commerce/auth/promo code is reused. No real Instagram messages or live payment launch is authorized by this plan.
+
 ## CODE — ordered implementation ledger
 
 | ID | Remaining deliverable / source IDs | Acceptance and intended milestone | Status |

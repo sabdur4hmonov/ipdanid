@@ -42,6 +42,10 @@ type ScreenContext = Pick<
   | "pace"
   | "pan"
   | "paper"
+  | "restAssembly"
+  | "resting"
+  | "restSaveState"
+  | "resumeAssembly"
   | "pausePlayback"
   | "startPlayback"
   | "pdf"
@@ -116,6 +120,10 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
     pace,
     pan,
     paper,
+    restAssembly,
+    resting,
+    restSaveState,
+    resumeAssembly,
     pausePlayback,
     startPlayback,
     pdf,
@@ -200,6 +208,10 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
         saveState={localSaveState}
         onJump={jump}
         onConfirm={confirmCurrent}
+        resting={resting}
+        restSaveState={restSaveState}
+        onRest={restAssembly}
+        onResume={resumeAssembly}
       />
       <div className="craft-grid">
         <section className="card craft-preview">

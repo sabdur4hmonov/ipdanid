@@ -1,9 +1,8 @@
-import {
-  frameProduct,
-  prepareProductCanvas,
-  productSource,
-  type ProductKind,
-} from "./core/product-framing";
+import { frameFreePhoto, freePhotoCanvas } from "./core/free-photo-framing";
+import { whiteBackground } from "./person-background";
+import { paintPersonMask, type PersonMask } from "./core/person-mask";
+import { referenceToneCanvas } from "./core/portrait-framing";
+import { productSource, type ProductKind } from "./core/product-framing";
 import { productText } from "./product-i18n";
 import { withPortraitCaption, captionGeometry } from "./core/portrait-caption";
 import { leastSquaresProfile } from "./core/classic-least-squares";
@@ -16,23 +15,15 @@ import {
   useRef,
   type PointerEvent,
 } from "react";
-import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
+import type { Instruction, Locale, Shape } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
 import type { KitPreparation } from "./core/standard-preparation";
-import {
-  frameCustomerHeads,
-  prepareCustomerCanvas,
-  turnPoint,
-} from "./core/customer-framing";
+import { turnPoint } from "./core/customer-framing";
 import {
   defaultHeadAdjustment,
   type HeadAdjustment,
 } from "./core/portrait-framing";
-import {
-  unturnBox,
-  unturnMask,
-  type QuarterTurn,
-} from "./core/photo-orientation";
+import { type QuarterTurn } from "./core/photo-orientation";
 import { loadPhoto } from "./core/image";
 import { hash } from "./core/engine";
 import { preparePersonPhoto, type PhotoAnalysis } from "./photo-prepare";
@@ -85,7 +76,6 @@ export function CustomerStudio({
   const [step, setStep] = useState<"start" | "adjust" | "result">("start"),
     [shape, setShape] = useState<Shape>("circle"),
     [kind, setKind] = useState<ProductKind>("people"),
-    [bounds, setBounds] = useState<RegionBox>(),
     [lettering, setLettering] = useState("SALOM"),
     [caption, setCaption] = useState(""),
     [captionRaster, setCaptionRaster] = useState<{
@@ -94,13 +84,15 @@ export function CustomerStudio({
     }>(),
     [captionInvalid, setCaptionInvalid] = useState(false),
     [source, setSource] = useState<HTMLCanvasElement>(),
-    [cleaned, setCleaned] = useState<HTMLCanvasElement>(),
     [analysis, setAnalysis] = useState<PhotoAnalysis>(),
     [sourceHash, setSourceHash] = useState(""),
     [config, setConfig] = useState(structuredClone(DEFAULT_STANDARD_KIT)),
     [adjustments, setAdjustments] = useState<HeadAdjustment[]>([]),
     [rotation, setRotation] = useState<QuarterTurn>(0),
-    [shoulders, setShoulders] = useState(false),
+    [maskEdit, setMaskEdit] = useState(false),
+    [brush, setBrush] = useState<"erase" | "restore">("erase"),
+    [maskWarning, setMaskWarning] = useState(false),
+    [maskHistory, setMaskHistory] = useState<PersonMask[]>([]),
     [before, setBefore] = useState(false),
     [selected, setSelected] = useState(0),
     [preparing, setPreparing] = useState(false),
@@ -131,27 +123,20 @@ export function CustomerStudio({
       ),
     [config, shape],
   );
-  const faces = analysis?.faces.map((f) => f.face) ?? [];
+  const maskCanvas = useRef<HTMLCanvasElement>(null);
   const baseFraming = useMemo(
     () =>
-      source && analysis && (kind !== "people" || analysis.faces.length)
-        ? frameProduct(
+      source && analysis
+        ? frameFreePhoto(
             kind,
             analysis.faces.map((f) => f.face),
             shape,
             source.width / source.height,
-            shoulders,
-            (kind === "people" ? analysis.faces : [0]).map(
-              (_, j) => adjustments[j] ?? defaultHeadAdjustment(),
-            ),
+            adjustments[0] ?? defaultHeadAdjustment(),
             rotation,
-            bounds,
-            kind === "people" &&
-              shape === "heart" &&
-              analysis.faces.length === 1,
           )
         : undefined,
-    [source, analysis, shape, shoulders, adjustments, rotation, kind, bounds],
+    [source, analysis, shape, adjustments, rotation, kind],
   );
   const framing = useMemo(() => {
     if (!baseFraming || kind !== "people") return baseFraming;
@@ -184,30 +169,53 @@ export function CustomerStudio({
       live = false;
     };
   }, [captionKey]);
+  const cutout = useMemo(
+    () =>
+      source && analysis ? whiteBackground(source, analysis.mask) : undefined,
+    [source, analysis],
+  );
+  const tonal = useMemo(
+    () =>
+      source && analysis && !maskEdit
+        ? referenceToneCanvas(source, analysis.mask)
+        : undefined,
+    [source, analysis, maskEdit],
+  );
   const prepared = useMemo(
     () =>
-      source &&
-      analysis &&
+      tonal &&
       framing &&
       (!framing.caption || captionRaster?.key === captionKey)
-        ? prepareProductCanvas(
-            cleaned ?? source,
-            analysis.mask,
+        ? freePhotoCanvas(tonal, framing, shape, captionRaster?.pixels)
+        : undefined,
+    [tonal, framing, shape, captionRaster, captionKey],
+  );
+  const display = useMemo(
+    () =>
+      framing && source && cutout
+        ? freePhotoCanvas(
+            before ? source : cutout,
             framing,
             shape,
-            false,
             captionRaster?.pixels,
           )
         : undefined,
-    [source, cleaned, analysis, framing, shape, captionRaster, captionKey],
+    [framing, source, cutout, before, shape, captionRaster],
   );
-  const original = useMemo(
-    () =>
-      before && source && framing
-        ? prepareProductCanvas(source, undefined, framing, shape, true)
-        : undefined,
-    [before, source, framing, shape],
-  );
+  useEffect(() => {
+    const c = maskCanvas.current;
+    if (!maskEdit || !c || !source || !cutout) return;
+    const scale = Math.min(1, 600 / Math.max(source.width, source.height));
+    c.width = Math.round(source.width * scale);
+    c.height = Math.round(source.height * scale);
+    c.getContext("2d")!.drawImage(
+      before ? source : cutout,
+      0,
+      0,
+      c.width,
+      c.height,
+    );
+  }, [source, cutout, maskEdit, before]);
   const allowed = useBuildAccess(result ? [result] : []);
   useEffect(() => {
     let live = true;
@@ -243,7 +251,7 @@ export function CustomerStudio({
     const ctx = c.getContext("2d")!;
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, 500, 500);
-    if (prepared) ctx.drawImage(original?.canvas ?? prepared.canvas, 0, 0);
+    if (display) ctx.drawImage(display.canvas, 0, 0);
     else {
       ctx.save();
       ctx.beginPath();
@@ -268,7 +276,7 @@ export function CustomerStudio({
       );
       ctx.restore();
     }
-  }, [source, prepared, original, step, shape]);
+  }, [source, display, step, shape]);
   useEffect(() => {
     if (result && actual.current) {
       actual.current.width = actual.current.height = 1000;
@@ -311,12 +319,12 @@ export function CustomerStudio({
     generation.current++;
     setResult(undefined);
     setSource(undefined);
-    setCleaned(undefined);
     setAnalysis(undefined);
     setSourceHash("");
     setAdjustments([]);
     setRotation(0);
-    setShoulders(false);
+    setMaskEdit(false);
+    setMaskHistory([]);
     setBefore(false);
     setSelected(0);
     setLines(DEFAULT_CUSTOMER_LINES);
@@ -330,7 +338,7 @@ export function CustomerStudio({
         image.close();
         return;
       }
-      let c = document.createElement("canvas");
+      const c = document.createElement("canvas");
       const scale = Math.min(1, 1536 / Math.max(image.width, image.height));
       c.width = Math.round(image.width * scale);
       c.height = Math.round(image.height * scale);
@@ -340,41 +348,8 @@ export function CustomerStudio({
       telemetry({ kind: "photo-selected", shape });
       const abort = new AbortController();
       controller.current = abort;
-      let a: PhotoAnalysis;
-      if (kind === "people") a = await preparePersonPhoto(c, abort.signal);
-      else {
-        const prepared = productSource(c);
-        setCleaned(prepared.canvas);
-        setBounds(prepared.bounds);
-        a = {
-          faces: [],
-          mask: { width: 1, height: 1, values: new Float32Array([1]) },
-          faceUnavailable: false,
-          cleanupUnavailable: false,
-        } as PhotoAnalysis;
-      }
+      const a = await analyseCutout(c, abort.signal);
       if (id !== upload.current) return;
-      if (a.analysisTurn) {
-        const r = a.analysisTurn,
-          rotated = document.createElement("canvas");
-        rotated.width = r % 2 ? c.height : c.width;
-        rotated.height = r % 2 ? c.width : c.height;
-        const rc = rotated.getContext("2d")!;
-        rc.translate(rotated.width / 2, rotated.height / 2);
-        rc.rotate((r * Math.PI) / 2);
-        rc.drawImage(c, -c.width / 2, -c.height / 2);
-        c = rotated;
-        const inverse = ((4 - r) % 4) as QuarterTurn;
-        a = {
-          ...a,
-          mask: unturnMask(a.mask, inverse),
-          faces: a.faces.map((f) => ({
-            ...f,
-            face: unturnBox(f.face, inverse),
-          })),
-          analysisTurn: 0,
-        };
-      }
       const digest = await hash(
         new Uint8Array(
           c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data,
@@ -383,13 +358,6 @@ export function CustomerStudio({
       if (id !== upload.current) return;
       setSource(c);
       setSourceHash(digest);
-      if (
-        kind === "people" &&
-        (!a.faces.length || a.faces.length > (shape === "heart" ? 2 : 3))
-      ) {
-        setError("noFace");
-        return;
-      }
       setAnalysis(a);
     } catch {
       if (id === upload.current) setError("error");
@@ -397,14 +365,85 @@ export function CustomerStudio({
       if (id === upload.current) setPreparing(false);
     }
   }
-  function change(j: number, fn: (a: HeadAdjustment) => HeadAdjustment) {
-    setAdjustments((old) =>
-      (kind === "people" ? faces : [0]).map((_, k) =>
-        k === j
-          ? fn(old[k] ?? defaultHeadAdjustment())
-          : (old[k] ?? defaultHeadAdjustment()),
-      ),
+  async function analyseCutout(
+    c: HTMLCanvasElement,
+    signal: AbortSignal,
+  ): Promise<PhotoAnalysis> {
+    setMaskWarning(false);
+    if (kind === "people") {
+      try {
+        return await preparePersonPhoto(c, signal);
+      } catch {
+        if (signal.aborted) throw Error("cancelled");
+      }
+    }
+    // Conservative colour-border fallback is explicitly disclosed, editable,
+    // and never presented as phone-quality object segmentation.
+    const small = document.createElement("canvas"),
+      scale = Math.min(1, 512 / Math.max(c.width, c.height));
+    small.width = Math.round(c.width * scale);
+    small.height = Math.round(c.height * scale);
+    small.getContext("2d")!.drawImage(c, 0, 0, small.width, small.height);
+    let mask: PersonMask;
+    try {
+      mask = productSource(small).mask;
+    } catch {
+      mask = {
+        width: small.width,
+        height: small.height,
+        values: new Float32Array(small.width * small.height).fill(1),
+      };
+    }
+    setMaskWarning(true);
+    return { faces: [], mask, faceUnavailable: true, cleanupUnavailable: true };
+  }
+  async function recut() {
+    if (!source || preparing || busy) return;
+    const id = ++upload.current,
+      abort = new AbortController();
+    controller.current?.abort();
+    controller.current = abort;
+    setPreparing(true);
+    setError("");
+    try {
+      const a = await analyseCutout(source, abort.signal);
+      if (id === upload.current) {
+        // Re-cut changes only the mask. Re-running a detector can jitter its
+        // boxes; keep the existing reviewed placement and importance regions.
+        setAnalysis((old) =>
+          old
+            ? { ...old, mask: a.mask, cleanupUnavailable: a.cleanupUnavailable }
+            : a,
+        );
+        setMaskHistory([]);
+      }
+    } catch {
+      if (id === upload.current) setError("error");
+    } finally {
+      if (id === upload.current) setPreparing(false);
+    }
+  }
+  function paintMask(e: PointerEvent<HTMLCanvasElement>) {
+    if (!analysis || preparing || busy) return;
+    if (e.type === "pointerdown") {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      setMaskHistory((old) => [...old.slice(-7), analysis.mask]);
+    } else if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+    const r = e.currentTarget.getBoundingClientRect(),
+      x = (e.clientX - r.left) / r.width,
+      y = (e.clientY - r.top) / r.height;
+    if (x < 0 || x > 1 || y < 0 || y > 1) return;
+    setAnalysis((old) =>
+      old
+        ? {
+            ...old,
+            mask: paintPersonMask(old.mask, x, y, 0.045, brush === "restore"),
+          }
+        : old,
     );
+  }
+  function change(_j: number, fn: (a: HeadAdjustment) => HeadAdjustment) {
+    setAdjustments((old) => [fn(old[0] ?? defaultHeadAdjustment())]);
   }
   const clamp = (v: number, min: number, max: number) =>
     Math.max(min, Math.min(max, v));
@@ -416,12 +455,12 @@ export function CustomerStudio({
     );
     change(selected, (a) => ({
       ...a,
-      x: clamp(a.x + d.x - 0.5, -0.3, 0.3),
-      y: clamp(a.y + d.y - 0.5, -0.3, 0.3),
+      x: clamp(a.x + d.x - 0.5, -1.5, 1.5),
+      y: clamp(a.y + d.y - 0.5, -1.5, 1.5),
     }));
   }
   function zoom(value: number) {
-    change(selected, (a) => ({ ...a, zoom: clamp(value, 0.65, 1.5) }));
+    change(selected, (a) => ({ ...a, zoom: clamp(value, 0.2, 4) }));
   }
   function point(e: { clientX: number; clientY: number }) {
     const r = surface.current!.getBoundingClientRect();
@@ -444,21 +483,6 @@ export function CustomerStudio({
     if (busy || !framing) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     const p = point(e);
-    if (!pointers.current.size) {
-      let nearest = 0,
-        distance = Infinity;
-      (framing.targetFaces ?? []).forEach((f, j) => {
-        const d = Math.hypot(
-          p.x - f.left - f.width / 2,
-          p.y - f.top - f.height / 2,
-        );
-        if (d < distance) {
-          nearest = j;
-          distance = d;
-        }
-      });
-      setSelected(nearest);
-    }
     pointers.current.set(e.pointerId, p);
     gesture.current = snapshot();
   }
@@ -472,7 +496,7 @@ export function CustomerStudio({
       if (g.distance && last.distance)
         change(selected, (a) => ({
           ...a,
-          zoom: clamp((a.zoom * g.distance) / last.distance, 0.65, 1.5),
+          zoom: clamp((a.zoom * g.distance) / last.distance, 0.2, 4),
         }));
     }
     gesture.current = g;
@@ -499,7 +523,8 @@ export function CustomerStudio({
   function reset() {
     setAdjustments([]);
     setRotation(0);
-    setShoulders(false);
+    setMaskEdit(false);
+    setMaskHistory([]);
     setBefore(false);
     setSelected(0);
   }
@@ -517,17 +542,10 @@ export function CustomerStudio({
     setFraction(0);
     setError("");
     const proof: KitPreparation = {
-      version:
-        framing.version === "reviewed-heart-framing/7"
-          ? "standard-preparation/7"
-          : framing.version === "reviewed-heart-caption-framing/8"
-            ? "standard-preparation/8"
-            : framing.caption
-              ? "standard-preparation/6"
-              : "standard-preparation/5",
+      version: "standard-preparation/9",
       sourceHash,
       sourceAspect: source.width / source.height,
-      whiteBackground: "automatic",
+      whiteBackground: maskHistory.length ? "manual" : "automatic",
       transform: framing,
     };
     w.onmessage = async ({ data }) => {
@@ -666,9 +684,7 @@ export function CustomerStudio({
                   setKind(e.target.value as ProductKind);
                   setStep("start");
                   setSource(undefined);
-                  setCleaned(undefined);
                   setAnalysis(undefined);
-                  setBounds(undefined);
                 }}
               >
                 {(
@@ -758,26 +774,6 @@ export function CustomerStudio({
               hint={false}
             />
           )}
-          <div className="shape-chips" aria-label={t("adjust")}>
-            {(["circle", "rectangle", "heart"] as const).map((s) => (
-              <button
-                key={s}
-                aria-pressed={shape === s}
-                onClick={() => setShape(s)}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  {s === "circle" ? (
-                    <circle cx="12" cy="12" r="9" />
-                  ) : s === "rectangle" ? (
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                  ) : (
-                    <path d="M12 21C-6 10 3-2 12 6C21-2 30 10 12 21Z" />
-                  )}
-                </svg>
-                {t(s)}
-              </button>
-            ))}
-          </div>
         </div>
       )}
       {step === "adjust" && (
@@ -830,31 +826,39 @@ export function CustomerStudio({
               </g>
             </svg>
           </div>
+          <div className="shape-chips" aria-label={t("chooseShape")}>
+            {(["circle", "rectangle", "heart"] as const).map((s) => (
+              <button
+                key={s}
+                aria-pressed={shape === s}
+                disabled={busy}
+                onClick={() => setShape(s)}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  {s === "circle" ? (
+                    <circle cx="12" cy="12" r="9" />
+                  ) : s === "rectangle" ? (
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                  ) : (
+                    <path d="M12 21C-6 10 3-2 12 6C21-2 30 10 12 21Z" />
+                  )}
+                </svg>
+                {t(s)}
+              </button>
+            ))}
+          </div>
           {preparing ? (
             <p role="status">{t("preparing")}</p>
           ) : (
             <>
               <p className="customer-hint">{t("hint")}</p>
-              {faces.length > 1 && (
-                <div className="person-chips">
-                  {faces.map((_, j) => (
-                    <button
-                      key={j}
-                      aria-pressed={selected === j}
-                      onClick={() => setSelected(j)}
-                    >
-                      {t("person")} {j + 1}
-                    </button>
-                  ))}
-                </div>
-              )}
               <label className="customer-zoom">
                 {t("zoom")}
                 <input
                   aria-label={t("zoom")}
                   type="range"
-                  min=".65"
-                  max="1.5"
+                  min=".2"
+                  max="4"
                   step=".01"
                   value={adjustments[selected]?.zoom ?? 1}
                   disabled={!prepared || busy}
@@ -874,15 +878,64 @@ export function CustomerStudio({
                   {t("reset")}
                 </button>
               </div>
-              <label className="customer-shoulders" hidden={kind !== "people"}>
-                <input
-                  type="checkbox"
-                  checked={shoulders}
-                  disabled={!prepared || busy}
-                  onChange={(e) => setShoulders(e.target.checked)}
-                />
-                {t("shoulders")}
-              </label>
+              <div className="customer-adjust-tools">
+                <button
+                  disabled={busy || preparing}
+                  onClick={() => void recut()}
+                >
+                  {t("recut")}
+                </button>
+                <button
+                  data-testid="edit-cutout"
+                  disabled={busy || preparing || !analysis}
+                  onClick={() => setMaskEdit(!maskEdit)}
+                >
+                  {t(maskEdit ? "maskDone" : "maskEdit")}
+                </button>
+              </div>
+              {maskWarning && <p role="status">{t("maskWarning")}</p>}
+              {maskEdit && (
+                <section aria-label={t("maskEdit")}>
+                  <p>{t("maskHint")}</p>
+                  <div className="customer-adjust-tools">
+                    <button
+                      aria-pressed={brush === "erase"}
+                      onClick={() => setBrush("erase")}
+                    >
+                      {t("erase")}
+                    </button>
+                    <button
+                      aria-pressed={brush === "restore"}
+                      onClick={() => setBrush("restore")}
+                    >
+                      {t("restore")}
+                    </button>
+                    <button
+                      disabled={!maskHistory.length}
+                      onClick={() => {
+                        const mask = maskHistory.at(-1)!;
+                        setAnalysis((a) => (a ? { ...a, mask } : a));
+                        setMaskHistory((h) => h.slice(0, -1));
+                      }}
+                    >
+                      {t("undoMask")}
+                    </button>
+                  </div>
+                  <canvas
+                    ref={maskCanvas}
+                    data-testid="cutout-editor"
+                    style={{ width: "100%", touchAction: "none" }}
+                    onPointerDown={paintMask}
+                    onPointerMove={paintMask}
+                    onPointerUp={(e) =>
+                      e.currentTarget.releasePointerCapture(e.pointerId)
+                    }
+                    onPointerCancel={(e) =>
+                      e.currentTarget.releasePointerCapture(e.pointerId)
+                    }
+                  />
+                </section>
+              )}
               {kind === "people" && (
                 <label className="customer-caption">
                   {t("caption")}
@@ -905,7 +958,7 @@ export function CustomerStudio({
           )}
           <button
             className="primary customer-main-action"
-            disabled={preparing || !prepared || !sourceHash}
+            disabled={preparing || maskEdit || !prepared || !sourceHash}
             onClick={() => {
               if (busy) {
                 generation.current++;

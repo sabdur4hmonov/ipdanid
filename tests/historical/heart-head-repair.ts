@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import UPNGModule from "@pdf-lib/upng";
-import { gallery, photoCases, png } from "./phase12-cases";
+import { gallery, photoCases, png } from "../e2e/phase12-cases";
 import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { validateInstruction } from "../../src/core/validation";
 import { referenceRaster } from "../../src/core/classic-reference";

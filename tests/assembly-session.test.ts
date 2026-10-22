@@ -1,3 +1,4 @@
+import { newerAudioPosition } from "../src/assembly-audio-resume";
 import { spokenPin } from "../src/i18n";
 import { test, expect } from "vitest";
 import { validAssemblySession } from "../src/assembly-session";
@@ -21,6 +22,28 @@ const saved = {
   current: 71,
   pace: 8,
 };
+test("explicit rest survives restart without implying any confirmed work", () => {
+  const rest = { ...saved, resting: true };
+  expect(validAssemblySession(rest, projects)).toEqual(rest);
+  expect(
+    newerAudioPosition(
+      { ...rest, version: 1 },
+      {
+        projectId: "p",
+        sequenceHash: saved.sequenceHash,
+        current: 72,
+        updatedAt: Date.now(),
+      },
+      3000,
+    ),
+  ).toBeUndefined();
+  expect(
+    validAssemblySession({ ...saved, resting: "yes" }, projects),
+  ).toBeUndefined();
+  expect(
+    validAssemblySession({ ...saved, resting: false }, projects)?.resting,
+  ).toBe(false);
+});
 test("resume cursor is bound to exact surviving guide; never changes confirmed progress", () => {
   expect(validAssemblySession(saved, projects)).toEqual(saved);
   for (const change of [

@@ -13,17 +13,25 @@ import net from "node:net";
 import { freshTestDatabase } from "./test-artifacts.mjs";
 
 assert(
-  process.argv.slice(2).every((v) => v === "--portrait-repair"),
+  process.argv
+    .slice(2)
+    .every((v) => ["--portrait-repair", "--free-photo"].includes(v)),
   "Unknown preview option",
 );
+const free = process.argv.includes("--free-photo");
 const repair = process.argv.includes("--portrait-repair");
-const reportPath = repair ? "photo-repair" : "photo-test";
-const webDir = repair
-    ? "output/phase15-portrait-repair-dist"
-    : "output/phase15-photo-trial-dist",
-  evidence = repair
-    ? "output/phase15/portrait-repair"
-    : "output/phase15/photo-trial",
+assert(!(free && repair), "One preview at a time");
+const reportPath = free ? "free-photo" : repair ? "photo-repair" : "photo-test";
+const webDir = free
+    ? "output/phase15-free-photo-dist"
+    : repair
+      ? "output/phase15-portrait-repair-dist"
+      : "output/phase15-photo-trial-dist",
+  evidence = free
+    ? "output/phase15/free-photo"
+    : repair
+      ? "output/phase15/portrait-repair"
+      : "output/phase15/photo-trial",
   proof = JSON.parse(readFileSync(`${evidence}/snapshot.json`, "utf8")),
   root = realpathSync(webDir);
 assert.equal(proof.snapshot, webDir.replaceAll("/", sep));
@@ -51,8 +59,8 @@ async function freePort(start) {
   throw Error("No free photo-trial port");
 }
 // Separate from all old previews, final4201/API4483 and automated test ports.
-const port = await freePort(repair ? 4211 : 4210),
-  apiPort = await freePort(repair ? 4651 : 4650),
+const port = await freePort(free ? 4212 : repair ? 4211 : 4210),
+  apiPort = await freePort(free ? 4652 : repair ? 4651 : 4650),
   site = `http://127.0.0.1:${port}`,
   api = `http://127.0.0.1:${apiPort}/api`,
   isolated = freshTestDatabase("owner-photo-trial"),

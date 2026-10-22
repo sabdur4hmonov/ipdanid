@@ -5,7 +5,8 @@ export function newerAudioPosition(
   total: number,
   now = Date.now(),
 ): number | undefined {
-  if (!value || typeof value !== "object") return;
+  // Explicit customer rest is authoritative, including a late native audio checkpoint.
+  if (saved.resting || !value || typeof value !== "object") return;
   const c = value as {
     projectId?: string;
     sequenceHash?: string;

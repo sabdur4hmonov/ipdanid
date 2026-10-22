@@ -9,6 +9,7 @@ export type AssemblySession = {
   current: number;
   pace: number;
   updatedAt?: number;
+  resting?: boolean;
 };
 export function validAssemblySession(
   raw: unknown,
@@ -18,6 +19,7 @@ export function validAssemblySession(
   const s = raw as AssemblySession,
     p = projects.find((p) => p.id === s.projectId && !p.deletedAt);
   if (
+    (s.resting !== undefined && typeof s.resting !== "boolean") ||
     s.version !== 1 ||
     !p ||
     s.sequenceHash !== p.instruction.sequenceHash ||
@@ -37,6 +39,7 @@ export function validAssemblySession(
     sequenceHash: s.sequenceHash,
     current: s.current,
     pace: s.pace,
+    ...(s.resting !== undefined ? { resting: s.resting } : {}),
     ...(s.updatedAt !== undefined ? { updatedAt: s.updatedAt } : {}),
   };
 }

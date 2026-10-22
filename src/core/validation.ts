@@ -1,3 +1,4 @@
+import { frameFreePhoto } from "./free-photo-framing";
 import { frameProduct } from "./product-framing";
 import { withPortraitCaption } from "./portrait-caption";
 import {
@@ -211,6 +212,7 @@ export async function validateInstruction(
               "standard-preparation/6",
               "standard-preparation/7",
               "standard-preparation/8",
+              "standard-preparation/9",
             ]
           : ["standard-preparation/1"]
       ).includes(k.version) ||
@@ -218,74 +220,88 @@ export async function validateInstruction(
       !["automatic", "manual", "original"].includes(k.whiteBackground) ||
       JSON.stringify(k.transform) !==
         JSON.stringify(
-          ["standard-preparation/6", "standard-preparation/8"].includes(
-            k.version,
-          )
+          k.version === "standard-preparation/9"
             ? withPortraitCaption(
-                frameProduct(
+                frameFreePhoto(
                   k.transform.product!.kind,
                   k.transform.faces,
                   p.shape,
                   k.sourceAspect,
-                  k.transform.framing?.keepShoulders,
-                  k.transform.framing?.adjustments,
+                  k.transform.framing?.adjustments[0],
                   k.transform.framing?.rotation,
-                  k.transform.product?.bounds,
-                  k.version === "standard-preparation/8",
                 ),
                 p.shape,
                 k.transform.caption?.text ?? "",
-                k.transform.caption?.version === "portrait-caption/2"
-                  ? "bidi/2"
-                  : "single/1",
+                "bidi/2",
               )
-            : ["standard-preparation/5", "standard-preparation/7"].includes(
+            : ["standard-preparation/6", "standard-preparation/8"].includes(
                   k.version,
                 )
-              ? frameProduct(
-                  k.transform.product!.kind,
-                  k.transform.faces,
-                  p.shape,
-                  k.sourceAspect,
-                  k.transform.framing?.keepShoulders,
-                  k.transform.framing?.adjustments,
-                  k.transform.framing?.rotation,
-                  k.transform.product?.bounds,
-                  k.version === "standard-preparation/7",
-                )
-              : k.version === "standard-preparation/4"
-                ? frameCustomerHeads(
+              ? withPortraitCaption(
+                  frameProduct(
+                    k.transform.product!.kind,
                     k.transform.faces,
                     p.shape,
                     k.sourceAspect,
                     k.transform.framing?.keepShoulders,
                     k.transform.framing?.adjustments,
                     k.transform.framing?.rotation,
+                    k.transform.product?.bounds,
+                    k.version === "standard-preparation/8",
+                  ),
+                  p.shape,
+                  k.transform.caption?.text ?? "",
+                  k.transform.caption?.version === "portrait-caption/2"
+                    ? "bidi/2"
+                    : "single/1",
+                )
+              : ["standard-preparation/5", "standard-preparation/7"].includes(
+                    k.version,
                   )
-                : k.version === "standard-preparation/3"
-                  ? framePortraitHeads(
+                ? frameProduct(
+                    k.transform.product!.kind,
+                    k.transform.faces,
+                    p.shape,
+                    k.sourceAspect,
+                    k.transform.framing?.keepShoulders,
+                    k.transform.framing?.adjustments,
+                    k.transform.framing?.rotation,
+                    k.transform.product?.bounds,
+                    k.version === "standard-preparation/7",
+                  )
+                : k.version === "standard-preparation/4"
+                  ? frameCustomerHeads(
                       k.transform.faces,
                       p.shape,
                       k.sourceAspect,
                       k.transform.framing?.keepShoulders,
                       k.transform.framing?.adjustments,
+                      k.transform.framing?.rotation,
                     )
-                  : [
-                        "classic-greedy/2",
-                        "classic-greedy/3",
-                        "standard-accent/21",
-                      ].includes(i.algorithm)
-                    ? faceFillReference(
+                  : k.version === "standard-preparation/3"
+                    ? framePortraitHeads(
                         k.transform.faces,
                         p.shape,
                         k.sourceAspect,
+                        k.transform.framing?.keepShoulders,
+                        k.transform.framing?.adjustments,
                       )
-                    : faceFill(
-                        k.transform.faces,
-                        p.shape,
-                        k.sourceAspect,
-                        p.standardKit.patternScale,
-                      ),
+                    : [
+                          "classic-greedy/2",
+                          "classic-greedy/3",
+                          "standard-accent/21",
+                        ].includes(i.algorithm)
+                      ? faceFillReference(
+                          k.transform.faces,
+                          p.shape,
+                          k.sourceAspect,
+                        )
+                      : faceFill(
+                          k.transform.faces,
+                          p.shape,
+                          k.sourceAspect,
+                          p.standardKit.patternScale,
+                        ),
         )
     )
       throw Error("Invalid reviewed kit preparation");

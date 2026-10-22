@@ -195,12 +195,39 @@ test("offline assembly resumes exact position after restart; one-hand controls, 
       ),
     )
     .toBe(18);
+  await page.getByTestId("assembly-rest").click();
+  await expect(page.getByTestId("assembly-rest-status")).toHaveAttribute(
+    "data-state",
+    "saved",
+  );
+  await expect(page.getByTestId("assembly-rest-status")).toContainText("18");
+  await expect
+    .poll(() => page.evaluate(() => (window as any).__awake.live))
+    .toBe(0);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(localStorage.getItem("iprasm.assembly-session.v1")!)
+            .resting,
+      ),
+    )
+    .toBe(true);
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByTestId("assembly-current-route")).toHaveText(
     route(18),
   );
   await expect(page.getByTestId("confirmed-step")).toHaveText("17/300");
+  await expect(page.getByTestId("assembly-rest-status")).toHaveAttribute(
+    "data-state",
+    "saved",
+  );
+  await expect(page.getByTestId("assembly-rest-status")).toContainText(
+    route(18),
+  );
+  await page.getByTestId("assembly-rest").click();
+  await expect(page.getByTestId("assembly-rest-status")).toHaveCount(0);
   await page.getByTestId("assembly-confirm").click();
   await expect(page.getByTestId("confirmed-step")).toHaveText("18/300");
   await expect(page.getByTestId("assembly-save-state")).toHaveAttribute(

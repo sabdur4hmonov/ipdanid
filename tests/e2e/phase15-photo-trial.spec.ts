@@ -26,6 +26,7 @@ for (const shape of ["circle", "rectangle", "heart"] as const) {
     await page.goto("/");
     const flow = page.getByTestId("customer-flow");
     await expect(flow).toHaveAttribute("data-screen", "start");
+    const source = await gallery(page, photoCases[0]);
     await page
       .getByRole("button", {
         name: customerFlowText("uz", shape),
@@ -33,7 +34,6 @@ for (const shape of ["circle", "rectangle", "heart"] as const) {
       })
       .click();
     await page.screenshot({ path: join(out, "start.png"), fullPage: true });
-    const source = await gallery(page, photoCases[0]);
     writeFileSync(join(out, "source.jpg"), source);
     const image = page.getByTestId("customer-photo"),
       baseline = await png(page, "customer-photo"),
@@ -43,7 +43,7 @@ for (const shape of ["circle", "rectangle", "heart"] as const) {
         name: customerFlowText("uz", "shoulders"),
         exact: true,
       }),
-    ).not.toBeChecked();
+    ).toHaveCount(0);
     const zoom = flow.getByRole("slider", {
       name: customerFlowText("uz", "zoom"),
       exact: true,

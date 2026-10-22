@@ -1,3 +1,4 @@
+import { captureStudioTarget, studioTargetPng } from "./phase12-cases";
 import { hash } from "../../src/core/engine";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
@@ -25,11 +26,19 @@ const cases = [
       shape,
     })),
   ),
-  ...["SALOM", "САЛОМ", "سلام"].flatMap((text,j)=>(["circle","rectangle","heart"] as const).map(shape=>({name:"lettering-"+j+"-"+shape,kind:"lettering" as const,shape,text}))),
+  ...["SALOM", "САЛОМ", "سلام"].flatMap((text, j) =>
+    (["circle", "rectangle", "heart"] as const).map((shape) => ({
+      name: "lettering-" + j + "-" + shape,
+      kind: "lettering" as const,
+      shape,
+      text,
+    })),
+  ),
 ];
 for (const c of cases)
   test("product14 " + c.name, async ({ page }, info) => {
     test.setTimeout(180000);
+    await captureStudioTarget(page);
     await page.goto("/");
     await english(page);
     const kind = "kind" in c ? c.kind : "people";
@@ -38,13 +47,6 @@ for (const c of cases)
       await page.getByTestId("product-kind").selectOption(kind);
       await page.getByTestId("customer-menu").locator("summary").click();
     }
-    if (c.shape !== "circle")
-      await page
-        .getByRole("button", {
-          name: c.shape === "heart" ? "Heart" : "Square",
-          exact: true,
-        })
-        .click();
     if (kind === "lettering") {
       await page
         .getByTestId("lettering-input")
@@ -120,10 +122,17 @@ for (const c of cases)
       "null",
       { timeout: 90000 },
     );
+    if (c.shape !== "circle")
+      await page
+        .getByRole("button", {
+          name: c.shape === "heart" ? "Heart" : "Square",
+          exact: true,
+        })
+        .click();
     const out = "output/current-product/" + info.project.name + "/" + c.name;
     mkdirSync(out, { recursive: true });
     writeFileSync(
-      out + "/target.png",
+      out + "/cutout.png",
       Buffer.from(await png(page, "customer-photo"), "base64"),
     );
     if (kind === "people") {
@@ -132,22 +141,14 @@ for (const c of cases)
           .getByTestId("customer-photo")
           .getAttribute("data-framing"))!,
       );
-      const bottom = Math.max(
-        ...proof.framing.heads.map((h: { chin: number }) => h.chin),
-      );
-      expect(
-        await page
-          .getByTestId("customer-photo")
-          .evaluate((canvas: HTMLCanvasElement, chin: number) => {
-            const d = canvas
-              .getContext("2d")!
-              .getImageData(0, 0, 500, 500).data;
-            for (let y = Math.min(500, Math.ceil(chin * 500)); y < 500; y++)
-              for (let x = 0; x < 500; x++)
-                if (d[(y * 500 + x) * 4] !== 255) return false;
-            return true;
-          }, bottom),
-      ).toBe(true);
+      expect(proof.framing.heads).toEqual([]);
+      expect(proof.framing.keepShoulders).toBe(true);
+      expect(proof.sourceBounds).toEqual({
+        left: 0,
+        top: 0,
+        width: 1,
+        height: 1,
+      });
     }
     const start = Date.now();
     await page.getByRole("button", { name: "Create", exact: true }).click();
@@ -155,6 +156,10 @@ for (const c of cases)
       timeout: 60000,
     });
     const elapsed = Date.now() - start;
+    writeFileSync(
+      out + "/target.png",
+      Buffer.from(await studioTargetPng(page), "base64"),
+    );
     expect(elapsed).toBeLessThan(15000);
     writeFileSync(
       out + "/result.png",
@@ -197,9 +202,18 @@ for (const c of cases)
         { length: 1000 * 1000 },
         (_, k) => raster[k * 3],
       );
-    expect(i.imageHash).toBe(await hash(Uint8Array.from(rgba.filter((_,k)=>k%4!==3))));
-    const actualPng=UPNG.decode(Uint8Array.from(readFileSync(out+'/result.png')).buffer),actualRgba=new Uint8Array(UPNG.toRGBA8(actualPng)[0]);
-    expect(Buffer.from(actualRgba.filter((_,k)=>k%4!==3)).equals(Buffer.from(Uint8Array.from(raster,v=>Math.round(v*255))))).toBe(true);
+    expect(i.imageHash).toBe(
+      await hash(Uint8Array.from(rgba.filter((_, k) => k % 4 !== 3))),
+    );
+    const actualPng = UPNG.decode(
+        Uint8Array.from(readFileSync(out + "/result.png")).buffer,
+      ),
+      actualRgba = new Uint8Array(UPNG.toRGBA8(actualPng)[0]);
+    expect(
+      Buffer.from(actualRgba.filter((_, k) => k % 4 !== 3)).equals(
+        Buffer.from(Uint8Array.from(raster, (v) => Math.round(v * 255))),
+      ),
+    ).toBe(true);
     const ssim = viewingSsim(target, 500, image, 1000, {
       faces: i.params.kitPreparation.transform.targetFaces,
     });

@@ -263,6 +263,11 @@ export function productSource(source: HTMLCanvasElement) {
   ctx.putImageData(d, 0, 0);
   return {
     canvas: c,
+    mask: {
+      width: w,
+      height: h,
+      values: Float32Array.from(seen, (v) => 1 - v),
+    },
     bounds: {
       left: l / w,
       top: t / h,

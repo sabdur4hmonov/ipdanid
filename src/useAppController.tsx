@@ -430,6 +430,13 @@ export function useAppController(initialView: View = "create") {
     instruction = project?.instruction,
     steps = instruction && canBuild(instruction) ? flatten(instruction) : [],
     active = steps[current - 1];
+  const [restStatus, setRestStatus] = useState<{
+    projectId: string;
+    current: number;
+    state: "saving" | "saved" | "failed";
+  }>();
+  const resting =
+    restStatus?.projectId === project?.id && restStatus?.current === current;
   const assemblyRestored = useRef(false);
   const restorationScope = useRef({ view, projects });
   restorationScope.current = { view, projects };
@@ -464,6 +471,12 @@ export function useAppController(initialView: View = "create") {
           return;
         setSelected(saved.projectId);
         setCurrent(restored);
+        if (saved.resting)
+          setRestStatus({
+            projectId: saved.projectId,
+            current: restored,
+            state: "saved",
+          });
         setPace(saved.pace);
         setView("assemble");
       }
@@ -480,6 +493,7 @@ export function useAppController(initialView: View = "create") {
         sequenceHash: project.instruction.sequenceHash,
         current,
         pace,
+        resting,
       }).catch(() => setError(guideText(locale, "saveFailed")));
   }, [
     loaded,
@@ -488,6 +502,7 @@ export function useAppController(initialView: View = "create") {
     project?.instruction.sequenceHash,
     current,
     pace,
+    resting,
   ]);
   const matchingVoices = voices.filter((v) =>
     v.lang.toLowerCase().startsWith(guideLocale),
@@ -531,6 +546,32 @@ export function useAppController(initialView: View = "create") {
     backgroundAudio.stop();
     stopSpeech();
     setSound(false);
+  };
+  const restAssembly = async () => {
+    if (!project || !loaded || !instruction || !canBuild(instruction)) return;
+    pause();
+    const saved = { projectId: project.id, current };
+    setRestStatus({ ...saved, state: "saving" });
+    try {
+      await writeAssemblySession({
+        version: 1,
+        ...saved,
+        sequenceHash: instruction.sequenceHash,
+        pace,
+        resting: true,
+      });
+      setRestStatus((old) =>
+        old?.projectId === saved.projectId && old.current === saved.current
+          ? { ...old, state: "saved" }
+          : old,
+      );
+    } catch {
+      setRestStatus((old) =>
+        old?.projectId === saved.projectId && old.current === saved.current
+          ? { ...old, state: "failed" }
+          : old,
+      );
+    }
   };
   const speak = () => {
     stopSpeech();
@@ -1752,6 +1793,7 @@ export function useAppController(initialView: View = "create") {
     open(p);
   }
   function confirmCurrent() {
+    setRestStatus(undefined);
     if (!project || !loaded || !canBuild(project.instruction)) return;
     setConfirmedUndo(project.progress.confirmed);
     setProjects((ps) =>
@@ -1773,6 +1815,7 @@ export function useAppController(initialView: View = "create") {
     }
   }
   const jump = (v: number) => {
+    setRestStatus(undefined);
     pause();
     if (Number.isInteger(v) && v >= 1 && v <= steps.length) {
       setCurrent(v);
@@ -1992,11 +2035,16 @@ export function useAppController(initialView: View = "create") {
     pan,
     paper,
     pause,
+    restAssembly,
+    resting,
+    restSaveState: restStatus?.state ?? "saved",
+    resumeAssembly: () => setRestStatus(undefined),
     pausePlayback: () => {
       if (backgroundAudio.enabled) backgroundAudio.pause();
       else pause();
     },
     startPlayback: () => {
+      setRestStatus(undefined);
       if (backgroundAudio.enabled) {
         setSound(false);
         void backgroundAudio.start(current);

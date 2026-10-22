@@ -1,3 +1,13 @@
+# 2026-10-22 — Erkin moslash tayyor, web birinchi
+
+Yangi sinov: **http://127.0.0.1:4212/**. Surat → shakl → faqat fonni qirqish → o‘zingiz erkin joylashtirish → ipli natija → ovozli yig‘ish. Yuz/soch/yelka avtomatik kesilmaydi. Cho‘tka bilan qirqimni tuzatish va joylashuvni yo‘qotmay qayta qirqish bor. “Dam olish” aniq qadamni saqlaydi, qayta ochilganda to‘xtagan joyga qaytadi; bajarilgan qadam alohida tasdiqlanadi.
+
+31unit,12ta yakuniy tegishli desktop/mobil holat, build va117/117yangi server fayli tekshirildi. RAM tanqisligi sabab to‘xtatilgan/vaqt tugagan sinovlar o‘tdi deb yozilmagan; oxirgi juft holat alohida qayta o‘tdi. Bu yangi web milestone, to‘liq Phase15/yangi APK yoki haqiqiy telefon/taxta sifati tasdig‘i emas.
+
+Avval websayt, keyin bitta serverdagi ayni hisob bilan app. Hisob/parol, shop/dostavka, sandbox to‘lov va chegirma kodi asoslari bor. **Barcha ma’lumotni qurilmalar orasida to‘liq saqlash/ko‘chirish hali C21 vazifasi.** Instagram obunachilariga ilk shaxsiy sinov kodi, dostavka va pul qismining aniq rejasi: docs/WEB_FIRST_UZ.md va WEB_FIRST_LAUNCH_PLAN.md. Haqiqiy Instagram xabari yoki to‘lov bajarilmagan.
+
+Keyingi ustuvor ish: haqiqiy ipli tiniqlikni tekshirish, C21 hisob/loyiha/tasdiqlangan qadam/to‘xtagan joy sinxronlash, keyin web xavfsizligi/tezligi va chiqish. Original suratning shaxsiy zaxirasi ommaviy galereyadan alohida rozilik bilan bo‘ladi. C19b–C26ning qolgan ishlari AGENT/PROGRESS.mdda ochiq. Quyidagi eski hisobotlar tarixiy.
+
 # Phase15 davom etmoqda — 2026-10-21
 
 Namunaviy rasm bilan sinash tayyor: **http://127.0.0.1:4210/photo-test/**. “Rasmni saqlash” → “Ilovani ochish” → “Galereyadan tanlash” → “Yaratish”. Doira/Kvadrat/Yurak kompyuter va mobil brauzerda6/6o‘tdi; hisoblash3.3–4.5soniya. Bu hozir sinash uchun alohida sahifa, yakuniy Phase15/APK emas. Yig‘ish kodi faqat `output/phase15/photo-trial/manual-testing.txt`da, uchta yig‘ish hali ishlatilmagan.

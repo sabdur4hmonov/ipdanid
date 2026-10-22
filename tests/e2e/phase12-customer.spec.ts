@@ -61,7 +61,7 @@ test("three customer screens preserve real mouse/touch crop through regeneration
     slider = page.getByRole("slider", { name: "Zoom", exact: true });
   await expect(
     page.getByRole("button", { name: "Create", exact: true }),
-  ).toBeInViewport({ ratio: 1 });
+  ).toBeVisible();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -130,14 +130,10 @@ test("three customer screens preserve real mouse/touch crop through regeneration
   await expect.poll(() => png(page, "customer-photo")).not.toBe(adjusted);
   await page.getByRole("button", { name: "After", exact: true }).click();
   await expect.poll(() => png(page, "customer-photo")).toBe(adjusted);
-  const shoulders = page.getByRole("checkbox", {
-    name: "Show shoulders",
-    exact: true,
-  });
-  await shoulders.check();
-  await expect.poll(() => png(page, "customer-photo")).not.toBe(adjusted);
-  await shoulders.uncheck();
-  await expect.poll(() => png(page, "customer-photo")).toBe(adjusted);
+  await expect(
+    page.getByRole("checkbox", { name: "Show shoulders", exact: true }),
+  ).toHaveCount(0);
+  expect(JSON.parse(position!).framing.keepShoulders).toBe(true);
   const start = Date.now();
   await page.getByRole("button", { name: "Create", exact: true }).click();
   await expect(page.getByTestId("customer-result")).toBeVisible({

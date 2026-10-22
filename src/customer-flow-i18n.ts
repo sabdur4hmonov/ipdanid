@@ -2,6 +2,18 @@ import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 const words = {
   en: {
+    chooseShape: "Choose a shape",
+    recut: "Remove background again",
+    maskEdit: "Fix cutout",
+    maskDone: "Done fixing",
+    maskHint:
+      "Paint the unwanted background, or restore parts of the photo. Your placement stays unchanged.",
+    maskWarning:
+      "Automatic cutout was limited. Check and fix it with Erase / Restore.",
+    erase: "Erase",
+    restore: "Restore",
+    undoMask: "Undo brush",
+
     gallery: "Choose photo",
     camera: "Take photo",
     circle: "Circle",
@@ -41,6 +53,18 @@ const words = {
     close: "Close",
   },
   uz: {
+    chooseShape: "Shaklni tanlang",
+    recut: "Fonni qayta qirqish",
+    maskEdit: "Qirqimni tuzatish",
+    maskDone: "Tuzatish tugadi",
+    maskHint:
+      "Keraksiz fonni o‘chiring yoki surat qismlarini qaytaring. Joylashuv saqlanadi.",
+    maskWarning:
+      "Avtomatik qirqimni tekshiring. O‘chirish / Qaytarish bilan tuzatishingiz mumkin.",
+    erase: "O‘chirish",
+    restore: "Qismini qaytarish",
+    undoMask: "Oxirgi chiziqni qaytarish",
+
     gallery: "Galereyadan tanlash",
     camera: "Rasmga olish",
     circle: "Doira",
@@ -80,6 +104,18 @@ const words = {
     close: "Yopish",
   },
   ru: {
+    chooseShape: "Выберите форму",
+    recut: "Удалить фон заново",
+    maskEdit: "Исправить вырезку",
+    maskDone: "Готово",
+    maskHint:
+      "Закрасьте лишний фон или восстановите части фото. Положение сохранится.",
+    maskWarning:
+      "Автоматическая вырезка ограничена. Проверьте и исправьте ластиком или восстановлением.",
+    erase: "Стереть",
+    restore: "Восстановить",
+    undoMask: "Отменить мазок",
+
     gallery: "Выбрать фото",
     camera: "Снять фото",
     circle: "Круг",

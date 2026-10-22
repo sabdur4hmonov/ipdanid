@@ -12,16 +12,25 @@ export function withPortraitCaption(
 ): FaceFill {
   if (!input.trim()) return base;
   if (
-    !["reviewed-product-framing/5", "reviewed-heart-framing/7"].includes(
-      base.version,
-    ) ||
+    ![
+      "reviewed-product-framing/5",
+      "reviewed-heart-framing/7",
+      "reviewed-free-photo/9",
+    ].includes(base.version) ||
     base.product?.kind !== "people"
   )
     throw Error("caption/portrait-required");
   const { text, font } =
       shaping === "bidi/2" ? textInput(input) : letteringInput(input),
-    scale = shape === "heart" ? 0.88 : 0.82;
-  const notchSafe = base.version === "reviewed-heart-framing/7";
+    scale =
+      base.version === "reviewed-free-photo/9"
+        ? 1
+        : shape === "heart"
+          ? 0.88
+          : 0.82;
+  const notchSafe =
+    base.version === "reviewed-heart-framing/7" ||
+    (base.version === "reviewed-free-photo/9" && shape === "heart");
   const bounds = notchSafe
     ? { left: 0.42, top: 0.8, width: 0.16, height: 0.04 }
     : shape === "heart"
@@ -32,12 +41,16 @@ export function withPortraitCaption(
   return {
     ...base,
     version:
-      base.version === "reviewed-heart-framing/7"
-        ? "reviewed-heart-caption-framing/8"
-        : "reviewed-caption-framing/6",
+      base.version === "reviewed-free-photo/9"
+        ? "reviewed-free-photo/9"
+        : base.version === "reviewed-heart-framing/7"
+          ? "reviewed-heart-caption-framing/8"
+          : "reviewed-caption-framing/6",
     targetFaces: base.targetFaces?.map((b) => ({
       left: (1 - scale) / 2 + b.left * scale,
-      top: b.top * scale + (notchSafe ? 0.04 : 0),
+      top:
+        b.top * scale +
+        (base.version === "reviewed-heart-framing/7" ? 0.04 : 0),
       width: b.width * scale,
       height: b.height * scale,
     })),

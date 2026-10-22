@@ -134,6 +134,7 @@
   min-height: 40px;
 }
 .compare-switch button[aria-pressed="true"],
+.customer-adjust-tools button[aria-pressed="true"],
 .person-chips button[aria-pressed="true"],
 .budget-chips button[aria-pressed="true"] {
   background: #dfe8d4;

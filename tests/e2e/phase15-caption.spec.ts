@@ -1,3 +1,4 @@
+import { captureStudioTarget, studioTargetPng } from "./phase12-cases";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { photoCases, gallery, english, png } from "./phase12-cases";
@@ -22,8 +23,10 @@ for (const [shape, text] of [
       !existsSync(photoCases[0].source),
       "Local synthetic portrait stays outside Git",
     );
+    await captureStudioTarget(page);
     await page.goto("/");
     await english(page);
+    await gallery(page, photoCases[0]);
     if (shape !== "circle")
       await page
         .getByRole("button", {
@@ -31,7 +34,6 @@ for (const [shape, text] of [
           exact: true,
         })
         .click();
-    await gallery(page, photoCases[0]);
     const before = await png(page, "customer-photo");
     await page.getByTestId("portrait-caption").fill(text);
     await expect
@@ -53,18 +55,18 @@ for (const [shape, text] of [
         JSON.parse(localStorage.getItem("iprasm.projects.v1")!)[0].instruction,
     );
     await validateInstruction(guide);
-    expect(guide.params.kitPreparation.version).toBe(
-      shape === "heart" ? "standard-preparation/8" : "standard-preparation/6",
-    );
+    expect(guide.params.kitPreparation.version).toBe("standard-preparation/9");
     expect(guide.params.kitPreparation.transform.caption.text).toBe(text);
     expect(guide.algorithm).toBe("classic-greedy/3");
     expect(guide.metrics.lines).toBe(3000);
-    const raw = UPNG.decode(
-        Uint8Array.from(Buffer.from(target, "base64")).buffer,
-      ),
-      rgba = new Uint8Array(UPNG.toRGBA8(raw)[0]);
+    const input = UPNG.decode(
+      Uint8Array.from(Buffer.from(await studioTargetPng(page), "base64"))
+        .buffer,
+    );
     expect(guide.imageHash).toBe(
-      await hash(rgba.filter((_, j) => j % 4 !== 3)),
+      await hash(
+        new Uint8Array(UPNG.toRGBA8(input)[0]).filter((_, j) => j % 4 !== 3),
+      ),
     );
     const tampered = structuredClone(guide);
     tampered.params.kitPreparation.transform.caption.portraitScale = 0.99;
@@ -72,7 +74,11 @@ for (const [shape, text] of [
     await expect(validateInstruction(tampered)).rejects.toThrow();
     const out = `output/current-caption/${info.project.name}/${shape}`;
     mkdirSync(out, { recursive: true });
-    writeFileSync(out + "/target.png", Buffer.from(target, "base64"));
+    writeFileSync(out + "/cutout.png", Buffer.from(target, "base64"));
+    writeFileSync(
+      out + "/target.png",
+      Buffer.from(await studioTargetPng(page), "base64"),
+    );
     writeFileSync(out + "/guide.json", JSON.stringify(guide));
     writeFileSync(
       out + "/result.png",

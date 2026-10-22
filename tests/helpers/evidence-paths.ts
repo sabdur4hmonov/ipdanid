@@ -50,6 +50,7 @@ function checked(root: string, output: string, results: string) {
       "photo-trial",
       "assembly-audio",
       "portrait-repair",
+      "free-photo",
     ].includes(parts[1])
   )
     throw Error("Completed Phase15 checkpoint evidence is frozen");
