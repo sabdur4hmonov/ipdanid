@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-23 — Qurilmalar orasida davom ettirish (server sinovi)
+
+Hozir qo‘lda sinashingiz shart emas.19unit+2haqiqiy API testi: bitta login bilan ikki kirish, tasdiqlangan4-qadamdan alohida17-qadamda dam olish, papka/belgilar, eski nusxani rad qilish va saqlash xatosidan qaytish o‘tdi.4212o‘zgarmagan. Keyingi interfeys tayyor bo‘lgach: webda hisobga kiring → loyihani/qolgan joyni saqlang → boshqa brauzer yoki yangi ilovada ayni hisob bilan kiring → tiklang → ayni17-qadamda to‘xtab turishi, tasdiqlangan qadam4bo‘lib qolishi kerak. Hozir bu yangi tugmalar hali ulanmagan.
+
 ## 2026-10-21 — C19 ovozli buyruqlar asosi (hali interfeysga ulanmagan)
 
 40ta avtomatik test, TypeScript/build va oflayn Android kompilyatsiyasi o‘tdi. Haqiqiy mikrofon yoki ovoz yozuvi ishlatilmadi. Qurilmadagi tayyor modelga mo‘ljallangan “keyingi/oldingi/takrorla/pauza/davom et” buyruqlari bor; “tasdiqla” bajarilmaydi. Ixtiyoriy Expert interfeysi va ruxsat/shovqin/bekor qilish sinovlari keyingi qadam. Hozir bu tugmani4210sahifasida izlamang; sinashingizni kutib kod ishlari to‘xtamaydi.

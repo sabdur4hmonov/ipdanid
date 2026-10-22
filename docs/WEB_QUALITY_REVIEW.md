@@ -1,0 +1,9 @@
+# Free-photo physical output review — 2026-10-23
+
+Review of the existing /9 UI evidence, not a new solver experiment. The owner now controls the entire photograph's placement. Do not restore automatic face cropping, shoulder removal or heart-lobe rearrangement to make comparisons look better.
+
+Inspected full-size `output/current-free-photo/desktop/0/{cutout,result}.png` and `output/current-free-photo/mobile-browser/5/result.png`. The cutout retains the whole head and shirt inside the chosen shape. The actual physical thread render is recognizable, but the Heart's otherwise white upper lobes accumulate substantial grey crossing texture. The pair has the same problem. Faces and fine details remain less clear than the colour cutout. **Not accepted as a likeness improvement.** Current UI cases also exercise arbitrary pan/zoom; they are functional fixtures, not owner-approved composition or objective quality benchmarks.
+
+Existing measured generation: desktop single 4368 ms; mobile-browser pair 7960 ms. These measurements establish responsiveness under those recorded conditions, not a universally sharp physical result. The real preview remains pixel-exact to the legal sequence. Do not conceal haze using a source-photo overlay, selective rendering or preview-only opacity changes.
+
+No new default, no parameter sweep and no model installation in this review. Earlier rejected log-target/sum-score and v17 texture experiments remain rejected. A later quality experiment must freeze customer-reviewed placement and tonal Worker input, preserve the physical renderer and compare one explicit hypothesis against the same /3 baseline, including facial detail and white-region dark excess. Approval must cover both single and pair fixtures and local-only owner imagery before promotion. Until that evidence exists, classic-greedy/3 remains the compatible default and quality remains open.

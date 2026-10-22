@@ -8,6 +8,7 @@ import { dirname } from "node:path";
 import "./local-config.ts";
 import { DomainError } from "./store.ts";
 import { KitStore } from "./kit-store.ts";
+import { RecoveryStore } from "./recovery-store.ts";
 import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 import { Payments } from "./payments.ts";
@@ -45,6 +46,7 @@ const store = new KitStore(
   paymentKey,
 );
 if (!production) store.seed();
+const recovery = new RecoveryStore(store);
 const business = new BusinessStore(store);
 const gallery = new GalleryStore(store);
 const offers = new OfferStore(store);
@@ -813,6 +815,13 @@ const server = createServer(async (req, res) => {
     const returnOrder = path.match(/^\/api\/orders\/([^/]+)\/return$/);
     if (returnOrder && req.method === "POST") {
       send(200, store.requestReturn(user, returnOrder[1]));
+      return;
+    }
+    const recoveryPath = path.match(/^\/api\/instructions\/([^/]+)\/recovery$/);
+    if (recoveryPath) {
+      if (req.method === 'GET') send(200, recovery.read(user, recoveryPath[1]));
+      else if (req.method === 'POST') send(200, recovery.save(user, recoveryPath[1], body));
+      else throw new DomainError('Method not supported', 405);
       return;
     }
     const getProgress = path.match(/^\/api\/instructions\/([^/]+)\/progress$/);

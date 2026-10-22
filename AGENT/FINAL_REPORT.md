@@ -1,3 +1,9 @@
+# 2026-10-23 — Hisobni boshqa qurilmada davom ettirish, server qismi
+
+Tasdiqlangan qadam, dam olgan joy, tezlik, papka va belgilarni bitta hisobda xavfsiz saqlash qo‘shildi. Eski nusxa yangisini bosib ketmaydi; qayta urinish kredit sarflamaydi.19unit va2haqiqiy API testi, TypeScript/build o‘tdi. **Interfeysga ulash va barcha ma’lumotlar ko‘chishini tekshirish hali C21bda**;4212dagi sinov o‘zgarmagan. docs/ACCOUNT_RECOVERY_CHECKPOINT.md.
+
+Ip natijasining tiniqligi hali qabul qilinmadi: yurakning oq joylarida ortiqcha ip izi bor. Ko‘rilgan dalillar docs/WEB_QUALITY_REVIEW.mdda. Fon/joylashuvning erkinligi saqlanadi; yangi sifat algoritmi tayyor deb aytilmaydi.
+
 # 2026-10-22 — Erkin moslash tayyor, web birinchi
 
 Yangi sinov: **http://127.0.0.1:4212/**. Surat → shakl → faqat fonni qirqish → o‘zingiz erkin joylashtirish → ipli natija → ovozli yig‘ish. Yuz/soch/yelka avtomatik kesilmaydi. Cho‘tka bilan qirqimni tuzatish va joylashuvni yo‘qotmay qayta qirqish bor. “Dam olish” aniq qadamni saqlaydi, qayta ochilganda to‘xtagan joyga qaytadi; bajarilgan qadam alohida tasdiqlanadi.
