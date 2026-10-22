@@ -12,8 +12,18 @@ import { join, sep } from "node:path";
 import net from "node:net";
 import { freshTestDatabase } from "./test-artifacts.mjs";
 
-const webDir = "output/phase15-photo-trial-dist",
-  evidence = "output/phase15/photo-trial",
+assert(
+  process.argv.slice(2).every((v) => v === "--portrait-repair"),
+  "Unknown preview option",
+);
+const repair = process.argv.includes("--portrait-repair");
+const reportPath = repair ? "photo-repair" : "photo-test";
+const webDir = repair
+    ? "output/phase15-portrait-repair-dist"
+    : "output/phase15-photo-trial-dist",
+  evidence = repair
+    ? "output/phase15/portrait-repair"
+    : "output/phase15/photo-trial",
   proof = JSON.parse(readFileSync(`${evidence}/snapshot.json`, "utf8")),
   root = realpathSync(webDir);
 assert.equal(proof.snapshot, webDir.replaceAll("/", sep));
@@ -41,8 +51,8 @@ async function freePort(start) {
   throw Error("No free photo-trial port");
 }
 // Separate from all old previews, final4201/API4483 and automated test ports.
-const port = await freePort(4210),
-  apiPort = await freePort(4650),
+const port = await freePort(repair ? 4211 : 4210),
+  apiPort = await freePort(repair ? 4651 : 4650),
   site = `http://127.0.0.1:${port}`,
   api = `http://127.0.0.1:${apiPort}/api`,
   isolated = freshTestDatabase("owner-photo-trial"),
@@ -130,7 +140,7 @@ try {
   const batch = await response.json();
   writeFileSync(
     `${evidence}/manual-testing.txt`,
-    `IP RASM — NAMUNAVIY RASM SINOVI\nTaqqoslash: ${site}/photo-test/\nIlova: ${site}/\nRasm: ${site}/photo-test/namuna-portret.jpg\nKit kodi (${batch.codes[0].quota} natija): ${batch.codes[0].code}\nAdministrator tokeni: ${admin}\nAPI: ${api}\nFaqat yangi mahalliy sinov; eski serverlar va tmp/data ishlatilmagan. C18–C26 hali davom etadi, bu yakuniy reliz emas.\n`,
+    `IP RASM — NAMUNAVIY RASM SINOVI\nTaqqoslash: ${site}/${reportPath}/\nIlova: ${site}/\nRasm: ${site}/${reportPath}/namuna-portret.jpg\nKit kodi (${batch.codes[0].quota} natija): ${batch.codes[0].code}\nAdministrator tokeni: ${admin}\nAPI: ${api}\nFaqat yangi mahalliy sinov; eski serverlar va tmp/data ishlatilmagan. Portret sifati va Phase15 ishlari davom etadi, bu yakuniy reliz emas.\n`,
     { mode: 0o600 },
   );
   writeFileSync(
@@ -138,7 +148,7 @@ try {
     JSON.stringify(
       {
         ...metadata,
-        report: `${site}/photo-test/`,
+        report: `${site}/${reportPath}/`,
         quota: batch.codes[0].quota,
         credentialPath: `${evidence}/manual-testing.txt`,
       },
@@ -147,7 +157,7 @@ try {
     ),
   );
   console.log(
-    `Photo trial ready: ${site}/photo-test/; credentials only in ignored ${evidence}/manual-testing.txt`,
+    `Photo trial ready: ${site}/${reportPath}/; credentials only in ignored ${evidence}/manual-testing.txt`,
   );
 } catch (error) {
   child.kill();

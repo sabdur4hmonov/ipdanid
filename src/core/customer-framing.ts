@@ -104,9 +104,11 @@ export function prepareCustomerCanvas(
   before = false,
 ) {
   if (
-    !["reviewed-customer-framing/4", "reviewed-product-framing/5"].includes(
-      f.version,
-    ) ||
+    ![
+      "reviewed-customer-framing/4",
+      "reviewed-product-framing/5",
+      "reviewed-heart-framing/7",
+    ].includes(f.version) ||
     !f.framing
   )
     throw Error("customer/proof");
@@ -148,9 +150,11 @@ export function prepareCustomerCanvas(
           k = (y * n + x) * 4;
         let alpha = before
           ? 1
-          : (f.version === "reviewed-product-framing/5"
-              ? polishedHeadAlpha
-              : customerHeadAlpha)(
+          : (f.version === "reviewed-heart-framing/7"
+              ? completeHeadAlpha
+              : f.version === "reviewed-product-framing/5"
+                ? polishedHeadAlpha
+                : customerHeadAlpha)(
               u,
               v,
               targetFace,
@@ -213,6 +217,26 @@ export function polishedHeadAlpha(
   if (v <= start) return vertical;
   const t = smooth((v - start) / Math.max(0.001, chin - start));
   const half = face.width * (0.56 - 0.38 * t);
+  return (
+    vertical *
+    (1 - smooth((Math.abs(u - face.left - face.width / 2) - half) / 0.014))
+  );
+}
+
+// Preserve cheeks/mouth/chin; start the neck fade below the detected face.
+// Earlier versions deliberately retain their original arithmetic for replay.
+export function completeHeadAlpha(
+  u: number,
+  v: number,
+  face: RegionBox,
+  chin: number,
+  keep: boolean,
+) {
+  if (keep) return 1;
+  const bottom = face.top + face.height;
+  const vertical = 1 - smooth((v - bottom) / Math.max(0.001, chin - bottom));
+  const t = smooth((v - face.top - 0.65 * face.height) / (0.43 * face.height));
+  const half = face.width * (0.6 - 0.38 * t);
   return (
     vertical *
     (1 - smooth((Math.abs(u - face.left - face.width / 2) - half) / 0.014))

@@ -2,7 +2,7 @@ import type { RegionBox, Shape } from "./types";
 import type { FaceFill } from "./standard-preparation";
 import { frameCustomerHeads, prepareCustomerCanvas } from "./customer-framing";
 import { defaultHeadAdjustment, type HeadAdjustment } from "./portrait-framing";
-import { type QuarterTurn } from "./photo-orientation";
+import { unturnBox, type QuarterTurn } from "./photo-orientation";
 import { inside } from "./geometry";
 export type ProductKind =
   "people" | "animal" | "vehicle" | "object" | "lettering";
@@ -17,6 +17,7 @@ export function frameProduct(
     : [defaultHeadAdjustment()],
   rotation: QuarterTurn = 0,
   bounds?: RegionBox,
+  notchSafe = false,
 ): FaceFill {
   if (!["people", "animal", "vehicle", "object", "lettering"].includes(kind))
     throw Error("product/kind");
@@ -31,6 +32,72 @@ export function frameProduct(
     );
     f.version = "reviewed-product-framing/5";
     f.product = { kind };
+    if (notchSafe) {
+      if (shape !== "heart" || faces.length !== 1)
+        throw Error("framing/heart-single");
+      const face = faces[0],
+        head = f.framing!.heads[0],
+        a = adjustments[0];
+      // Keep /5 byte-for-byte reproducible. /7 keeps the entire crown below
+      // the physical notch and includes the chin, instead of cropping at 94%.
+      head.source.height =
+        Math.min(1, face.top + 1.08 * face.height) - head.source.top;
+      const s = head.source,
+        ratio = (s.width * aspect) / s.height;
+      const cy = 0.56;
+      let lo = 0,
+        hi = Math.min(0.56, 0.76 / ratio);
+      for (let k = 0; k < 24; k++) {
+        const h = (lo + hi) / 2;
+        let fits = true;
+        // A head has a narrower jaw than an ellipse. Fit a conservative crown,
+        // cheek and chin outline, so the lower heart does not force a tiny face.
+        const outline = [
+          [0, 0],
+          [0.08, 0.36],
+          [0.22, 0.5],
+          [0.5, 0.5],
+          [0.7, 0.44],
+          [0.8, 0.37],
+          [0.92, 0.24],
+          [1, 0.1],
+        ];
+        for (let j = 1; j < outline.length; j++)
+          for (let q = 0; q <= 8; q++) {
+            const t = q / 8,
+              a = outline[j - 1],
+              b = outline[j];
+            const y = cy + (a[0] + (b[0] - a[0]) * t - 0.5) * h;
+            const half = (a[1] + (b[1] - a[1]) * t) * h * ratio;
+            for (const sign of [-1, 1])
+              if (
+                !inside(shape, 0.5 + sign * (half + 0.008), y - 0.008) ||
+                !inside(shape, 0.5 + sign * (half + 0.008), y + 0.008)
+              )
+                fits = false;
+          }
+        if (fits) lo = h;
+        else hi = h;
+      }
+      const h = lo * a.zoom,
+        w = h * ratio;
+      head.target = {
+        left: 0.5 - w / 2 + a.x,
+        top: cy - h / 2 + a.y,
+        width: w,
+        height: h,
+      };
+      const t = head.target;
+      head.chin = t.top + t.height;
+      const b = {
+        left: t.left + ((face.left - s.left) / s.width) * t.width,
+        top: t.top + ((face.top - s.top) / s.height) * t.height,
+        width: (face.width / s.width) * t.width,
+        height: (face.height / s.height) * t.height,
+      };
+      f.targetFaces = [unturnBox(b, ((4 - rotation) % 4) as QuarterTurn)];
+      f.version = "reviewed-heart-framing/7";
+    }
     return f;
   }
   if (
@@ -212,7 +279,11 @@ export function prepareProductCanvas(
   before = false,
   captionPixels?: Uint8Array,
 ) {
-  if (f.version === "reviewed-caption-framing/6") {
+  if (
+    ["reviewed-caption-framing/6", "reviewed-heart-caption-framing/8"].includes(
+      f.version,
+    )
+  ) {
     if (!f.caption || (!before && captionPixels?.length !== 500 * 500 * 3))
       throw Error("caption/not-ready");
     const base = frameProduct(
@@ -223,6 +294,8 @@ export function prepareProductCanvas(
         f.framing?.keepShoulders,
         f.framing?.adjustments,
         f.framing?.rotation,
+        undefined,
+        f.version === "reviewed-heart-caption-framing/8",
       ),
       portrait = prepareCustomerCanvas(source, mask, base, shape, before),
       c = document.createElement("canvas");
@@ -234,7 +307,7 @@ export function prepareProductCanvas(
     ctx.drawImage(
       portrait.canvas,
       (1 - scale) * 250,
-      0,
+      f.version === "reviewed-heart-caption-framing/8" ? 20 : 0,
       500 * scale,
       500 * scale,
     );

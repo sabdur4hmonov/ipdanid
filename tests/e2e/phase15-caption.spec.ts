@@ -53,7 +53,9 @@ for (const [shape, text] of [
         JSON.parse(localStorage.getItem("iprasm.projects.v1")!)[0].instruction,
     );
     await validateInstruction(guide);
-    expect(guide.params.kitPreparation.version).toBe("standard-preparation/6");
+    expect(guide.params.kitPreparation.version).toBe(
+      shape === "heart" ? "standard-preparation/8" : "standard-preparation/6",
+    );
     expect(guide.params.kitPreparation.transform.caption.text).toBe(text);
     expect(guide.algorithm).toBe("classic-greedy/3");
     expect(guide.metrics.lines).toBe(3000);

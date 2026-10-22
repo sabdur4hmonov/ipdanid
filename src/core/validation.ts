@@ -209,6 +209,8 @@ export async function validateInstruction(
               "standard-preparation/4",
               "standard-preparation/5",
               "standard-preparation/6",
+              "standard-preparation/7",
+              "standard-preparation/8",
             ]
           : ["standard-preparation/1"]
       ).includes(k.version) ||
@@ -216,7 +218,9 @@ export async function validateInstruction(
       !["automatic", "manual", "original"].includes(k.whiteBackground) ||
       JSON.stringify(k.transform) !==
         JSON.stringify(
-          k.version === "standard-preparation/6"
+          ["standard-preparation/6", "standard-preparation/8"].includes(
+            k.version,
+          )
             ? withPortraitCaption(
                 frameProduct(
                   k.transform.product!.kind,
@@ -227,6 +231,7 @@ export async function validateInstruction(
                   k.transform.framing?.adjustments,
                   k.transform.framing?.rotation,
                   k.transform.product?.bounds,
+                  k.version === "standard-preparation/8",
                 ),
                 p.shape,
                 k.transform.caption?.text ?? "",
@@ -234,7 +239,9 @@ export async function validateInstruction(
                   ? "bidi/2"
                   : "single/1",
               )
-            : k.version === "standard-preparation/5"
+            : ["standard-preparation/5", "standard-preparation/7"].includes(
+                  k.version,
+                )
               ? frameProduct(
                   k.transform.product!.kind,
                   k.transform.faces,
@@ -244,6 +251,7 @@ export async function validateInstruction(
                   k.transform.framing?.adjustments,
                   k.transform.framing?.rotation,
                   k.transform.product?.bounds,
+                  k.version === "standard-preparation/7",
                 )
               : k.version === "standard-preparation/4"
                 ? frameCustomerHeads(

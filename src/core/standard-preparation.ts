@@ -27,7 +27,9 @@ export interface FaceFill {
     | "reviewed-head-framing/3"
     | "reviewed-customer-framing/4"
     | "reviewed-product-framing/5"
-    | "reviewed-caption-framing/6";
+    | "reviewed-caption-framing/6"
+    | "reviewed-heart-framing/7"
+    | "reviewed-heart-caption-framing/8";
   caption?: {
     version: "portrait-caption/1" | "portrait-caption/2";
     text: string;
@@ -59,7 +61,9 @@ export interface KitPreparation {
     | "standard-preparation/3"
     | "standard-preparation/4"
     | "standard-preparation/5"
-    | "standard-preparation/6";
+    | "standard-preparation/6"
+    | "standard-preparation/7"
+    | "standard-preparation/8";
   sourceHash: string;
   sourceAspect: number;
   whiteBackground: "automatic" | "manual" | "original";

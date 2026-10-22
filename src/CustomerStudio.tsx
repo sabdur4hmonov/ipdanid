@@ -48,7 +48,7 @@ import { HEART_POLYGON } from "./core/geometry";
 import { PhotoActions } from "./PhotoActions";
 import { customerFlowText } from "./customer-flow-i18n";
 import { DEFAULT_CUSTOMER_LINES } from "./customer-defaults";
-import {analyticsClient} from './analytics-client';
+import { analyticsClient } from "./analytics-client";
 import { validateInstruction } from "./core/validation";
 import { useBuildAccess } from "./useBuildAccess";
 import { BuildGate } from "./BuildGate";
@@ -146,6 +146,9 @@ export function CustomerStudio({
             ),
             rotation,
             bounds,
+            kind === "people" &&
+              shape === "heart" &&
+              analysis.faces.length === 1,
           )
         : undefined,
     [source, analysis, shape, shoulders, adjustments, rotation, kind, bounds],
@@ -301,7 +304,7 @@ export function CustomerStudio({
     }
   }
   async function photo(file: File) {
-    const telemetry=analyticsClient.capture();
+    const telemetry = analyticsClient.capture();
     const id = ++upload.current;
     controller.current?.abort();
     worker.current?.terminate();
@@ -334,7 +337,7 @@ export function CustomerStudio({
       c.getContext("2d")!.drawImage(image, 0, 0, c.width, c.height);
       image.close();
       setSource(c);
-      telemetry({kind:'photo-selected',shape});
+      telemetry({ kind: "photo-selected", shape });
       const abort = new AbortController();
       controller.current = abort;
       let a: PhotoAnalysis;
@@ -501,7 +504,7 @@ export function CustomerStudio({
     setSelected(0);
   }
   async function generate(budget = lines) {
-    const telemetry=analyticsClient.capture();
+    const telemetry = analyticsClient.capture();
     if (!prepared || !framing || !source || !sourceHash) return;
     worker.current?.terminate();
     const id = ++generation.current,
@@ -514,9 +517,14 @@ export function CustomerStudio({
     setFraction(0);
     setError("");
     const proof: KitPreparation = {
-      version: framing.caption
-        ? "standard-preparation/6"
-        : "standard-preparation/5",
+      version:
+        framing.version === "reviewed-heart-framing/7"
+          ? "standard-preparation/7"
+          : framing.version === "reviewed-heart-caption-framing/8"
+            ? "standard-preparation/8"
+            : framing.caption
+              ? "standard-preparation/6"
+              : "standard-preparation/5",
       sourceHash,
       sourceAspect: source.width / source.height,
       whiteBackground: "automatic",
@@ -548,7 +556,7 @@ export function CustomerStudio({
           const i = await validateInstruction(data.instruction);
           if (id !== generation.current) return;
           setResult(i);
-          telemetry({kind:'preview-ready',shape:i.profile.shape});
+          telemetry({ kind: "preview-ready", shape: i.profile.shape });
           onPersist(i);
           setStep("result");
           await clearOptimizerRecovery();
@@ -633,10 +641,20 @@ export function CustomerStudio({
                 <option value="en">English</option>
               </select>
             )}
-            <button onClick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');onNavigate("library");}}>
+            <button
+              onClick={(event) => {
+                event.currentTarget.closest("details")?.removeAttribute("open");
+                onNavigate("library");
+              }}
+            >
               {t("library")}
             </button>
-            <button onClick={event=>{event.currentTarget.closest('details')?.removeAttribute('open');onNavigate("customer");}}>
+            <button
+              onClick={(event) => {
+                event.currentTarget.closest("details")?.removeAttribute("open");
+                onNavigate("customer");
+              }}
+            >
               {t("account")}
             </button>
             <label>
