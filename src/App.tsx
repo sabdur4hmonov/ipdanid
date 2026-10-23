@@ -266,6 +266,7 @@ export default function App() {
               onClaimHandled={() => setKitClaim(null)}
               locale={locale}
               projects={projects.filter((p) => canBuild(p.instruction))}
+              onRestore={context.restoreAccountProject}
               onImport={(i, p) => {
                 const next: Project = {
                   id: crypto.randomUUID(),

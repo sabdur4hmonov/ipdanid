@@ -273,19 +273,12 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
     })
     .click();
   await expect(hub.getByTestId("customer-credits")).toHaveText("1");
-  const remote = hub
-    .locator("section")
-    .filter({
-      has: page.getByRole("heading", {
-        name: "Server instructions",
-        exact: true,
-      }),
-    });
-  await remote.getByRole("button", { name: "Refresh", exact: true }).click();
+  const remote = hub.getByTestId("account-recovery");
+  await remote.getByRole("button", { name: "Refresh from server", exact: true }).click();
   await remote
-    .getByRole("button", { name: "Save local progress", exact: true })
+    .getByRole("button", { name: "Save this device’s copy", exact: true })
     .click();
-  await expect(remote).toContainText("Confirmed: 10");
+  await expect(remote).toContainText("Confirmed step: 10");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.getByRole("button", { name: "Resume", exact: true }).click();
   await revealControl(page.getByLabel("Jump to exact step", { exact: true }));
@@ -302,9 +295,9 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
     .click();
   await expect(hub.getByTestId("customer-credits")).toHaveText("1");
   await hub.getByRole("button", { name: "Project sync", exact: true }).click();
-  await remote.getByRole("button", { name: "Refresh", exact: true }).click();
+  await remote.getByRole("button", { name: "Refresh from server", exact: true }).click();
   await remote
-    .getByRole("button", { name: "Use server progress", exact: true })
+    .getByRole("button", { name: "Restore server copy", exact: true })
     .click();
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await expect(

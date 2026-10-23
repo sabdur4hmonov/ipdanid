@@ -1,12 +1,16 @@
-import type { Progress } from './core/types';
+import type { Progress } from "./core/types";
 
 /** Account metadata, separate from immutable instructions and paid receipts. */
 export type RecoveryDetails = {
   resume: { current: number; pace: number; resting: boolean } | null;
-  library: { name: string; folder: string; bookmarks: { step: number; label: string }[] };
+  library: {
+    name: string;
+    folder: string;
+    bookmarks: { step: number; label: string }[];
+  };
 };
 export type RecoverySnapshot = {
-  version: 'account-recovery/1';
+  version: "account-recovery/1";
   progress: Progress;
   details: RecoveryDetails | null;
 };

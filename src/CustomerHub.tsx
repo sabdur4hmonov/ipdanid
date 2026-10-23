@@ -1,3 +1,5 @@
+import type {RecoverySnapshot} from './recovery-types';
+const RecoveryPanel=lazy(()=>import('./RecoveryPanel'));
 import { PaymentOptions } from "./PaymentOptions";
 import { AdminPasswordLogin, adminLoginText } from "./AdminPasswordLogin";
 import { OwnerAdminNavigation } from "./OwnerAdminNavigation";
@@ -131,6 +133,7 @@ export function CustomerHub({
   projects,
   onImport,
   onProgress,
+  onRestore,
   onApplyProfile,
   kitClaim,
   onClaimHandled,
@@ -139,6 +142,7 @@ export function CustomerHub({
 }: {
   locale: Locale;
   projects: Project[];
+  onRestore: (instruction: Instruction, snapshot: RecoverySnapshot, valid:()=>boolean) => Promise<void>;
   onImport: (instruction: Instruction, progress: Progress) => void;
   onProgress: (id: string, progress: Progress) => void;
   onApplyProfile: (profile: string) => void | Promise<void>;
@@ -1392,92 +1396,9 @@ export function CustomerHub({
                   </article>
                 ))}
             </section>
-            <section className="card">
-              <h2>{t("serverProjects")}</h2>
-              {!remote.length && <p>{t("empty")}</p>}
-              {remote.map((r) => {
-                const local = projects.find(
-                  (p) =>
-                    !p.deletedAt &&
-                    p.instruction.sequenceHash === r.sequence_hash,
-                );
-                const snapshot = snapshots[r.id];
-                return (
-                  <article className="customer-item" key={r.id}>
-                    <code>{r.sequence_hash.slice(0, 16)}</code>
-                    <button
-                      className="outline"
-                      onClick={() =>
-                        void run(async () => {
-                          await inspect(r);
-                        })
-                      }
-                    >
-                      {t("refresh")}
-                    </button>
-                    {snapshot && (
-                      <>
-                        <p>
-                          {t("confirmed")}: {snapshot.confirmed} · revision{" "}
-                          {snapshot.revision}
-                        </p>
-                        {local ? (
-                          <div className="customer-actions">
-                            <button
-                              onClick={() =>
-                                void run(async () => {
-                                  const saved = await api.request<Progress>(
-                                    `/instructions/${r.id}/progress`,
-                                    {
-                                      progress: local.progress,
-                                      expectedRevision: snapshot.revision,
-                                    },
-                                  );
-                                  setSnapshots((v) => ({
-                                    ...v,
-                                    [r.id]: saved,
-                                  }));
-                                  setNotice(t("saved"));
-                                })
-                              }
-                            >
-                              {t("push")}
-                            </button>
-                            <button
-                              className="outline"
-                              onClick={() =>
-                                void run(async () => {
-                                  const latest = await inspect(r);
-                                  onProgress(local.id, latest);
-                                  setNotice(t("saved"));
-                                })
-                              }
-                            >
-                              {t("pull")}
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              void run(async () => {
-                                const i = await api.request<Instruction>(
-                                  `/instructions/${r.id}`,
-                                );
-                                await validateInstruction(i);
-                                const p = await inspect(r);
-                                onImport(i, p);
-                              })
-                            }
-                          >
-                            {t("download")}
-                          </button>
-                        )}
-                      </>
-                    )}
-                  </article>
-                );
-              })}
-            </section>
+            <Suspense fallback={<p role="status">…</p>}>
+              <RecoveryPanel key={api.session?.token} locale={locale} projects={projects} remote={remote} onRestore={onRestore}/>
+            </Suspense>
           </>
         )}
         {pane === "support" && connected && (

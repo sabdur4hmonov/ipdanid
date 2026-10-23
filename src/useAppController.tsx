@@ -1,3 +1,5 @@
+import {recoveredProject} from './recovery-client';
+import type {RecoverySnapshot} from './recovery-types';
 import {
   readAssemblySession,
   writeAssemblySession,
@@ -1738,6 +1740,25 @@ export function useAppController(initialView: View = "create") {
       strategy: requestedStrategy,
     });
   }
+  async function restoreAccountProject(guide: Instruction, snapshot: RecoverySnapshot, valid:()=>boolean) {
+    if (!valid() || !loaded) return;
+    const old=projects.find(p=>!p.deletedAt && p.instruction.sequenceHash===guide.sequenceHash);
+    const restored=recoveredProject(deepFreeze(guide),snapshot,old);
+    const next=old ? projects.map(p=>p.id===old.id?restored.project:p) : [restored.project,...projects];
+    pause();
+    await writeProjects(next);
+    if (!valid()) return;
+    await writeAssemblySession(restored.session);
+    if (!valid()) return;
+    setProjects(next);
+    setSelected(restored.project.id);
+    setCurrent(restored.session.current);
+    setPace(restored.session.pace);
+    setRestStatus({projectId:restored.project.id,current:restored.session.current,state:'saved'});
+    setConfirmedUndo(null);
+    setView('assemble');
+    setZoom(1);setPan({x:0,y:0});
+  }
   function open(p: Project) {
     pause();
     setSelected(p.id);
@@ -2036,6 +2057,7 @@ export function useAppController(initialView: View = "create") {
     paper,
     pause,
     restAssembly,
+    restoreAccountProject,
     resting,
     restSaveState: restStatus?.state ?? "saved",
     resumeAssembly: () => setRestStatus(undefined),

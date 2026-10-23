@@ -1,3 +1,7 @@
+# 2026-10-23 — Ikki brauzerda ayni hisobdan davom ettirish
+
+Hisobdagi loyiha uchun saqlash/tiklash, qolgan qadam, papka/belgi va aloqa uzilganda qayta yuborish interfeysi ishlaydi. Ayni parol bilan ikkinchi brauzerda17-qadam tiklandi, bajarilgan qadam4bo‘lib qoldi; ovoz o‘zi boshlanmadi.32unit,8brauzer+2APIyakuniy holat va build o‘tdi.4212eski nusxasi o‘zgarmagan. Native/telefon huquqini qayta olish, shaxsiy surat zaxirasi va umumiy hisob o‘chirish ishlari hali C21da ochiq. Tiniqlik muammosi ham ochiq; quyidagi hisobotlar o‘z davridagi holatni ko‘rsatadi.
+
 # 2026-10-23 — Hisobni boshqa qurilmada davom ettirish, server qismi
 
 Tasdiqlangan qadam, dam olgan joy, tezlik, papka va belgilarni bitta hisobda xavfsiz saqlash qo‘shildi. Eski nusxa yangisini bosib ketmaydi; qayta urinish kredit sarflamaydi.19unit va2haqiqiy API testi, TypeScript/build o‘tdi. **Interfeysga ulash va barcha ma’lumotlar ko‘chishini tekshirish hali C21bda**;4212dagi sinov o‘zgarmagan. docs/ACCOUNT_RECOVERY_CHECKPOINT.md.

@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-23 — Ikki brauzerda ayni hisob, qolgan joyni tiklash
+
+Avtomatik tekshirildi:32unit,8ta brauzer holati va2API testi. Yangi kodda Menu → Hisob → Loyihalar sinxroni → yo‘riqnomani hisobga yuklash → Serverdan yangilash → Shu qurilmadagini saqlash. Ikkinchi brauzerda ayni email/parol → Loyihalar sinxroni → Serverdan yangilash → Serverdagi nusxani tiklash. Sinovda aynan17-qadamda to‘xtab turdi, bajarilgan qadam4bo‘lib qoldi, papka/belgi ham keldi. Aloqa yo‘q bo‘lsa Qayta yuborish; eski nusxa to‘qnashsa o‘zi ustidan yozmaydi. Bu tugmalar yangi kodda; eski4212sinov sahifasi ataylab o‘zgartirilmagan. Qo‘lda sinashingizni kutmaymiz. Telefon ilovasi, to‘langan yo‘riqnoma huquqini qayta olish va asl surat zaxirasi keyingi sinov.
+
 ## 2026-10-23 — Qurilmalar orasida davom ettirish (server sinovi)
 
 Hozir qo‘lda sinashingiz shart emas.19unit+2haqiqiy API testi: bitta login bilan ikki kirish, tasdiqlangan4-qadamdan alohida17-qadamda dam olish, papka/belgilar, eski nusxani rad qilish va saqlash xatosidan qaytish o‘tdi.4212o‘zgarmagan. Keyingi interfeys tayyor bo‘lgach: webda hisobga kiring → loyihani/qolgan joyni saqlang → boshqa brauzer yoki yangi ilovada ayni hisob bilan kiring → tiklang → ayni17-qadamda to‘xtab turishi, tasdiqlangan qadam4bo‘lib qolishi kerak. Hozir bu yangi tugmalar hali ulanmagan.

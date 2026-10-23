@@ -1,40 +1,147 @@
-import { test, expect } from '@playwright/test';
-import { generate } from '../../src/core/engine';
-import { createProfile } from '../../src/core/geometry';
-test.use({trace:'off'});
-test('two authenticated clients share exact recovery state and reject stale, private and legacy conflicts', async ({request}) => {
-  const guest = await (await request.post('/api/session')).json();
-  const registered = await request.post('/api/account/register',{headers:{Authorization:'Bearer '+guest.token},data:{email:crypto.randomUUID()+'@example.invalid',password:'Synthetic-password-123!'}});
-  expect(registered.ok()).toBe(true); const account = await registered.json();
-  const h={Authorization:'Bearer '+account.token};
-  const issued = await request.post('/api/admin/codes',{headers:{Authorization:'Bearer '+process.env.LOCAL_ADMIN_TOKEN!},data:{profile:'dev-circle-120-dark',quota:3,expiresAt:Date.now()+60000}});
-  expect(issued.ok()).toBe(true); const code=await issued.json();
-  expect((await request.post('/api/codes/redeem',{headers:h,data:{code:code.code}})).ok()).toBe(true);
-  const instruction=await generate({pixels:new Uint8Array(32*32*3).fill(90),resolution:32,profile:createProfile('circle',48),lines:40,mode:'dark'});
-  const reserved=await request.post('/api/jobs/reserve',{headers:h,data:{requestKey:crypto.randomUUID(),sequenceHash:instruction.sequenceHash}});
-  expect(reserved.ok()).toBe(true); const job=await reserved.json();
-  const archived=await request.post('/api/jobs/finish',{headers:h,data:{jobId:job.id,instruction}});
-  expect(archived.ok()).toBe(true); const id=(await archived.json()).instructionId, path=`/api/instructions/${id}/recovery`;
-  const body={sequenceHash:instruction.sequenceHash,confirmed:4,expectedRevision:0,requestKey:crypto.randomUUID(),resume:{current:17,pace:8,resting:true},library:{name:'Private portrait',folder:'Gifts',bookmarks:[{step:12,label:'Tension'}]}};
-  expect((await request.post(path,{data:body})).status()).toBe(401);
-  const response=await request.post(path,{headers:h,data:body}); expect(response.ok()).toBe(true); const saved=await response.json();
-  expect(saved).toMatchObject({progress:{confirmed:4,revision:1},details:{resume:body.resume,library:body.library}});
-  const login=await request.post('/api/account/login',{data:{email:account.email,password:'Synthetic-password-123!'}});
-  expect(login.ok()).toBe(true); const second=await login.json(); expect(second.id).toBe(account.id);
-  const h2={Authorization:'Bearer '+second.token};
-  expect(await (await request.get(path,{headers:h2})).json()).toEqual(saved);
-  expect(await (await request.post(path,{headers:h2,data:body})).json()).toEqual(saved);
-  expect((await request.post(path,{headers:h2,data:{...body,resume:{...body.resume,current:20}}})).status()).toBe(409);
-  const other=await (await request.post('/api/session')).json(), foreign={Authorization:'Bearer '+other.token};
-  expect((await request.get(path,{headers:foreign})).status()).toBe(404);
-  expect((await request.post(path,{headers:foreign,data:body})).status()).toBe(404);
-  expect((await request.post(path,{headers:h2,data:{...body,photo:'must not accept photo'}})).status()).toBe(400);
-  const newer=await request.post(path,{headers:h2,data:{...body,requestKey:crypto.randomUUID(),expectedRevision:1,resume:{current:23,pace:9,resting:true}}});
+import { test, expect } from "@playwright/test";
+import { generate } from "../../src/core/engine";
+import { createProfile } from "../../src/core/geometry";
+test.use({ trace: "off" });
+test("two authenticated clients share exact recovery state and reject stale, private and legacy conflicts", async ({
+  request,
+}) => {
+  const guest = await (await request.post("/api/session")).json();
+  const registered = await request.post("/api/account/register", {
+    headers: { Authorization: "Bearer " + guest.token },
+    data: {
+      email: crypto.randomUUID() + "@example.invalid",
+      password: "Synthetic-password-123!",
+    },
+  });
+  expect(registered.ok()).toBe(true);
+  const account = await registered.json();
+  const h = { Authorization: "Bearer " + account.token };
+  const issued = await request.post("/api/admin/codes", {
+    headers: { Authorization: "Bearer " + process.env.LOCAL_ADMIN_TOKEN! },
+    data: {
+      profile: "dev-circle-120-dark",
+      quota: 3,
+      expiresAt: Date.now() + 60000,
+    },
+  });
+  expect(issued.ok()).toBe(true);
+  const code = await issued.json();
+  expect(
+    (
+      await request.post("/api/codes/redeem", {
+        headers: h,
+        data: { code: code.code },
+      })
+    ).ok(),
+  ).toBe(true);
+  const instruction = await generate({
+    pixels: new Uint8Array(32 * 32 * 3).fill(90),
+    resolution: 32,
+    profile: createProfile("circle", 48),
+    lines: 40,
+    mode: "dark",
+  });
+  const reserved = await request.post("/api/jobs/reserve", {
+    headers: h,
+    data: {
+      requestKey: crypto.randomUUID(),
+      sequenceHash: instruction.sequenceHash,
+    },
+  });
+  expect(reserved.ok()).toBe(true);
+  const job = await reserved.json();
+  const archived = await request.post("/api/jobs/finish", {
+    headers: h,
+    data: { jobId: job.id, instruction },
+  });
+  expect(archived.ok()).toBe(true);
+  const id = (await archived.json()).instructionId,
+    path = `/api/instructions/${id}/recovery`;
+  const body = {
+    sequenceHash: instruction.sequenceHash,
+    confirmed: 4,
+    expectedRevision: 0,
+    requestKey: crypto.randomUUID(),
+    resume: { current: 17, pace: 8, resting: true },
+    library: {
+      name: "Private portrait",
+      folder: "Gifts",
+      bookmarks: [{ step: 12, label: "Tension" }],
+    },
+  };
+  expect((await request.post(path, { data: body })).status()).toBe(401);
+  const response = await request.post(path, { headers: h, data: body });
+  expect(response.ok()).toBe(true);
+  const saved = await response.json();
+  expect(saved).toMatchObject({
+    progress: { confirmed: 4, revision: 1 },
+    details: { resume: body.resume, library: body.library },
+  });
+  const login = await request.post("/api/account/login", {
+    data: { email: account.email, password: "Synthetic-password-123!" },
+  });
+  expect(login.ok()).toBe(true);
+  const second = await login.json();
+  expect(second.id).toBe(account.id);
+  const h2 = { Authorization: "Bearer " + second.token };
+  expect(await (await request.get(path, { headers: h2 })).json()).toEqual(
+    saved,
+  );
+  expect(
+    await (await request.post(path, { headers: h2, data: body })).json(),
+  ).toEqual(saved);
+  expect(
+    (
+      await request.post(path, {
+        headers: h2,
+        data: { ...body, resume: { ...body.resume, current: 20 } },
+      })
+    ).status(),
+  ).toBe(409);
+  const other = await (await request.post("/api/session")).json(),
+    foreign = { Authorization: "Bearer " + other.token };
+  expect((await request.get(path, { headers: foreign })).status()).toBe(404);
+  expect(
+    (await request.post(path, { headers: foreign, data: body })).status(),
+  ).toBe(404);
+  expect(
+    (
+      await request.post(path, {
+        headers: h2,
+        data: { ...body, photo: "must not accept photo" },
+      })
+    ).status(),
+  ).toBe(400);
+  const newer = await request.post(path, {
+    headers: h2,
+    data: {
+      ...body,
+      requestKey: crypto.randomUUID(),
+      expectedRevision: 1,
+      resume: { current: 23, pace: 9, resting: true },
+    },
+  });
   expect(newer.ok()).toBe(true);
-  expect((await request.post(path,{headers:h,data:body})).status()).toBe(409);
-  const legacy=await request.post(`/api/instructions/${id}/progress`,{headers:h,data:{progress:{...saved.progress,confirmed:7},expectedRevision:2}});
+  expect((await request.post(path, { headers: h, data: body })).status()).toBe(
+    409,
+  );
+  const legacy = await request.post(`/api/instructions/${id}/progress`, {
+    headers: h,
+    data: {
+      progress: { ...saved.progress, confirmed: 7 },
+      expectedRevision: 2,
+    },
+  });
   expect(legacy.ok()).toBe(true);
-  expect(await (await request.get(path,{headers:h2})).json()).toMatchObject({progress:{confirmed:7,revision:3},details:null});
-  expect(await (await request.get('/api/account',{headers:h2})).json()).toMatchObject({credits:2});
-  expect(await (await request.get(`/api/instructions/${id}`,{headers:h2})).json()).toEqual(instruction);
+  expect(await (await request.get(path, { headers: h2 })).json()).toMatchObject(
+    { progress: { confirmed: 7, revision: 3 }, details: null },
+  );
+  expect(
+    await (await request.get("/api/account", { headers: h2 })).json(),
+  ).toMatchObject({ credits: 2 });
+  expect(
+    await (
+      await request.get(`/api/instructions/${id}`, { headers: h2 })
+    ).json(),
+  ).toEqual(instruction);
 });
