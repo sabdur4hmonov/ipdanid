@@ -436,3 +436,6 @@ Hozir qo‘lda tekshirishingiz shart emas. Yakuniy yangi manzilda: suratni tanla
 
 ## 2026-10-23 — Shaxsiy surat zaxirasi API
 Server qismi avtomatik tekshirildi: nusxa faqat hisob egasiga ochiladi, rozilik talab qiladi, o‘chirilgan suratni eski so‘rov qayta saqlamaydi. Hozir qo‘lda test shart emas. Saqlash/ochish/o‘chirish oynasi keyingi bosqichda ulanadi; 4212 hali o‘zgarmagan. Boshqa qurilma sessiyasi oddiy chiqishda yopilmaydi.
+
+## 2026-10-23 — Hisobdagi surat zaxirasi (yangi build)
+Hozir qo‘lda sinov shart emas. Yakuniy yangi manzilda Menyu → Hisob orqali kiring. Suratni moslang → Menyu → Suratni keyin davom ettirish → “Zaxira holatini tekshirish”. Suratni serverga yuborish roziligini alohida belgilang, “Hisobimda saqlash”. Boshqa qurilmada shu hisobga kirib, shu oynadan “Hisobdagi suratni ochish” joylashuv va qirqimni aynan qaytaradi. Bitta nusxa 30 kungacha; keyingi saqlash eskisini almashtiradi. O‘chirish alohida tasdiqlanadi. Aloqa uzilsa “Avvalgi so‘rovni qayta yuborish”; “unutish” serverdagi nusxani o‘chirmaydi. Bu nusxa galereyada ommaga e’lon qilinmaydi. 4212 eski build; yangisi finalda ochiladi.

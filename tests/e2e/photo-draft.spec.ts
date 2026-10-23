@@ -71,9 +71,9 @@ test("explicit local photo draft restores exact cutout and placement offline, th
   await page
     .getByRole("button", { name: "Open saved photo", exact: true })
     .click();
-  await expect(
-    page.getByTestId("photo-draft-panel").getByRole("status"),
-  ).toContainText("No saved photo");
+  await expect(page.getByTestId("local-photo-draft-status")).toContainText(
+    "No saved photo",
+  );
   await page.getByRole("button", { name: "Close", exact: true }).click();
   await gallery(page, photoCases[0]);
   await page.getByRole("button", { name: "Heart", exact: true }).click();
@@ -97,9 +97,9 @@ test("explicit local photo draft restores exact cutout and placement offline, th
   await page
     .getByRole("button", { name: "Save on this device", exact: true })
     .click();
-  await expect(
-    page.getByTestId("photo-draft-panel").getByRole("status"),
-  ).toHaveText("Saved");
+  await expect(page.getByTestId("local-photo-draft-status")).toHaveText(
+    "Saved",
+  );
   expect(uploads).toBe(0);
   await page.evaluate(() => {
     const original = IDBObjectStore.prototype.put;
@@ -116,9 +116,9 @@ test("explicit local photo draft restores exact cutout and placement offline, th
   await page
     .getByRole("button", { name: "Save on this device", exact: true })
     .click();
-  await expect(
-    page.getByTestId("photo-draft-panel").getByRole("status"),
-  ).toContainText("Could not finish");
+  await expect(page.getByTestId("local-photo-draft-status")).toContainText(
+    "Could not finish",
+  );
   // The failed replacement must leave the prior committed photo readable.
   await page.reload();
   await english(page);
@@ -163,14 +163,14 @@ test("explicit local photo draft restores exact cutout and placement offline, th
   await page
     .getByRole("button", { name: "Delete saved photo", exact: true })
     .click();
-  await expect(
-    page.getByTestId("photo-draft-panel").getByRole("status"),
-  ).toHaveText("Saved copy deleted");
+  await expect(page.getByTestId("local-photo-draft-status")).toHaveText(
+    "Saved copy deleted",
+  );
   await page
     .getByRole("button", { name: "Open saved photo", exact: true })
     .click();
-  await expect(
-    page.getByTestId("photo-draft-panel").getByRole("status"),
-  ).toHaveText("No saved photo");
+  await expect(page.getByTestId("local-photo-draft-status")).toHaveText(
+    "No saved photo",
+  );
   await context.setOffline(false);
 });

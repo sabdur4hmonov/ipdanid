@@ -7,6 +7,7 @@ import {
   deletePhotoDraft,
 } from "./photo-draft-storage";
 import { photoDraftText } from "./photo-draft-i18n";
+import PrivatePhotoBackupPanel from "./PrivatePhotoBackupPanel";
 export default function PhotoDraftPanel({
   locale,
   capture,
@@ -81,7 +82,17 @@ export default function PhotoDraftPanel({
         </button>
         <button onClick={close}>{t("close")}</button>
       </div>
-      <p role="status">{notice}</p>
+      <p role="status" data-testid="local-photo-draft-status">
+        {notice}
+      </p>
+      <PrivatePhotoBackupPanel
+        locale={locale}
+        capture={capture}
+        restore={(d) => {
+          restore(d);
+          close();
+        }}
+      />
     </dialog>
   );
 }
