@@ -135,18 +135,42 @@ export function freePhotoCanvas(
   ctx.drawImage(source, t.left * n, t.top * n, t.width * n, t.height * n);
   ctx.resetTransform();
   const d = ctx.getImageData(0, 0, n, n),
-    pixels = new Uint8Array(n * n * 3);
-  for (let k = 0; k < n * n; k++)
-    for (let ch = 0; ch < 3; ch++) {
-      const v = inside(
-        shape,
-        ((k % n) + 0.5) / n,
-        (Math.floor(k / n) + 0.5) / n,
-      )
-        ? Math.min(d.data[k * 4 + ch], captionPixels?.[k * 3 + ch] ?? 255)
-        : 255;
-      pixels[k * 3 + ch] = d.data[k * 4 + ch] = v;
-    }
+    pixels = maskFreePhotoPixels(d.data, shape, captionPixels);
   ctx.putImageData(d, 0, 0);
   return { canvas: c, pixels };
+}
+
+// The same 500px pixel-centre containment rule for every adjustment. Previously
+// each RGB channel repeated a polygon walk, twice per render (colour + target).
+// Cache only these three fixed shape masks, never a photo or user transform.
+const shapeMasks = new Map<Shape, Uint8Array>();
+export function maskFreePhotoPixels(
+  rgba: Uint8ClampedArray,
+  shape: Shape,
+  captionPixels?: Uint8Array,
+) {
+  const n = 500;
+  if (
+    rgba.length !== n * n * 4 ||
+    (captionPixels && captionPixels.length !== n * n * 3)
+  )
+    throw Error("free-photo/pixel-size");
+  let mask = shapeMasks.get(shape);
+  if (!mask) {
+    mask = Uint8Array.from(
+      { length: n * n },
+      (_, k) =>
+        +inside(shape, ((k % n) + 0.5) / n, (Math.floor(k / n) + 0.5) / n),
+    );
+    shapeMasks.set(shape, mask);
+  }
+  const pixels = new Uint8Array(n * n * 3);
+  for (let k = 0; k < n * n; k++)
+    for (let ch = 0; ch < 3; ch++) {
+      const v = mask[k]
+        ? Math.min(rgba[k * 4 + ch], captionPixels?.[k * 3 + ch] ?? 255)
+        : 255;
+      pixels[k * 3 + ch] = rgba[k * 4 + ch] = v;
+    }
+  return pixels;
 }

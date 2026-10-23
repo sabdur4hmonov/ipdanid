@@ -2,6 +2,7 @@ import { test, expect } from "vitest";
 import {
   frameFreePhoto,
   freePhotoSourcePoint,
+  maskFreePhotoPixels,
 } from "../src/core/free-photo-framing";
 import { withPortraitCaption } from "../src/core/portrait-caption";
 import {
@@ -14,6 +15,41 @@ import {
 } from "../src/core/standard-kit";
 import { validateInstruction } from "../src/core/validation";
 import { turnPoint } from "../src/core/customer-framing";
+import { inside } from "../src/core/geometry";
+test("cached fixed-shape raster is byte-identical to the original pixel-centre rule, including caption and reuse", () => {
+  const rgba = Uint8ClampedArray.from(
+      { length: 500 * 500 * 4 },
+      (_, i) => i % 256,
+    ),
+    caption = Uint8Array.from(
+      { length: 500 * 500 * 3 },
+      (_, i) => (i * 11) % 256,
+    );
+  for (const shape of ["circle", "rectangle", "heart"] as const) {
+    const expected = new Uint8Array(500 * 500 * 3);
+    for (let k = 0; k < 500 * 500; k++) {
+      const keep = inside(
+        shape,
+        ((k % 500) + 0.5) / 500,
+        (Math.floor(k / 500) + 0.5) / 500,
+      );
+      for (let ch = 0; ch < 3; ch++)
+        expected[k * 3 + ch] = keep
+          ? Math.min(rgba[k * 4 + ch], caption[k * 3 + ch])
+          : 255;
+    }
+    expect(
+      maskFreePhotoPixels(rgba.slice(), shape, caption).every(
+        (v, i) => v === expected[i],
+      ),
+    ).toBe(true);
+    expect(
+      maskFreePhotoPixels(rgba.slice(), shape, caption).every(
+        (v, i) => v === expected[i],
+      ),
+    ).toBe(true);
+  }
+}, 20000); // The oracle deliberately repeats the old full polygon walk at 500px.
 const face = { left: 0.3, top: 0.2, width: 0.4, height: 0.5 };
 test("free composition preserves entire source, shoulders and relative placement regardless of detections", () => {
   for (const shape of ["circle", "rectangle", "heart"] as const) {

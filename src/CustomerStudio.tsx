@@ -1,7 +1,7 @@
 import { frameFreePhoto, freePhotoCanvas } from "./core/free-photo-framing";
 import { whiteBackground } from "./person-background";
 import { paintPersonMask, type PersonMask } from "./core/person-mask";
-import { referenceToneCanvas } from "./core/portrait-framing";
+import { usePhotoTone } from "./usePhotoTone";
 import { productSource, type ProductKind } from "./core/product-framing";
 import { productText } from "./product-i18n";
 import { withPortraitCaption, captionGeometry } from "./core/portrait-caption";
@@ -49,7 +49,10 @@ import {
   clearOptimizerRecovery,
 } from "./optimizer-storage";
 import "./customer-flow.css";
+import type { PhotoDraft } from "./photo-draft";
+import { photoDraftText } from "./photo-draft-i18n";
 const SequenceAnimation = lazy(() => import("./SequenceAnimation"));
+const PhotoDraftPanel = lazy(() => import("./PhotoDraftPanel"));
 
 type Props = {
   kitConfig?: StandardKitConfig;
@@ -93,6 +96,7 @@ export function CustomerStudio({
     [brush, setBrush] = useState<"erase" | "restore">("erase"),
     [maskWarning, setMaskWarning] = useState(false),
     [maskHistory, setMaskHistory] = useState<PersonMask[]>([]),
+    [restoredMaskEdited, setRestoredMaskEdited] = useState(false),
     [before, setBefore] = useState(false),
     [selected, setSelected] = useState(0),
     [preparing, setPreparing] = useState(false),
@@ -102,8 +106,10 @@ export function CustomerStudio({
     [result, setResult] = useState<Instruction>(),
     [lines, setLines] = useState<number>(DEFAULT_CUSTOMER_LINES),
     [gate, setGate] = useState<"pdf" | "start">(),
-    [pdfBusy, setPdfBusy] = useState(false);
+    [pdfBusy, setPdfBusy] = useState(false),
+    [draftOpen, setDraftOpen] = useState(false);
   const generation = useRef(0),
+    configRead = useRef(0),
     upload = useRef(0),
     controller = useRef<AbortController | undefined>(undefined),
     worker = useRef<Worker | undefined>(undefined),
@@ -115,13 +121,14 @@ export function CustomerStudio({
     gesture = useRef<{ x: number; y: number; distance: number } | undefined>(
       undefined,
     );
+  const profiles = useMemo(() => standardProfiles(config), [config]);
   const profile = useMemo(
     () =>
       leastSquaresProfile(
-        standardProfiles(config).find((p) => p.shape === shape)!,
+        profiles.find((p) => p.shape === shape)!,
         true,
       ),
-    [config, shape],
+    [profiles, shape],
   );
   const maskCanvas = useRef<HTMLCanvasElement>(null);
   const baseFraming = useMemo(
@@ -174,13 +181,8 @@ export function CustomerStudio({
       source && analysis ? whiteBackground(source, analysis.mask) : undefined,
     [source, analysis],
   );
-  const tonal = useMemo(
-    () =>
-      source && analysis && !maskEdit
-        ? referenceToneCanvas(source, analysis.mask)
-        : undefined,
-    [source, analysis, maskEdit],
-  );
+  const tone = usePhotoTone(source, analysis?.mask, !maskEdit),
+    tonal = tone?.canvas;
   const prepared = useMemo(
     () =>
       tonal &&
@@ -219,9 +221,13 @@ export function CustomerStudio({
   const allowed = useBuildAccess(result ? [result] : []);
   useEffect(() => {
     let live = true;
+    const request = ++configRead.current;
     void (kitConfig ? Promise.resolve(kitConfig) : currentStandardKit()).then(
       (c) => {
-        if (live) setConfig(c);
+        if (live && request === configRead.current)
+          setConfig((old) =>
+            JSON.stringify(old) === JSON.stringify(c) ? old : c,
+          );
       },
     );
     return () => {
@@ -314,6 +320,17 @@ export function CustomerStudio({
   async function photo(file: File) {
     const telemetry = analyticsClient.capture();
     const id = ++upload.current;
+    const configRequest = ++configRead.current;
+    void (kitConfig ? Promise.resolve(kitConfig) : currentStandardKit())
+      .then((c) => {
+        if (configRequest === configRead.current && id === upload.current)
+          setConfig((old) =>
+            JSON.stringify(old) === JSON.stringify(c) ? old : c,
+          );
+      })
+      .catch(() => {
+        if (id === upload.current) setError("error");
+      });
     controller.current?.abort();
     worker.current?.terminate();
     generation.current++;
@@ -325,6 +342,7 @@ export function CustomerStudio({
     setRotation(0);
     setMaskEdit(false);
     setMaskHistory([]);
+    setRestoredMaskEdited(false);
     setBefore(false);
     setSelected(0);
     setLines(DEFAULT_CUSTOMER_LINES);
@@ -364,6 +382,92 @@ export function CustomerStudio({
     } finally {
       if (id === upload.current) setPreparing(false);
     }
+  }
+  function captureDraft(): PhotoDraft {
+    if (!source || !analysis || preparing || busy)
+      throw Error("photo-draft/not-ready");
+    return {
+      version: "editable-photo/1",
+      maskEdited: restoredMaskEdited || maskHistory.length > 0,
+      savedAt: Date.now(),
+      width: source.width,
+      height: source.height,
+      rgba: new Uint8Array(
+        source.getContext("2d")!.getImageData(0, 0, source.width, source.height)
+          .data,
+      ),
+      analysis: structuredClone({
+        mask: analysis.mask,
+        faces: analysis.faces,
+        faceUnavailable: analysis.faceUnavailable,
+        cleanupUnavailable: analysis.cleanupUnavailable,
+        ...(analysis.analysisTurn === undefined
+          ? {}
+          : { analysisTurn: analysis.analysisTurn }),
+      }),
+      shape,
+      kind,
+      caption,
+      adjustment: { ...(adjustments[0] ?? defaultHeadAdjustment()) },
+      rotation,
+      lines,
+      config: structuredClone(config),
+    };
+  }
+  function restoreDraft(d: PhotoDraft) {
+    // Restored drafts have passed bounded integrity checks. Never rerun segmentation
+    // or silently replace their kit configuration with today's Admin revision.
+    ++upload.current;
+    ++generation.current;
+    ++configRead.current;
+    controller.current?.abort();
+    worker.current?.terminate();
+    const c = document.createElement("canvas");
+    c.width = d.width;
+    c.height = d.height;
+    c.getContext("2d")!.putImageData(
+      new ImageData(new Uint8ClampedArray(d.rgba), d.width, d.height),
+      0,
+      0,
+    );
+    setSourceHash("");
+    setSource(c);
+    setAnalysis(d.analysis);
+    setShape(d.shape);
+    setKind(d.kind);
+    setCaption(d.caption);
+    setAdjustments([d.adjustment]);
+    setRotation(d.rotation);
+    setLines(d.lines);
+    setConfig((old) =>
+      JSON.stringify(old) === JSON.stringify(d.config) ? old : d.config,
+    );
+    setResult(undefined);
+    setBefore(false);
+    setMaskEdit(false);
+    setMaskHistory([]);
+    setSelected(0);
+    setMaskWarning(d.analysis.cleanupUnavailable);
+    setRestoredMaskEdited(d.maskEdited);
+    setBusy(false);
+    setPreparing(true);
+    setError("");
+    setStep("adjust");
+    const id = upload.current;
+    void hash(d.rgba).then(
+      (digest) => {
+        if (id === upload.current) {
+          setSourceHash(digest);
+          setPreparing(false);
+        }
+      },
+      () => {
+        if (id === upload.current) {
+          setError("error");
+          setPreparing(false);
+        }
+      },
+    );
   }
   async function analyseCutout(
     c: HTMLCanvasElement,
@@ -416,6 +520,7 @@ export function CustomerStudio({
             : a,
         );
         setMaskHistory([]);
+        setRestoredMaskEdited(false);
       }
     } catch {
       if (id === upload.current) setError("error");
@@ -545,7 +650,8 @@ export function CustomerStudio({
       version: "standard-preparation/9",
       sourceHash,
       sourceAspect: source.width / source.height,
-      whiteBackground: maskHistory.length ? "manual" : "automatic",
+      whiteBackground:
+        restoredMaskEdited || maskHistory.length ? "manual" : "automatic",
       transform: framing,
     };
     w.onmessage = async ({ data }) => {
@@ -647,6 +753,14 @@ export function CustomerStudio({
         <details className="customer-menu" data-testid="customer-menu">
           <summary>{t("menu")}</summary>
           <div>
+            <button
+              onClick={(event) => {
+                event.currentTarget.closest("details")?.removeAttribute("open");
+                setDraftOpen(true);
+              }}
+            >
+              {photoDraftText(locale, "title")}
+            </button>
             {active && (
               <select
                 aria-label="Language"
@@ -708,6 +822,20 @@ export function CustomerStudio({
           </div>
         </details>
       </header>
+      {draftOpen && active && (
+        <Suspense fallback={null}>
+          <PhotoDraftPanel
+            locale={locale}
+            capture={
+              source && analysis && !preparing && !busy
+                ? captureDraft
+                : undefined
+            }
+            restore={restoreDraft}
+            close={() => setDraftOpen(false)}
+          />
+        </Suspense>
+      )}
       {step === "start" && (
         <div className="customer-start" data-testid="customer-start">
           {kind === "lettering" ? (
@@ -861,20 +989,20 @@ export function CustomerStudio({
                   max="4"
                   step=".01"
                   value={adjustments[selected]?.zoom ?? 1}
-                  disabled={!prepared || busy}
+                  disabled={!display || busy}
                   onChange={(e) => zoom(Number(e.target.value))}
                 />
               </label>
               <div className="customer-adjust-tools">
                 <button
-                  disabled={!prepared || busy}
+                  disabled={!display || busy}
                   onClick={() =>
                     setRotation(((rotation + 1) % 4) as QuarterTurn)
                   }
                 >
                   {t("rotate")} ↻
                 </button>
-                <button disabled={!prepared || busy} onClick={reset}>
+                <button disabled={!display || busy} onClick={reset}>
                   {t("reset")}
                 </button>
               </div>
@@ -955,6 +1083,11 @@ export function CustomerStudio({
                   <p role="alert">{t("captionError")}</p>
                 )}
             </>
+          )}
+          {source && analysis && !maskEdit && !tonal && (
+            <p role={tone?.failed ? "alert" : "status"}>
+              {t(tone?.failed ? "error" : "preparing")}
+            </p>
           )}
           <button
             className="primary customer-main-action"

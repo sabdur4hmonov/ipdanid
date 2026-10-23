@@ -26,6 +26,8 @@ TSC passed; build2113/30.11s used the correct `VITE_NATIVE_DEBUG_SETTINGS=1` wit
 
 ## Required next C21c work
 
+C21c1 local editable-photo retention is now accepted; see [PHOTO_DRAFT_CHECKPOINT.md](PHOTO_DRAFT_CHECKPOINT.md). One explicit local working copy retains exact source/mask/free placement offline. Private server backup and global erasure below remain required. No automatic upload, account-original migration or final-release claim.
+
 Private source-photo consent/backup/restore and account-wide deletion/retention remain. Audit source lifetime first: ordinary CustomerStudio currently keeps original canvas/mask in memory and persists the final guide, not the editable original. Existing generation-input IDB stores selected engine targets/checkpoints, which does not imply that ordinary free-photo re-editing survives restart. Define explicit local original+mask+placement retention separately from private server consent; never automatically upload photos or turn a public-gallery consent into backup consent. The website-first continuity foundation is functional, but C21 and all-field migration remain open. Global lifecycle must cover original/input/recovery caches, native announced checkpoints, device registrations, gallery, inbox, sessions and scoped backups without undoing required order/accounting records.
 
 Validation results are recorded in AGENT/LOG.md after execution. This checkpoint does not claim production or phone acceptance.

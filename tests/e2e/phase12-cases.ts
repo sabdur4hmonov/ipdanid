@@ -90,7 +90,7 @@ export async function gallery(page: Page, c: (typeof photoCases)[number]) {
   );
   await expect(
     page.getByRole("button", { name: /^(Yaratish|Create)$/, exact: true }),
-  ).toBeEnabled();
+  ).toBeEnabled({ timeout: 30000 }); // Tone preparation is asynchronous; generation keeps its separate timing gate.
   return Buffer.from(jpg, "base64");
 }
 export async function english(page: Page) {

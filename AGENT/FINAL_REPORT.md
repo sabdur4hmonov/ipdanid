@@ -1,3 +1,11 @@
+# 2026-10-23 — Davom etayotgan ish
+
+Suratning mahalliy tahrir nusxasi: rangli surat, qo‘lda qirqilgan fon va joylashuvni 30 kun saqlash/aynan tiklash/o‘chirish qo‘shildi. 9 unit va 6 desktop/mobil tekshiruv o‘tdi; build tayyor. Sinov suratining 3000 ipli natijasi 1.94–1.97 soniyada yaratildi. Shakl rasteri va Worker hisobining avvalgisi bilan aynan tengligi tekshirildi. Bu yangi kod hali eski4212 sahifasiga qo‘yilmadi.
+
+Hali tugamagan: shaxsiy server surat zaxirasi, umumiy ma’lumot o‘chirish, qolgan reja va yakuniy to‘liq test/APK/PR. Tiniqlik bo‘yicha ochiq baho saqlanadi. Hozir sizdan qo‘lda sinov talab qilinmaydi; ish davom etadi.
+
+---
+
 # 2026-10-23 — Ilova rejimida qayta kredit yechilmaydi
 
 Yana4avtomatik holat o‘tdi: ayni hisobdan ilova rejimida yo‘riqnoma/qolgan joyni tiklash, yangi qurilma uchun imzolangan ruxsat, xotira to‘lishi va hisob almashgandan keyin kechikkan javob.3kreditdan birinchisi webda ishlatilgach, yangi qurilmada ham2qoldi; qayta yechilmadi. Bu haqiqiy APIga ulangan native-bridge maketi, hali telefonga o‘rnatilgan APK sinovi emas. Build/TSC o‘tdi; asl suratning rozilikli zaxirasi va umumiy o‘chirish hali C21cda.4212sahifa o‘zgarmagan.

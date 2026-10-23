@@ -429,3 +429,7 @@ Ilova: http://127.0.0.1:4212/ . Namuna va tekshiruvlar: http://127.0.0.1:4212/fr
 Avtomatik sinovlar bajarildi, hozir sizdan majburiy sinov talab qilinmaydi. Ipli tiniqlik va haqiqiy taxta sifati hali alohida qabul qilinadi.
 
 Sayt → app, hisoblar, dostavka/to‘lov va Instagram sinov aksiyasi rejasi: docs/WEB_FIRST_UZ.md. Click/Payme hozir sinov; haqiqiy pul/xabar yuborilmadi.
+
+## 2026-10-23 — Suratni keyin tahrirlash (yangi build; 4212 o‘zgarmagan)
+
+Hozir qo‘lda tekshirishingiz shart emas. Yakuniy yangi manzilda: suratni tanlang, shakl/joylashuv/fonni moslang → Menyu → “Suratni keyin davom ettirish” → “Shu qurilmada saqlash”. Bitta nusxa 30 kun saqlanadi, yangi saqlash eskisini almashtiradi; surat serverga yuborilmaydi. Sahifani yopib ochgach shu menyudan “Saqlangan suratni ochish”: shakl, burilish, kattalik va qo‘lda qirqilgan qismlar aynan qaytishi kerak. “Saqlangan suratni o‘chirish” faqat shu tahrir nusxasini o‘chiradi; tayyor yo‘riqnoma alohida qoladi. Eskirgan yoki buzilgan nusxa tiklanmaydi. Brauzer/app ma’lumotlari tozalansa bu mahalliy nusxa ham yo‘qoladi. Bu hali server zaxirasi emas; shaxsiy hisob zaxirasi keyingi bosqichda ulanadi.
