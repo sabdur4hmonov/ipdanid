@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-23 — C21c1 explicit local editable-photo retention accepted:9unit/6desktop-mobile/TSC/build2118. Exact source/mask/placement restore offline; async unchanged tone worker and cached exact shape raster. Private server consent backup/global erasure next.4212/API4652 remains frozen. Physical Heart haze still not accepted. Full Phase15/C19b–C26 not complete.
+Last update:2026-10-23 — C21c2a private photo API accepted:32unit/4HTTP/TSC/build2118. Consent/CAS/exact retry/tombstone/expiry/quota enforced. UI and global erasure next.4212/API4652 frozen; quality and remaining CODE open.
 
 Owner-requested manual preview opened after final handoff: http://127.0.0.1:4194/ with API4331. Both ports were offline before launch. Hidden launcherPID21912 uses a fresh isolated test-results/owner-manual-kv4zhc/database.sqlite (not owner tmp/data); metadata launch.json, logs output/owner-preview-20261015.*.log. HTTP200, exact current dist HTML and sandbox API business-sandbox/2 verified. Leave this owner testing session running; do not stop4194 or treat its temporary kit/account data as the old owner account. No product source/build change.
 
@@ -65,6 +65,8 @@ Phase12 milestone commits:38ec922,38da72e,fa92b83,f2fa81d,11e0058,affa4ce,ad5984
 Phase10 engineering evidence remains valid, but owner review found insufficient head size and wasted shirt/background strands. Preparation3 implemented separately; classic2 solver, preparation2 and old exports unchanged. Circle/Square87% head/18px chin fade, Heart upper-lobe compositions, independent pan/zoom, shoulders toggle and2000/2500/3000 with8s estimates. Targeted11/11 unit passed (new5+reference6), TypeScript and1968module isolated build passed. Real12/12 desktop/mobile JPG comparison passed8.7min on4336/API4476 (phase11-acceptance-v1), max9.706s. Every face height>1.3x old; equal-size agent review accepts larger/more recognizable owner/3synthetic/Square/Heart-pair, exact reference paths/raster and signed exports. Private report/visual-review saved. APK/PDF/final regression and fresh4197 handoff verified. All live previews4194/4195/4196 and directories protected.
 
 ## Exact next step
+
+C21c2a API DONE:32/32unit,4/4actualHTTP25.3s (c21c-backup-http-final),TSC,build2118/21.92s. Commit/exportscan/normal featurepush this checkpoint first; verify git and skip if already done. NEXT C21c2b: explicit unchecked private-upload consent and actual lazy save/restore/delete UI, same archive, IndexedDB exact-body/key pending retry before network, account/API scope/session/logout fences, expiry/conflict/disk failure and actual browser/native tests. Then global erasure, remaining C19b/C20/C22–C26/checkout/follower trial/quality. No owner wait. Next4503/API4639, final4201/API4483 reserved. Older notes below historical.
 
 C21c1 local editable-photo retention DONE. Menu→Continue editing later explicitly saves one bounded lossless normalized source/mask/manual-mask flag/placement/rotation/caption/kit/lines for30days; offline restore does not segment again, committed-copy survives injected disk-full, delete/expiry/integrity/unknown-field guards. No automatic/server upload. Dedicated tone Worker uses unchanged reference arithmetic; shape mask cache removes repeated per-channel Heart polygon walks, all500px RGB/caption bytes match old rule. New source does NOT change frozen4212.
 

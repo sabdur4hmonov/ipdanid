@@ -433,3 +433,6 @@ Sayt → app, hisoblar, dostavka/to‘lov va Instagram sinov aksiyasi rejasi: do
 ## 2026-10-23 — Suratni keyin tahrirlash (yangi build; 4212 o‘zgarmagan)
 
 Hozir qo‘lda tekshirishingiz shart emas. Yakuniy yangi manzilda: suratni tanlang, shakl/joylashuv/fonni moslang → Menyu → “Suratni keyin davom ettirish” → “Shu qurilmada saqlash”. Bitta nusxa 30 kun saqlanadi, yangi saqlash eskisini almashtiradi; surat serverga yuborilmaydi. Sahifani yopib ochgach shu menyudan “Saqlangan suratni ochish”: shakl, burilish, kattalik va qo‘lda qirqilgan qismlar aynan qaytishi kerak. “Saqlangan suratni o‘chirish” faqat shu tahrir nusxasini o‘chiradi; tayyor yo‘riqnoma alohida qoladi. Eskirgan yoki buzilgan nusxa tiklanmaydi. Brauzer/app ma’lumotlari tozalansa bu mahalliy nusxa ham yo‘qoladi. Bu hali server zaxirasi emas; shaxsiy hisob zaxirasi keyingi bosqichda ulanadi.
+
+## 2026-10-23 — Shaxsiy surat zaxirasi API
+Server qismi avtomatik tekshirildi: nusxa faqat hisob egasiga ochiladi, rozilik talab qiladi, o‘chirilgan suratni eski so‘rov qayta saqlamaydi. Hozir qo‘lda test shart emas. Saqlash/ochish/o‘chirish oynasi keyingi bosqichda ulanadi; 4212 hali o‘zgarmagan. Boshqa qurilma sessiyasi oddiy chiqishda yopilmaydi.

@@ -9,6 +9,7 @@ import "./local-config.ts";
 import { DomainError } from "./store.ts";
 import { KitStore } from "./kit-store.ts";
 import { RecoveryStore } from "./recovery-store.ts";
+import { PhotoBackupStore } from "./photo-backup-store.ts";
 import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 import { Payments } from "./payments.ts";
@@ -47,6 +48,7 @@ const store = new KitStore(
 );
 if (!production) store.seed();
 const recovery = new RecoveryStore(store);
+const photoBackups = new PhotoBackupStore(store);
 const business = new BusinessStore(store);
 const gallery = new GalleryStore(store);
 const offers = new OfferStore(store);
@@ -108,7 +110,10 @@ const payments = new Payments(store, {
 const budgets = new Map<string, { start: number; count: number }>();
 const finance = new FinanceStore(store);
 const authBudgets = new Map<string, { start: number; count: number }>();
+const photoBudgets = new Map<string, { start: number; count: number }>();
+let photoUploads = 0;
 const server = createServer(async (req, res) => {
+  let photoLease = false;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -145,6 +150,23 @@ const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://127.0.0.1"),
       path = url.pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
+    const photoWrite = path === "/api/photo-backup" && req.method === "POST";
+    if (path.startsWith("/api/photo-backup")) {
+      // Authenticate before reading a potentially large private-photo body.
+      const account = store.authenticate(token);
+      photoBackups.authorize(account);
+      if (url.search) throw new DomainError("Private photo query fields are not allowed");
+      const old = photoBudgets.get(account), now = Date.now();
+      const budget = old && now - old.start < 60000 ? old : { start: now, count: 0 };
+      photoBudgets.set(account, budget);
+      if (++budget.count > 24) throw new DomainError("Private photo limit; retry later", 429);
+      if (photoWrite) {
+        if (photoUploads >= 2) throw new DomainError("Private photo storage is busy; retry", 503);
+        ++photoUploads;
+        photoLease = true;
+        req.setTimeout(20000, () => req.destroy());
+      }
+    }
     if (production && (path === "/api/sandbox/callback" || path === "/api/admin/sandbox/sign" || /^\/api\/admin\/orders\/[^/]+\/(test-payment|refund)$/.test(path))) throw new DomainError("Sandbox finance actions are disabled in production",403);
     if (req.method === "GET" && path === "/api/gallery") {
       send(200, gallery.page(url.searchParams.get("after") ?? undefined));
@@ -248,7 +270,7 @@ const server = createServer(async (req, res) => {
     let receivedBytes = 0;
     for await (const chunk of req) {
       receivedBytes += chunk.length;
-      if (receivedBytes > 4_000_000)
+      if (receivedBytes > (photoWrite ? 20_000_000 : 4_000_000))
         throw new DomainError("Request too large", 413);
       chunks.push(Buffer.from(chunk));
     }
@@ -623,6 +645,20 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/photo-backup" && req.method === "GET") {
+      send(200, photoBackups.status(user)); return;
+    }
+    if (path === "/api/photo-backup/read" && req.method === "GET") {
+      send(200, photoBackups.read(user)); return;
+    }
+    if (path === "/api/photo-backup" && req.method === "POST") {
+      send(200, await photoBackups.save(user, body, () => {
+        if (store.authenticate(token) !== user) throw new DomainError("Authentication required", 401);
+      })); return;
+    }
+    if (path === "/api/photo-backup/delete" && req.method === "POST") {
+      send(200, photoBackups.remove(user, body)); return;
+    }
     if(path==='/api/analytics/preferences'&&['GET','POST'].includes(req.method??'')){send(200,req.method==='GET'?analytics.preferences(user):analytics.save(user,body));return;}
     if(path==='/api/analytics/events'&&req.method==='POST'){send(201,analytics.record(user,body));return;}
     if(path==='/api/analytics/export'&&req.method==='GET'){send(200,analytics.export(user));return;}
@@ -956,6 +992,8 @@ const server = createServer(async (req, res) => {
     if (e instanceof DomainError) send(e.status, { error: e.message });
     else if (e instanceof SyntaxError) send(400, { error: "Invalid JSON" });
     else send(400, { error: "Invalid request or data" });
+  } finally {
+    if (photoLease) --photoUploads;
   }
 });
 const port = Number(process.env.PORT ?? 4311);
@@ -977,6 +1015,9 @@ const cleanup = setInterval(() => {
   partners.prune();
   outbox.prune();
   analytics.prune();
+  photoBackups.prune();
+  for (const [account, budget] of photoBudgets)
+    if (Date.now() - budget.start >= 60000) photoBudgets.delete(account);
 }, 60_000);
 cleanup.unref();
 const shutdown=()=>{
