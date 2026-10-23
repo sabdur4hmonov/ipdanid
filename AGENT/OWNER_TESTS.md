@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-23 — Webdan ilova rejimiga, to‘langan yo‘riqnoma
+
+4avtomatik sinov o‘tdi: webda1kredit bilan ochilgan yo‘riqnomani ayni email/parol orqali yangi ilova rejimida tiklash, qurilmaga ruxsatni qayta olish,17-qadamda dam olishni davom ettirish. Qolgan2kredit o‘zgarmadi, bajarilgan4-qadam alohida qoldi. Xotira to‘lsa xato chiqdi, joy bo‘shagach qayta tiklandi. Haqiqiy APK chiqqach shu ketma-ketlikni telefonda tekshirish kerak; hozir sizdan kutmaymiz. Screenshotlar test-results/c21b-native/*-paid-restored.png. Asl suratning server zaxirasi hali ulanmagan.
+
 ## 2026-10-23 — Ikki brauzerda ayni hisob, qolgan joyni tiklash
 
 Avtomatik tekshirildi:32unit,8ta brauzer holati va2API testi. Yangi kodda Menu → Hisob → Loyihalar sinxroni → yo‘riqnomani hisobga yuklash → Serverdan yangilash → Shu qurilmadagini saqlash. Ikkinchi brauzerda ayni email/parol → Loyihalar sinxroni → Serverdan yangilash → Serverdagi nusxani tiklash. Sinovda aynan17-qadamda to‘xtab turdi, bajarilgan qadam4bo‘lib qoldi, papka/belgi ham keldi. Aloqa yo‘q bo‘lsa Qayta yuborish; eski nusxa to‘qnashsa o‘zi ustidan yozmaydi. Bu tugmalar yangi kodda; eski4212sinov sahifasi ataylab o‘zgartirilmagan. Qo‘lda sinashingizni kutmaymiz. Telefon ilovasi, to‘langan yo‘riqnoma huquqini qayta olish va asl surat zaxirasi keyingi sinov.

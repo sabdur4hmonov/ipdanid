@@ -268,3 +268,24 @@ test("stale save stays pending and logout clears its private retry after leaving
     .poll(() => page.evaluate((k) => localStorage.getItem(k), key))
     .toBeNull();
 });
+
+test('a delayed restore response cannot overwrite local work after logout and another login',async({page,request})=>{
+  const f=await fixture(request);await seed(page,f);
+  const body={sequenceHash:f.project.instruction.sequenceHash,confirmed:9,expectedRevision:0,requestKey:crypto.randomUUID(),resume:{current:25,pace:9,resting:true},library:{name:'Private old account restore',folder:'Old account',bookmarks:[]}};
+  expect((await request.post(`/api/instructions/${f.id}/recovery`,{headers:f.headers,data:body})).ok()).toBe(true);
+  const panel=await sync(page);await panel.getByRole('button',{name:'Refresh from server',exact:true}).click();
+  let arrived!:()=>void,release!:()=>void,finished!:()=>void;
+  const received=new Promise<void>(resolve=>arrived=resolve),gate=new Promise<void>(resolve=>release=resolve),done=new Promise<void>(resolve=>finished=resolve);
+  await page.route(`**/api/instructions/${f.id}/recovery`,async route=>{const response=await route.fetch();arrived();await gate;await route.fulfill({response});finished();});
+  await panel.getByRole('button',{name:'Restore server copy',exact:true}).click();await received;
+  await page.locator('.customer-hub').getByRole('button',{name:'Account',exact:true}).click();await page.getByRole('button',{name:'Sign out',exact:true}).click();
+  const guest=await(await request.post('/api/session')).json(),email=crypto.randomUUID()+'@example.invalid';
+  expect((await request.post('/api/account/register',{headers:{Authorization:'Bearer '+guest.token},data:{email,password:f.password}})).ok()).toBe(true);
+  await page.getByLabel('Email',{exact:true}).fill(email);await page.getByLabel('Password (at least 12 characters)',{exact:true}).fill(f.password);
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.locator('.customer-session')).toContainText(email);
+  release();await done;await page.unroute(`**/api/instructions/${f.id}/recovery`);
+  await page.getByRole('button',{name:'Project sync',exact:true}).click();await expect(page.getByTestId('account-recovery')).toContainText('Upload a project to your account first');
+  const local=await page.evaluate(()=>JSON.parse(localStorage.getItem('iprasm.projects.v1')!));
+  expect(local).toHaveLength(1);expect(local[0]).toMatchObject({name:'Recovery portrait',progress:{confirmed:4},folder:'Gifts'});
+  await expect(page.getByTestId('assembly-focus')).toHaveCount(0);
+});

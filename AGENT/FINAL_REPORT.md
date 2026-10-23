@@ -1,3 +1,7 @@
+# 2026-10-23 — Ilova rejimida qayta kredit yechilmaydi
+
+Yana4avtomatik holat o‘tdi: ayni hisobdan ilova rejimida yo‘riqnoma/qolgan joyni tiklash, yangi qurilma uchun imzolangan ruxsat, xotira to‘lishi va hisob almashgandan keyin kechikkan javob.3kreditdan birinchisi webda ishlatilgach, yangi qurilmada ham2qoldi; qayta yechilmadi. Bu haqiqiy APIga ulangan native-bridge maketi, hali telefonga o‘rnatilgan APK sinovi emas. Build/TSC o‘tdi; asl suratning rozilikli zaxirasi va umumiy o‘chirish hali C21cda.4212sahifa o‘zgarmagan.
+
 # 2026-10-23 — Ikki brauzerda ayni hisobdan davom ettirish
 
 Hisobdagi loyiha uchun saqlash/tiklash, qolgan qadam, papka/belgi va aloqa uzilganda qayta yuborish interfeysi ishlaydi. Ayni parol bilan ikkinchi brauzerda17-qadam tiklandi, bajarilgan qadam4bo‘lib qoldi; ovoz o‘zi boshlanmadi.32unit,8brauzer+2APIyakuniy holat va build o‘tdi.4212eski nusxasi o‘zgarmagan. Native/telefon huquqini qayta olish, shaxsiy surat zaxirasi va umumiy hisob o‘chirish ishlari hali C21da ochiq. Tiniqlik muammosi ham ochiq; quyidagi hisobotlar o‘z davridagi holatni ko‘rsatadi.
