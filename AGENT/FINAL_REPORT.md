@@ -1,5 +1,7 @@
 # 2026-10-24 — GitHub uchun ishlayotgan sinov nusxasi
 
+Manba5e2c964 `origin feat/full-roadmap`ga push qilindi, remote SHA tekshirildi. [GitHub branch](https://github.com/sabdur4hmonov/ipdanid/tree/feat/full-roadmap), [ZIP](https://github.com/sabdur4hmonov/ipdanid/archive/refs/heads/feat/full-roadmap.zip). Yangi mahalliy sinov: **http://127.0.0.1:4213/**; kod faqat `output/phase15/testable-web/manual-testing.txt`da. 92faylning SHA tengligi/HTTP200/sandbox tekshirildi. Eski sahifalar saqlangan.
+
 Egasi hozir yuklab olib sinashni, keyingi ko‘rsatmalarni undan keyin berishni so‘radi. README_UZ.md ga yuklab olish/Node24/o‘rnatish/build/ajratilgan server/test kit/Admin tartibi qo‘shildi. Shaxsiy surat/baza/maxfiy qiymatlar Gitga kiritilmaydi. Yangi nusxa uchun launcher eski serverlarni o‘zgartirmaydi.
 
 Hisobni o‘chirish, barcha kirishlarni yopish, shaxsiy surat/yo‘riqnoma/galereya/xabar/analitika/device tokenlarini o‘chirish, moliyaviy va tugallanmagan buyurtma istisnosi, qurilma keshini xatodan keyin qayta tozalash qo‘shildi. Sinov topgan ikki xato tuzatildi: buzilgan eski buyurtma keshi hisob oynasini to‘sishi va hisob o‘chirilayotganda yakuniy xabar yashirinishi.

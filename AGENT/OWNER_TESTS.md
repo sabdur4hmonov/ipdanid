@@ -4,6 +4,8 @@ Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak
 
 ## 2026-10-24 — GitHub’dan yangi nusxani sinash
 
+Hozir shu kompyuterda ochilgan yangi sayt: **http://127.0.0.1:4213/**. Kit kodi va Admin tokeni `output/phase15/testable-web/manual-testing.txt`da. 92fayl test qilingan build bilan aynan teng; real pul/xabar o‘chiq. Eski4212sayti ham saqlangan.
+
 `feat/full-roadmap` branchini ZIP qilib yuklang. README_UZ.md dagi Node24 → npm ci → alohida build → start-testable-web ketma-ketligini bajaring. Yangi test manzili terminalda, kit kodi/Admin tokeni faqat `output/phase15/testable-web/manual-testing.txt`da. Surat tanlash → shakl → fonni qirqish/erkin surish/kattalashtirish/burish → Yaratish → test kit kodi → Yig‘ish → Dam olish → qayta ochib ayni qadamni tekshiring. Eski4212bazasi bu yangi sinovga avtomatik ko‘chirilmaydi.
 
 Avtomatik:599unit,4hisob o‘chirish UI,10asosiy desktop/mobile holat va avvalgi2API o‘tdi. Yaratish3.609–4.150s, natija haqiqiy ip ketma-ketligiga aynan teng. Bu barcha roadmap/tiniqlik yoki yangi APK tayyor degani emas. GitHub nusxasi sinash uchun, sizning keyingi ko‘rsatmalaringizga tayyor.
