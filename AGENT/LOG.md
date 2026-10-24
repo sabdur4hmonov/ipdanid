@@ -749,3 +749,9 @@ Final6/6unit physical-route-final-unit-retry.json (4research+2existingOpenCVgold
 
 Commit/exportscan/normalfeaturepush this research checkpoint before next large step. Next C21 private-photo held-response/logout/unmounted cleanup test at4504/API4640, then globalerasure and remainingCODE; quality remains explicit unresolved, no repeat of sealed losses/parameter sweeps. Owner does not need to test now;4212 stays frozen.
 
+## 2026-10-24 — private-photo logout and delayed-response verification
+
+7ba598a scanned381files42commits0prohibited/0credentialpatterns and pushed94f2d78..7ba598a before work. Added actual desktop/mobile privacy test: faileddelete retry storedIDB, closepanel/logoutclears; relogin/hold successfulread/close/logout/newpasswordaccount/releaseresponse cannot restore oldpixels into still-mounted CustomerStudio. Freshotheraccountstatus empty and reloadempty.2/2passed29.7s, c21c-backup-privacy/report.json, fresh4504/API4640. Tiny synthetic2x2archive/no ownerphoto, tracesoff/mobile screenshotinspected. Existing product guards unchanged; no failed test or mutation proof claimed.
+
+TSCpassed; isolatedbuild2122/46.08s c21c-backup-privacy-build.log, existingchunkwarning. RAM4.38/4.97GiB beforetest/check; serial jobs, all runners ended. No APK/fullsuite/nativephone/quality acceptance. Protectedpreviews/tmpdata/oldassets untouched. Commit/scan/featurepush before globalaccount/sourceerasure, exactschema/financialretention/auth/asyncbarriers/localcleanup; next4505/API4641. Owner need nottest; quality remains unresolved, remainingCODE mandatory.
+

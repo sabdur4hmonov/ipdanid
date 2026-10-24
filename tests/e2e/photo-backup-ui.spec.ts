@@ -5,6 +5,8 @@ import {
   type APIRequestContext,
 } from "@playwright/test";
 import { gallery, photoCases, png } from "./phase12-cases";
+import { encodePhotoDraft, type PhotoDraft } from "../../src/photo-draft";
+import { DEFAULT_STANDARD_KIT } from "../../src/core/standard-kit";
 test.use({ trace: "off" });
 async function account(request: APIRequestContext) {
   const guest = await (await request.post("/api/session")).json(),
@@ -39,6 +41,161 @@ async function seed(page: Page, a: unknown) {
   }, a);
   await page.goto("/");
 }
+async function accountScreen(page: Page) {
+  const menu = page.getByTestId("customer-menu");
+  if (!(await menu.evaluate((n: HTMLDetailsElement) => n.open)))
+    await menu.locator("summary").click();
+  await menu
+    .getByRole("button", { name: "Account / Admin", exact: true })
+    .click();
+}
+async function login(page: Page, f: { email: string; password: string }) {
+  await page.getByLabel("Email", { exact: true }).fill(f.email);
+  await page
+    .getByLabel("Password (at least 12 characters)", { exact: true })
+    .fill(f.password);
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await expect(page.locator(".customer-session")).toContainText(f.email);
+}
+async function pendingCount(page: Page) {
+  return page.evaluate(
+    () =>
+      new Promise<number>((resolve, reject) => {
+        const r = indexedDB.open("iprasm.private-photo-pending", 1);
+        r.onsuccess = () => {
+          const db = r.result,
+            tx = db.transaction("pending"),
+            count = tx.objectStore("pending").count();
+          tx.oncomplete = () => {
+            resolve(count.result);
+            db.close();
+          };
+          tx.onerror = () => {
+            reject(tx.error);
+            db.close();
+          };
+        };
+        r.onerror = () => reject(r.error);
+      }),
+  );
+}
+test("private photo privacy: logout cleans unmounted retries and rejects a held old-account photo", async ({
+  page,
+  request,
+}, info) => {
+  const f = await account(request),
+    other = await account(request);
+  const draft: PhotoDraft = {
+    version: "editable-photo/1",
+    savedAt: Date.now(),
+    width: 2,
+    height: 2,
+    rgba: new Uint8Array(16).fill(160),
+    maskEdited: true,
+    analysis: {
+      mask: { width: 2, height: 2, values: new Float32Array(4).fill(1) },
+      faces: [],
+      faceUnavailable: true,
+      cleanupUnavailable: true,
+    },
+    shape: "heart",
+    kind: "people",
+    caption: "Private old account",
+    adjustment: { x: 0.1, y: 0.1, zoom: 1.2 },
+    rotation: 1,
+    lines: 3000,
+    config: structuredClone(DEFAULT_STANDARD_KIT),
+  };
+  const saved = await request.post("/api/photo-backup", {
+    headers: { Authorization: "Bearer " + f.account.token },
+    data: {
+      consent: "private-photo-backup/1",
+      expectedRevision: 0,
+      requestKey: crypto.randomUUID(),
+      archive: Buffer.from(await encodePhotoDraft(draft)).toString("base64"),
+    },
+  });
+  expect(saved.ok()).toBe(true);
+  await seed(page, f.account);
+  let panel = await open(page);
+  await panel
+    .getByRole("button", { name: "Check backup status", exact: true })
+    .click();
+  await page.route("**/api/photo-backup/delete", (route) => route.abort());
+  await panel
+    .getByLabel("I confirm deleting the account copy", { exact: true })
+    .check();
+  await panel
+    .getByRole("button", { name: "Delete account photo", exact: true })
+    .click();
+  await expect(
+    panel.getByRole("button", { name: "Retry previous request", exact: true }),
+  ).toBeVisible();
+  expect(await pendingCount(page)).toBe(1);
+  await page
+    .getByTestId("photo-draft-panel")
+    .getByRole("button", { name: "Close", exact: true })
+    .click();
+  await accountScreen(page);
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect.poll(() => pendingCount(page)).toBe(0);
+  await login(page, f);
+  await page
+    .getByRole("navigation", { name: "Main" })
+    .getByRole("button", { name: "Create", exact: true })
+    .click();
+  panel = await open(page);
+  await panel
+    .getByRole("button", { name: "Check backup status", exact: true })
+    .click();
+  let arrived!: () => void, release!: () => void, finished!: () => void;
+  const received = new Promise<void>((r) => (arrived = r)),
+    gate = new Promise<void>((r) => (release = r)),
+    done = new Promise<void>((r) => (finished = r));
+  await page.route("**/api/photo-backup/read", async (route) => {
+    const response = await route.fetch();
+    expect(response.ok()).toBe(true);
+    arrived();
+    await gate;
+    await route.fulfill({ response });
+    finished();
+  });
+  await panel
+    .getByRole("button", { name: "Open account photo", exact: true })
+    .click();
+  await received;
+  try {
+    await page
+      .getByTestId("photo-draft-panel")
+      .getByRole("button", { name: "Close", exact: true })
+      .click();
+    await accountScreen(page);
+    await page.getByRole("button", { name: "Sign out", exact: true }).click();
+    await login(page, other);
+    release();
+    await done;
+    await page
+      .getByRole("navigation", { name: "Main" })
+      .getByRole("button", { name: "Create", exact: true })
+      .click();
+    panel = await open(page);
+    await panel
+      .getByRole("button", { name: "Check backup status", exact: true })
+      .click();
+    await expect(panel.getByTestId("photo-backup-status")).toContainText(
+      "No account photo",
+    );
+    expect(await pendingCount(page)).toBe(0);
+    await expect(page.getByTestId("customer-photo")).toHaveCount(0);
+    await panel.screenshot({
+      path: `test-results/c21c-backup-privacy/${info.project.name}-other-account.png`,
+    });
+    await page.reload();
+    await expect(page.getByTestId("customer-photo")).toHaveCount(0);
+  } finally {
+    release();
+  }
+});
 for (const native of [false, true])
   test(`private photo exact retry and second-device ${native ? "native" : "web"} restore/delete`, async ({
     page,

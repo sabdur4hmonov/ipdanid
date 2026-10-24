@@ -443,3 +443,6 @@ Hozir qo‘lda sinov shart emas. Yakuniy yangi manzilda Menyu → Hisob orqali k
 
 Mahalliy `output/physical-route-ssim-v4/report.html` faylida yettita suratning tayyorlangan nishoni, oldingi ip ko‘rinishi va tajriba natijasi yonma-yon. Vaqt bo‘lsa bir xil o‘lchamda ko‘z, burun va yurakning yuqori qismini solishtirish mumkin. Natija ozgina yaxshilangan, lekin ortiqcha iplar yetarlicha kamaymagan; bu variant ilovaga qo‘shilmadi. 4212 sahifasi o‘zgarmagan. Hisobotdagi shaxsiy suratlar faqat kompyuterda qoladi. Jismoniy taxta sifati tasdiqlangani yo‘q; boshqa kod ishlari egadan javob kutmasdan davom etadi.
 
+## 2026-10-24 — hisob almashganda surat maxfiyligi
+
+Kompyuter va mobil ko‘rinishda avtomatik sinov o‘tdi: oyna yopilgan bo‘lsa ham hisobdan chiqish tugallanmagan so‘rovni tozaladi. Eski hisobning kechikkan surat javobi yangi hisobga o‘tmadi. Sizdan hozir test kerak emas. Keyingi yangi buildda tekshirish uchun: shaxsiy zaxira oynasini yoping → hisobdan chiqing → boshqa hisobga kiring; uning zaxirasi va surati alohida qolishi kerak. Hisobni butunlay o‘chirish keyingi kod bosqichi; oddiy chiqish qurilmada ataylab saqlangan shaxsiy loyihalarni o‘chirmaydi.
