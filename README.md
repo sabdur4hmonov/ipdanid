@@ -1,3 +1,12 @@
+# Ip Rasm — current source download
+
+Use **feat/full-roadmap**. Start here: **[README_UZ.md](README_UZ.md)** (Node.js 24, dependency installation, isolated web build, local API and test kit).
+
+Current checks and unfinished work: [AGENT/PROGRESS.md](AGENT/PROGRESS.md). This is a development snapshot; full Phase15 release acceptance and portrait-quality acceptance remain open. Private photos, databases, credentials and generated artifacts are excluded from Git.
+
+The dated notes below are historical; their ports and APK paths describe earlier snapshots.
+
+---
 Joriy tekshiruv: PHOTO_QUALITY_CHECKPOINT.md. Lokal sayt4194/API4331: Start-Ip-Rasm.cmd. Suratga maslahat va bir nechta yuz uchun alohida zonalar mavjud; sifat kafolati yoki fizik sinov emas. Android yangi build lokal saqlanadi, telefon sinovi egasi tomonidan keyinga qoldirilgan. Native commerce uchun tegishliHTTPSbackend sozlash talab qilinadi; brauzerdagi to‘lov/dostavka/xabarlar lokal sandbox. Asl loyiha/progressni boshqa portga ko‘chirishda eski saytdan JSON eksport qilib import qiling; eski origin saqlanadi.
 
 GitHub verification (2026-10-12): `npm run test:e2e:ci` runs14 public desktop/touch cases using committed synthetic inputs. Private portrait experiments remain local; CI uploads only named JSON reports, never the private output/ directory. Read [docs/GITHUB_READINESS_AUDIT.md](docs/GITHUB_READINESS_AUDIT.md) for observed remote state, CI evidence and remaining full-product work. No remote publication has been performed.
@@ -7,6 +16,8 @@ Current local test build (2026-10-12): double-click **Start-Ip-Rasm.cmd**, then 
 Active resume: **SIMPLE_FLOW_CHECKPOINT.md**, 2026-10-10, continuing preserved `0c94b5b`. Camera/gallery-first UZ/RU/EN UI; advanced editing/material presets and secondary product screens are disclosed on demand, while saved projects/progress and exact export paths remain. Final focused desktop/touch and full domain checks are recorded in the checkpoint. New APK is packaged, not installed; portrait likeness, physical kit, current native/iOS/production and full roadmap acceptance remain open. Website4183/API4311; private UI review5183/output/simple-flow/report.html. Historical records below remain.
 
 # Ip Rasm
+
+**Current download/start guide (2026-10-24): [README_UZ.md](README_UZ.md).** Use the `feat/full-roadmap` branch. Earlier port, APK and quality notes in this README are historical snapshots; current executed checks and remaining work are recorded in [AGENT/PROGRESS.md](AGENT/PROGRESS.md). Downloaded source needs Node.js 24 and `npm ci`; local private photos, databases, secrets and build artifacts are excluded from Git.
 
 Real on-device photo-to-continuous-thread instructions. Development build; physical material profiles are provisional. Full scope is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/FEATURE_MATRIX.md](docs/FEATURE_MATRIX.md). Read [docs/STATUS.md](docs/STATUS.md) to resume.
 

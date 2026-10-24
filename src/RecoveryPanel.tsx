@@ -26,13 +26,16 @@ api.sessionChanged.add(() => {
   ++privacyEpoch;
 });
 api.beforeLogout.add(async () => {
+  if (api.session) await clearRecoveryAccount(api.session.id);
+});
+export function clearRecoveryAccount(account: string) {
   ++privacyEpoch;
-  const key = customerCacheNamespace + ":recovery:" + api.session?.id;
-  await enqueue(async () => {
+  const key = customerCacheNamespace + ":recovery:" + account;
+  return enqueue(async () => {
     if (Capacitor.isNativePlatform()) await Preferences.remove({ key });
     else localStorage.removeItem(key);
   });
-});
+}
 export default function RecoveryPanel({
   locale,
   projects,

@@ -148,6 +148,15 @@ export class CustomerStore extends Store {
       .run(this.digest(token));
     return { loggedOut: true };
   }
+  confirmAccountErasure(user: string, credential: unknown) {
+    this.assertAccountActive(user);
+    const account = this.db.prepare("SELECT * FROM accounts WHERE user_id=?").get(user) as Account | undefined;
+    if (!account || typeof credential !== "string" || credential.length < 12 || credential.length > 256)
+      throw new DomainError("Account credential required", 403);
+    const candidate = scryptSync(credential, account.salt, 64);
+    if (!timingSafeEqual(candidate, Buffer.from(account.password_hash, "hex")))
+      throw new DomainError("Account credential incorrect", 403);
+  }
   customer(user: string) {
     const account = this.db
       .prepare("SELECT email FROM accounts WHERE user_id=?")

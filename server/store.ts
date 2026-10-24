@@ -93,6 +93,9 @@ export class Store {
     this.db.exec(
       "CREATE TABLE IF NOT EXISTS order_commerce(order_id TEXT PRIMARY KEY REFERENCES orders(id),data TEXT NOT NULL)",
     );
+    this.db.exec(`CREATE TABLE IF NOT EXISTS account_erasure(user_id TEXT PRIMARY KEY REFERENCES users(id),erased_at INTEGER NOT NULL);
+      CREATE TRIGGER IF NOT EXISTS erased_session BEFORE INSERT ON sessions WHEN EXISTS(SELECT 1 FROM account_erasure WHERE user_id=NEW.user_id) BEGIN SELECT RAISE(ABORT,'Account erased'); END;
+      CREATE TRIGGER IF NOT EXISTS erased_project BEFORE INSERT ON projects WHEN EXISTS(SELECT 1 FROM account_erasure WHERE user_id=NEW.user_id) BEGIN SELECT RAISE(ABORT,'Account erased'); END;`);
     this.migrateJobs();
     this.tx(() => {
       if (
@@ -167,7 +170,12 @@ export class Store {
       )
       .get(this.digest(token), Date.now()) as { user_id: string } | undefined;
     if (!row) throw new DomainError("Authentication required", 401);
+    this.assertAccountActive(row.user_id);
     return row.user_id;
+  }
+  assertAccountActive(user: string) {
+    if (this.db.prepare("SELECT 1 FROM account_erasure WHERE user_id=?").get(user))
+      throw new DomainError("Account erased", 401);
   }
   seed() {
     this.db
@@ -901,6 +909,7 @@ export class Store {
     jobId: string,
     instruction: Instruction | null,
   ) {
+    this.assertAccountActive(user);
     return this.tx(() => {
       const job = this.db
         .prepare("SELECT * FROM jobs WHERE id=? AND user_id=?")

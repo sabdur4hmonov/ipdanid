@@ -2,6 +2,14 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-24 — GitHub’dan yangi nusxani sinash
+
+`feat/full-roadmap` branchini ZIP qilib yuklang. README_UZ.md dagi Node24 → npm ci → alohida build → start-testable-web ketma-ketligini bajaring. Yangi test manzili terminalda, kit kodi/Admin tokeni faqat `output/phase15/testable-web/manual-testing.txt`da. Surat tanlash → shakl → fonni qirqish/erkin surish/kattalashtirish/burish → Yaratish → test kit kodi → Yig‘ish → Dam olish → qayta ochib ayni qadamni tekshiring. Eski4212bazasi bu yangi sinovga avtomatik ko‘chirilmaydi.
+
+Avtomatik:599unit,4hisob o‘chirish UI,10asosiy desktop/mobile holat va avvalgi2API o‘tdi. Yaratish3.609–4.150s, natija haqiqiy ip ketma-ketligiga aynan teng. Bu barcha roadmap/tiniqlik yoki yangi APK tayyor degani emas. GitHub nusxasi sinash uchun, sizning keyingi ko‘rsatmalaringizga tayyor.
+
+Hisobni o‘chirishni faqat keraksiz test hisobda sinang: Hisob → Hisobni o‘chirish → nimalar o‘chishini tekshirish → o‘z paroli/kit kodi → tasdiq. Barcha kirishlar yopiladi; tugallanmagan buyurtma/to‘lov istisnosi oldindan ko‘rsatiladi. Qurilma xotirasi tozalanmasa qayta urinish tugmasi sahifa qayta ochilganda ham qoladi. Qurilmaga tegishli mahalliy surat/loyihalar alohida o‘chiriladi.
+
 ## 2026-10-23 — Webdan ilova rejimiga, to‘langan yo‘riqnoma
 
 4avtomatik sinov o‘tdi: webda1kredit bilan ochilgan yo‘riqnomani ayni email/parol orqali yangi ilova rejimida tiklash, qurilmaga ruxsatni qayta olish,17-qadamda dam olishni davom ettirish. Qolgan2kredit o‘zgarmadi, bajarilgan4-qadam alohida qoldi. Xotira to‘lsa xato chiqdi, joy bo‘shagach qayta tiklandi. Haqiqiy APK chiqqach shu ketma-ketlikni telefonda tekshirish kerak; hozir sizdan kutmaymiz. Screenshotlar test-results/c21b-native/*-paid-restored.png. Asl suratning server zaxirasi hali ulanmagan.

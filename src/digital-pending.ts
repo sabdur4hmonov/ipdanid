@@ -12,6 +12,10 @@ async function remove(id: string) {
   if (Capacitor.isNativePlatform()) await Preferences.remove({ key: key(id) });
   else localStorage.removeItem(key(id));
 }
+export function clearDigitalPendingAccount(id: string) {
+  ++epoch;
+  return queue.run(() => remove(id));
+}
 export function startDigitalPendingLifecycle() {
   if (started) return;
   started = true;

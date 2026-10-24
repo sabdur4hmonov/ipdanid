@@ -408,6 +408,7 @@ export class KitStore extends CustomerStore {
     );
   }
   archiveBuild(account: string, i: Instruction) {
+    this.assertAccountActive(account);
     return this.ktx(() => {
       if (
         i.params.accessPolicy !== "kit-build/1" ||
@@ -441,6 +442,13 @@ export class KitStore extends CustomerStore {
       this.klog(account, "build.archive", instructionId);
       return { instructionId, duplicate: false };
     });
+  }
+  override confirmAccountErasure(account: string, credential: unknown) {
+    this.assertAccountActive(account);
+    if (this.db.prepare("SELECT 1 FROM accounts WHERE user_id=?").get(account))
+      return super.confirmAccountErasure(account, credential);
+    if (typeof credential !== "string" || credential.length > 100 || !this.db.prepare("SELECT 1 FROM kit_codes WHERE hash=? AND account_id=? AND revoked=0").get(this.digest(credential), account))
+      throw new DomainError("Account credential incorrect", 403);
   }
   unlockBuild(
     account: string,

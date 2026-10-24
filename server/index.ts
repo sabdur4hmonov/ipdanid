@@ -10,6 +10,7 @@ import { DomainError } from "./store.ts";
 import { KitStore } from "./kit-store.ts";
 import { RecoveryStore } from "./recovery-store.ts";
 import { PhotoBackupStore } from "./photo-backup-store.ts";
+import { AccountErasureStore } from "./account-erasure-store.ts";
 import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 import { Payments } from "./payments.ts";
@@ -109,6 +110,8 @@ const payments = new Payments(store, {
 });
 const budgets = new Map<string, { start: number; count: number }>();
 const finance = new FinanceStore(store);
+const accountErasure = new AccountErasureStore(store);
+accountErasure.prune();
 const authBudgets = new Map<string, { start: number; count: number }>();
 const photoBudgets = new Map<string, { start: number; count: number }>();
 let photoUploads = 0;
@@ -151,6 +154,8 @@ const server = createServer(async (req, res) => {
       path = url.pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
     const photoWrite = path === "/api/photo-backup" && req.method === "POST";
+    if (path === "/api/account/erasure" && url.search)
+      throw new DomainError("Account erasure query fields are not allowed");
     if (path.startsWith("/api/photo-backup")) {
       // Authenticate before reading a potentially large private-photo body.
       const account = store.authenticate(token);
@@ -305,7 +310,7 @@ const server = createServer(async (req, res) => {
     }
     if (
       req.method === "POST" &&
-      (/^\/api\/account\/(login|recover|register|kit)$/.test(path) ||
+      (/^\/api\/account\/(login|recover|register|kit|erasure)$/.test(path) ||
         path === "/api/admin/login")
     ) {
       const attempts = authBudgets.get(ip) ?? { start: Date.now(), count: 0 };
@@ -645,6 +650,12 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if (path === "/api/account/erasure" && req.method === "GET") {
+      send(200, accountErasure.preview(user)); return;
+    }
+    if (path === "/api/account/erasure" && req.method === "POST") {
+      send(200, accountErasure.erase(user, body)); return;
+    }
     if (path === "/api/photo-backup" && req.method === "GET") {
       send(200, photoBackups.status(user)); return;
     }
@@ -958,6 +969,7 @@ const server = createServer(async (req, res) => {
         store.finishGeneration(user, body.jobId, null);
         throw e;
       }
+      if (store.authenticate(token) !== user) throw new DomainError("Authentication required",401);
       send(200, store.finishGeneration(user, body.jobId, instruction));
       return;
     }
@@ -1016,6 +1028,7 @@ const cleanup = setInterval(() => {
   outbox.prune();
   analytics.prune();
   photoBackups.prune();
+  accountErasure.prune();
   for (const [account, budget] of photoBudgets)
     if (Date.now() - budget.start >= 60000) photoBudgets.delete(account);
 }, 60_000);

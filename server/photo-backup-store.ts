@@ -58,6 +58,7 @@ export class PhotoBackupStore {
       CREATE INDEX IF NOT EXISTS photo_backup_expiry ON photo_backups(expires_at);`);
   }
   authorize(user: string) {
+    this.store.assertAccountActive(user);
     if (
       this.store.db.prepare("SELECT role FROM users WHERE id=?").get(user)
         ?.role !== "maker"
@@ -90,6 +91,7 @@ export class PhotoBackupStore {
       .run(now);
   }
   status(user: string, now = Date.now()): PhotoBackupStatus {
+    this.store.assertAccountActive(user);
     this.authorize(user);
     this.prune(now);
     const r = this.row(user);

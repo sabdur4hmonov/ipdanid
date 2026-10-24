@@ -50,6 +50,10 @@ function clearAccount(account?: string) {
     }),
   );
 }
+export function clearPrivatePhotoRetries(account: string) {
+  ++epoch;
+  return clearAccount(account);
+}
 // Module-level cleanup survives closing the panel. No token is persisted with pixels.
 api.sessionChanged.add(() => {
   ++epoch;

@@ -154,6 +154,7 @@ export const buildAccess = {
     return serial(async () => {
       await customerApi.restore();
       if (!customerApi.session) throw Error("build-access/login");
+      const session = customerApi.session;
       const c = await read(),
         key = normalizedKey(
           await customerApi.request<JsonWebKey>("/builds/key", undefined, ""),
@@ -178,13 +179,15 @@ export const buildAccess = {
         requestKey: `unlock-${i.sequenceHash}`,
       });
       if (
+        customerApi.session?.token !== session.token ||
         !(await verifyBuildReceipt(response.receipt, key, {
-          accountId: customerApi.session.id,
+          accountId: session.id,
           sequenceHash: i.sequenceHash,
           deviceId: c.deviceId,
         }))
       )
         throw Error("build-access/signature");
+      if (customerApi.session?.token !== session.token) throw Error("build-access/login");
       c.receipts[i.sequenceHash] = response.receipt;
       await write(c);
       window.dispatchEvent(new Event("iprasm-build-access"));
@@ -192,3 +195,12 @@ export const buildAccess = {
     });
   },
 };
+export function clearAccountReceipts(account: string) {
+  return serial(async () => {
+    const cache = await read();
+    for (const [hash, receipt] of Object.entries(cache.receipts))
+      if (receipt.payload.accountId === account) delete cache.receipts[hash];
+    await write(cache);
+    window.dispatchEvent(new Event("iprasm-build-access"));
+  });
+}

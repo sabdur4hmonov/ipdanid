@@ -1,3 +1,13 @@
+# 2026-10-24 — GitHub uchun ishlayotgan sinov nusxasi
+
+Egasi hozir yuklab olib sinashni, keyingi ko‘rsatmalarni undan keyin berishni so‘radi. README_UZ.md ga yuklab olish/Node24/o‘rnatish/build/ajratilgan server/test kit/Admin tartibi qo‘shildi. Shaxsiy surat/baza/maxfiy qiymatlar Gitga kiritilmaydi. Yangi nusxa uchun launcher eski serverlarni o‘zgartirmaydi.
+
+Hisobni o‘chirish, barcha kirishlarni yopish, shaxsiy surat/yo‘riqnoma/galereya/xabar/analitika/device tokenlarini o‘chirish, moliyaviy va tugallanmagan buyurtma istisnosi, qurilma keshini xatodan keyin qayta tozalash qo‘shildi. Sinov topgan ikki xato tuzatildi: buzilgan eski buyurtma keshi hisob oynasini to‘sishi va hisob o‘chirilayotganda yakuniy xabar yashirinishi.
+
+599/599 unit (129fayl),39tegishli unit,2API,4web/native UI va10asosiy desktop/mobile tekshiruv o‘tdi. TypeScript/build2125/28.89s tayyor. To‘rt rasm holatida yaratish3.609–4.150s, ekrandagi natija haqiqiy ip ketma-ketligiga aynan teng. Bu to‘liq yakuniy brauzer/APK sinovi emas.
+
+**Qolgan CODE ochiq:** C21 barcha jadvallar/backupdan tiklanganda o‘chirishni qayta qo‘llash auditi; checkout/Instagram sinov kodi yakuni; C19b/C20/C22–C26. Tiniqlikda yurakning oq joylaridagi ip izi hali ko‘rinadi; yangi sifat algoritmi qabul qilinmadi. Domen/VPS, imzo kaliti, haqiqiy merchant kalitlari, ovoz va fizik/telefon sinovi egaga tegishli. Bu hisobot butun Phase15 tugadi degani emas. Aniq holat AGENT/PROGRESS.md da.
+
 # 2026-10-23 — Davom etayotgan ish
 
 Suratning mahalliy tahrir nusxasi: rangli surat, qo‘lda qirqilgan fon va joylashuvni 30 kun saqlash/aynan tiklash/o‘chirish qo‘shildi. 9 unit va 6 desktop/mobil tekshiruv o‘tdi; build tayyor. Sinov suratining 3000 ipli natijasi 1.94–1.97 soniyada yaratildi. Shakl rasteri va Worker hisobining avvalgisi bilan aynan tengligi tekshirildi. Bu yangi kod hali eski4212 sahifasiga qo‘yilmadi.

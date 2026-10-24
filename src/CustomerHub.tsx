@@ -1,5 +1,6 @@
 import type {RecoverySnapshot} from './recovery-types';
 const RecoveryPanel=lazy(()=>import('./RecoveryPanel'));
+const AccountErasurePanel=lazy(()=>import('./AccountErasurePanel'));
 import { PaymentOptions } from "./PaymentOptions";
 import { AdminPasswordLogin, adminLoginText } from "./AdminPasswordLogin";
 import { OwnerAdminNavigation } from "./OwnerAdminNavigation";
@@ -264,6 +265,7 @@ export function CustomerHub({
   const checkoutKey = () =>
     `${customerCacheNamespace}:checkout:${api.session?.id ?? "none"}`;
   async function retainCheckout(attempt: typeof orderRequest.current) {
+    const token = api.session?.token;
     const key = checkoutKey();
     if (Capacitor.isNativePlatform()) {
       if (attempt)
@@ -271,6 +273,11 @@ export function CustomerHub({
       else await Preferences.remove({ key });
     } else if (attempt) localStorage.setItem(key, JSON.stringify(attempt));
     else localStorage.removeItem(key);
+    if (token !== api.session?.token) {
+      if (Capacitor.isNativePlatform()) await Preferences.remove({key});
+      else localStorage.removeItem(key);
+      return;
+    }
     orderRequest.current = attempt;
     setPendingCheckout(Boolean(attempt));
   }
@@ -402,8 +409,6 @@ export function CustomerHub({
     ]);
     if (!valid()) return;
     const sandbox = customerHealthSandbox(health);
-    if (!orderRequest.current) await restoreCheckout(valid);
-    if (!valid()) return;
     setSandboxMode(sandbox);
     setMe(m);
     setProducts(c.products);
@@ -419,6 +424,9 @@ export function CustomerHub({
     setRemote(r);
     setConnected(true);
     await refreshStorefront();
+    // Optional local checkout corruption must not hide the account, orders,
+    // sign-out or privacy controls. Preserve the bad retry for explicit handling.
+    if (valid() && !orderRequest.current) await restoreCheckout(valid);
   }
   useEffect(() => {
     let alive = true;
@@ -661,6 +669,9 @@ export function CustomerHub({
         {pane==='inbox'&&connected&&<Suspense fallback={<p role="status">…</p>}><InboxPanel key={locale+api.session?.token} locale={locale}/></Suspense>}
         {pane === "account" && (
           <div className="customer-grid">
+            <Suspense fallback={<p role="status">…</p>}>
+              <AccountErasurePanel locale={locale} connected={connected && !!me?.durable} />
+            </Suspense>
             {connected&&<Suspense fallback={<p role="status">…</p>}><AnalyticsSettings key={locale+api.session?.token} locale={locale}/></Suspense>}
             {giftClaim && (
               <Suspense fallback={<p role="status">…</p>}>
