@@ -79,9 +79,20 @@ export function viewingSsim(
   renderSize: number,
   options: { faces?: RegionBox[]; boardMask?: Uint8Array } = {},
 ) {
-  const a = viewingImage(render, renderSize),
-    b = viewingImage(target, targetSize),
-    n = VIEW_SIZE,
+  return viewingSsimPrepared(
+    viewingImage(render, renderSize),
+    viewingImage(target, targetSize),
+    options,
+  );
+}
+export function viewingSsimPrepared(
+  a: Float32Array,
+  b: Float32Array,
+  options: { faces?: RegionBox[]; boardMask?: Uint8Array } = {},
+) {
+  if (a.length !== VIEW_SIZE ** 2 || b.length !== VIEW_SIZE ** 2)
+    throw Error("viewing-ssim/prepared-size");
+  const n = VIEW_SIZE,
     mu1 = gaussian(a, n, 1.5, 7),
     mu2 = gaussian(b, n, 1.5, 7),
     sq1 = gaussian(

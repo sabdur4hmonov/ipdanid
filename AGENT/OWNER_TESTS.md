@@ -439,3 +439,7 @@ Server qismi avtomatik tekshirildi: nusxa faqat hisob egasiga ochiladi, rozilik 
 
 ## 2026-10-23 — Hisobdagi surat zaxirasi (yangi build)
 Hozir qo‘lda sinov shart emas. Yakuniy yangi manzilda Menyu → Hisob orqali kiring. Suratni moslang → Menyu → Suratni keyin davom ettirish → “Zaxira holatini tekshirish”. Suratni serverga yuborish roziligini alohida belgilang, “Hisobimda saqlash”. Boshqa qurilmada shu hisobga kirib, shu oynadan “Hisobdagi suratni ochish” joylashuv va qirqimni aynan qaytaradi. Bitta nusxa 30 kungacha; keyingi saqlash eskisini almashtiradi. O‘chirish alohida tasdiqlanadi. Aloqa uzilsa “Avvalgi so‘rovni qayta yuborish”; “unutish” serverdagi nusxani o‘chirmaydi. Bu nusxa galereyada ommaga e’lon qilinmaydi. 4212 eski build; yangisi finalda ochiladi.
+# 2026-10-24 — sifat sinovi, egadan hozir test talab qilinmaydi
+
+Mahalliy `output/physical-route-ssim-v4/report.html` faylida yettita suratning tayyorlangan nishoni, oldingi ip ko‘rinishi va tajriba natijasi yonma-yon. Vaqt bo‘lsa bir xil o‘lchamda ko‘z, burun va yurakning yuqori qismini solishtirish mumkin. Natija ozgina yaxshilangan, lekin ortiqcha iplar yetarlicha kamaymagan; bu variant ilovaga qo‘shilmadi. 4212 sahifasi o‘zgarmagan. Hisobotdagi shaxsiy suratlar faqat kompyuterda qoladi. Jismoniy taxta sifati tasdiqlangani yo‘q; boshqa kod ishlari egadan javob kutmasdan davom etadi.
+
