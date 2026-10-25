@@ -186,7 +186,9 @@ export default function App() {
               }}
               onExpert={() => {
                 setCustomerFlow(false);
-                nav("create");
+                context.setMoreOpen(false);
+                if(view === "assemble") context.pause();
+                else nav("create");
               }}
             />
             {!online && (
@@ -414,7 +416,7 @@ export default function App() {
               )}
             </>
           )}
-          {view === "assemble" && <AssembleScreen context={context} />}
+          {view === "assemble" && <AssembleScreen context={context} expert={!customerFlow} />}
           {view === "library" && <LibraryScreen context={context} />}
           {view === "materials" && <MoreScreen context={context} />}
           {view === "crafts" && (

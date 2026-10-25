@@ -42,6 +42,9 @@ export async function audioFixture(page: Page) {
       w.__nativeAudioCalls = [];
       w.__visible = true;
       w.__nativeSpeech = [];
+      w.__commandCalls = [];
+      w.__commandSupported = true;
+      w.__commandGranted = true;
       w.__holdAudio = false;
       w.__audioState = undefined;
       w.__audioProgram = undefined;
@@ -110,6 +113,7 @@ export async function audioFixture(page: Page) {
             "removeListener",
           ]),
           header("IpRasmAwake", ["set"]),
+          header("IpRasmCommands", ["capabilities", "permission", "listen", "cancel", "addListener", "removeListener"]),
           header("App", ["addListener", "removeListener"]),
         ],
         nativeCallback: (plugin: string, method: string, o: any, fn: any) => {
@@ -139,6 +143,21 @@ export async function audioFixture(page: Page) {
             };
           }
           if (plugin === "IpRasmAwake") return;
+          if (plugin === "IpRasmCommands") {
+            w.__commandCalls.push({method,...structuredClone(o??{})});
+            if(method === "capabilities") return {supported:w.__commandSupported};
+            if(method === "permission") {
+              if(w.__holdCommandPermission)return await new Promise(resolve=>{w.__releaseCommandPermission=()=>resolve({granted:w.__commandGranted});});
+              return {granted:w.__commandGranted};
+            }
+            if(method === "cancel") return;
+            if(method === "listen") return await new Promise(resolve=>{
+              w.__commandSession=o.session;
+              w.__commandReady=(session=o.session)=>emit(plugin,"ready",{session});
+              w.__commandResult=(alternatives:unknown,session=o.session)=>resolve({session,status:"result",alternatives});
+            });
+            throw Error("Unexpected command method");
+          }
           if (plugin === "IpRasmSpeech") {
             if (method === "voices")
               return {

@@ -1,4 +1,5 @@
 import {recoveredProject} from './recovery-client';
+import { cancelAssemblyInputs } from "./assembly-input-cancellation";
 import type {RecoverySnapshot} from './recovery-types';
 import {
   readAssemblySession,
@@ -545,6 +546,7 @@ export function useAppController(initialView: View = "create") {
     cancelGuideSpeech();
   };
   const pause = () => {
+    cancelAssemblyInputs();
     setPlaying(false);
     backgroundAudio.stop();
     stopSpeech();
@@ -577,6 +579,7 @@ export function useAppController(initialView: View = "create") {
     }
   };
   const speak = () => {
+    cancelAssemblyInputs();
     stopSpeech();
     if (backgroundAudio.enabled) {
       void backgroundAudio.start(current, false);
@@ -1815,6 +1818,7 @@ export function useAppController(initialView: View = "create") {
     open(p);
   }
   function confirmCurrent() {
+    cancelAssemblyInputs();
     setRestStatus(undefined);
     if (!project || !loaded || !canBuild(project.instruction)) return;
     setConfirmedUndo(project.progress.confirmed);
@@ -2061,12 +2065,14 @@ export function useAppController(initialView: View = "create") {
     restoreAccountProject,
     resting,
     restSaveState: restStatus?.state ?? "saved",
-    resumeAssembly: () => setRestStatus(undefined),
+    resumeAssembly: () => { cancelAssemblyInputs(); setRestStatus(undefined); },
     pausePlayback: () => {
+      cancelAssemblyInputs();
       if (backgroundAudio.enabled) backgroundAudio.pause();
       else pause();
     },
     startPlayback: () => {
+      cancelAssemblyInputs();
       setRestStatus(undefined);
       if (backgroundAudio.enabled) {
         setSound(false);

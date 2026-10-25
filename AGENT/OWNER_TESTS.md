@@ -509,3 +509,7 @@ Hozir qo‘lda tekshirish shart emas: mobil rasm yuklash, ipli natija, kit bilan
 ##2026-10-25 — Oddiy ekran va eski loyihalar
 
 Desktop va mobil avtomatik sinovida eski loyiha ochildi, tasdiqlangan qadam saqlandi, internet o‘chirilganda qayta ochilib JSON chiqarildi. Hozir sizdan qo‘lda sinov talab qilinmaydi; yakuniy yangi havola alohida beriladi. Arabcha shrift va eski qo‘llanmalar saqlangan.
+
+##2026-10-25 — Ovozli buyruqlar tayyor (ixtiyoriy)
+
+Avtomatik desktop/mobil sinovlari o‘tdi; hozir sizdan qo‘lda sinov talab qilinmaydi. Keyinchalik Android13+da yig‘ishni oching → Menyu → Mutaxassis rejimi → Ovozli buyruqlar. Rejimni belgilang, Bir marta tinglashni bosing. Qo‘llanma tilida keyingi/oldingi/takrorla/pauza/ijro deng. So‘z tanish modeli telefonda avvaldan bo‘lishi kerak; bo‘lmasa tugmalar ishlashda davom etadi. Ruxsat oynasidan keyin kerak bo‘lsa yana Bir marta tinglashni bosing. Ilova internetdagi tanishga yoki model yuklashga o‘tmaydi. Bajarilgan ipni faqat qo‘lda tasdiqlang; ovozli buyruq buni tasdiqlamaydi. Ekrandan chiqish, qo‘lda qadamni o‘zgartirish va dam olish tinglashni bekor qiladi. Qayta ochilganda mikrofon rejimi o‘chiq. Batafsil docs/ASSEMBLY_COMMANDS_CHECKPOINT.md.

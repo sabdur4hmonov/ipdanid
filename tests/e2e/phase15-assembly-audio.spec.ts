@@ -6,6 +6,7 @@ import { unlockKitGuide } from "./kit-access";
 import { assemblyAudioText } from "../../src/assembly-audio-i18n";
 import { flatten } from "../../src/core/engine";
 import { pinLabel } from "../../src/core/standard-kit";
+import { uiText } from "../../src/ui-i18n";
 test.use({ trace: "off" });
 test("native opt-in owns offline background steps and lock-screen pause without confirming; restart restores newer exact cursor with mode off", async ({
   page,
@@ -170,7 +171,7 @@ test("late native start after navigation cannot resume or publish an old project
     .poll(() => page.evaluate(() => typeof (window as any).__releaseAudio))
     .toBe("function");
   await page
-    .getByRole("navigation", { name: "Main", exact: true })
+    .getByRole("navigation", { name: uiText("en","main"), exact: true })
     .getByRole("button", { name: "My projects", exact: true })
     .click();
   await page.evaluate(() => (window as any).__releaseAudio());

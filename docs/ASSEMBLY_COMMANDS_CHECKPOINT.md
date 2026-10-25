@@ -1,8 +1,8 @@
-# Experimental local voice commands — C19 ACTIVE
+# Experimental local voice commands — C19 CODE accepted
 
 ## C19a native/parser/driver core — 2026-10-21
 
-Native and pure policy/ownership core implemented and tested. **No customer microphone controls or actual bridge UI acceptance yet. C19b remains required; C19 is not complete.** No microphone was activated in these tests.
+At the C19a checkpoint only the native/policy core was accepted. C19b UI is now accepted below; no real microphone was activated in tests.
 
 The policy permits only next/previous/repeat/pause/play, with bounded exact phrases in Uzbek Latin/Cyrillic, Russian and English. It has no confirm, purchase, credit or unlock action. Confidence must be finite0..1, with first result at least0.88; alternatives at least0.5 must agree on the same canonical command. Unknown, conflicting, low-confidence, hidden-control, overlong and cross-language input falls back to manual control. These thresholds are conservative rules, not a measured recognition accuracy claim.
 
@@ -17,10 +17,22 @@ Actual validation:
 - Native main/JVM guards/instrumentation-source compilation **offline BUILD SUCCESSFUL38s**,131tasks(9executed), `test-results/phase15-c19-core-native.log`. The existing three actual Java fence tests remain the JVM suite. No emulator/phone/real recognition/real permission prompt/APK installation occurred.
 - C18 complete implementation remains accepted in its separate checkpoint. C19 UI, lazy Expert entry, explicit opt-in, truthful native-ready indicator, manual fallback and mocked desktop/mobile permission/denial/noise/stale/navigation tests are NEXT.
 
-## C19b exact next step
+## Historical C19b handoff (implemented below)
 
 After this core is committed/scanned/pushed, add a lazy assembly voice-command panel visible only in Menu→Expert mode, default off. Keep the current assembly guide when entering Expert mode from assembly. Add the real native client plus `ready` listener to `driver.ready(session)`. Only a button begins one attempt; pause ordinary/native guide audio before listening. Show canonical recognized action, not arbitrary raw transcript. No physical confirmation callback is passed to the panel.
 
 Add a small cancellation registry called synchronously by controller pause/navigation and manual confirmation; unregister and cancel on panel/view/project/current/language/unlock change, visibility loss and native Activity pause. Late permission must never start a microphone on a new screen. No always-on microphone or browser/cloud SpeechRecognition fallback. Integrate explicit allow/deny/unavailable-model/noisy/ambiguous/stale-ready/result tests with the real isolated kit gate on desktop/mobile; compile native again and run old assembly regressions. Owner device/models remain O07 and do not block mocks/code.
 
+## C19b implementation and executed browser evidence2026-10-25
+
+The preceding handoff is implemented. Lazy AssemblyCommands is reachable only after Menu→Expert mode, default off for each mount/restart. Entering Expert from assembly preserves the exact project/hash/cursor and pauses guide audio. Only the explicit Listen once button begins one attempt; ordinary/native/recorded speech is stopped before listening. A real IpRasmCommands ready listener alone shows Listening now. UI displays canonical accepted actions, never arbitrary transcripts. There is no confirmation/credit/unlock callback. Four locale dictionaries include Uzbek Cyrillic through scriptText.
+
+Synchronous cancellation registry is called by pause/navigation/jump/manual confirmation/repeat/play/resume. Current guide/language/cursor/opt-in changes, visibility loss, Activity pause, listener failure and unmount cancel/retire the driver. Late permission cannot start capture after manual confirmation; stale ready/result cannot navigate a new cursor. Listeners are removed even if native registration resolves after unmount. Web/iOS/missing Android on-device model fail closed to manual buttons; no browser/cloud SpeechRecognition fallback, model installation or always-on microphone.
+
+41/41unit tests (40existing policy/driver +1real shared cancellation ownership) and TypeScript pass.78dictionaries/1783keys locale audit passes. Isolated2136module build1m10s passes; manifest confirms434675B app+221974B React with lazy expert/provider/PDF code. Actual six isolated desktop/mobile Chrome cases passed1.3min at4540/API4686 using a real kit gate and mocked native bridge: default off, unchanged guide on Expert entry, positive next/previous without physical confirmation, low confidence/ambiguous/forbidden confirmation rejected, delayed permission/result/ready retired on manual cursor/confirm and visibility, denial/missing model preserve manual controls, restart restores confirmed2/80 with command mode off. Reports c19b-commands-ui/report.json and c19b-unit.json. No real microphone/audio/device permission prompt or phone recognition was run. Native compile and old background-audio regression are recorded in the final milestone log.
+
 References: [SpeechRecognizer](https://developer.android.com/reference/android/speech/SpeechRecognizer), [RecognitionSupport](https://developer.android.com/reference/android/speech/RecognitionSupport). No model or speech service was invoked on the owner's computer.
+
+Final acceptance:12distinct latest desktop/mobile cases pass (newcommand6 + oldbackgroundaudio6). Initial oldaudio4pass/2fail came from the stale C22 exact Main locator; corrected to uiText Main sections. Final integration4/4passed16.9s at4542/API4688 proves real mocked native audio starts, Expert pauses it before listening, and late native start after real Library navigation cannot revive playback. A screenshot exposed an actual open-menu overlay when preserving assembly; failing-first1/1 desktop4543/API4689 reproduced it. Expert entry now also closes MoreMenu; newcommand6/6 rerun passed23.2s4544/API4690, screenshots visually inspected clear/readable on mobile. TypeScript/final2136build22.84s passed after the fix. Earlier diagnostics remain, not reported as a single clean12run.
+
+Native compile final: cached portable JDK21/Gradle offline BUILD SUCCESSFUL5m29s,131tasks all up-to-date; no claim they executed anew. Fresh javac/JUnit guard run3/3 passed in audio-native-d53b7485c60745ef915259c12cc0a8a1. Initial use of system JDK25 failed unsupported major69 and was corrected to the documented existing JDK21/cache; no installs or system configuration changed. No phone/emulator/real installed speech-model accuracy acceptance. Owner test remains O07. C19 CODE complete; C20/C26 and portrait likeness remain open.

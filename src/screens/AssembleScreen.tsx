@@ -3,6 +3,7 @@ import { AssemblyFocus } from "../AssemblyFocus";
 import { recordManualMilestone } from "../analytics-client";
 import { lazy, Suspense } from "react";
 const SequenceAnimation = lazy(() => import("../SequenceAnimation"));
+const AssemblyCommands = lazy(() => import("../AssemblyCommands"));
 import type { AppScreenContext } from "../useAppController";
 import { pinLabel, sectorPin } from "../core/standard-kit";
 import { recordedVoiceText } from "../recorded-voice-i18n";
@@ -41,6 +42,7 @@ type ScreenContext = Pick<
   | "matchingVoices"
   | "nav"
   | "pace"
+  | "pause"
   | "pan"
   | "paper"
   | "restAssembly"
@@ -85,7 +87,7 @@ type ScreenContext = Pick<
   | "volume"
   | "zoom"
 >;
-export function AssembleScreen({ context }: { context: ScreenContext }) {
+export function AssembleScreen({ context, expert = false }: { context: ScreenContext; expert?: boolean }) {
   const {
     ArrowRight,
     AssemblyNavigator,
@@ -214,6 +216,18 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
         onRest={restAssembly}
         onResume={resumeAssembly}
       />
+      {expert && <Suspense fallback={<p>…</p>}><AssemblyCommands
+        locale={locale}
+        scope={{projectId:project.id,sequenceHash:instruction.sequenceHash,current,total:steps.length,language:guideLocale}}
+        pause={context.pause}
+        dispatch={command=>{
+          if(command==="next")jump(current+1);
+          else if(command==="previous")jump(current-1);
+          else if(command==="repeat")speak();
+          else if(command==="pause")context.pause();
+          else startPlayback();
+        }}
+      /></Suspense>}
       <div className="craft-grid">
         <section className="card craft-preview">
           <Supply instruction={instruction} locale={locale} />
