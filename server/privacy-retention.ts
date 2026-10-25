@@ -37,6 +37,7 @@ export const RETENTION_TABLES = {
     "tickets",
   ],
   accounting: [
+    "trial_batches","trial_codes","trial_claims",
     "build_unlocks",
     "campaigns",
     "catalog_reservations",
@@ -68,6 +69,7 @@ export const RETENTION_TABLES = {
     "erasure_ledger_binding",
   ],
   sharedOrStaff: [
+    "trial_policy",
     "announcement_requests",
     "announcements",
     "audit",

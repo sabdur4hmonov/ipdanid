@@ -476,3 +476,8 @@ Hozir sizdan qo'lda tekshiruv kerak emas. Eski backupni tiklashda ham o'chirilga
 ## 2026-10-25 — C21 yakuniy tekshiruv
 
 624/624unit va6/6desktop/mobil API/oyna testi o'tdi. Dockerproduction rejimida eskiDBni tiklash,o'chirilganhisob qaytmasligi,boshqahisob saqlanishi vaikkitabackup tekshirildi. RealVPSga kirilmagan,realpul/xabar yo'q. Sizdan bu bosqichda sinovtalabqilinmaydi. KeyingiC28sinovkodi/dostavka oqimi avtomatik tekshiriladi; taxtapaketi tayyor.
+
+
+### C28 — Instagram sinov kodi (API tayyor, oynalar hali tugamagan)
+
+Hozir qo‘lda sinash shart emas; server17unit va1HTTP sinovdan o‘tdi. Kampaniya o‘chiq qoladi. Kod faqat bitta raqamli yig‘ishga; taxta/dostavka alohida. Keyingi oynalar tayyor bo‘lganda to‘liq qadamlar yoziladi. docs/INSTAGRAM_TRIAL_UZ.md.

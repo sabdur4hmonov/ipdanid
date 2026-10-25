@@ -11,6 +11,7 @@ import { KitStore } from "./kit-store.ts";
 import { RecoveryStore } from "./recovery-store.ts";
 import { PhotoBackupStore } from "./photo-backup-store.ts";
 import { AccountErasureStore } from "./account-erasure-store.ts";
+import { TrialStore } from "./trial-store.ts";
 import { AdminAccess, adminRoutePermission } from "./admin-access.ts";
 import { validateInstruction } from "../src/core/validation.ts";
 import { Payments } from "./payments.ts";
@@ -110,6 +111,7 @@ const payments = new Payments(store, {
 });
 const budgets = new Map<string, { start: number; count: number }>();
 const finance = new FinanceStore(store);
+const trials = new TrialStore(store);
 const ledgerPath=process.env.ERASURE_LEDGER_PATH||(production?join(dirname(process.env.DATABASE_PATH!),"erasure-intents.sqlite"):undefined);
 const accountErasure = new AccountErasureStore(store,ledgerPath?{path:ledgerPath,key:pepper}:undefined);
 accountErasure.prune();
@@ -154,6 +156,7 @@ const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://127.0.0.1"),
       path = url.pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
+    if((path.startsWith("/api/trial")||path.startsWith("/api/admin/trial"))&&url.search)throw new DomainError("Trial parameters must not be in the URL");
     const photoWrite = path === "/api/photo-backup" && req.method === "POST";
     if (path === "/api/account/erasure" && url.search)
       throw new DomainError("Account erasure query fields are not allowed");
@@ -313,7 +316,7 @@ const server = createServer(async (req, res) => {
     if (
       req.method === "POST" &&
       (/^\/api\/account\/(login|recover|register|kit|erasure)$/.test(path) ||
-        path === "/api/admin/login")
+        path === "/api/admin/login" || path === "/api/trial/claim")
     ) {
       const attempts = authBudgets.get(ip) ?? { start: Date.now(), count: 0 };
       if (Date.now() - attempts.start > 60000) {
@@ -380,6 +383,10 @@ const server = createServer(async (req, res) => {
           403,
         );
       const actor = session.id;
+      if(path==="/api/admin/trials"&&req.method==="GET"){send(200,trials.report());return;}
+      if(path==="/api/admin/trials/policy"&&req.method==="POST"){send(200,trials.update(actor,body));return;}
+      if(path==="/api/admin/trials/batch"&&req.method==="POST"){send(201,trials.issue(actor,body));return;}
+      if(path==="/api/admin/trials/revoke"&&req.method==="POST"){send(200,trials.revoke(actor,body));return;}
       if(path==='/api/admin/analytics'&&req.method==='GET'){send(200,analytics.report());return;}
       if(path === '/api/admin/mail' && req.method === 'GET'){send(200,outbox.admin());return;}
       const mailRetry=path.match(/^\/api\/admin\/mail\/([a-f0-9-]{36})\/retry$/);
@@ -652,6 +659,8 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Admin route not implemented", 404);
     }
     const user = store.authenticate(token);
+    if(path==="/api/trial"&&req.method==="GET"){send(200,trials.status(user));return;}
+    if(path==="/api/trial/claim"&&req.method==="POST"){send(200,trials.claim(user,body));return;}
     if (path === "/api/account/erasure" && req.method === "GET") {
       send(200, accountErasure.preview(user)); return;
     }

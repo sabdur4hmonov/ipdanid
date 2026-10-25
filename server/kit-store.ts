@@ -30,6 +30,10 @@ const defaults: KitPolicy = {
   periodDays: 30,
 };
 export class KitStore extends CustomerStore {
+  additionalBuildCredits?: {
+    balance(account:string,now:number):number;
+    spend(account:string,now:number):string|null;
+  };
   constructor(path: string, pepper: string, paymentKey: string) {
     super(path, pepper, paymentKey);
     this.db.exec(`
@@ -341,6 +345,7 @@ export class KitStore extends CustomerStore {
   kitBalance(account: string, now = Date.now()) {
     return (
       super.balance(account) +
+      (this.additionalBuildCredits?.balance(account,now)??0) +
       Number(
         this.db
           .prepare(
@@ -497,7 +502,9 @@ export class KitStore extends CustomerStore {
           )
           .get(account, now);
         let source: string;
-        if (grant) {
+        const extra=this.additionalBuildCredits?.spend(account,now);
+        if(extra){source=extra;}
+        else if (grant) {
           source = String(grant.code_hash);
           this.db
             .prepare(

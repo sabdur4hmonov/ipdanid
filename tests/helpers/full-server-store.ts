@@ -17,6 +17,7 @@ import { MockPushAdapter } from "../../server/fcm-adapter";
 import { ProductionAdminAuth } from "../../server/production-auth";
 import { AdminAccess } from "../../server/admin-access";
 import { FinanceStore } from "../../server/finance-store";
+import { TrialStore } from "../../server/trial-store";
 
 // Match every production feature migration without starting HTTP or reading env/owner data.
 export function fullServerStore(path = ":memory:", pepper = "p".repeat(32)) {
@@ -43,5 +44,6 @@ export function fullServerStore(path = ":memory:", pepper = "p".repeat(32)) {
   );
   new AdminAccess(store, "t".repeat(32), owner);
   new FinanceStore(store);
+  new TrialStore(store);
   return { store, photos };
 }
