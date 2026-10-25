@@ -521,3 +521,7 @@ Hozir qo‘lda sinov shart emas: kamera maketi, xotira xatosi, saqlash, internet
 ##2026-10-26 — Yakuniy tekshiruv tayyorgarligi
 
 660ta unit sinovi to‘liq o‘tdi. Hozir qo‘lda tekshirish talab qilinmaydi; desktop/mobil sinov matritsasi va APK yakuni davom etadi. Yangi yakuniy havola va3ta kit kodi tayyor bo‘lganda output/phase15/manual-testing.txt da bo‘ladi; hozir bu fayl yaratilgan degan ma’no yo‘q. Eski4214 sahifangiz saqlangan. Egasi imzolaydigan release uchun scripts/build-release.ps1 va docs/APK_SERVER_AND_SIGNING_UZ.md, iPhone uchun docs/IOS_UZ.md qo‘llanadi; hech qanday yangi kalit/telefon o‘rnatish bajarilmagan.
+
+##2026-10-26 — Mutaxassis muharriri
+
+Avtomatik desktop/mobil sinovda rasm yuklash, Hayvon tanlash, maxsus sozlamani yoqish, belgilarni ko‘chirish va hisoblash tekshirildi. Sozlama yoqilganda butun ekran yo‘qolishi tuzatildi. Hozir qo‘lda tekshirish shart emas; yakuniy yangi havola hali tayyorlanmoqda.

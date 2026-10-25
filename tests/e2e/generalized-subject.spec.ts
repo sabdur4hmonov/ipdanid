@@ -47,8 +47,7 @@ test("generic manual marks are crop-bound, locally reviewed and dispatched to re
     rgba[k * 4 + 3] = 255;
   }
   await page
-    .locator("input[type=file]")
-    .first()
+    .locator('input[type=file][accept="image/jpeg,image/png"]')
     .setInputFiles({
       name: "dog.png",
       mimeType: "image/png",
@@ -61,6 +60,9 @@ test("generic manual marks are crop-bound, locally reviewed and dispatched to re
     .click();
   await page.getByTestId("subject-fit-options").locator("summary").click();
   await page.getByTestId("subject-fit-enable").check();
+  // Inline editor loading must not hide the form or roll back this input.
+  await expect(page.getByTestId("subject-fit-enable")).toBeChecked();
+  await expect(page.getByTestId("subject-kind")).toBeVisible();
   await revealControl(page.getByTestId("subject-marks"));
   await expect(
     page.getByRole("checkbox", { name: "Prioritize portrait", exact: true }),

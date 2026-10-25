@@ -1,9 +1,20 @@
+// This screen is already lazy. Load its inline editors together so toggling a
+// controlled input cannot suspend the entire screen or detach its canvas refs.
+import { BackgroundEditor } from "../BackgroundEditor";
+import { PeopleRegionEditor } from "../PeopleRegionEditor";
+import { PersonBackground } from "../PersonBackground";
+import { PhotoActions } from "../PhotoActions";
+import { PhotoQualityAdvice } from "../PhotoQualityAdvice";
+import { PortraitSamplingPanel } from "../PortraitSamplingPanel";
+import { ShapeCropEditor } from "../ShapeCropEditor";
+import { SubjectAdvice } from "../SubjectAdvice";
+import { SubjectChooser } from "../SubjectChooser";
+import { SubjectMarksEditor } from "../SubjectMarksEditor";
 import { uiText } from "../ui-i18n";
 import type { AppScreenContext } from "../useAppController";
 type ScreenContext = Pick<
   AppScreenContext,
   | "ArrowRight"
-  | "BackgroundEditor"
   | "Circle"
   | "DEFAULT_EDITS"
   | "DEFAULT_PORTRAIT"
@@ -12,20 +23,11 @@ type ScreenContext = Pick<
   | "Layers"
   | "Leaf"
   | "MAX_LINES"
-  | "PeopleRegionEditor"
-  | "PersonBackground"
-  | "PhotoActions"
-  | "PhotoQualityAdvice"
-  | "PortraitSamplingPanel"
   | "Preview"
   | "ResultSubject"
   | "RotateCcw"
-  | "ShapeCropEditor"
   | "ShieldCheck"
   | "Square"
-  | "SubjectAdvice"
-  | "SubjectChooser"
-  | "SubjectMarksEditor"
   | "Supply"
   | "Upload"
   | "activeBackground"
@@ -158,7 +160,6 @@ type ScreenContext = Pick<
 export function CreateScreen({ context }: { context: ScreenContext }) {
   const {
     ArrowRight,
-    BackgroundEditor,
     Circle,
     DEFAULT_EDITS,
     DEFAULT_PORTRAIT,
@@ -167,20 +168,11 @@ export function CreateScreen({ context }: { context: ScreenContext }) {
     Layers,
     Leaf,
     MAX_LINES,
-    PeopleRegionEditor,
-    PersonBackground,
-    PhotoActions,
-    PhotoQualityAdvice,
-    PortraitSamplingPanel,
     Preview,
     ResultSubject,
     RotateCcw,
-    ShapeCropEditor,
     ShieldCheck,
     Square,
-    SubjectAdvice,
-    SubjectChooser,
-    SubjectMarksEditor,
     Supply,
     Upload,
     activeBackground,
