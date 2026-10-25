@@ -9,7 +9,7 @@ const words = {
     maskHint:
       "Paint the unwanted background, or restore parts of the photo. Your placement stays unchanged.",
     maskWarning:
-      "Automatic cutout was limited. Check and fix it with Erase / Restore.",
+      "The background could not be separated reliably. Your complete photo is kept; use Erase / Restore to fix the cutout.",
     erase: "Erase",
     restore: "Restore",
     undoMask: "Undo brush",
@@ -60,7 +60,7 @@ const words = {
     maskHint:
       "Keraksiz fonni o‘chiring yoki surat qismlarini qaytaring. Joylashuv saqlanadi.",
     maskWarning:
-      "Avtomatik qirqimni tekshiring. O‘chirish / Qaytarish bilan tuzatishingiz mumkin.",
+      "Fon ishonchli ajratilmadi. Suratingiz butun saqlandi; O‘chirish / Qaytarish bilan qirqimni tuzating.",
     erase: "O‘chirish",
     restore: "Qismini qaytarish",
     undoMask: "Oxirgi chiziqni qaytarish",
@@ -111,7 +111,7 @@ const words = {
     maskHint:
       "Закрасьте лишний фон или восстановите части фото. Положение сохранится.",
     maskWarning:
-      "Автоматическая вырезка ограничена. Проверьте и исправьте ластиком или восстановлением.",
+      "Фон не удалось надёжно отделить. Фото сохранено целиком; исправьте вырезку ластиком или восстановлением.",
     erase: "Стереть",
     restore: "Восстановить",
     undoMask: "Отменить мазок",

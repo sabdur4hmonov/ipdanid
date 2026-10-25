@@ -2,7 +2,8 @@ import { frameFreePhoto, freePhotoCanvas } from "./core/free-photo-framing";
 import { whiteBackground } from "./person-background";
 import { paintPersonMask, type PersonMask } from "./core/person-mask";
 import { usePhotoTone } from "./usePhotoTone";
-import { productSource, type ProductKind } from "./core/product-framing";
+import { type ProductKind } from "./core/product-framing";
+import type { CutoutChoice } from "./core/semantic-cutout";
 import { productText } from "./product-i18n";
 import { withPortraitCaption, captionGeometry } from "./core/portrait-caption";
 import { leastSquaresProfile } from "./core/classic-least-squares";
@@ -26,7 +27,7 @@ import {
 import { type QuarterTurn } from "./core/photo-orientation";
 import { loadPhoto } from "./core/image";
 import { hash } from "./core/engine";
-import { preparePersonPhoto, type PhotoAnalysis } from "./photo-prepare";
+import { preparePhotoCutout, type PhotoAnalysis } from "./photo-prepare";
 import { classicPins } from "./core/classic-reference";
 import {
   DEFAULT_STANDARD_KIT,
@@ -79,6 +80,9 @@ export function CustomerStudio({
   const [step, setStep] = useState<"start" | "adjust" | "result">("start"),
     [shape, setShape] = useState<Shape>("circle"),
     [kind, setKind] = useState<ProductKind>("people"),
+    [cutoutChoice, setCutoutChoice] = useState<CutoutChoice | "lettering">(
+      "auto",
+    ),
     [lettering, setLettering] = useState("SALOM"),
     [caption, setCaption] = useState(""),
     [captionRaster, setCaptionRaster] = useState<{
@@ -435,6 +439,7 @@ export function CustomerStudio({
     setAnalysis(d.analysis);
     setShape(d.shape);
     setKind(d.kind);
+    setCutoutChoice(d.kind);
     setCaption(d.caption);
     setAdjustments([d.adjustment]);
     setRotation(d.rotation);
@@ -472,36 +477,44 @@ export function CustomerStudio({
   async function analyseCutout(
     c: HTMLCanvasElement,
     signal: AbortSignal,
+    choice: CutoutChoice | "lettering" = cutoutChoice,
   ): Promise<PhotoAnalysis> {
     setMaskWarning(false);
-    if (kind === "people") {
+    if (choice !== "lettering") {
       try {
-        return await preparePersonPhoto(c, signal);
+        const { subjectKind, ...analysis } = await preparePhotoCutout(
+          c,
+          signal,
+          choice,
+        );
+        if (signal.aborted) throw Error("cancelled");
+        if (subjectKind) setKind(subjectKind);
+        return analysis;
       } catch {
         if (signal.aborted) throw Error("cancelled");
       }
     }
-    // Conservative colour-border fallback is explicitly disclosed, editable,
-    // and never presented as phone-quality object segmentation.
+    // Unrecognised objects are kept intact for manual review. Colour-border
+    // guesses must not silently erase fur, clothing or disconnected letters.
     const small = document.createElement("canvas"),
       scale = Math.min(1, 512 / Math.max(c.width, c.height));
     small.width = Math.round(c.width * scale);
     small.height = Math.round(c.height * scale);
     small.getContext("2d")!.drawImage(c, 0, 0, small.width, small.height);
-    let mask: PersonMask;
-    try {
-      mask = productSource(small).mask;
-    } catch {
-      mask = {
-        width: small.width,
-        height: small.height,
-        values: new Float32Array(small.width * small.height).fill(1),
-      };
-    }
-    setMaskWarning(true);
-    return { faces: [], mask, faceUnavailable: true, cleanupUnavailable: true };
+    const mask: PersonMask = {
+      width: small.width,
+      height: small.height,
+      values: new Float32Array(small.width * small.height).fill(1),
+    };
+    setMaskWarning(choice !== "lettering");
+    return {
+      faces: [],
+      mask,
+      faceUnavailable: true,
+      cleanupUnavailable: choice !== "lettering",
+    };
   }
-  async function recut() {
+  async function recut(choice: CutoutChoice | "lettering" = cutoutChoice) {
     if (!source || preparing || busy) return;
     const id = ++upload.current,
       abort = new AbortController();
@@ -510,12 +523,12 @@ export function CustomerStudio({
     setPreparing(true);
     setError("");
     try {
-      const a = await analyseCutout(source, abort.signal);
+      const a = await analyseCutout(source, abort.signal, choice);
       if (id === upload.current) {
         // Re-cut changes only the mask. Re-running a detector can jitter its
         // boxes; keep the existing reviewed placement and importance regions.
         setAnalysis((old) =>
-          old
+          old && choice === cutoutChoice
             ? { ...old, mask: a.mask, cleanupUnavailable: a.cleanupUnavailable }
             : a,
         );
@@ -651,7 +664,11 @@ export function CustomerStudio({
       sourceHash,
       sourceAspect: source.width / source.height,
       whiteBackground:
-        restoredMaskEdited || maskHistory.length ? "manual" : "automatic",
+        restoredMaskEdited || maskHistory.length
+          ? "manual"
+          : maskWarning || kind === "lettering"
+            ? "original"
+            : "automatic",
       transform: framing,
     };
     w.onmessage = async ({ data }) => {
@@ -789,39 +806,54 @@ export function CustomerStudio({
             >
               {t("account")}
             </button>
-            <label>
-              {productText(locale, "kind")}
-              <select
-                data-testid="product-kind"
-                value={kind}
-                onChange={(e) => {
-                  setKind(e.target.value as ProductKind);
-                  setStep("start");
-                  setSource(undefined);
-                  setAnalysis(undefined);
-                }}
-              >
-                {(
-                  [
-                    "people",
-                    "animal",
-                    "vehicle",
-                    "object",
-                    "lettering",
-                  ] as const
-                ).map((k) => (
-                  <option key={k} value={k}>
-                    {productText(locale, k)}
-                  </option>
-                ))}
-              </select>
-            </label>
             <button data-testid="enter-expert" onClick={onExpert}>
               {t("expert")}
             </button>
           </div>
         </details>
       </header>
+      {step !== "result" && (
+        <label className="customer-hint">
+          {productText(locale, "kind")}
+          <select
+            data-testid="product-kind"
+            value={cutoutChoice}
+            disabled={busy || preparing}
+            onChange={(e) => {
+              const next = e.target.value as CutoutChoice | "lettering";
+              setCutoutChoice(next);
+              setKind(next === "auto" ? "people" : next);
+              if (next === "lettering" || kind === "lettering") {
+                ++upload.current;
+                ++generation.current;
+                controller.current?.abort();
+                worker.current?.terminate();
+                setStep("start");
+                setSource(undefined);
+                setAnalysis(undefined);
+                setResult(undefined);
+                setPreparing(false);
+                setBusy(false);
+              } else if (source) void recut(next);
+            }}
+          >
+            {(
+              [
+                "auto",
+                "people",
+                "animal",
+                "vehicle",
+                "object",
+                "lettering",
+              ] as const
+            ).map((k) => (
+              <option key={k} value={k}>
+                {productText(locale, k)}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       {draftOpen && active && (
         <Suspense fallback={null}>
           <PhotoDraftPanel
@@ -876,8 +908,39 @@ export function CustomerStudio({
                         d.data[k * 4 + 3] = 255;
                       }
                       ctx.putImageData(d, 0, 0);
+                      // Fit generated glyphs, including Arabic dots/diacritics,
+                      // rather than a large empty square around a short line.
+                      // Uploaded photographs retain the user's whole-photo framing.
+                      const left = Math.max(
+                          0,
+                          Math.floor(g.bounds.left * 500) - 4,
+                        ),
+                        top = Math.max(0, Math.floor(g.bounds.top * 500) - 4),
+                        right = Math.min(
+                          500,
+                          Math.ceil((g.bounds.left + g.bounds.width) * 500) + 4,
+                        ),
+                        bottom = Math.min(
+                          500,
+                          Math.ceil((g.bounds.top + g.bounds.height) * 500) + 4,
+                        ),
+                        textSource = document.createElement("canvas");
+                      textSource.width = right - left;
+                      textSource.height = bottom - top;
+                      textSource
+                        .getContext("2d")!
+                        .putImageData(
+                          ctx.getImageData(
+                            left,
+                            top,
+                            right - left,
+                            bottom - top,
+                          ),
+                          0,
+                          0,
+                        );
                       const blob = await new Promise<Blob>((r) =>
-                        c.toBlob((b) => r(b!)),
+                        textSource.toBlob((b) => r(b!)),
                       );
                       await photo(
                         new File([blob], "lettering.png", {

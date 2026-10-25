@@ -1,6 +1,7 @@
 import { segmentPeople } from "./person-background";
 import { detectSourceFaces, closeFaceDetector } from "./face-detection";
-import { cleanupBackground } from "./background-cleanup";
+import { cleanupBackground, segmentPhotoSubject } from "./background-cleanup";
+import type { CutoutChoice } from "./core/semantic-cutout";
 import type { SourceFace } from "./core/face-features";
 import { unturnMask, type QuarterTurn } from "./core/photo-orientation";
 const scope = self as unknown as {
@@ -13,6 +14,7 @@ self.onmessage = async (
     image?: ImageBitmap;
     cancel?: boolean;
     dispose?: boolean;
+    choice?: CutoutChoice;
   }>,
 ) => {
   const { id, image, cancel, dispose } = e.data;
@@ -32,12 +34,44 @@ self.onmessage = async (
     let faces: SourceFace[] = [],
       faceUnavailable = false;
     const orientation: { turn: QuarterTurn } = { turn: 0 };
+    const choice = e.data.choice ?? "people";
     try {
-      faces = await detectSourceFaces(image, () => latest === id, orientation);
+      if (choice === "people" || choice === "auto")
+        faces = await detectSourceFaces(
+          image,
+          () => latest === id,
+          orientation,
+        );
     } catch {
       faceUnavailable = true;
     }
     if (latest !== id) return;
+    if (choice !== "people") {
+      const semantic = await segmentPhotoSubject(
+        image,
+        choice,
+        () => latest === id,
+      );
+      if (latest !== id) return;
+      // A face detector alone cannot decide that a pet is a human. Use the
+      // semantic class first; refine actual human foreground with the selfie model.
+      if (choice !== "auto" || !semantic.refinePeople) {
+        scope.postMessage(
+          {
+            id,
+            mask: semantic.mask,
+            subjectKind: semantic.subjectKind,
+            faces:
+              choice === "auto" && semantic.subjectKind === "people" ? faces : [],
+            faceUnavailable,
+            cleanupUnavailable: false,
+            analysisTurn: 0,
+          },
+          [semantic.mask.values.buffer as ArrayBuffer],
+        );
+        return;
+      }
+    }
     let input: ImageBitmap | OffscreenCanvas = image;
     if (orientation.turn) {
       const scale = Math.min(1, 512 / Math.max(image.width, image.height));
@@ -72,6 +106,7 @@ self.onmessage = async (
         faceUnavailable,
         cleanupUnavailable,
         analysisTurn: orientation.turn,
+        ...(choice === "auto" ? { subjectKind: "people" } : {}),
       },
       [mask.values.buffer as ArrayBuffer],
     );

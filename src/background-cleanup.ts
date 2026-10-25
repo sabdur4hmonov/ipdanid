@@ -1,5 +1,6 @@
 import { cleanUncertainBackground } from "./core/background-cleanup";
 import type { PersonMask } from "./core/person-mask";
+import { semanticCutout, type CutoutChoice } from "./core/semantic-cutout";
 const ROOT = "/vendor/portrait-segmentation";
 type Segmenter = {
   segment: (input: OffscreenCanvas) => {
@@ -76,5 +77,36 @@ export async function cleanupBackground(
     });
   } finally {
     output.close();
+  }
+}
+
+export async function segmentPhotoSubject(
+  image: ImageBitmap | OffscreenCanvas,
+  choice: CutoutChoice,
+  stillWanted: () => boolean,
+) {
+  const segmenter = await getModel();
+  if (!stillWanted()) throw new DOMException("Superseded photo", "AbortError");
+  const scale = Math.min(1, 512 / Math.max(image.width, image.height));
+  const canvas = new OffscreenCanvas(
+    Math.max(1, Math.round(image.width * scale)),
+    Math.max(1, Math.round(image.height * scale)),
+  );
+  canvas.getContext("2d")!.drawImage(image, 0, 0, canvas.width, canvas.height);
+  const result = segmenter.segment(canvas);
+  try {
+    return semanticCutout(
+      segmenter.getLabels(),
+      result.confidenceMasks.map((m) => ({
+        width: m.width,
+        height: m.height,
+        values: Float32Array.from(m.getAsFloat32Array(), (v) =>
+          Math.max(0, Math.min(1, v)),
+        ),
+      })),
+      choice,
+    );
+  } finally {
+    result.close();
   }
 }

@@ -456,3 +456,7 @@ Mahalliy `output/physical-route-ssim-v4/report.html` faylida yettita suratning t
 ## 2026-10-24 — hisob almashganda surat maxfiyligi
 
 Kompyuter va mobil ko‘rinishda avtomatik sinov o‘tdi: oyna yopilgan bo‘lsa ham hisobdan chiqish tugallanmagan so‘rovni tozaladi. Eski hisobning kechikkan surat javobi yangi hisobga o‘tmadi. Sizdan hozir test kerak emas. Keyingi yangi buildda tekshirish uchun: shaxsiy zaxira oynasini yoping → hisobdan chiqing → boshqa hisobga kiring; uning zaxirasi va surati alohida qolishi kerak. Hisobni butunlay o‘chirish keyingi kod bosqichi; oddiy chiqish qurilmada ataylab saqlangan shaxsiy loyihalarni o‘chirmaydi.
+
+## 2026-10-25 — mushuk va yozuv tuzatmasi (yangi manzil keyin beriladi)
+
+4213 eski taqqoslash uchun saqlanadi. Yangi nusxada rasm turini bosh ekranda tanlash mumkin: Avtomatik, Odam, Hayvon, Transport, Buyum yoki Yozuv. Mushuk rasmini yuklang: boshi/tanasi qolishi, fon oq bo'lishi kerak. Joylashuvni o'zingiz surib yoki kattalashtirib belgilang; turni almashtirib qayta qirqish joylashuvni buzmasligi kerak. Noma'lum buyum ishonchli ajratilmasa, rasm butun qoladi; O'chirish/Tiklash bilan to'g'rilang. Yozuvda arabcha va lotincha matnni birga sinash mumkin, masalan «سَلام Ali»; harf nuqtalari va belgilari saqlanadi. Ipli natijadagi burun/tiniqlik hali qabul qilinmagan, bu tuzatma faqat qirqish va matn joylashuvini yaxshilaydi. Avtomatik desktop/mobil tekshiruvlar egani kutmasdan bajariladi.

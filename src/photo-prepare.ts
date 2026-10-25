@@ -1,5 +1,6 @@
 import type { PersonMask } from "./core/person-mask";
 import type { SourceFace } from "./core/face-features";
+import type { CutoutChoice, PhotoSubject } from "./core/semantic-cutout";
 export type PhotoAnalysis = {
   mask: PersonMask;
   faces: SourceFace[];
@@ -56,6 +57,7 @@ if (typeof window !== "undefined")
 async function preparePersonPhotoOnce(
   source: HTMLCanvasElement,
   signal: AbortSignal,
+  choice: CutoutChoice = "people",
 ): Promise<PhotoAnalysis> {
   const bitmap = await createImageBitmap(source);
   if (signal.aborted) {
@@ -85,7 +87,7 @@ async function preparePersonPhotoOnce(
       },
     });
     try {
-      w.postMessage({ id: task, image: bitmap }, [bitmap]);
+      w.postMessage({ id: task, image: bitmap, choice }, [bitmap]);
     } catch (error) {
       pending.delete(task);
       signal.removeEventListener("abort", abort);
@@ -112,5 +114,23 @@ export async function preparePersonPhoto(
     )
       throw error;
     return preparePersonPhotoOnce(source, signal);
+  }
+}
+
+export async function preparePhotoCutout(
+  source: HTMLCanvasElement,
+  signal: AbortSignal,
+  choice: CutoutChoice,
+): Promise<PhotoAnalysis & { subjectKind?: PhotoSubject }> {
+  try {
+    return await preparePersonPhotoOnce(source, signal, choice);
+  } catch (error) {
+    if (
+      signal.aborted ||
+      !(error instanceof Error) ||
+      error.message !== "Local photo worker unavailable"
+    )
+      throw error;
+    return preparePersonPhotoOnce(source, signal, choice);
   }
 }
