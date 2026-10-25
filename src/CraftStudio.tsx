@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from "react";
-import { GridStudio } from "./GridStudio";
-import { PaintStudio } from "./PaintStudio";
+const GridStudio = lazy(() => import("./GridStudio").then(m => ({ default: m.GridStudio })));
+const PaintStudio = lazy(() => import("./PaintStudio").then(m => ({ default: m.PaintStudio })));
 import { paintText } from "./paint-i18n";
 import type { Instruction, Locale } from "./core/types";
 import { letteringText } from "./lettering-i18n";

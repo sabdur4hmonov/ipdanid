@@ -17,10 +17,10 @@ const StandardKitStudio = lazy(() =>
 
 import { useAppController } from "./useAppController";
 import { MoreMenu } from "./screens/MoreMenu";
-import { CreateScreen } from "./screens/CreateScreen";
-import { AssembleScreen } from "./screens/AssembleScreen";
-import { LibraryScreen } from "./screens/LibraryScreen";
-import { MoreScreen } from "./screens/MoreScreen";
+const CreateScreen = lazy(() => import("./screens/CreateScreen").then(m => ({ default: m.CreateScreen })));
+const AssembleScreen = lazy(() => import("./screens/AssembleScreen").then(m => ({ default: m.AssembleScreen })));
+const LibraryScreen = lazy(() => import("./screens/LibraryScreen").then(m => ({ default: m.LibraryScreen })));
+const MoreScreen = lazy(() => import("./screens/MoreScreen").then(m => ({ default: m.MoreScreen })));
 export default function App() {
   const [kitClaim, setKitClaim] = useState(() =>
     kitClaimCode(window.location.hash),
@@ -260,6 +260,7 @@ export default function App() {
               {notice}
             </div>
           )}
+          <Suspense fallback={<p role="status">{customerText(locale, "loading")}</p>}>
           {view === "customer" && (
             <CustomerHub
               initialPane={customerPane}
@@ -438,6 +439,7 @@ export default function App() {
               }}
             />
           )}
+          </Suspense>
         </main>
         <footer>
           <span>{storefront.brandName || PRODUCT_NAME}</span>

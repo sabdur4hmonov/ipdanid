@@ -93,6 +93,7 @@ export default defineConfig({
   projects: [
     {
       name: "desktop",
+      testIgnore: "**/phone-performance.spec.ts",
       use: { ...devices["Desktop Chrome"], ...(channel ? { channel } : {}) },
     },
     {

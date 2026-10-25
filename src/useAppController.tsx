@@ -12,13 +12,13 @@ import {
 } from "./assembly-audio-client";
 import { newerAudioPosition } from "./assembly-audio-resume";
 import { assemblyStepText } from "./assembly-audio-program";
-import { SubjectChooser } from "./SubjectChooser";
+const SubjectChooser = lazy(() => import("./SubjectChooser").then(m => ({ default: m.SubjectChooser })));
 import { recordedClipPlayer } from "./recorded-player";
 import { recordedStepEntries } from "./core/recorded-voices";
 import { recordedVoiceText } from "./recorded-voice-i18n";
 import { BuildGate } from "./BuildGate";
 import { useBuildAccess } from "./useBuildAccess";
-import { SubjectMarksEditor } from "./SubjectMarksEditor";
+const SubjectMarksEditor = lazy(() => import("./SubjectMarksEditor").then(m => ({ default: m.SubjectMarksEditor })));
 import { subjectFitText, subjectMetricLabel } from "./subject-fit-i18n";
 import { defaultSubjectMarks, subjectRecipeKey } from "./core/subject-edit";
 import { capabilityProblem, CAPABILITIES } from "./core/capabilities";
@@ -33,10 +33,10 @@ import { businessText } from "./business-i18n";
 import { Announcements } from "./Announcements";
 import { useBusiness } from "./BusinessContext";
 import { baseLocale } from "./uzbek-script";
-import { PeopleRegionEditor } from "./PeopleRegionEditor";
+const PeopleRegionEditor = lazy(() => import("./PeopleRegionEditor").then(m => ({ default: m.PeopleRegionEditor })));
 import { unconfirmedPeople, unreviewedPeople } from "./core/people-edit";
-import { PhotoQualityAdvice } from "./PhotoQualityAdvice";
-import { SubjectAdvice } from "./SubjectAdvice";
+const PhotoQualityAdvice = lazy(() => import("./PhotoQualityAdvice").then(m => ({ default: m.PhotoQualityAdvice })));
+const SubjectAdvice = lazy(() => import("./SubjectAdvice").then(m => ({ default: m.SubjectAdvice })));
 import {
   adviceCrop,
   subjectAdvice,
@@ -53,9 +53,10 @@ import {
 } from "./core/head-importance";
 import { simpleText } from "./simple-flow-i18n";
 import { portraitChoiceText } from "./portrait-choice-i18n";
-import { CraftStudio } from "./CraftStudio";
-import { PhotoActions } from "./PhotoActions";
-import { PersonBackground, type BackgroundState } from "./PersonBackground";
+const CraftStudio = lazy(() => import("./CraftStudio").then(m => ({ default: m.CraftStudio })));
+const PhotoActions = lazy(() => import("./PhotoActions").then(m => ({ default: m.PhotoActions })));
+import type { BackgroundState } from "./PersonBackground";
+const PersonBackground = lazy(() => import("./PersonBackground").then(m => ({ default: m.PersonBackground })));
 import { backgroundText } from "./person-background-i18n";
 import { fitAllPeople, croppedPeopleFraction } from "./core/people-fit";
 import {
@@ -68,7 +69,7 @@ import {
   DEFAULT_ANATOMICAL_IMPORTANCE,
   type AnatomicalImportance,
 } from "./core/anatomical-importance";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, useEffect, useMemo, useRef, useState } from "react";
 import { App as NativeApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import {
@@ -99,12 +100,12 @@ import {
   putRgb,
   snapshotPortrait,
 } from "./core/portrait";
-import { RegionEditor } from "./RegionEditor";
+const RegionEditor = lazy(() => import("./RegionEditor").then(m => ({ default: m.RegionEditor })));
 import {
   portraitSampling,
   type PortraitSampling,
 } from "./core/portrait-sampling";
-import { PortraitSamplingPanel } from "./PortraitSamplingPanel";
+const PortraitSamplingPanel = lazy(() => import("./PortraitSamplingPanel").then(m => ({ default: m.PortraitSamplingPanel })));
 import { appendVariants, GenerationJobs, type Variants } from "./core/variants";
 import {
   continuationStrategy,
@@ -117,13 +118,13 @@ import {
   sealGenerationInput,
   deleteGenerationInput,
 } from "./generation-inputs";
-import { BackgroundEditor } from "./BackgroundEditor";
+const BackgroundEditor = lazy(() => import("./BackgroundEditor").then(m => ({ default: m.BackgroundEditor })));
 import { MAX_LINES } from "./core/limits";
 import { deepFreeze, flatten, hash } from "./core/engine";
 import { renderInstruction } from "./core/render";
 import { assemblyEffort } from "./core/simplify";
 import { loadPhoto, prepare, sampleCanvas, suitability } from "./core/image";
-import { ShapeCropEditor } from "./ShapeCropEditor";
+const ShapeCropEditor = lazy(() => import("./ShapeCropEditor").then(m => ({ default: m.ShapeCropEditor })));
 import type { OutlinePoint } from "./core/head-outline";
 import {
   androidSpeech,
@@ -156,7 +157,7 @@ import { translate } from "./i18n";
 import { readProjects, writeProjects, StorageConflictError } from "./storage";
 import { download } from "./download";
 import { PRODUCT_NAME } from "./config";
-import { CustomerHub } from "./CustomerHub";
+const CustomerHub = lazy(() => import("./CustomerHub").then(m => ({ default: m.CustomerHub })));
 import { customerText } from "./customer-i18n";
 import { guideText } from "./guide-i18n";
 import { recordManualMilestone } from "./analytics-client";

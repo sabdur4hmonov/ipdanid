@@ -1,4 +1,5 @@
 import { generateClassicLeastSquares } from "./classic-least-squares";
+import { physicalPreviewRgba } from "./physical-preview";
 import { refineHairCycles } from "./hair-cycles";
 import { generateClassic } from "./classic";
 import { generateClassicReference } from "./classic-reference";
@@ -336,6 +337,7 @@ self.onmessage = async ({ data }) => {
               }),
           })
         : instruction;
+    const preview = data.physicalPreview === true && data.strategy === "classic3" ? physicalPreviewRgba(finalInstruction) : undefined;
     self.postMessage({
       type: "done",
       jobId: data.jobId,
@@ -361,7 +363,8 @@ self.onmessage = async ({ data }) => {
         : {}),
       baseline,
       durationMs: performance.now() - started,
-    });
+      ...(preview ? { physicalPreview: {sequenceHash: finalInstruction.sequenceHash, width:1000,height:1000,pixels:preview} } : {}),
+    }, {transfer: preview ? [preview.buffer] : []});
   } catch (error) {
     self.postMessage({
       type: "error",

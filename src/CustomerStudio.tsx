@@ -113,6 +113,7 @@ export function CustomerStudio({
     [fraction, setFraction] = useState(0),
     [error, setError] = useState<"" | "error" | "noFace">(""),
     [result, setResult] = useState<Instruction>(),
+    [resultPreview, setResultPreview] = useState<{sequenceHash:string; pixels:Uint8ClampedArray<ArrayBuffer>}>(),
     [lines, setLines] = useState<number>(DEFAULT_CUSTOMER_LINES),
     [gate, setGate] = useState<"pdf" | "start">(),
     [pdfBusy, setPdfBusy] = useState(false),
@@ -295,9 +296,10 @@ export function CustomerStudio({
   useEffect(() => {
     if (result && actual.current) {
       actual.current.width = actual.current.height = 1000;
-      renderInstruction(actual.current.getContext("2d")!, result);
+      if(resultPreview?.sequenceHash === result.sequenceHash) actual.current.getContext("2d")!.putImageData(new ImageData(resultPreview.pixels,1000,1000),0,0);
+      else renderInstruction(actual.current.getContext("2d")!, result);
     }
-  }, [result, step]);
+  }, [result, resultPreview, step]);
   useEffect(() => {
     if (gate) dialog.current?.showModal();
   }, [gate]);
@@ -701,6 +703,9 @@ export function CustomerStudio({
         try {
           const i = await validateInstruction(data.instruction);
           if (id !== generation.current) return;
+          const p=data.physicalPreview;
+          if(p?.sequenceHash!==i.sequenceHash || p.width!==1000 || p.height!==1000 || !(p.pixels instanceof Uint8ClampedArray) || p.pixels.length!==4000000) throw Error("physical-preview/missing");
+          setResultPreview({sequenceHash:i.sequenceHash,pixels:p.pixels});
           setResult(i);
           telemetry({ kind: "preview-ready", shape: i.profile.shape });
           onPersist(i);
@@ -726,6 +731,7 @@ export function CustomerStudio({
     };
     w.postMessage({
       strategy: "classic3",
+      physicalPreview: true,
       jobId: id,
       pixels: prepared.pixels,
       profile,

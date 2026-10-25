@@ -491,3 +491,8 @@ Avtomatik20unit va6desktop/mobil oqim o‘tdi; hozir qo‘lda sinash talab qilin
 ### C22 — to‘rt til
 
 Menyu → Til: O‘zbekcha / Ўзбекча / Русский / English. Surat tanlash, joylashuv, natija, yig‘ishni ochish va xato xabari shu tilda chiqadi; joylashuv va iplar o‘zgarmaydi. Admin kit andozasi/stiker PDF va yig‘ish TXT/PDF tanlangan tilda. Sektor B-17, rang kodi va raqamlar o‘zgarmaydi.19unit,4desktop/mobil va16PDF/144sahifa avtomatik tekshirildi; hozir qo‘lda sinash talab qilinmaydi. Eski taxta ZIP o‘zgarmagan.
+
+
+### C23 — natija chiqqanda qotish tuzatildi
+
+Yaratish tugagach rasmni chizish ham alohida hisoblash oqimida; eski iplar va barcha piksellar aynan saqlandi.17unit/17desktop-mobil oqim o‘tdi; do‘konni ochib qaytganda joylashuv/burilish saqlanadi. Chrome sahifasi4×sinovida yaratish4.2–5.8s, ekran javobidagi eng katta uzilish0.423s. Bu haqiqiy telefon yoki Workerning4×sinovi emas: Chrome uni sekinlatmadi, butun telefon uchun20smezon hali qabul qilinmagan. Keyin o‘z telefoningizda Doira/Kvadrat/Yurakni yaratib vaqtni tekshiring; hozir bu sinovni kutib turmayman. Tafsilot PHONE_PERFORMANCE_CHECKPOINT.md.
