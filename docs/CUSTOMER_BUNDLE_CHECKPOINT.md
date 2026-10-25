@@ -1,0 +1,11 @@
+# C25 customer-path cleanup —2026-10-25
+
+C23 already moved expert/account/craft screens behind actual lazy boundaries and cut the initial customer JS from963.85kB to657.60kB. C25 separates the stable React/DOM/scheduler runtime so ordinary application updates can reuse its cache. It does **not** claim that moving bytes between files reduces the initial dependency total.
+
+Actual2131module build: customer app434461bytes + React runtime221974bytes =656435initial JS bytes, compared to657595previous single app chunk. `audit-customer-bundle.mjs` walks the real Vite manifest's static imports, rejects expert/account/craft/Admin/fontkit/Firebase chunks in the initial graph and checks the default500kB app threshold. This audit runs in CI immediately after build. Dynamic chunks and every old engine/immutable-guide validator remain available; research-only scripts are outside the browser source graph. No discarded quality experiment or owner photo is imported into the customer path.
+
+The app's oversize warning is removed. **One legitimate upstream fontkit warning remains**:763715bytes,344.25kB gzip, loaded only for text/font shaping/subsetting/PDF. Upstream ships its browser engine as one prebundled ES module; Rollup cannot split inside that module. Removing Arabic/OpenType or forking that font engine solely to hide a warning would endanger supported products. No chunk-size threshold increase, warning suppression, external font CDN or fallback glyph substitution was added. This is a documented retained dependency limit, not unfinished customer code.
+
+Test harness now rejects all frozen4194–4200/4210–4214 preview ports and corresponding APIs before creating/starting services. Local default preview directory is phase15-dist; CI alone defaults to its own freshly built dist. Isolated databases and no-reuse remain mandatory. Unit safety checks cover every reserved port in both positions plus invalid/equal ports.
+
+Executed13/13focused unit tests (test safety, exact physical transfer and old classic reference), TypeScript and isolated build1m37s pass. No engine/preparation/material/renderer change. Final desktop/mobile public-guide/offline/export results are recorded in PROGRESS/LOG with the milestone. Portrait/nose acceptance, C19b/C20 and final full release candidate remain separate.

@@ -39,6 +39,18 @@ const fontFiles = [
     "/licenses/robust-predicates.txt",
   ]);
 export default defineConfig({
+  build: {
+    manifest: true,
+    rollupOptions: {
+      output: {
+        // Stable React runtime can be cached across product updates. Expert,
+        // account, PDF/font and legacy screens retain their existing lazy edges.
+        manualChunks(id) {
+          if (/\/node_modules\/(?:react|react-dom|scheduler)\//.test(id.replaceAll("\\", "/"))) return "react-runtime";
+        },
+      },
+    },
+  },
   // Native build caches and private evidence are served on demand, never source watched.
   server: {
     proxy: {

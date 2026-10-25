@@ -15,6 +15,7 @@ jobs:
       - run: npm ci
       - run: npm run check:locales
       - run: npm run build
+      - run: node scripts/audit-customer-bundle.mjs dist
       - run: node -e "require('node:fs').mkdirSync('.ci-evidence',{recursive:true})"
       - run: npm test -- --testTimeout=30000 --reporter=json --outputFile=.ci-evidence/unit.json
       - run: npm run test:sandbox

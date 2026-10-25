@@ -1,18 +1,41 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { freshTestDatabase } from "../scripts/test-artifacts.mjs";
-import { existsSync, mkdtempSync, mkdirSync, symlinkSync, rmSync } from "node:fs";
+import {
+  existsSync,
+  mkdtempSync,
+  mkdirSync,
+  symlinkSync,
+  rmSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { assertTestDatabasePath } from "../server/test-safety.mjs";
+import {
+  assertTestDatabasePath,
+  assertTestPorts,
+} from "../server/test-safety.mjs";
 
 describe("isolated test database boundary", () => {
+  it("refuses every frozen owner preview/API before launching test services", () => {
+    for (const port of [
+      4194, 4195, 4196, 4197, 4198, 4199, 4200, 4210, 4211, 4212, 4213, 4214,
+      4331, 4465, 4478, 4479, 4480, 4481, 4482, 4650, 4651, 4652, 4653, 4654,
+    ]) {
+      expect(() => assertTestPorts(port, 4690)).toThrow("reserved");
+      expect(() => assertTestPorts(4540, port)).toThrow("reserved");
+    }
+    for (const port of [0, 80, NaN, 65536, 4539.5])
+      expect(() => assertTestPorts(port, 4690)).toThrow();
+    expect(() => assertTestPorts(4540, 4540)).toThrow("differ");
+    expect(() => assertTestPorts(4540, 4690)).not.toThrow();
+  });
   afterEach(() => vi.unstubAllEnvs());
   it("allocates distinct artifact databases and rejects a protected root before mkdir", () => {
     const root = mkdtempSync(join(tmpdir(), "iprasm-artifacts-"));
     try {
       vi.stubEnv("DATABASE_PATH", "");
       vi.stubEnv("IP_RASM_TEST_ARTIFACTS", root);
-      const a = freshTestDatabase("http"), b = freshTestDatabase("http");
+      const a = freshTestDatabase("http"),
+        b = freshTestDatabase("http");
       expect(a.databasePath).not.toBe(b.databasePath);
       expect(a.databasePath.startsWith(root)).toBe(true);
       vi.stubEnv("IP_RASM_TEST_ARTIFACTS", join(root, "tmp", "data"));

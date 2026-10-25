@@ -2,23 +2,10 @@ import { defineConfig, devices } from "@playwright/test";
 import { mkdirSync, mkdtempSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { randomBytes } from "node:crypto";
-import { assertTestDatabasePath } from "./server/test-safety.mjs";
+import { assertTestDatabasePath, assertTestPorts } from "./server/test-safety.mjs";
 const previewPort = Number(process.env.IP_RASM_TEST_PORT || 4183);
 const apiPort = Number(process.env.IP_RASM_TEST_API_PORT || 4311);
-for (const port of [previewPort, apiPort])
-  if (
-    !Number.isInteger(port) ||
-    port < 1024 ||
-    port > 65535 ||
-    [
-      4194, 4195, 4196, 4197, 4198, 4199, 4200, 4331, 4465, 4478, 4479, 4480,
-      4481, 4482,
-    ].includes(port)
-  )
-    throw Error(
-      "Invalid local test port (owner previews and APIs are reserved)",
-    );
-if (previewPort === apiPort) throw Error("Test ports must differ");
+assertTestPorts(previewPort,apiPort);
 assertTestDatabasePath(process.env.DATABASE_PATH || ":memory:");
 const artifacts = resolve(process.env.IP_RASM_TEST_ARTIFACTS || "test-results");
 // Reject a protected artifacts root before creating even a test directory.
@@ -41,7 +28,7 @@ for (const name of [
 process.env.IP_RASM_TEST_API_URL = `http://127.0.0.1:${apiPort}`;
 process.env.IP_RASM_BUSINESS_TEST = "isolated";
 const channel = process.env.IP_RASM_TEST_BROWSER_CHANNEL;
-const previewDir = process.env.IP_RASM_TEST_WEB_DIR || "dist";
+const previewDir = process.env.IP_RASM_TEST_WEB_DIR || (process.env.CI ? "dist" : "output/phase15-dist");
 if (!/^[a-zA-Z0-9_./-]+$/.test(previewDir) || previewDir.includes(".."))
   throw Error("Invalid test web directory");
 assertTestDatabasePath(join(resolve(previewDir), "preview-safety.sqlite"));

@@ -505,3 +505,7 @@ Vite7.3.7/Vitest4.1.12 bilan npm auditi0ta zaiflik ko‘rsatdi.28tegishli unit v
 ##2026-10-25 — Server xavfsizligi avtomatik tekshirildi
 
 Hozir qo‘lda tekshirish shart emas: mobil rasm yuklash, ipli natija, kit bilan kirish va PDF haqiqiy lokal HTTPS/Caddy orqali o‘tdi. VPSni qo‘yishda docs/DEPLOY_VPS_UZ.md ga amal qiling; API portini internetga ochmang.429 chiqsa60soniya kuting. Galereya sig‘imi sozlamasi, proxy IP va tarmoqni faqat shu yo‘riqnoma bo‘yicha o‘zgartiring. Bu real telefon/taxta yoki yuz o‘xshashligi tasdig‘i emas.
+
+##2026-10-25 — Oddiy ekran va eski loyihalar
+
+Desktop va mobil avtomatik sinovida eski loyiha ochildi, tasdiqlangan qadam saqlandi, internet o‘chirilganda qayta ochilib JSON chiqarildi. Hozir sizdan qo‘lda sinov talab qilinmaydi; yakuniy yangi havola alohida beriladi. Arabcha shrift va eski qo‘llanmalar saqlangan.
