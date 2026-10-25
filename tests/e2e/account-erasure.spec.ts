@@ -11,7 +11,7 @@ test("account erasure revokes both clients and preserves the other account", asy
       headers: { Authorization: "Bearer " + guest.token },
       data: { email, password },
     });
-    expect(r.ok()).toBe(true);
+    expect(r.ok(), `Registration HTTP status: ${r.status()}`).toBe(true);
     return { ...(await r.json()), email };
   }
   const account = await register(),

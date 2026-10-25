@@ -12,7 +12,7 @@ for (const native of [false, true])
         headers: { Authorization: "Bearer " + guest.token },
         data: { email: crypto.randomUUID() + "@example.invalid", password },
       });
-      expect(r.ok()).toBe(true);
+      expect(r.ok(), `Registration HTTP status: ${r.status()}`).toBe(true);
       return r.json();
     };
     const user = await register(),

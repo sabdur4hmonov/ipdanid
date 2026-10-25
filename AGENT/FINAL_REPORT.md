@@ -1,4 +1,4 @@
-#2026-10-25 — yasash paketi tayyor, kod yakunlash davom etmoqda
+# 2026-10-25 — yasash paketi tayyor, kod yakunlash davom etmoqda
 
 500x500mm taxta uchun katta PDF,6A4andoza,18sektor sahifasi va o'zbek qo'llanma tayyor: output/ip-rasm-yasash-paketi-500mm-20261025.zip. 720mix nuqtasi va50mm belgilar mustaqil tekshirildi.8/8desktop/mobil sinovda rasm->kit->birinchi ip->dam olish->internetsiz qaytish o'tdi;6PDFdagi18000qadam va rasm pikseli aynan teng.17unit/TypeScript/build o'tdi. Yo'l: docs/BUILD_TODAY_UZ.md. Yangi ilova4214,kit kodi faqat lokal manual-testing.txt da.
 
