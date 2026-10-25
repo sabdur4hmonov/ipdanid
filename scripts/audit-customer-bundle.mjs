@@ -3,7 +3,7 @@ import { readFileSync, statSync, writeFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 const root = resolve(process.argv[2] || "output/phase15-dist");
 const manifest = JSON.parse(
-  readFileSync(join(root, ".vite/manifest.json"), "utf8"),
+  readFileSync(join(root, "asset-manifest.json"), "utf8"),
 );
 const entry = Object.entries(manifest).find(
   ([, v]) => v.isEntry && v.src === "index.html",

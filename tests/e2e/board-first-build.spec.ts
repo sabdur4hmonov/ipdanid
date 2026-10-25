@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { gallery, photoCases, english, png } from "./phase12-cases";
@@ -20,7 +21,7 @@ for (const [shape, label] of [
     context,
   }, info) => {
     test.setTimeout(240000);
-    const out = `output/board-first-build/${info.project.name}/${shape}`;
+    const out = newEvidenceRoot(`output/board-first-build/${info.project.name}/${shape}`);
     mkdirSync(out, { recursive: true });
     await page.goto("/");
     await english(page);

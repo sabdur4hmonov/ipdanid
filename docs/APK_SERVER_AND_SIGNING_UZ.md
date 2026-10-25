@@ -18,10 +18,12 @@ $storeSecret = Read-Host 'Keystore paroli' -AsSecureString
 $keySecret = Read-Host 'Kalit paroli' -AsSecureString
 $env:IP_RASM_RELEASE_STORE_PASSWORD = [System.Net.NetworkCredential]::new('', $storeSecret).Password
 $env:IP_RASM_RELEASE_KEY_PASSWORD = [System.Net.NetworkCredential]::new('', $keySecret).Password
-./scripts/Release-Android.ps1 -ValidateOnly
-./scripts/Release-Android.ps1
+./scripts/build-release.ps1 -ValidateOnly
+./scripts/build-release.ps1
 Remove-Item Env:IP_RASM_RELEASE_STORE_PASSWORD
 Remove-Item Env:IP_RASM_RELEASE_KEY_PASSWORD
 ```
 
 Skript HTTPS API ni talab qiladi, Server maydonini release uchun o‘chiradi, yangi `output/release-VAQT` katalogini yaratadi, web build + Capacitor + offline Gradle qiladi va unsigned APKni `zipalign/apksigner` bilan imzolaydi. Parollar argumentda ko‘rinmaydi: vosita ularni muhitdan oladi. Development sertifikati bilan release natijasini rad etadi. `JAVA_HOME` va `ANDROID_SDK_ROOT`, SDK/Gradle keshi avval tayyor bo‘lsin. Skript publish yoki install qilmaydi. Keystore hali yo‘q; haqiqiy release imzolangan deb da’vo qilinmaydi.
+
+`build-release.ps1` shu tekshiruvlarning yagona mavjud `Release-Android.ps1` bajaruvchisiga murojaat qiladi. Egasi kalitlari yo‘q holatda ValidateOnly build boshlamasdan rad etilishi tekshirildi; hech qanday kalit yaratilmagan. Bu Windows hostdagi sinov uchun mavjud JDK21 va loyiha Gradle keshi ishlatiladi; mos kelmaydigan yangi JDKni tasodifan tanlamang. Android Auto Backupga ilova ma’lumotini qo‘shish o‘chiq; hisoblararo tiklash serverdagi rozilikli nusxa orqali ishlaydi. Asl OS kamera fayllari va boshqa OS ko‘chirishlari ilova tomonidan boshqarilmaydi.

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { uiText } from "../../src/ui-i18n";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { english, gallery, photoCases } from "./phase12-cases";
@@ -91,7 +92,7 @@ test("real photo preview unlock and manual-only assembly milestones obey opt-in,
   mkdirSync(dir, { recursive: true });
   await settings.screenshot({ path: join(dir, "consent-en.png") });
   await page
-    .getByRole("navigation", { name: "Main", exact: true })
+    .getByRole("navigation", { name: uiText("en", "main"), exact: true })
     .getByRole("button", { name: "Create", exact: true })
     .click();
   await gallery(page, photoCases[0]);
@@ -156,7 +157,7 @@ test("real photo preview unlock and manual-only assembly milestones obey opt-in,
     })
     .toBe(2);
   await page
-    .getByRole("navigation", { name: "Main", exact: true })
+    .getByRole("navigation", { name: uiText("en", "main"), exact: true })
     .getByRole("button", { name: "Create", exact: true })
     .click();
   await accountMenu(page);
@@ -237,7 +238,7 @@ test("real photo preview unlock and manual-only assembly milestones obey opt-in,
   await current.screenshot({ path: join(dir, "erased-en.png") });
   const before = records.length;
   await page
-    .getByRole("navigation", { name: "Main", exact: true })
+    .getByRole("navigation", { name: uiText("en", "main"), exact: true })
     .getByRole("button", { name: "Assemble", exact: true })
     .click();
   await page.getByTestId("assembly-confirm").click();

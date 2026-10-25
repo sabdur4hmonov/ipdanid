@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { gallery, photoCases, english, png } from "./phase12-cases";
@@ -14,7 +15,7 @@ for (const index of [0, 5] as const)
   }, info) => {
     // Two full local segmentation passes plus mask editing; generation retains its 15 s bound.
     test.setTimeout(240000);
-    const out = `output/current-free-photo/${info.project.name}/${index}`;
+    const out = newEvidenceRoot(`output/current-free-photo/${info.project.name}/${index}`);
     mkdirSync(out, { recursive: true });
     await page.goto("/");
     await english(page);

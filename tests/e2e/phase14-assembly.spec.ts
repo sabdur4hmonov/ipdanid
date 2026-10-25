@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import {
@@ -235,7 +236,7 @@ test("offline assembly resumes exact position after restart; one-hand controls, 
     "saved",
   );
   expect(await page.evaluate(() => navigator.onLine)).toBe(false);
-  const out = "output/current-product/assembly/" + info.project.name;
+  const out = newEvidenceRoot("output/current-product/assembly/") + info.project.name;
   mkdirSync(out, { recursive: true });
   await page.screenshot({ path: out + "/offline-resumed.png", fullPage: true });
   await context.setOffline(false);

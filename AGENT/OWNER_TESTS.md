@@ -517,3 +517,7 @@ Avtomatik desktop/mobil sinovlari o‘tdi; hozir sizdan qo‘lda sinov talab qil
 ##2026-10-26 — Taxta rasmi bilan qadamni tekshirish (ixtiyoriy)
 
 Hozir qo‘lda sinov shart emas: kamera maketi, xotira xatosi, saqlash, internet o‘chiq qayta ochish va rasmni o‘chirish avtomatik tekshirildi. Keyin yig‘ish ekranida Menyu → Mutaxassis rejimi → Taxta rasmlari belgilang. Kamera yoki galereyadan taxtaning rasmini oling, qadamni solishtiring, yoqsa Shu qadam rasmini saqlashni bosing. Saqlangan rasm har doim o‘sha qadamga tegishli; Shu qadamni ochish faqat qadamga qaytaradi, ishni tasdiqlamaydi. To‘g‘riligini o‘zingiz tekshirib, odatiy tasdiqlash tugmasidan foydalaning. Rasm faqat shu qurilmada,30kungacha; har loyihada3ta/qurilmada20ta. Serverga yoki boshqa qurilmadagi hisobga ko‘chmaydi. Eski rasmni Rasmni o‘chirish bilan tozalang. Haqiqiy kamera/taxta aniqligi alohida sinov; ilova noto‘g‘ri ipni avtomatik topadi degan va’da yo‘q. docs/ASSEMBLY_PHOTOS_CHECKPOINT.md.
+
+##2026-10-26 — Yakuniy tekshiruv tayyorgarligi
+
+660ta unit sinovi to‘liq o‘tdi. Hozir qo‘lda tekshirish talab qilinmaydi; desktop/mobil sinov matritsasi va APK yakuni davom etadi. Yangi yakuniy havola va3ta kit kodi tayyor bo‘lganda output/phase15/manual-testing.txt da bo‘ladi; hozir bu fayl yaratilgan degan ma’no yo‘q. Eski4214 sahifangiz saqlangan. Egasi imzolaydigan release uchun scripts/build-release.ps1 va docs/APK_SERVER_AND_SIGNING_UZ.md, iPhone uchun docs/IOS_UZ.md qo‘llanadi; hech qanday yangi kalit/telefon o‘rnatish bajarilmagan.

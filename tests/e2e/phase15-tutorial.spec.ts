@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "./legacy-test";
 import type { Page } from "@playwright/test";
 import { openMore } from "./navigation";
@@ -48,7 +49,7 @@ test("three original free workshops have actual actions and exact exported templ
 }, info) => {
   test.setTimeout(150000);
   await enter(page);
-  const out = `output/current-tutorial/${info.project.name}`;
+  const out = newEvidenceRoot(`output/current-tutorial/${info.project.name}`);
   mkdirSync(out, { recursive: true });
   for (const id of tutorialIds) {
     await start(page, id);

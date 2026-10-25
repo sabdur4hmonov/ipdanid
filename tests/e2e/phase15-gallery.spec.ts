@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "./legacy-test";
 import type { Page } from "@playwright/test";
 import { openMore } from "./navigation";
@@ -192,7 +193,7 @@ test("visitor views approved-only gallery; JPEG submission requires consent, own
   await expect(
     page.getByTestId("gallery-large-image").locator("img"),
   ).toBeVisible();
-  const out = `output/current-gallery/${info.project.name}`;
+  const out = newEvidenceRoot(`output/current-gallery/${info.project.name}`);
   mkdirSync(out, { recursive: true });
   await page
     .getByTestId("gallery-studio")
@@ -287,7 +288,7 @@ test("lost submit response retries the identical post; rejection and stale withd
     .click();
   await expect(mine).toContainText("Not published");
   await expect(mine).toContainText("Personal information");
-  const out = `output/current-gallery/${info.project.name}`;
+  const out = newEvidenceRoot(`output/current-gallery/${info.project.name}`);
   mkdirSync(out, { recursive: true });
   await mine.screenshot({ path: out + "/rejected.png" });
   await mine

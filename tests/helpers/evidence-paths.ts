@@ -60,8 +60,25 @@ function checked(root: string, output: string, results: string) {
 // Check lexical paths before filesystem inspection, then resolve existing
 // ancestors so a junction cannot redirect a new report into an old report.
 export function newEvidenceRoot(value: string) {
-  const root = resolve(value);
+  let root = resolve(value);
   checked(root, resolve("output"), resolve("test-results"));
   checked(canonical(root), canonical("output"), canonical("test-results"));
+  // Validate the ORIGINAL first: a release run must never turn a forbidden old
+  // report into a permitted path. Redirect only already permitted output writes.
+  const release = process.env.IP_RASM_RELEASE_EVIDENCE_ROOT;
+  if (release && root.startsWith(resolve("output") + sep)) {
+    const destination = resolve(release);
+    if (!destination.startsWith(resolve("test-results") + sep))
+      throw Error(
+        "Release evidence must use an isolated test-results directory",
+      );
+    checked(
+      canonical(destination),
+      canonical("output"),
+      canonical("test-results"),
+    );
+    root = join(destination, relative(resolve("output"), root));
+    checked(canonical(root), canonical("output"), canonical("test-results"));
+  }
   return root;
 }

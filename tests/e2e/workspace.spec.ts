@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "./legacy-test";
@@ -36,11 +37,11 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   const generationMs = Date.now() - start;
   mkdirSync("output/evidence", { recursive: true });
   await page.screenshot({
-    path: `output/evidence/${testInfo.project.name}-generated.png`,
+    path: newEvidenceRoot(`output/evidence/${testInfo.project.name}-generated.png`),
     fullPage: true,
   });
   await page.locator(".result-card").screenshot({
-    path: `output/evidence/${testInfo.project.name}-quality-result.png`,
+    path: newEvidenceRoot(`output/evidence/${testInfo.project.name}-quality-result.png`),
   });
   const previewHash = await page
     .locator("canvas[data-sequence-hash]")
@@ -82,7 +83,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
       .click(),
   ]);
   mkdirSync("output/evidence", { recursive: true });
-  await pdf.saveAs(`output/evidence/${testInfo.project.name}-guide.pdf`);
+  await pdf.saveAs(newEvidenceRoot(`output/evidence/${testInfo.project.name}-guide.pdf`));
   const [json] = await Promise.all([
     page.waitForEvent("download"),
     page.getByRole("button", { name: "Project JSON", exact: true }).click(),
@@ -97,7 +98,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   await page.locator("input[type=file]").last().setInputFiles(path!);
   await expect(page.getByTestId("player-hash")).toHaveText(previewHash!);
   await page.screenshot({
-    path: `output/evidence/${testInfo.project.name}-assembly.png`,
+    path: newEvidenceRoot(`output/evidence/${testInfo.project.name}-assembly.png`),
     fullPage: true,
   });
   expect(
@@ -112,7 +113,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
     .first()
     .click();
   await page.screenshot({
-    path: `output/evidence/${testInfo.project.name}-create.png`,
+    path: newEvidenceRoot(`output/evidence/${testInfo.project.name}-create.png`),
     fullPage: true,
   });
   await testInfo.attach("generation-measurement", {
@@ -127,7 +128,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
     contentType: "application/json",
   });
   writeFileSync(
-    `output/evidence/${testInfo.project.name}-benchmark.json`,
+    newEvidenceRoot(`output/evidence/${testInfo.project.name}-benchmark.json`),
     JSON.stringify(
       {
         generationMs,

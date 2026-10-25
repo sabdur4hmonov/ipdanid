@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import {
   generateClassicLeastSquares,
@@ -132,7 +133,7 @@ test("native-mode browser uses real local API for kit redeem, signed unlock and 
   await expect(page.getByTestId("build-gate")).toHaveCount(0);
   await page.getByTestId("assembly-confirm").click();
   await expect(page.getByTestId("confirmed-step")).toHaveText("1/80");
-  const out = "output/current-product/native/" + info.project.name;
+  const out = newEvidenceRoot("output/current-product/native/") + info.project.name;
   mkdirSync(out, { recursive: true });
   await page.screenshot({ path: out + "/native-local-kit.png" });
   writeFileSync(

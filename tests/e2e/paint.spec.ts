@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "./legacy-test";
 import { readFileSync, mkdirSync } from "node:fs";
@@ -64,12 +65,12 @@ test("paint actual photo upload waits for local background preparation and produ
   expect(p.guide.regions.length).toBeGreaterThan(4);
   await (
     await event
-  ).saveAs(`output/current-paint/photo-${test.info().project.name}.json`);
+  ).saveAs(newEvidenceRoot(`output/current-paint/photo-${test.info().project.name}.json`));
   await revealControl(page.getByLabel("Colour preview", { exact: true }));
   await page.getByLabel("Colour preview", { exact: true }).check();
   await page
     .locator(".paint-preview")
-    .screenshot({ path: `output/current-paint/photo-${test.info().project.name}.png` });
+    .screenshot({ path: newEvidenceRoot(`output/current-paint/photo-${test.info().project.name}.png`) });
 });
 test("paint uses connected regions, independent progress, undo, same immutable offline exports and localized print guides", async ({
   page,
@@ -107,10 +108,10 @@ test("paint uses connected regions, independent progress, undo, same immutable o
   expect(p.progress.completed).toEqual([1]);
   expect(p.guide.regions.every((r: any) => r.cells.length >= 4)).toBe(true);
   expect(paintCoverage(p.guide).reduce((s, c) => s + c.cells, 0)).toBe(256);
-  mkdirSync("output/current-paint", { recursive: true });
+  mkdirSync(newEvidenceRoot("output/current-paint"), { recursive: true });
   await (
     await event
-  ).saveAs(`output/current-paint/${test.info().project.name}-guide.json`);
+  ).saveAs(newEvidenceRoot(`output/current-paint/${test.info().project.name}-guide.json`));
   const csv = page.waitForEvent("download");
   await page.getByRole("button", { name: "Regions CSV", exact: true }).click();
   expect(readFileSync((await (await csv).path())!, "utf8")).toBe(
@@ -150,11 +151,11 @@ test("paint uses connected regions, independent progress, undo, same immutable o
     await page.getByRole("button", { name: label, exact: true }).click();
     await (
       await pdf
-    ).saveAs(`output/current-paint/${test.info().project.name}-${locale}-guide.pdf`);
+    ).saveAs(newEvidenceRoot(`output/current-paint/${test.info().project.name}-${locale}-guide.pdf`));
   }
   await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.screenshot({
-    path: `output/current-paint/${test.info().project.name}.png`,
+    path: newEvidenceRoot(`output/current-paint/${test.info().project.name}.png`),
     fullPage: true,
   });
   expect(

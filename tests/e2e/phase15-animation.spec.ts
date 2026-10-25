@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { photoCases, gallery, english } from "./phase12-cases";
 import { createHash } from "node:crypto";
@@ -53,7 +54,7 @@ test("ordinary v3 result exports actual video and GIF with exact final physical 
   await page.locator(".customer-details>summary").click();
   const ui = page.getByTestId("sequence-animation"),
     canvas = page.getByTestId("animation-canvas"),
-    out = `output/current-animation/${info.project.name}`;
+    out = newEvidenceRoot(`output/current-animation/${info.project.name}`);
   mkdirSync(out, { recursive: true });
   await ui
     .getByRole("button", { name: "Download thread video", exact: true })
@@ -183,7 +184,7 @@ test("unsupported video has a real GIF fallback for an offline legacy guide", as
     .getByRole("button", { name: "Download thread GIF", exact: true })
     .click();
   const file = await event,
-    out = `output/current-animation/${info.project.name}`;
+    out = newEvidenceRoot(`output/current-animation/${info.project.name}`);
   mkdirSync(out, { recursive: true });
   await file.saveAs(out + "/legacy.gif");
   await expect(page.getByTestId("animation-canvas")).toHaveAttribute(

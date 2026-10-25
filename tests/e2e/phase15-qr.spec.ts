@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "./legacy-test";
 import { openMore } from "./navigation";
 import jsQR from "jsqr";
@@ -41,7 +42,7 @@ test("real QR front ribbon decodes and the same continuous plan exports, resumes
   const pixels = await preview.evaluate((c: HTMLCanvasElement) =>
     Array.from(c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data),
   );
-  const capture = `output/current-qr/diagnostic-${info.project.name}`;
+  const capture = newEvidenceRoot(`output/current-qr/diagnostic-${info.project.name}`);
   mkdirSync(capture, { recursive: true });
   const png = await preview.evaluate(
     (c: HTMLCanvasElement) => c.toDataURL("image/png").split(",")[1],
@@ -93,7 +94,7 @@ test("real QR front ribbon decodes and the same continuous plan exports, resumes
   await expect(page.getByTestId("qr-progress")).toContainText("2/");
   await expect(page.getByTestId("qr-current")).toContainText("P3 → P4 · Front");
   const pdf = await exported(page, "QR template and steps PDF"),
-    out = `output/current-qr/${info.project.name}`;
+    out = newEvidenceRoot(`output/current-qr/${info.project.name}`);
   mkdirSync(out, { recursive: true });
   await pdf.saveAs(out + "/qr.pdf");
   writeFileSync(out + "/guide.json", JSON.stringify(raw));

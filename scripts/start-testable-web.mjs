@@ -15,14 +15,17 @@ import {
 import { join, relative, resolve, sep } from "node:path";
 import net from "node:net";
 import { freshTestDatabase } from "./test-artifacts.mjs";
+import { OWNER_PREVIEW_PORTS } from "../server/test-safety.mjs";
 const args = process.argv.slice(2);
 assert(
   args.length === 0 || (args.length === 2 && args[0] === "--name"),
-  "Expected --name subject-repair",
+  "Expected --name testable-web, subject-repair or release-candidate",
 );
 const snapshotName = args[1] ?? "testable-web";
 assert(
-  ["testable-web", "subject-repair"].includes(snapshotName),
+  ["testable-web", "subject-repair", "release-candidate"].includes(
+    snapshotName,
+  ),
   "Unknown preview snapshot",
 );
 const root = realpathSync("."),
@@ -31,6 +34,12 @@ const root = realpathSync("."),
   evidence = `output/phase15/${snapshotName}`;
 assert.equal(source, join(root, "output", "phase15-dist"));
 assert.equal(realpathSync("output"), join(root, "output"));
+if (existsSync("output/phase15"))
+  assert(
+    !lstatSync("output/phase15").isSymbolicLink() &&
+      realpathSync("output/phase15") === join(root, "output", "phase15"),
+    "Preview evidence parent must stay inside this workspace",
+  );
 assert(
   !existsSync(webDir) && !existsSync(evidence),
   "Preserve an already published preview",
@@ -58,6 +67,7 @@ writeFileSync(
 );
 async function freePort(start) {
   for (let port = start; port < start + 30; port++) {
+    if (OWNER_PREVIEW_PORTS.includes(port)) continue;
     const free = await new Promise((resolve) => {
       const s = net.createServer();
       s.once("error", () => resolve(false));
@@ -67,8 +77,13 @@ async function freePort(start) {
   }
   throw Error("No free test port");
 }
-const port = await freePort(snapshotName === "subject-repair" ? 4214 : 4213),
-  apiPort = await freePort(snapshotName === "subject-repair" ? 4654 : 4653),
+const release = snapshotName === "release-candidate",
+  port = await freePort(
+    release ? 4201 : snapshotName === "subject-repair" ? 4214 : 4213,
+  ),
+  apiPort = await freePort(
+    release ? 4483 : snapshotName === "subject-repair" ? 4654 : 4653,
+  ),
   site = `http://127.0.0.1:${port}`,
   api = `http://127.0.0.1:${apiPort}/api`;
 const isolated = freshTestDatabase(`owner-${snapshotName}`),
@@ -79,6 +94,7 @@ const child = spawn(process.execPath, ["scripts/run-local.mjs"], {
   env: {
     ...process.env,
     NODE_ENV: "development",
+    TRUSTED_PROXY_IPS: "",
     APP_ORIGIN: site,
     IP_RASM_LOCAL_PORT: String(port),
     IP_RASM_API_PORT: String(apiPort),
@@ -135,12 +151,32 @@ try {
     },
     body: JSON.stringify({
       profile: `standard-base-r${config.revision}`,
-      count: 1,
+      count: release ? 3 : 1,
       requestKey: randomUUID(),
     }),
   });
   assert(response.ok, "Could not issue isolated kit");
   const batch = await response.json();
+  if (release) {
+    const destination = "output/phase15/manual-testing.txt";
+    if (existsSync(destination))
+      assert(
+        lstatSync(destination).isFile() &&
+          !lstatSync(destination).isSymbolicLink(),
+        "Manual test file must be a regular workspace file",
+      );
+    if (existsSync(destination))
+      cpSync(
+        destination,
+        `output/phase15/manual-testing-before-c26-${Date.now()}.txt`,
+        { errorOnExist: true, force: false },
+      );
+    writeFileSync(
+      destination,
+      `IP RASM — YAKUNIY SINOV NUSXASI\nIlova: ${site}/\nAPI: ${api}\nKit kodlari (har biri ${batch.codes[0].quota} natija):\n${batch.codes.map((c, k) => `${k + 1}. ${c.code}`).join("\n")}\nAdministrator tokeni: ${admin}\n\n1. Galereyadan surat → shakl → o‘zingiz joylashtiring → Yaratish.\n2. Yig‘ishni boshlash → bitta test kit kodi → qadamni qo‘lda tasdiqlang.\n3. Dam olish → qayta ochish → saqlangan joydan davom etish.\n4. Menyu → Hisob / Admin → do‘kon/dostavka/sandbox to‘lov; hisob bilan web/app bir serverdagi loyihaga qaytadi.\n5. Mutaxassis rejimida ixtiyoriy ovozli buyruq va qurilmagagina tegishli taxta rasmlari bor.\n\nKodlar mahalliy yangi sandbox uchun, haqiqiy pul/xabar yoki jo‘natma yo‘q. Eski server/hisoblar bu alohida bazaga qo‘shilmadi. Surat o‘xshashligi va jismoniy taxta/telefon qabul holati AGENT/FINAL_REPORT.md da, avtomatik testlar buni almashtirmaydi.\n`,
+      { mode: 0o600 },
+    );
+  }
   writeFileSync(
     `${evidence}/manual-testing.txt`,
     `IP RASM — YANGI WEB SINOV\nIlova: ${site}/\nKit kodi (${batch.codes[0].quota} natija): ${batch.codes[0].code}\nAdministrator tokeni: ${admin}\nAPI: ${api}\n\n1. Galereyadan o‘z rasmingizni tanlang.\n2. Doira / Kvadrat / Yurak, keyin surish, kattalashtirish yoki Burish bilan joylashtiring.\n3. Oldin / Keyin bilan qirqimni ko‘ring, kerak bo‘lsa fonni qayta qirqing.\n4. Yaratish → natijani ko‘ring → Yig‘ishni boshlash, yuqoridagi test kit kodini kiriting.\n5. Qadam/ovoz/dam olishni tekshiring; sahifani yangilab qolgan joyga qayting.\n6. Hisob ochsangiz, Menyu → Suratni keyin davom ettirish orqali mahalliy yoki rozilik bilan hisob zaxirasini sinang.\n\nBu yangi ajratilgan sinov bazasi. Eski 4212 hisoblari bu test bazasiga ko‘chirilmagan. Production web va app bir API bilan ayni hisobni ishlatadi. Haqiqiy pul/xabar yuborilmaydi. Sifat tadqiqoti katta o‘sish bermagani uchun standart engine almashtirilmadi. Qolgan qabul ishlari AGENT/PROGRESS.md da.\n`,

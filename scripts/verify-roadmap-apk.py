@@ -41,6 +41,7 @@ parser.add_argument('--portrait-framing', action='store_true')
 parser.add_argument('--customer-flow', action='store_true')
 parser.add_argument('--classic-least-squares', action='store_true')
 parser.add_argument('--finish-product', action='store_true')
+parser.add_argument('--finish-every-code', action='store_true')
 args = parser.parse_args()
 assert re.fullmatch(r'[a-zA-Z0-9._-]+',args.series) and re.fullmatch(r'[a-zA-Z0-9._-]+\.json',args.snapshot), 'Unsafe archive name'
 SNAPSHOT = OUT / args.snapshot
@@ -93,6 +94,15 @@ with zipfile.ZipFile(APP) as apk:
         for marker in ['reviewed-product-framing/5','axis-interior-skip/2','assembly-current-route','iprasm.assembly-session.v1','IpRasmAwake','payment-options','kit-inserts-pdf','admin-password-login','http://127.0.0.1:4482/api']:
             assert marker in code, 'Required Phase14 product feature absent: '+marker
         assert any(b'IpRasmAwakePlugin' in apk.read(n) for n in apk.namelist() if re.fullmatch(r'classes\d*\.dex',n)), 'Native app-window screen-awake plugin missing from DEX'
+    if args.finish_every_code:
+        for marker in ['reviewed-free-photo/9','assembly-commands','assembly-photos','iprasm.board-checkpoints','IpRasmCommands','IpRasmAssemblyAudio','portrait-caption','trial-claim','http://127.0.0.1:4483/api']:
+            assert marker in code, 'Required Phase15 feature absent: '+marker
+        assert apk.read('assets/public/asset-manifest.json') == (dist / 'asset-manifest.json').read_bytes(), 'Build manifest missing from APK'
+        dex = [apk.read(n) for n in apk.namelist() if re.fullmatch(r'classes\d*\.dex',n)]
+        for plugin in [b'IpRasmCommandsPlugin',b'IpRasmAssemblyAudioPlugin',b'IpRasmAwakePlugin',b'IpRasmPushPrivacyPlugin']:
+            assert any(plugin in data for data in dex), 'Native Phase15 plugin missing from DEX'
+        manifest = subprocess.run([args.aapt, 'dump', 'xmltree', str(APP), 'AndroidManifest.xml'], capture_output=True, text=True, check=True, timeout=60).stdout
+        assert re.search(r'android:allowBackup\([^)]*\)=\(type 0x12\)0x0\b', manifest), 'Private device data must not opt into Android Auto Backup'
     assert hashlib.sha256(apk.read('assets/public/fonts/NotoNaskhArabic-Regular.ttf')).hexdigest() == 'a87da9e7687b097af15f9dc217fe3e2dd80bcb3d50eccb394a4aece74b1ca4d9'
     voices = json.loads(apk.read('assets/public/voices/manifest.json'))
     assert len(voices['profiles']) == 2 and not any(p['clips'] for p in voices['profiles']), 'Unexpected fictional/undeclared voice assets'
@@ -120,6 +130,7 @@ evidence = dict(debug=True, nativeDeviceTested=False, phoneInstalled=False, prod
                 webDirectory=str(dist.relative_to(ROOT)), standardKitVerified=args.standard_kit,
                 classicReferenceVerified=args.classic_reference, portraitFramingVerified=args.portrait_framing, customerFlowVerified=args.customer_flow, classicLeastSquaresVerified=args.classic_least_squares,
                 productCodeVerified=args.finish_product,
+                phase15CodeVerified=args.finish_every_code,
                 previousApksVerifiedUnchanged=old_count, webAssetsVerified=len(assets),
                 archivedApks=[str(p.relative_to(ROOT)) for p in archives], signatures=signatures,
                 applicationBadging=badging.splitlines()[:6], recordedVoicesInstalled=0,

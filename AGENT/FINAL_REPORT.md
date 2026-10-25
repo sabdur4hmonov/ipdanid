@@ -1,3 +1,6 @@
+#2026-10-26 — Yakuniy tekshiruv davom etmoqda
+
+C19ovozli buyruqlar, C20qurilmadagi taxta rasmlari, C22tarjimalar, C23ekran tezligi, C24xavfsizlik va C25tozalash kodi tugadi. To‘liq660unit/145fayl sinovi o‘tdi;8ta releaseharness himoya testi va build ham o‘tdi. Hozir C26to‘liq desktop/mobil matritsa, yangi APK, yangi havola va PR yakunlanadi. Barcha ish yakunlandi degan da’vo hali yo‘q. Burun/tiniqlik hamda haqiqiy telefon/taxta sifati hali qabul qilinmagan. Aniq holat AGENT/PROGRESS.md; quyidagi yozuvlar tarixiy.
 # 2026-10-25 — hisob, sinov kodi va buyurtma bosqichlari yakunlandi
 
 C21: eski bazadan tiklanganda ham hisobni o‘chirish kuchda qoladi;624unit,6HTTP/UI va ajratilgan Docker tiklash sinovi o‘tdi. C28: bir hisobga bitta raqamli sinov kodi, Admin budjet/kodlar, do‘kon/dostavka, Click/Payme sandbox va internetsiz yo‘riqnoma tekshirildi:20tegishli unit,6desktop/mobil,TypeScript/build2128. Yo‘l docs/INSTAGRAM_TRIAL_UZ.md. Haqiqiy xabar yoki pul yuborilmadi.

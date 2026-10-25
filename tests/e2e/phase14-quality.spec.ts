@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { captureStudioTarget, studioTargetPng } from "./phase12-cases";
 import { hash } from "../../src/core/engine";
 import { test, expect } from "@playwright/test";
@@ -129,7 +130,7 @@ for (const c of cases)
           exact: true,
         })
         .click();
-    const out = "output/current-product/" + info.project.name + "/" + c.name;
+    const out = newEvidenceRoot("output/current-product/") + info.project.name + "/" + c.name;
     mkdirSync(out, { recursive: true });
     writeFileSync(
       out + "/cutout.png",

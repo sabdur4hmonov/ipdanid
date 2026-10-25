@@ -1,5 +1,21 @@
-import { test, expect } from "vitest";
+import { test, expect, vi } from "vitest";
 import { newEvidenceRoot } from "./helpers/evidence-paths";
+test("release evidence redirects current writes while forbidden originals and unsafe destinations still fail", () => {
+  vi.stubEnv(
+    "IP_RASM_RELEASE_EVIDENCE_ROOT",
+    "test-results/c26-evidence-fixture",
+  );
+  try {
+    expect(
+      newEvidenceRoot("output/current-caption/desktop").replaceAll("\\", "/"),
+    ).toMatch(/test-results\/c26-evidence-fixture\/current-caption\/desktop$/);
+    expect(() => newEvidenceRoot("output/phase13/desktop")).toThrow("frozen");
+    vi.stubEnv("IP_RASM_RELEASE_EVIDENCE_ROOT", "src");
+    expect(() => newEvidenceRoot("output/current-caption")).toThrow("isolated");
+  } finally {
+    vi.unstubAllEnvs();
+  }
+});
 test("current evidence cannot overwrite historical reports, served builds or escape the artifact tree", () => {
   for (const value of [
     "output/phase9",

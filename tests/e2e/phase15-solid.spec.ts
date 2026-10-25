@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "./legacy-test";
 import { openMore } from "./navigation";
 import { unlockCraftGuide } from "./kit-access";
@@ -95,7 +96,7 @@ test("measured frame rotates actual geometry, unlocks exact STL and layouts and 
   expect(
     await canvas.evaluate((c: HTMLCanvasElement) => c.toDataURL()),
   ).not.toBe(original);
-  const out = `output/current-solid/${info.project.name}/frame`;
+  const out = newEvidenceRoot(`output/current-solid/${info.project.name}/frame`);
   mkdirSync(out, { recursive: true });
   await canvas.screenshot({ path: out + "/rotated.png" });
   await page
@@ -189,7 +190,7 @@ test("layered sculpture and mixed lettering use ordered physical parts and a sec
     .uncheck();
   await page.getByLabel("Assembly step", { exact: true }).fill("10");
   await expect(page.getByTestId("solid-current")).toContainText("layer-10");
-  const out = `output/current-solid/${info.project.name}/spindle`;
+  const out = newEvidenceRoot(`output/current-solid/${info.project.name}/spindle`);
   mkdirSync(out, { recursive: true });
   const stl = await exported(page, "Current part STL");
   expect(
@@ -234,7 +235,7 @@ test("layered sculpture and mixed lettering use ordered physical parts and a sec
   await expect(gate).toHaveCount(0);
   const mixed = await json(page),
     letters = await validateSolidPlan(mixed.project.guide, fonts),
-    folder = `output/current-solid/${info.project.name}/letters`;
+    folder = newEvidenceRoot(`output/current-solid/${info.project.name}/letters`);
   mkdirSync(folder, { recursive: true });
   for (let step = 1; step <= letters.parts.length; step++) {
     await page.getByLabel("Assembly step", { exact: true }).fill(String(step));

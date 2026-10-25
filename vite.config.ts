@@ -40,7 +40,8 @@ const fontFiles = [
   ]);
 export default defineConfig({
   build: {
-    manifest: true,
+    // AAPT omits hidden directories; keep the audited manifest byte-exact in APKs.
+    manifest: "asset-manifest.json",
     rollupOptions: {
       output: {
         // Stable React runtime can be cached across product updates. Expert,

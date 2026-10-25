@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "./legacy-test";
 import { openMore } from "./navigation";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -142,7 +143,7 @@ test("book marks require a signed build and the exact plan resumes and exports o
     .click();
   await expect(page.getByTestId("book-progress")).toContainText("2/80");
   await expect(page.getByTestId("book-current")).toContainText("Leaf 163");
-  const out = `output/current-book/${info.project.name}`;
+  const out = newEvidenceRoot(`output/current-book/${info.project.name}`);
   mkdirSync(out, { recursive: true });
   await (await exported(page, "Folding PDF")).saveAs(out + "/book.pdf");
   const pdf = await PDFDocument.load(readFileSync(out + "/book.pdf"));

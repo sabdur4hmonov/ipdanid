@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "./legacy-test";
 import { readFileSync, mkdirSync } from "node:fs";
@@ -87,7 +88,7 @@ test("browser camera captures an actual frame into crop; cancel and navigation r
   ).toBeVisible();
   mkdirSync("output/camera", { recursive: true });
   await page.screenshot({
-    path: `output/camera/${info.project.name}-capture.png`,
+    path: newEvidenceRoot(`output/camera/${info.project.name}-capture.png`),
     fullPage: true,
   });
   // A pending getUserMedia response after cancellation is also disposed; no camera leak.

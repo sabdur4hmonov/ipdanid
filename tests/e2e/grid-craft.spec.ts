@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "./legacy-test";
 import { readFileSync, mkdirSync } from "node:fs";
@@ -136,15 +137,15 @@ for (const kind of ["mosaic", "diamond"] as const)
     const pdfEvent = page.waitForEvent("download");
     await page.getByRole("button", { name: "Grid PDF", exact: true }).click();
     const pdf = await pdfEvent;
-    mkdirSync("output/current-grid", { recursive: true });
+    mkdirSync(newEvidenceRoot("output/current-grid"), { recursive: true });
     await pdf.saveAs(
-      `output/current-grid/${kind}-${test.info().project.name}-guide.pdf`,
+      newEvidenceRoot(`output/current-grid/${kind}-${test.info().project.name}-guide.pdf`),
     );
     const jsonEvent = page.waitForEvent("download");
     await page.getByRole("button", { name: "Grid JSON", exact: true }).click();
     await (
       await jsonEvent
-    ).saveAs(`output/current-grid/${kind}-${test.info().project.name}-guide.json`);
+    ).saveAs(newEvidenceRoot(`output/current-grid/${kind}-${test.info().project.name}-guide.json`));
     await page.getByText("Edit current piece", { exact: true }).click();
     const next = gridCell(source.guide, 6),
       newColor =
@@ -171,7 +172,7 @@ for (const kind of ["mosaic", "diamond"] as const)
     ).toBe(5);
     expect(stored[0].guide.manualEdit.parentSequenceHash).toBe(hash);
     await page.screenshot({
-      path: `output/current-grid/${kind}-${test.info().project.name}.png`,
+      path: newEvidenceRoot(`output/current-grid/${kind}-${test.info().project.name}.png`),
       fullPage: true,
     });
     expect(errors).toEqual([]);

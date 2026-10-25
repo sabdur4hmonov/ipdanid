@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { english, png } from "./phase12-cases";
@@ -51,7 +52,7 @@ test("automatic cat cutout keeps the head and body; changing type retains placem
   await page.getByTestId("product-kind").selectOption("animal");
   await expect(create).toBeEnabled({ timeout: 90000 });
   expect(await photo.getAttribute("data-framing")).toBe(before);
-  const out = `output/subject-repair/${info.project.name}/cat`;
+  const out = newEvidenceRoot(`output/subject-repair/${info.project.name}/cat`);
   mkdirSync(out, { recursive: true });
   writeFileSync(
     out + "/cutout.png",
@@ -127,7 +128,7 @@ test("unsupported cutout keeps the complete photo; Arabic and Latin lettering is
       return max - min;
     });
   expect(inkWidth).toBeGreaterThan(380);
-  const out = `output/subject-repair/${info.project.name}/lettering`;
+  const out = newEvidenceRoot(`output/subject-repair/${info.project.name}/lettering`);
   mkdirSync(out, { recursive: true });
   writeFileSync(
     out + "/target.png",

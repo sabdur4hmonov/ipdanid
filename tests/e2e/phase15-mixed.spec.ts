@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { english, png } from "./phase12-cases";
@@ -36,7 +37,7 @@ for (const [index, text] of [
     await validateInstruction(i);
     expect(i.metrics.lines).toBe(3000);
     expect(i.params.kitPreparation.transform.product.kind).toBe("lettering");
-    const dir = `output/current-bidi/${info.project.name}/normal-${index}`;
+    const dir = newEvidenceRoot(`output/current-bidi/${info.project.name}/normal-${index}`);
     mkdirSync(dir, { recursive: true });
     writeFileSync(dir + "/target.png", Buffer.from(target, "base64"));
     writeFileSync(

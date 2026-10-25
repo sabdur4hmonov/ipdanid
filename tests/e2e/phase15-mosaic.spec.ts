@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "./legacy-test";
 import { openMore, revealControl } from "./navigation";
 import { readFileSync, mkdirSync } from "node:fs";
@@ -85,7 +86,7 @@ test("mosaic baseplates use real inventory, exact sequence, local positions and 
     .getByRole("button", { name: "Baseplate PDF", exact: true })
     .click();
   const pdf = await pdfDownload;
-  const path = `output/current-mosaic/${info.project.name}`;
+  const path = newEvidenceRoot(`output/current-mosaic/${info.project.name}`);
   mkdirSync(path, { recursive: true });
   await pdf.saveAs(path + "/baseplates.pdf");
   const doc = await PDFDocument.load(readFileSync(path + "/baseplates.pdf"));

@@ -7,10 +7,10 @@ git clone --branch feat/full-roadmap --single-branch https://github.com/sabdur4h
 cd ipdanid
 npm ci
 npm run build -- --outDir output/phase15-dist
-node scripts/start-testable-web.mjs
+node scripts/start-testable-web.mjs --name release-candidate
 ```
 
-Terminalda chiqqan manzilni brauzerda oching. Terminalni ochiq qoldiring. Bu yangi mahalliy sinov bazasi; eski server yoki hisoblar ko‘chirilmaydi. Test kit kodi va mahalliy Admin tokeni faqat kompyuteringizdagi `output/phase15/testable-web/manual-testing.txt` faylida bo‘ladi. Uni boshqalarga yubormang. Launcher birinchi ishga tushirish uchun: mavjud sinov papkasini qayta yozishdan bosh tortadi.
+Terminalda chiqqan manzilni brauzerda oching. Terminalni ochiq qoldiring. Bu yangi mahalliy sinov bazasi; eski server yoki hisoblar ko‘chirilmaydi. Uchta test kit kodi va mahalliy Admin tokeni faqat kompyuteringizdagi `output/phase15/manual-testing.txt` faylida bo‘ladi. Uni boshqalarga yubormang. Launcher mavjud sinov nusxasini qayta yozmaydi va eski serverlarni qayta ishlatmaydi.
 
 ## Rasm bilan sinash
 
@@ -30,6 +30,7 @@ Menyu → **Hisob / Admin** orqali hisob, do‘kon, buyurtmalar va boshqaruv och
 - Click/Payme merchant kalitlari: [to‘lovlar](docs/PAYMENTS_UZ.md). Kalitlar faqat serverda; `VITE_*` ichiga yozmang.
 - Ovoz fayllari: [ovoz yozish](docs/VOICE_RECORDING_UZ.md), [fayllar ro‘yxati](docs/VOICE_RECORDING_LIST.csv).
 - APK, server manzili va egasining imzo kaliti: [Android yo‘riqnomasi](docs/APK_SERVER_AND_SIGNING_UZ.md).
+- Macdagi iPhone build/imzo/TestFlight: [iOS yo‘riqnomasi](docs/IOS_UZ.md).
 - Fizik taxta: [o‘lcham va teshik sinovi](docs/PHYSICAL_BOARD_UZ.md).
 
 Web va keyingi app bir HTTPS API va bazaga ulanganda bir hisobdan foydalanadi. GitHub ZIP ichida shaxsiy suratlar, bazalar, parollar, tayyor `node_modules` yoki lokal APKlar yo‘q; build kompyuteringizda yaratiladi.
@@ -38,7 +39,11 @@ Web va keyingi app bir HTTPS API va bazaga ulanganda bir hisobdan foydalanadi. G
 
 Bu ishlayotgan rivojlantirish nusxasi. Qolgan CODE vazifalari [auditda](docs/REMAINING_WORK.md), aniq keyingi qadam [progressda](AGENT/PROGRESS.md). Barcha roadmap bandlari tugagan yoki har bir suratning o‘xshashligi qabul qilingan deb hisoblamang. Hozirgi asosiy surat oqimi va hisob sinovlari bo‘yicha bajarilgan tekshiruvlar progressda yozilgan.
 
-Tekshirish: `npm test`, `npm run build`. Brauzer testlari uchun Playwright/Chrome va bo‘sh ajratilgan portlar kerak; mavjud serverga test yubormang.
+Tekshirish: `npm test -- --testTimeout=30000`, `npm run build -- --outDir output/phase15-dist`. To‘liq joriy mahsulot brauzer matritsasi: `node scripts/run-release-e2e.mjs`; bu kompyuterda o‘rnatilgan Chrome, yetarli RAM va bo‘sh ajratilgan portlar kerak. Har fayl/platforma yangi server oladi, eski hisobotlar saqlanadi. Xato bo‘lsa yangi natija papkasidagi `matrix.json` va oxirgi job hisobotini ko‘ring. Davom ettirish: `node scripts/run-release-e2e.mjs --resume=TEST_RESULTS_PAPKASI`; web build o‘zgargan bo‘lsa yangi to‘liq matritsa kerak.
+
+To‘liq lokal qabul matritsasidagi ayrim suratlar GitHub ZIPga ataylab kirmaydi. Yangi nusxaning faqat repodagi ochiq sinov rasmlari bilan tekshiruvi: builddan keyin `IP_RASM_TEST_WEB_DIR=output/phase15-dist` muhitini sozlab `npm run test:e2e:ci` bajaring. Playwright brauzeri oldindan tayyor bo‘lsin. Surat yuklash va ilovani oddiy ishlatish uchun bu lokal qabul rasmlari kerak emas.
+
+Yig‘ishda oddiy ovozli yo‘riqnoma va Dam olish mavjud. Mutaxassis rejimidagi mahalliy ovozli buyruqlar Android13+ uchun ixtiyoriy, rasm bilan qadam solishtirish esa qo‘lda: [ovozli buyruqlar](docs/ASSEMBLY_COMMANDS_CHECKPOINT.md), [taxta rasmlari](docs/ASSEMBLY_PHOTOS_CHECKPOINT.md). Qurilmagagina tegishli taxta rasmlari serverga/hisob tiklashga kirmaydi. Android ilovasi o‘z ma’lumotini Auto Backupga qo‘shishni o‘chiradi; bu telefon/OSning barcha nusxa yoki qo‘lda ko‘chirishlarini boshqaradi degan da’vo emas.
 
 
 Instagram sinov kodi va do‘kon/dostavka: [INSTAGRAM_TRIAL_UZ.md](docs/INSTAGRAM_TRIAL_UZ.md). Kod faqat raqamli yig‘ish huquqi; jismoniy kit/dostavka alohida. Kampaniya o‘chiq, jo‘natish egasi tomonidan.

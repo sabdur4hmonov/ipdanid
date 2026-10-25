@@ -1,3 +1,4 @@
+import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { PDFDocument } from "pdf-lib";
@@ -125,7 +126,7 @@ test("sandbox providers use authenticated callbacks, immutable retries and one c
     })
   ).json();
   expect(payme.error.code).toBe(-32504);
-  const dir = "output/current-product/business/" + info.project.name;
+  const dir = newEvidenceRoot("output/current-product/business/") + info.project.name;
   mkdirSync(dir, { recursive: true });
   writeFileSync(
     dir + "/callback-proof.json",
@@ -215,7 +216,7 @@ test("owner one-page administration prints kit QR/PDF, edits UZS prices and cust
   await kits.getByLabel("Codes per batch", { exact: true }).fill("7");
   await page.getByTestId("issue-kit-batch").click();
   await expect(page.getByTestId("kit-inserts-pdf")).toBeVisible();
-  const dir = "output/current-product/business/" + info.project.name;
+  const dir = newEvidenceRoot("output/current-product/business/") + info.project.name;
   mkdirSync(dir, { recursive: true });
   const dl = page.waitForEvent("download");
   await page.getByTestId("kit-inserts-pdf").click();
