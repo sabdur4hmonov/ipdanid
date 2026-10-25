@@ -1,3 +1,9 @@
+#2026-10-25 — yasash paketi tayyor, kod yakunlash davom etmoqda
+
+500x500mm taxta uchun katta PDF,6A4andoza,18sektor sahifasi va o'zbek qo'llanma tayyor: output/ip-rasm-yasash-paketi-500mm-20261025.zip. 720mix nuqtasi va50mm belgilar mustaqil tekshirildi.8/8desktop/mobil sinovda rasm->kit->birinchi ip->dam olish->internetsiz qaytish o'tdi;6PDFdagi18000qadam va rasm pikseli aynan teng.17unit/TypeScript/build o'tdi. Yo'l: docs/BUILD_TODAY_UZ.md. Yangi ilova4214,kit kodi faqat lokal manual-testing.txt da.
+
+Burun/tiniqlik hali to'liq tuzalmadi. Haqiqiy taxta/telefon sinovi va qolgan CODE/C26 yakuni ochiq; barcha ish tugadi deb da'vo qilinmaydi. Hozir C21backupdan keyingi o'chirish/retention yakunlanadi.
+
 # 2026-10-24 — GitHub uchun ishlayotgan sinov nusxasi
 
 Manba5e2c964 `origin feat/full-roadmap`ga push qilindi, remote SHA tekshirildi. [GitHub branch](https://github.com/sabdur4hmonov/ipdanid/tree/feat/full-roadmap), [ZIP](https://github.com/sabdur4hmonov/ipdanid/archive/refs/heads/feat/full-roadmap.zip). Yangi mahalliy sinov: **http://127.0.0.1:4213/**; kod faqat `output/phase15/testable-web/manual-testing.txt`da. 92faylning SHA tengligi/HTTP200/sandbox tekshirildi. Eski sahifalar saqlangan.

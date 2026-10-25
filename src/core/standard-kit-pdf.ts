@@ -254,7 +254,7 @@ export async function standardKitPdf(
           text(page, "50 mm calibration", 11, y - 2, 6);
           text(
             page,
-            `C Circle ${c.circleDiameterMm} mm | S Square ${c.squareSideMm} mm | H Heart envelope ${c.heartEnvelopeMm} mm | holes ${c.shaftMm} mm; centre clearance >=${c.minHoleGapMm} mm`,
+            `C Circle ${c.circleDiameterMm} mm | S Square ${c.squareSideMm} mm | H Heart envelope ${c.heartEnvelopeMm} mm | pin shaft ${c.shaftMm} mm; test pilot size on scrap | centre gap >=${c.minHoleGapMm} mm`,
             90,
             c.baseMm - 6,
             5,

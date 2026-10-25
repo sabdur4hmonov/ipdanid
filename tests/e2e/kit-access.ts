@@ -7,7 +7,7 @@ export async function unlockIfNeeded(page: Page) {
   if (await page.getByTestId("build-gate").isVisible())
     await unlockKitGuide(page);
 }
-export async function unlockKitGuide(page: Page) {
+export async function unlockKitGuide(page: Page, profile = "synthetic-e2e") {
   const gate = page.getByTestId("build-gate");
   await expect(gate).toBeVisible();
   const issued = await page.request.post(
@@ -15,7 +15,7 @@ export async function unlockKitGuide(page: Page) {
     {
       headers: { Authorization: `Bearer ${process.env.LOCAL_ADMIN_TOKEN}` },
       data: {
-        profile: "synthetic-e2e",
+        profile,
         count: 1,
         requestKey: crypto.randomUUID(),
       },

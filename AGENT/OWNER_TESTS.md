@@ -464,3 +464,7 @@ Kompyuter va mobil ko‘rinishda avtomatik sinov o‘tdi: oyna yopilgan bo‘lsa
 ##2026-10-25 — yangi sinov nusxasi
 
 http://127.0.0.1:4214/ — Avtomatik/Hayvon orqali mushukni tanlang; bosh va tana qolishi,fon oq bo'lishi kerak. Shaklni tanlab,surish/kattalashtirish bilan o'zingiz joylashtiring. Yozuv rejimida «سَلام Ali» kabi aralash yozuvni sinash mumkin. Test kit kodi output/phase15/subject-repair/manual-testing.txt da. Yig'ishni boshlash orqali birinchi qadamni ko'ring. Burun tiniqligi hali to'liq tuzalmagan; yangi nusxada qirqish/yozuv tuzatmasi bor. Avtomatik desktop/mobil8/8 test o'tgan. Eski4213 va yangi4214 nusxalari saqlanadi.
+
+##2026-10-25 — yasash papkasi tekshirildi
+
+`output/ip-rasm-yasash-paketi-500mm-20261025.zip` ni oching va BIRINCHI-OQING.html dan boshlang. Ichida500x500mm bitta PDF,6A4andoza,18sektor sahifasi va ustaga koordinatalar bor. 100%/Actual size chiqarib,50mm belgini chizg'ich bilan tekshiring. Har shaklda240mix; bitta ishga faqat tanlangan shakl mixlarini qo'ying. Qalinlik/pilot teshikni avval ortiqchaMDFda sinang. Keyin4214da rasmni yarating,kitni oching,birinchi qadamni ekrandan oling; dam olishdan keyin shu qo'llanma/brauzerga qayting. Batafsil docs/BUILD_TODAY_UZ.md. Bu bosqichning barcha desktop/mobil8/8sinovi avtomatik o'tdi; sizni kutib kod ishi to'xtamaydi. Burun sifati va haqiqiy taxta hali qabul qilinmagan.

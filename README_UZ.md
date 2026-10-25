@@ -14,6 +14,8 @@ Terminalda chiqqan manzilni brauzerda oching. Terminalni ochiq qoldiring. Bu yan
 
 ## Rasm bilan sinash
 
+Taxtani hozir yasash uchun aniq500mm/A4/sektor paketini chiqarish va birinchi ipgacha yo'l: [Birinchi taxtani yasash](docs/BUILD_TODAY_UZ.md). Har bir andozada50mm masshtab tekshiruvi bor.
+
 1. Galereyadan rasm tanlang. Doira, Kvadrat yoki Yurakni bosing.
 2. Oq fondagi rasmni suring, kattalashtiring yoki aylantiring. Zarur bo‘lsa fon qirqimini tuzating. Yuz va yelkani qayerda qoldirishni o‘zingiz tanlaysiz.
 3. **Yaratish** bosing va haqiqiy ip yo‘nalishidan chizilgan natijani ko‘ring.
