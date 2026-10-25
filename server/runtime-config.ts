@@ -6,7 +6,9 @@ function publicOrigin(value: string) {
   }
 }
 import { isAbsolute, resolve } from "node:path";
+import { securityConfig } from "./request-security";
 export function assertProductionConfig(env: NodeJS.ProcessEnv) {
+  securityConfig(env);
   if (env.NODE_ENV !== "production") return;
   const needed = [
     "DATABASE_PATH",

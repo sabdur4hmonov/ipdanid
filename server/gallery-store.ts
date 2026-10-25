@@ -32,7 +32,9 @@ export class GalleryStore {
   constructor(
     private store: Store,
     private now: () => number = Date.now,
+    private limits: {maxItems:number;maxBytes:number} = {maxItems:10000,maxBytes:268435456},
   ) {
+    if(!Number.isSafeInteger(limits.maxItems)||limits.maxItems<1||!Number.isSafeInteger(limits.maxBytes)||limits.maxBytes<1)throw Error("Invalid gallery capacity");
     store.db.exec(`CREATE TABLE IF NOT EXISTS gallery_posts(
       id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),request_key TEXT NOT NULL,fingerprint TEXT NOT NULL,
       title TEXT NOT NULL,alias TEXT NOT NULL,review TEXT NOT NULL,rating INTEGER NOT NULL,
@@ -210,6 +212,8 @@ export class GalleryStore {
       if (Number(quota.n) >= 10) throw new DomainError("gallery/limit", 429);
       const media = normalizeGalleryImage(input.image),
         id = randomUUID();
+      const capacity=this.store.db.prepare("SELECT count(*) AS items,COALESCE(sum(COALESCE(length(image),0)+COALESCE(length(thumbnail),0)),0) AS bytes FROM gallery_posts WHERE state!='deleted'").get()!;
+      if(Number(capacity.items)>=this.limits.maxItems || Number(capacity.bytes)+media.image.length+media.thumbnail.length>this.limits.maxBytes)throw new DomainError("gallery/capacity",429);
       this.store.db
         .prepare(
           "INSERT INTO gallery_posts VALUES(?,?,?,?,?,?,?,?,'pending',NULL,1,?,?,NULL,?,NULL,?,?)",

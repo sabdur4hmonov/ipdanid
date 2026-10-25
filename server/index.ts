@@ -1,3 +1,4 @@
+import { clientIp, securityConfig, WindowBudget, BodyLeases, requestBodyLimit } from "./request-security.ts";
 import { allowedOrigin } from "./runtime-config.ts";
 import { ProductionAdminAuth } from "./production-auth.ts";
 import { BusinessStore } from "./business-store.ts";
@@ -31,6 +32,7 @@ import {AnalyticsStore} from './analytics-store.ts';
 import type {Locale} from "../src/core/types.ts";
 import { claimOrigin } from "../src/kit-claim-link.ts";
 const production = process.env.NODE_ENV === "production";
+const security = securityConfig(process.env);
 const notificationAdapter = pushAdapter(process.env);
 const transactionalAdapter = emailAdapter(process.env);
 const adminToken = production
@@ -52,7 +54,7 @@ if (!production) store.seed();
 const recovery = new RecoveryStore(store);
 const photoBackups = new PhotoBackupStore(store);
 const business = new BusinessStore(store);
-const gallery = new GalleryStore(store);
+const gallery = new GalleryStore(store, Date.now, security.gallery);
 const offers = new OfferStore(store);
 const catalog = new CatalogStore(store);
 const regions = new RegionsStore(store);
@@ -109,21 +111,22 @@ const payments = new Payments(store, {
       }
     : {}),
 });
-const budgets = new Map<string, { start: number; count: number }>();
+const budgets = new WindowBudget(10000);
+const bodies = new BodyLeases(16);
 const finance = new FinanceStore(store);
 const trials = new TrialStore(store);
 const ledgerPath=process.env.ERASURE_LEDGER_PATH||(production?join(dirname(process.env.DATABASE_PATH!),"erasure-intents.sqlite"):undefined);
 const accountErasure = new AccountErasureStore(store,ledgerPath?{path:ledgerPath,key:pepper}:undefined);
 accountErasure.prune();
-const authBudgets = new Map<string, { start: number; count: number }>();
-const photoBudgets = new Map<string, { start: number; count: number }>();
 let photoUploads = 0;
 const server = createServer(async (req, res) => {
   let photoLease = false;
+  let releaseBody:(()=>void)|undefined;
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("X-Content-Type-Options", "nosniff");
   const send = (code: number, data: unknown) => {
+    if(res.destroyed)return;
     res.writeHead(code);
     res.end(JSON.stringify(data));
   };
@@ -142,21 +145,22 @@ const server = createServer(async (req, res) => {
       send(204, null);
       return;
     }
-    const ip = req.socket.remoteAddress ?? "local",
-      budgetKey = `${ip}:${req.method === "GET" ? "read" : "write"}`,
-      budget = budgets.get(budgetKey) ?? { start: Date.now(), count: 0 };
-    if (Date.now() - budget.start > 60000) {
-      budget.start = Date.now();
-      budget.count = 0;
-    }
-    budget.count++;
-    budgets.set(budgetKey, budget);
-    if (budget.count > (req.method === "GET" ? 600 : 120))
-      throw new DomainError("Rate limit exceeded; retry after one minute", 429);
+    if(!["GET","POST"].includes(req.method ?? ""))throw new DomainError("Method not allowed",405);
+    const read=req.method === "GET";
+    budgets.take(read?"global-read":"global-write","all",read?10000:2000);
+    const ip=clientIp(req.socket.remoteAddress,req.headers,security.proxies);
+    budgets.take(read?"ip-read":"ip-write",ip,read?600:120);
     const url = new URL(req.url ?? "/", "http://127.0.0.1"),
       path = url.pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
     if((path.startsWith("/api/trial")||path.startsWith("/api/admin/trial"))&&url.search)throw new DomainError("Trial parameters must not be in the URL");
+    const maxBodyBytes=requestBodyLimit(path,req.headers);
+    if(req.method === "GET" && (req.headers["transfer-encoding"]!==undefined || Number(req.headers["content-length"]??0)>0)) {
+      res.setHeader("Connection","close");throw new DomainError("GET request body is not allowed");
+    }
+    const authWrite=req.method === "POST" && (/^\/api\/account\/(login|recover|register|kit|erasure)$/.test(path) || path === "/api/admin/login" || path === "/api/trial/claim");
+    if(authWrite){budgets.take("global-auth","all",240);budgets.take("ip-auth",ip,12);}
+    if(path === "/api/session" && req.method === "POST"){budgets.take("global-guest","all",120);budgets.take("ip-guest",ip,30);}
     const photoWrite = path === "/api/photo-backup" && req.method === "POST";
     if (path === "/api/account/erasure" && url.search)
       throw new DomainError("Account erasure query fields are not allowed");
@@ -165,10 +169,7 @@ const server = createServer(async (req, res) => {
       const account = store.authenticate(token);
       photoBackups.authorize(account);
       if (url.search) throw new DomainError("Private photo query fields are not allowed");
-      const old = photoBudgets.get(account), now = Date.now();
-      const budget = old && now - old.start < 60000 ? old : { start: now, count: 0 };
-      photoBudgets.set(account, budget);
-      if (++budget.count > 24) throw new DomainError("Private photo limit; retry later", 429);
+      budgets.take("photo-account",account,24);
       if (photoWrite) {
         if (photoUploads >= 2) throw new DomainError("Private photo storage is busy; retry", 503);
         ++photoUploads;
@@ -239,6 +240,8 @@ const server = createServer(async (req, res) => {
         sandbox: !production,
         adminAuth: production ? "password" : "token",
         livePayments: false,
+        trustedProxy:security.proxies.length>0,
+        requestLimits:"bounded/1",
           erasureReplay:accountErasure.durableReplay,
         liveMessages: notificationAdapter.mode === "fcm" || transactionalAdapter.mode === 'resend',
         apiVersion: production ? "product-api/3" : "business-sandbox/2",
@@ -276,15 +279,18 @@ const server = createServer(async (req, res) => {
       send(200, store.standardKit(Number(kitRevision[1])));
       return;
     }
+    if(req.method === "POST") {
+      releaseBody=bodies.acquire();req.setTimeout(15000,()=>req.destroy());
+    }
     const chunks: Buffer[] = [];
     let receivedBytes = 0;
     for await (const chunk of req) {
       receivedBytes += chunk.length;
-      if (receivedBytes > (photoWrite ? 20_000_000 : 4_000_000))
+      if (receivedBytes > maxBodyBytes)
         throw new DomainError("Request too large", 413);
       chunks.push(Buffer.from(chunk));
     }
-    const raw = Buffer.concat(chunks).toString("utf8");
+    const raw = new TextDecoder("utf-8",{fatal:true}).decode(Buffer.concat(chunks));
     const clickForm =
       path === "/api/payments/click" &&
       String(req.headers["content-type"]).startsWith(
@@ -295,6 +301,7 @@ const server = createServer(async (req, res) => {
         ? Object.fromEntries(new URLSearchParams(raw))
         : JSON.parse(raw)
       : {};
+    if(!body || typeof body !== "object" || Array.isArray(body))throw new DomainError("Request body must be an object");
     if (req.method === "GET" && path === "/api/payments/config") {
       send(200, payments.availability());
       return;
@@ -312,21 +319,6 @@ const server = createServer(async (req, res) => {
         ),
       );
       return;
-    }
-    if (
-      req.method === "POST" &&
-      (/^\/api\/account\/(login|recover|register|kit|erasure)$/.test(path) ||
-        path === "/api/admin/login" || path === "/api/trial/claim")
-    ) {
-      const attempts = authBudgets.get(ip) ?? { start: Date.now(), count: 0 };
-      if (Date.now() - attempts.start > 60000) {
-        attempts.start = Date.now();
-        attempts.count = 0;
-      }
-      attempts.count++;
-      authBudgets.set(ip, attempts);
-      if (attempts.count > 12)
-        throw new DomainError("Too many account attempts; retry later", 429);
     }
     if (path === "/api/account/login" && req.method === "POST") {
       send(200, store.login(body.email, body.password));
@@ -1013,13 +1005,18 @@ const server = createServer(async (req, res) => {
     }
     throw new DomainError("Route not found", 404);
   } catch (e) {
+    // An early refusal must not leave an unread body on a reusable connection.
+    if (!req.complete) res.setHeader("Connection", "close");
+    if(e instanceof DomainError && e.status===429)res.setHeader("Retry-After","60");
     if (e instanceof DomainError) send(e.status, { error: e.message });
     else if (e instanceof SyntaxError) send(400, { error: "Invalid JSON" });
     else send(400, { error: "Invalid request or data" });
   } finally {
     if (photoLease) --photoUploads;
+    releaseBody?.();
   }
 });
+server.headersTimeout=15000;server.requestTimeout=30000;server.keepAliveTimeout=5000;server.maxConnections=256;
 const port = Number(process.env.PORT ?? 4311);
 if (!Number.isInteger(port) || port < 1024 || port > 65535)
   throw new Error("Invalid local server port");
@@ -1041,8 +1038,6 @@ const cleanup = setInterval(() => {
   analytics.prune();
   photoBackups.prune();
   accountErasure.prune();
-  for (const [account, budget] of photoBudgets)
-    if (Date.now() - budget.start >= 60000) photoBudgets.delete(account);
 }, 60_000);
 cleanup.unref();
 const shutdown=()=>{

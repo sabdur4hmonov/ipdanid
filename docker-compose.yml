@@ -12,6 +12,9 @@ services:
       PORT: "4311"
       DATABASE_PATH: /data/iprasm.sqlite
       ERASURE_LEDGER_PATH: /privacy/erasure-intents.sqlite
+      TRUSTED_PROXY_IPS: ${APP_PROXY_IP:-172.30.51.2}
+      GALLERY_MAX_ITEMS: ${GALLERY_MAX_ITEMS:-10000}
+      GALLERY_MAX_BYTES: ${GALLERY_MAX_BYTES:-268435456}
       APP_ORIGIN: https://${APP_DOMAIN:?Set APP_DOMAIN}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?Set ADMIN_PASSWORD_HASH}
       CODE_PEPPER: ${CODE_PEPPER:?Set CODE_PEPPER}
@@ -36,7 +39,10 @@ services:
       - sqlite:/data
       - erasure:/privacy
     # Outbound HTTPS for explicitly configured push/mail providers; no host API port.
-    networks: [backend, public]
+    networks:
+      backend:
+        ipv4_address: ${APP_API_IP:-172.30.51.3}
+      egress: {}
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4311/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s
@@ -58,7 +64,10 @@ services:
       APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
     ports: ["80:80", "443:443", "443:443/udp"]
     volumes: ["caddy-data:/data", "caddy-config:/config"]
-    networks: [backend, public]
+    networks:
+      backend:
+        ipv4_address: ${APP_PROXY_IP:-172.30.51.2}
+      public: {}
     depends_on:
       api: {condition: service_healthy}
     logging: *logging
@@ -72,15 +81,22 @@ services:
       BACKUP_DIR: /backups
       ERASURE_LEDGER_PATH: /privacy/erasure-intents.sqlite
     volumes: ["sqlite:/data:ro", "erasure:/privacy:ro", "backups:/backups"]
-    networks: [backend]
+    networks:
+      backend:
+        ipv4_address: ${APP_BACKUP_IP:-172.30.51.4}
     depends_on:
       api: {condition: service_healthy}
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     logging: *logging
 networks:
-  backend: {internal: true}
+  backend:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${APP_BACKEND_SUBNET:-172.30.51.0/24}
   public: {}
+  egress: {}
 volumes:
   sqlite: {}
   erasure: {}

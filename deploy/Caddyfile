@@ -5,9 +5,13 @@
     Referrer-Policy same-origin
     Permissions-Policy "camera=(self), microphone=()"
     Strict-Transport-Security "max-age=31536000"
+    Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self' https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://fcm.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
   }
   handle /api/* {
-    reverse_proxy api:4311
+    reverse_proxy api:4311 {
+      # Never trust a caller's forwarded address. API trusts only this proxy.
+      header_up X-Real-IP {remote_host}
+    }
   }
   handle {
     root * /srv

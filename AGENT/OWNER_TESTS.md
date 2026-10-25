@@ -501,3 +501,7 @@ Yaratish tugagach rasmni chizish ham alohida hisoblash oqimida; eski iplar va ba
 ### C24a — xavfsizlik paketlari
 
 Vite7.3.7/Vitest4.1.12 bilan npm auditi0ta zaiflik ko‘rsatdi.28tegishli unit va4desktop/mobil eski-yangi yo‘riqnoma/eksport/oflayn sinovi o‘tdi. Gitdagi barcha mavjud lokal tarix tekshirildi; tekshiruvchi maxfiy qiymatni chiqarmaydi. Tizim/telefon dasturi o‘rnatilmadi, eski saytlar o‘zgarmadi. ServerIP/rate-limit/galereya/CSP bosqichi hali davom etadi; hozir sizdan sinov talab qilinmaydi.
+
+##2026-10-25 — Server xavfsizligi avtomatik tekshirildi
+
+Hozir qo‘lda tekshirish shart emas: mobil rasm yuklash, ipli natija, kit bilan kirish va PDF haqiqiy lokal HTTPS/Caddy orqali o‘tdi. VPSni qo‘yishda docs/DEPLOY_VPS_UZ.md ga amal qiling; API portini internetga ochmang.429 chiqsa60soniya kuting. Galereya sig‘imi sozlamasi, proxy IP va tarmoqni faqat shu yo‘riqnoma bo‘yicha o‘zgartiring. Bu real telefon/taxta yoki yuz o‘xshashligi tasdig‘i emas.
