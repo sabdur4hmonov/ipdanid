@@ -12,7 +12,14 @@ import {
 import { resolve, join, dirname, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { assertTestDatabasePath } from "../server/test-safety.mjs";
-export async function backupSqlite(source, directory, now = new Date()) {
+export async function backupSqlite(
+  source,
+  directory,
+  now = new Date(),
+  prefix = "iprasm",
+) {
+  if (!["iprasm", "erasure"].includes(prefix))
+    throw Error("Invalid backup prefix");
   if (!source || !directory)
     throw Error("Explicit database and backup directory required");
   assertTestDatabasePath(source);
@@ -23,7 +30,8 @@ export async function backupSqlite(source, directory, now = new Date()) {
   const targetDir = realpathSync(resolve(directory));
   if (input === targetDir || input.startsWith(targetDir + sep))
     throw Error("Database cannot be inside the backup directory");
-  const name = "iprasm-" + now.toISOString().replaceAll(":", "-") + ".sqlite",
+  const name =
+      prefix + "-" + now.toISOString().replaceAll(":", "-") + ".sqlite",
     part = join(targetDir, name + ".part"),
     target = join(targetDir, name);
   if (existsSync(part) || existsSync(target))
@@ -49,10 +57,17 @@ export async function backupSqlite(source, directory, now = new Date()) {
   }
 }
 export function pruneBackups(directory, now = Date.now(), keepDays = 14) {
+  assertTestDatabasePath(join(directory, "backup.sqlite"));
   const root = realpathSync(directory);
+  const latestErasure = readdirSync(root)
+    .filter((n) => /^erasure-[0-9T.Z-]+\.sqlite$/.test(n))
+    .sort()
+    .at(-1);
   let removed = 0;
   for (const name of readdirSync(root)) {
-    if (!/^iprasm-[0-9T.Z-]+\.sqlite$/.test(name)) continue;
+    if (!/^(?:iprasm|erasure)-[0-9T.Z-]+\.sqlite$/.test(name)) continue;
+    // Keep the latest journal snapshot even if no backups ran for14days.
+    if (name === latestErasure) continue;
     const file = join(root, name);
     if (realpathSync(file) !== file || !file.startsWith(root + sep)) continue;
     if (statSync(file).mtimeMs < now - keepDays * 86400000) {
@@ -63,13 +78,28 @@ export function pruneBackups(directory, now = Date.now(), keepDays = 14) {
   return removed;
 }
 async function once() {
+  const at = new Date();
   const result = await backupSqlite(
     process.env.DATABASE_PATH,
     process.env.BACKUP_DIR,
+    at,
   );
+  const erasure = process.env.ERASURE_LEDGER_PATH
+    ? await backupSqlite(
+        process.env.ERASURE_LEDGER_PATH,
+        process.env.BACKUP_DIR,
+        at,
+        "erasure",
+      )
+    : undefined;
   const removed = pruneBackups(process.env.BACKUP_DIR);
   console.log(
-    JSON.stringify({ backup: result.path, bytes: result.bytes, removed }),
+    JSON.stringify({
+      backup: result.path,
+      bytes: result.bytes,
+      erasureBackup: erasure?.path,
+      removed,
+    }),
   );
 }
 if (

@@ -1,12 +1,18 @@
 import { randomUUID } from "node:crypto";
 import type { KitStore } from "./kit-store";
 import { DomainError } from "./store";
+import { ErasureLedger, type ErasureLedgerConfig } from "./erasure-ledger";
 
 // Construct after feature stores. A tombstone retains no credentials or photos.
 export class AccountErasureStore {
   private tables: Set<string>;
   private cursor = "";
-  constructor(private store: KitStore) {
+  private ledger?: ErasureLedger;
+  private replayNeeded = false;
+  constructor(
+    private store: KitStore,
+    config?: ErasureLedgerConfig,
+  ) {
     this.tables = new Set(
       store.db
         .prepare("SELECT name FROM sqlite_master WHERE type='table'")
@@ -34,6 +40,25 @@ export class AccountErasureStore {
             .exec(`CREATE TRIGGER IF NOT EXISTS erased_${table}_${action} BEFORE ${action} ON ${table}
         WHEN (${condition}) AND EXISTS(SELECT 1 FROM account_erasure WHERE user_id=NEW.${column})
         BEGIN SELECT RAISE(ABORT,'Account erased'); END;`);
+    if (config) {
+      this.ledger = new ErasureLedger(store.db, config);
+      store.erasureGuard = (user) => {
+        if (this.ledger!.has(user))
+          throw new DomainError("Account erased", 401);
+      };
+      try {
+        // Upgrade existing tombstones into the external journal before replay.
+        for (const row of store.db
+          .prepare("SELECT user_id,erased_at FROM account_erasure")
+          .iterate())
+          this.ledger.record(String(row.user_id), Number(row.erased_at));
+        this.replay();
+      } catch (error) {
+        store.erasureGuard = undefined;
+        this.ledger.close();
+        throw error;
+      }
+    }
   }
   private tx<T>(fn: () => T): T {
     const db = this.store.db;
@@ -86,7 +111,17 @@ export class AccountErasureStore {
       (input as { credential: unknown }).credential,
     );
     const details = this.preview(user),
-      db = this.store.db;
+      at = this.ledger?.record(user) ?? Date.now();
+    try {
+      this.eraseData(user, at);
+    } catch (error) {
+      this.replayNeeded = !!this.ledger;
+      throw error;
+    }
+    return { ...details, erased: true as const };
+  }
+  private eraseData(user: string, at: number) {
+    const db = this.store.db;
     return this.tx(() => {
       const remove = (table: string, column = "user_id") => {
         if (this.tables.has(table))
@@ -161,10 +196,7 @@ export class AccountErasureStore {
               "UPDATE partner_campaigns SET name='Deleted account' WHERE partner_id=?",
             ).run(row.id);
         }
-      db.prepare("INSERT INTO account_erasure VALUES(?,?)").run(
-        user,
-        Date.now(),
-      );
+      db.prepare("INSERT INTO account_erasure VALUES(?,?)").run(user, at);
       this.scrubOperations(user);
       db.prepare("INSERT INTO audit VALUES(?,?,?,?,?)").run(
         randomUUID(),
@@ -173,8 +205,30 @@ export class AccountErasureStore {
         user,
         new Date().toISOString(),
       );
-      return { ...details, erased: true as const };
     });
+  }
+  get durableReplay() {
+    return !!this.ledger;
+  }
+  replay() {
+    let applied = 0;
+    for (const { user, at } of this.ledger?.entries() ?? []) {
+      if (
+        !this.store.db.prepare("SELECT 1 FROM users WHERE id=?").get(user) ||
+        this.store.db
+          .prepare("SELECT 1 FROM account_erasure WHERE user_id=?")
+          .get(user)
+      )
+        continue;
+      this.eraseData(user, at);
+      applied++;
+    }
+    this.replayNeeded = false;
+    return applied;
+  }
+  close() {
+    this.store.erasureGuard = undefined;
+    this.ledger?.close();
   }
   private scrubOperations(user: string) {
     const db = this.store.db;
@@ -214,6 +268,7 @@ export class AccountErasureStore {
       }
   }
   prune() {
+    if (this.replayNeeded) this.replay();
     // Bound work per minute. No need to scan every erased account in one tick.
     return this.tx(() => {
       const rows = this.store.db

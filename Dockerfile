@@ -13,7 +13,7 @@ COPY --from=build /app/package.json ./
 COPY --from=build /app/server ./server
 COPY --from=build /app/src ./src
 COPY --from=build /app/scripts/backup-sqlite.mjs ./scripts/backup-sqlite.mjs
-RUN mkdir /data /backups && chown node:node /data /backups
+RUN mkdir /data /backups /privacy && chown node:node /data /backups /privacy
 USER node
 EXPOSE 4311
 CMD ["node","--import","tsx","server/index.ts"]

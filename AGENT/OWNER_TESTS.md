@@ -468,3 +468,7 @@ http://127.0.0.1:4214/ — Avtomatik/Hayvon orqali mushukni tanlang; bosh va tan
 ##2026-10-25 — yasash papkasi tekshirildi
 
 `output/ip-rasm-yasash-paketi-500mm-20261025.zip` ni oching va BIRINCHI-OQING.html dan boshlang. Ichida500x500mm bitta PDF,6A4andoza,18sektor sahifasi va ustaga koordinatalar bor. 100%/Actual size chiqarib,50mm belgini chizg'ich bilan tekshiring. Har shaklda240mix; bitta ishga faqat tanlangan shakl mixlarini qo'ying. Qalinlik/pilot teshikni avval ortiqchaMDFda sinang. Keyin4214da rasmni yarating,kitni oching,birinchi qadamni ekrandan oling; dam olishdan keyin shu qo'llanma/brauzerga qayting. Batafsil docs/BUILD_TODAY_UZ.md. Bu bosqichning barcha desktop/mobil8/8sinovi avtomatik o'tdi; sizni kutib kod ishi to'xtamaydi. Burun sifati va haqiqiy taxta hali qabul qilinmagan.
+
+##2026-10-25 — backupdan keyingi hisob o'chirish himoyasi
+
+Hozir sizdan qo'lda tekshiruv kerak emas. Eski backupni tiklashda ham o'chirilgan hisob qaytmasligi uchun alohida jurnal qo'shildi;20tegishli test o'tdi. VPSda tiklash vaqtida hozirgi erasure volume'ni saqlash kerak: docs/BACKUP_UZ.md. Docker/HTTP yakuniy sinovi agent tomonidan davom ettiriladi. Taxta yasash papkasi avvalgi ZIPda tayyor; burun sifati hali alohida ochiq masala.

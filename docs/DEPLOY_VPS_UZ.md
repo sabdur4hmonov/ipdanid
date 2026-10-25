@@ -31,7 +31,7 @@ Caddy domen uchun avtomatik HTTPS oladi va yangilaydi; DNS va80/443 to‘g‘ri 
 
 ## 4. Zaxira, yangilash va qaytarish
 
-SQLite `sqlite` Docker volume’da, Caddy sertifikatlari `caddy-data`/`caddy-config` da, kundalik zaxira `backups` volume’da qoladi. Backup xizmati SQLite online snapshot/quick_check bilan ishga tushishda va24soatda nusxa oladi,14kundan eskisini tozalaydi. `docker compose down -v` **ishlatmang**: volume’larni o‘chiradi. Faqat `docker compose --env-file .env.production down` bazani saqlaydi.
+SQLite `sqlite` Docker volume’da, o‘chirish jurnali alohida `erasure` volume’da, Caddy sertifikatlari `caddy-data`/`caddy-config` da, kundalik zaxira `backups` volume’da qoladi. Backup xizmati DB va jurnalning online snapshot/quick_check nusxalarini ishga tushishda va24soatda oladi,14kundan eskisini tozalaydi; oxirgi jurnal nusxasi saqlanadi. `docker compose down -v` **ishlatmang**: volume’larni o‘chiradi. Faqat `docker compose --env-file .env.production down` ma’lumotlarni saqlaydi. Eski DBni tiklashda hozirgi erasure volume'ni almashtirmang; `/api/health`da `erasureReplay=true` bo‘lsin. Batafsil [BACKUP_UZ.md](BACKUP_UZ.md).
 
 Qo‘lda zaxira:
 

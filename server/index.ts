@@ -4,7 +4,7 @@ import { BusinessStore } from "./business-store.ts";
 import { createServer } from "node:http";
 import { randomBytes } from "node:crypto";
 import { mkdirSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname,join } from "node:path";
 import "./local-config.ts";
 import { DomainError } from "./store.ts";
 import { KitStore } from "./kit-store.ts";
@@ -110,7 +110,8 @@ const payments = new Payments(store, {
 });
 const budgets = new Map<string, { start: number; count: number }>();
 const finance = new FinanceStore(store);
-const accountErasure = new AccountErasureStore(store);
+const ledgerPath=process.env.ERASURE_LEDGER_PATH||(production?join(dirname(process.env.DATABASE_PATH!),"erasure-intents.sqlite"):undefined);
+const accountErasure = new AccountErasureStore(store,ledgerPath?{path:ledgerPath,key:pepper}:undefined);
 accountErasure.prune();
 const authBudgets = new Map<string, { start: number; count: number }>();
 const photoBudgets = new Map<string, { start: number; count: number }>();
@@ -235,6 +236,7 @@ const server = createServer(async (req, res) => {
         sandbox: !production,
         adminAuth: production ? "password" : "token",
         livePayments: false,
+          erasureReplay:accountErasure.durableReplay,
         liveMessages: notificationAdapter.mode === "fcm" || transactionalAdapter.mode === 'resend',
         apiVersion: production ? "product-api/3" : "business-sandbox/2",
       });
@@ -1039,6 +1041,7 @@ const shutdown=()=>{
   if(pushTimer)clearInterval(pushTimer);
   clearInterval(cleanup);
   server.close(() => {
+    accountErasure.close();
     store.close();
     process.exit(0);
   });

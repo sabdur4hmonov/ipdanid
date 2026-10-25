@@ -5,7 +5,7 @@ function publicOrigin(value: string) {
     throw Error("Invalid APP_ORIGIN");
   }
 }
-import { isAbsolute } from "node:path";
+import { isAbsolute, resolve } from "node:path";
 export function assertProductionConfig(env: NodeJS.ProcessEnv) {
   if (env.NODE_ENV !== "production") return;
   const needed = [
@@ -48,6 +48,18 @@ export function assertProductionConfig(env: NodeJS.ProcessEnv) {
   )
     throw Error(
       "Production requires an explicit isolated absolute DATABASE_PATH",
+    );
+  const ledger = env.ERASURE_LEDGER_PATH;
+  if (
+    ledger &&
+    (!isAbsolute(ledger) ||
+      /(^|\/)tmp\/data(\/|$)/.test(
+        ledger.replaceAll("\\", "/").toLowerCase(),
+      ) ||
+      resolve(ledger) === resolve(env.DATABASE_PATH!))
+  )
+    throw Error(
+      "Production erasure ledger must be an isolated separate absolute path",
     );
 }
 export function allowedOrigin(origin: string, env: NodeJS.ProcessEnv) {

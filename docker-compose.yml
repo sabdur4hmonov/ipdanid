@@ -11,6 +11,7 @@ services:
       HOST: 0.0.0.0
       PORT: "4311"
       DATABASE_PATH: /data/iprasm.sqlite
+      ERASURE_LEDGER_PATH: /privacy/erasure-intents.sqlite
       APP_ORIGIN: https://${APP_DOMAIN:?Set APP_DOMAIN}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?Set ADMIN_PASSWORD_HASH}
       CODE_PEPPER: ${CODE_PEPPER:?Set CODE_PEPPER}
@@ -33,6 +34,7 @@ services:
       RESEND_API_KEY: ${RESEND_API_KEY:-}
     volumes:
       - sqlite:/data
+      - erasure:/privacy
     # Outbound HTTPS for explicitly configured push/mail providers; no host API port.
     networks: [backend, public]
     healthcheck:
@@ -68,7 +70,8 @@ services:
     environment:
       DATABASE_PATH: /data/iprasm.sqlite
       BACKUP_DIR: /backups
-    volumes: ["sqlite:/data:ro", "backups:/backups"]
+      ERASURE_LEDGER_PATH: /privacy/erasure-intents.sqlite
+    volumes: ["sqlite:/data:ro", "erasure:/privacy:ro", "backups:/backups"]
     networks: [backend]
     depends_on:
       api: {condition: service_healthy}
@@ -80,6 +83,7 @@ networks:
   public: {}
 volumes:
   sqlite: {}
+  erasure: {}
   backups: {}
   caddy-data: {}
   caddy-config: {}

@@ -21,6 +21,14 @@ test("production config fails closed before database IO; only configured HTTPS a
     APP_ORIGIN: "https://example.invalid",
   };
   expect(() => assertProductionConfig(env)).not.toThrow();
+  for (const path of [
+    "relative/erasure.sqlite",
+    env.DATABASE_PATH,
+    process.cwd() + "/tmp/data/erasure.sqlite",
+  ])
+    expect(() =>
+      assertProductionConfig({ ...env, ERASURE_LEDGER_PATH: path }),
+    ).toThrow("erasure ledger");
   for (const name of [
     "DATABASE_PATH",
     "CODE_PEPPER",

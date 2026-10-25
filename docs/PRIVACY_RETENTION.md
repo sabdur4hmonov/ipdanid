@@ -1,0 +1,37 @@
+# Account erasure, retention and restore — C21
+
+This is an application policy, not a legal retention-period certification or secure disk-erasure claim. Current-password/claimed-kit confirmation and maker-account authorization precede a durable erasure intent. No photo, email, password, token or customer name is stored in the separate erasure journal: only an opaque account ID, timestamp and authenticated chain metadata.
+
+## Durable restore protection
+
+Production always enables `ErasureLedger`. Compose mounts it at `/privacy/erasure-intents.sqlite` on the independent `erasure` volume; an explicit `ERASURE_LEDGER_PATH` can select another isolated absolute file. Direct production startup defaults beside DATABASE_PATH. The file must not be the application DB or owner tmp/data. Local development without the option preserves legacy rollback semantics; health exposes only `erasureReplay: true/false`.
+
+SQLite WAL/synchronousFULL commits the authenticated intent before mutating the application DB. A CODE_PEPPER HMAC chain authenticates each sequence/previous MAC, a signed head/count detects removed entries, and an application-DB binding rejects a foreign or missing journal. Startup validates before HTTP activation, imports existing tombstones, and replays all later intents over an older app snapshot. Existing private-data deletion/financial exceptions are reused. A failed scrub fences authentication immediately through the journal and retries during the periodic cleanup/restart; it does not need the old password again. Replay is idempotent. No pending-intent scan of all accounts is performed every minute when the current process has no failed scrub.
+
+Preserve the **current** independent journal during an app-DB restore. A valid old journal plus a valid old app DB cannot reveal later deletions if every newer copy was lost; HMAC does not solve whole-storage rollback or physical destruction. Keep the journal volume and a current secure offsite snapshot independently. Do not restore the journal merely because it has the same historical date as the selected app snapshot. If the current journal/key is missing, fail closed and recover it; do not remove the DB binding to bypass the check. A legacy pre-feature backup requires the current journal too.
+
+## Every production table
+
+`server/privacy-retention.ts` is the exact schema registry; CI constructs every production feature store and fails on an unclassified new table. It distinguishes customer ownership from public catalog/staff configuration. No per-customer data is silently assumed to be public just because a table lacks a direct `user_id` column.
+
+| Disposition | Exact current tables |
+| --- | --- |
+| Delete customer private rows, including joined guide ownership | account_recovery, accounts, analytics_assembly, analytics_events, analytics_preferences, build_requests, gallery_posts, instructions, mail_preferences, media, messages, photo_backups, progress, projects, push_deliveries, push_devices, reviews, sessions, transactional_outbox |
+| Redact/retain only explicit operational or financial exceptions | commissions, digital_purchases, fulfillments, jobs, offer_codes, offer_quotes, orders, partner_accounts, partner_campaigns, ticket_replies, tickets |
+| Retain accounting, redemption/ownership and inventory/idempotency history | build_unlocks, campaigns, catalog_reservations, code_batches, codes, credit_ledger, finance_reconciliations, gifts, kit_batches, kit_codes, kit_grants, kit_limits, manual_receipts, manual_refunds, offer_redemptions, order_actual_cost_history, order_actual_costs, order_commerce, order_lines, partner_quotes, payments, redemptions, referrals |
+| Retain opaque anti-revival/suppression metadata | account_erasure, analytics_blocks, notification_blocks, erasure_ledger_binding |
+| Shared catalog/configuration or separately authorized staff/system records | announcement_requests, announcements, audit, catalog_skus, catalog_state, commerce_regions, commission_products, content, journey_products, kit_settings, kit_signer, migrations, offer_policy, owner_sessions, product_details, products, profiles, promotions, push_batches, region_configuration, staff_access, standard_kit_history, standard_kit_profiles, storefront_settings, users |
+
+Conditional details: jobs lose instruction references and reserved jobs fail; terminal orders lose address/tracking and related support text/replies. An unfinished order/refund can retain fulfillment contacts and its approved commissioned artwork until terminal status, then periodic cleanup removes them. Commission notes/accept payloads and unused drafts are removed. Digital purchases lose guide payload and customer-supplied name; accounting snapshot remains. Partner terms lose the partner name and are disabled, campaign names are scrubbed; numeric/product quotes remain. Unattached discount quotes are removed; owned offer codes are disabled, while redeemed financial snapshots remain. Claimed kit codes are revoked but never made available to another account. Gifts already owned by another recipient remain theirs.
+
+`users` retains an opaque ID/role/date for foreign-key accounting, not the removed account credentials. Staff/owner password sessions and public seller/catalog content are not a maker's personal archive. Financial evidence, operator records and idempotency keys can contain operational/customer-supplied text; this policy does not promise to purge financial evidence or certify country-specific retention rules. Those rules belong to the owner's real business/provider policy.
+
+## Backup and physical limits
+
+The online backup tool snapshots the application DB and, when configured, the journal into distinct `iprasm-*` and `erasure-*` files without copying active WAL files. Fourteen-day pruning keeps the newest journal snapshot even if old. The live journal is not pruned. Restore must use the current retained journal and original CODE_PEPPER; manual production activation is documented in BACKUP_UZ.md. Offsite backup lag is a real recovery-point limitation; no remote storage is provisioned by tests.
+
+Logical deletion cannot recall already downloaded guides, external messages, other devices' offline files or independently retained external backups. SQLite/WAL/raw storage require protected storage and backup retention; already delivered messages cannot be recalled. Financial/active-order retention is disclosed before customer confirmation.
+
+## Verification
+
+The initial old-snapshot regression failed logically: a previously erased bearer session authenticated after restore. The new test replays the current journal over that old snapshot, rejects the deleted token/password, removes its private guide, preserves a foreign account and passes foreign-key checks. Tests also cover a failed SQL scrub with a durable pending intent, repeated replay, missing/foreign journal, wrong key, changed entry, removed entry, changed head, database-path reuse, WAL-consistent journal backup and schema-drift refusal. Existing six account-erasure tests cover private photos/delayed uploads, financial/terminal scrub, kit revocation, gallery, push and telemetry. Production-stack restore acceptance is tracked separately; no real VPS or live provider was used.

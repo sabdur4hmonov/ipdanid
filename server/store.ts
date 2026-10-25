@@ -70,6 +70,7 @@ type Product = {
 };
 export class Store {
   db: DatabaseSync;
+  erasureGuard?: (user:string)=>void;
   orderOffers?: OrderOfferProvider;
   inventory?: CatalogInventory;
   regions?: RegionalCommerce;
@@ -174,6 +175,7 @@ export class Store {
     return row.user_id;
   }
   assertAccountActive(user: string) {
+    this.erasureGuard?.(user);
     if (this.db.prepare("SELECT 1 FROM account_erasure WHERE user_id=?").get(user))
       throw new DomainError("Account erased", 401);
   }
