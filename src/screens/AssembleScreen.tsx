@@ -4,6 +4,7 @@ import { recordManualMilestone } from "../analytics-client";
 import { lazy, Suspense } from "react";
 const SequenceAnimation = lazy(() => import("../SequenceAnimation"));
 const AssemblyCommands = lazy(() => import("../AssemblyCommands"));
+const AssemblyPhotos = lazy(() => import("../AssemblyPhotos"));
 import type { AppScreenContext } from "../useAppController";
 import { pinLabel, sectorPin } from "../core/standard-kit";
 import { recordedVoiceText } from "../recorded-voice-i18n";
@@ -228,6 +229,7 @@ export function AssembleScreen({ context, expert = false }: { context: ScreenCon
           else startPlayback();
         }}
       /></Suspense>}
+      {expert && <Suspense fallback={<p>…</p>}><AssemblyPhotos locale={locale} instruction={instruction} scope={{projectId:project.id,sequenceHash:instruction.sequenceHash,step:current,total:steps.length}} pause={context.pause} jump={jump}/></Suspense>}
       <div className="craft-grid">
         <section className="card craft-preview">
           <Supply instruction={instruction} locale={locale} />

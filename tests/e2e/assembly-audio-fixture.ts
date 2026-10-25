@@ -10,7 +10,7 @@ import {
 import { DEFAULT_EDITS } from "../../src/core/types";
 import { progressFor } from "../../src/core/validation";
 
-export async function audioFixture(page: Page) {
+export async function audioFixture(page: Page, options: {web?:boolean} = {}) {
   const instruction = await generateClassicLeastSquares({
     pixels: new Uint8Array(64 * 64 * 3).fill(140),
     profile: leastSquaresProfile(
@@ -30,7 +30,7 @@ export async function audioFixture(page: Page) {
     edits: { ...DEFAULT_EDITS },
   };
   await page.addInitScript(
-    ({ project, api }) => {
+    ({ project, api, web }) => {
       const w = window as any,
         listeners = new Map<
           string,
@@ -89,7 +89,7 @@ export async function audioFixture(page: Page) {
         configurable: true,
         get: () => (w.__visible ? "visible" : "hidden"),
       });
-      w.CapacitorCustomPlatform = { name: "android" };
+      if(!web)w.CapacitorCustomPlatform = { name: "android" };
       const header = (name: string, names: string[]) => ({
         name,
         methods: names.map((name) => ({
@@ -272,13 +272,15 @@ export async function audioFixture(page: Page) {
       };
       localStorage.setItem("iprasm.debug-server.v1", api);
       localStorage.setItem("iprasm.locale", "en");
-      if (!localStorage.getItem("CapacitorStorage.iprasm.projects.v1")) {
+      const projectKey=web?"iprasm.projects.v1":"CapacitorStorage.iprasm.projects.v1",
+        assemblyKey=web?"iprasm.assembly-session.v1":"CapacitorStorage.iprasm.assembly-session.v1";
+      if (!localStorage.getItem(projectKey)) {
         localStorage.setItem(
-          "CapacitorStorage.iprasm.projects.v1",
+          projectKey,
           JSON.stringify([project]),
         );
         localStorage.setItem(
-          "CapacitorStorage.iprasm.assembly-session.v1",
+          assemblyKey,
           JSON.stringify({
             version: 1,
             projectId: project.id,
@@ -290,7 +292,7 @@ export async function audioFixture(page: Page) {
         localStorage.setItem("iprasm.guide.locale", "en");
       }
     },
-    { project, api: process.env.IP_RASM_TEST_API_URL! + "/api" },
+    { project, api: process.env.IP_RASM_TEST_API_URL! + "/api", web: options.web === true },
   );
   return instruction;
 }

@@ -264,6 +264,14 @@ main {
   background: #a0b28a;
   border-radius: 50%;
 }
+.board-photo-compare { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+.board-photo-compare > p, .board-photo-compare > button { grid-column:1/-1; }
+.board-photo-compare figure { margin:0;min-width:0; }
+.board-photo-compare canvas { width:100%;height:auto;display:block; }
+.board-photo-compare figcaption { font-size:.875rem; }
+[data-testid="board-photo-list"] { padding-left:20px; }
+[data-testid="board-photo-list"] li { display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-block:8px; }
+@media(max-width:600px){.board-photo-compare{grid-template-columns:1fr;}}
 .card {
   background: #fffefa;
   border: 1px solid var(--line);
