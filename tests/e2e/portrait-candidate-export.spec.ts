@@ -9,7 +9,7 @@ test("real new portrait guide keeps player, zero progress and all exports on the
     ),
     i = file.project.instruction;
   await page.goto("/");
-  await page.getByLabel("Language").selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[accept=".json,.txt"]')

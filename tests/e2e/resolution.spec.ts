@@ -29,7 +29,7 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
     progress: { ...progressFor(instruction), confirmed: 3 },
   };
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
@@ -73,7 +73,7 @@ test("192 settings survive reuse/presets, pointer geometry and actual Worker exp
     ["ru", "Разрешение расчёта"],
     ["en", "Computation resolution"],
   ]) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(page.getByLabel(label, { exact: true })).toHaveValue("192");
   }
   const mouth = page.locator('[data-region="mouth"]');

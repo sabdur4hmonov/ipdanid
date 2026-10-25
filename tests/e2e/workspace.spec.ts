@@ -12,7 +12,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
@@ -186,7 +186,7 @@ test("rectangular material dimensions drive crop, worker, preview and multicolor
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
@@ -223,7 +223,7 @@ test("photo candidates retain edits and reusable settings persist without storin
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })

@@ -21,7 +21,7 @@ test("customer account, code, gift, order, administrator fulfillment and support
   });
   expect(configured.ok()).toBe(true);
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
@@ -208,7 +208,7 @@ test("bookmarks, folder and explicit server progress preserve immutable instruct
   };
   const secrets = ({ LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN! });
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page
     .locator("input[type=file]")
     .last()

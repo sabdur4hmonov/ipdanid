@@ -74,7 +74,7 @@ test("uploaded photo is visible immediately with collapsed tools and survives re
       ["ru", "Загруженное фото"],
       ["en", "Uploaded photo"],
     ]) {
-      await page.getByLabel("Language", { exact: true }).selectOption(locale);
+      await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
       await expect(preview).toHaveAttribute("aria-label", label);
       await expect(preview).toBeVisible();
       expect(
@@ -84,7 +84,7 @@ test("uploaded photo is visible immediately with collapsed tools and survives re
       ).toBe(true);
     }
   }
-  await page.getByLabel("Language", { exact: true }).selectOption("uz");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("uz");
   await studio.getByTestId("standard-photo-preview").scrollIntoViewIfNeeded();
   await page.screenshot({
     path: info.outputPath("uploaded-photo-visible.png"),
@@ -99,7 +99,7 @@ for (const shape of ["circle", "rectangle", "heart"] as const)
     test.setTimeout(180000);
     await page.route("**/vendor/portrait-segmentation/**", (r) => r.abort());
     await page.goto("/");
-    await page.getByLabel("Language", { exact: true }).selectOption("en");
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
     const studio = page.getByTestId("standard-kit-studio");
     await expect(studio).toBeVisible();
     await studio
@@ -297,7 +297,7 @@ test("printed kit revision survives admin defaults and offline missing revisions
   expect(saved.ok()).toBe(true);
   const revision = (await saved.json()).revision;
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   const studio = page.getByTestId("standard-kit-studio");
   await expect(studio).toContainText(`r${revision}`);
   await studio

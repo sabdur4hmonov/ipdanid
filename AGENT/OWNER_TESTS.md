@@ -486,3 +486,8 @@ Hozir qo‘lda sinash shart emas; server17unit va1HTTP sinovdan o‘tdi. Kampani
 ### C28 — sinov kodi va do‘kon tayyor
 
 Avtomatik20unit va6desktop/mobil oqim o‘tdi; hozir qo‘lda sinash talab qilinmaydi. Keyin Menyu → Hisob/Admin → Instagram sinovi: muddat/budjetni saqlab, shaxsiy kod yarating/TXTsaqlang. Mijoz email hisobida Sinov kodi bo‘limidan yoki natijadagi yig‘ish oynasidan oladi. Bir kod bitta raqamli yig‘ish; taxta/dostavka pullik. Menyu → Do‘kon va buyurtmalar: savat, telefon/manzil, mahsulot+yetkazish+jami, sandbox to‘lov, holat/tracking. Dam olishdan keyin internetsiz qadam saqlanadi. To‘liq yo‘l docs/INSTAGRAM_TRIAL_UZ.md. Haqiqiy kampaniya/to‘lov o‘chiq.
+
+
+### C22 — to‘rt til
+
+Menyu → Til: O‘zbekcha / Ўзбекча / Русский / English. Surat tanlash, joylashuv, natija, yig‘ishni ochish va xato xabari shu tilda chiqadi; joylashuv va iplar o‘zgarmaydi. Admin kit andozasi/stiker PDF va yig‘ish TXT/PDF tanlangan tilda. Sektor B-17, rang kodi va raqamlar o‘zgarmaydi.19unit,4desktop/mobil va16PDF/144sahifa avtomatik tekshirildi; hozir qo‘lda sinash talab qilinmaydi. Eski taxta ZIP o‘zgarmagan.

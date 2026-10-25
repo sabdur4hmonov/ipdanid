@@ -11,7 +11,7 @@ import { mockCraftVoices } from "./craft-voice";
 import { unlockCraftGuide } from "./kit-access";
 async function enter(page: any) {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true }).click();
   await page
@@ -36,7 +36,7 @@ test("book measurements use only requested local language speech and stop on a d
     .click();
   await unlockCraftGuide(page);
   for (const locale of ["uz", "uz-Cyrl", "ru", "en"]) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     const speech = page.getByTestId("craft-step-voice");
     await speech.getByRole("button").first().click();
     const lang = locale.startsWith("uz")

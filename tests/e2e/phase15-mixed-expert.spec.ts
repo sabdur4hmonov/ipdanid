@@ -8,7 +8,7 @@ test("mixed Arabic Latin outline is reachable and exports its exact shaped font 
 }, info) => {
   test.setTimeout(120000);
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true }).click();
   await page

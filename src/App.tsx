@@ -1,3 +1,4 @@
+import { uiText } from "./ui-i18n";
 import type { Locale, Project, Shape } from "./core/types";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { startPushRuntime } from "./push-client";
@@ -134,7 +135,7 @@ export default function App() {
             <span className="brand-sub">{t("tagline")}</span>
           </span>
         </a>
-        <nav aria-label="Main">
+        <nav aria-label={uiText(locale,"main")}>
           {(
             [
               { id: "create", icon: Sparkles },
@@ -166,7 +167,7 @@ export default function App() {
           <button className="text-button" onClick={() => setShowPrivacy(true)}>
             {t("privacy")}
           </button>
-          <span className="version">Ip Rasm · development 0.1</span>
+          <span className="version">Ip Rasm · {uiText(locale,"development")} 0.1</span>
         </div>
       </aside>
       <div className="body">
@@ -196,7 +197,7 @@ export default function App() {
             )}
             {!(customerFlow && view === "create") && (
               <select
-                aria-label="Language"
+                data-testid="locale-picker" aria-label={uiText(locale,"language")}
                 value={locale}
                 onChange={(e) => setLocale(e.target.value as Locale)}
               >
@@ -248,7 +249,7 @@ export default function App() {
           {error && (
             <div role="alert" className="alert error">
               {customerError(error, locale)}
-              <button aria-label="Dismiss error" onClick={() => setError("")}>
+              <button aria-label={uiText(locale,"dismissError")} onClick={() => setError("")}>
                 <X size={16} />
               </button>
             </div>

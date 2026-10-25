@@ -1,3 +1,4 @@
+import { uiText } from "./ui-i18n";
 import type {RecoverySnapshot} from './recovery-types';
 const TrialClaimPanel=lazy(()=>import('./TrialClaimPanel'));
 const TrialAdmin=lazy(()=>import('./TrialAdmin'));
@@ -995,7 +996,7 @@ export function CustomerHub({
                 )
                 .map((p) => (
                   <section className="card" key={p.id}>
-                    <span className="eyebrow">{p.family}</span>
+                    <span className="eyebrow">{uiText(locale, (["string","diamond","mosaic","paint","book","digital"] as string[]).includes(p.family) ? p.family as "string"|"diamond"|"mosaic"|"paint"|"book"|"digital" : "product")}</span>
                     <h2>{p.name}</h2>
                     <p>{p.description}</p>
                     {skus[p.id] && (

@@ -95,7 +95,7 @@ test("explicit extension controls survive local reload and real Worker recovery/
     },
   );
   await page.reload();
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page
     .getByRole("button", { name: "Resume saved optimization", exact: true })
     .click();

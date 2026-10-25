@@ -6,7 +6,7 @@ import { validatePaintProject } from "../../src/core/paint";
 import { paintBoundaryPlan } from "../../src/core/paint-boundaries";
 async function enter(page: any) {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true }).click();
 }

@@ -134,7 +134,7 @@ test("real owner terms volume authorization partner PDF links and recipient clai
     ["ru", "Для партнёра"],
     ["en", "Partner portal"],
   ]) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(p.locator("summary")).toHaveText(label);
   }
   await p.getByLabel("Kit quantity", { exact: true }).fill("5");

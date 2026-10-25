@@ -24,7 +24,7 @@ test("face photo cannot silently use the general solver; reviewed choices preser
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page
     .getByLabel("Upload from gallery", { exact: true })
     .setInputFiles("output/portrait/source.jpg");

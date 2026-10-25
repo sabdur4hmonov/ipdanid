@@ -39,7 +39,7 @@ function fixture() {
 }
 async function enter(page: Page) {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })

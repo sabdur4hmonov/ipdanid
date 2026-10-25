@@ -28,7 +28,7 @@ export async function qrCraftPdf(
     { subset: true },
   );
   doc.setSubject(g.sequenceHash);
-  doc.setTitle("Ip Rasm QR ribbon plan");
+  doc.setTitle("Ip Rasm - " + qrCraftText(locale,"title"));
   const text = (
     p: ReturnType<typeof doc.addPage>,
     value: string,

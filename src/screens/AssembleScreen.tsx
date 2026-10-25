@@ -1,3 +1,4 @@
+import { animationText } from "../animation-i18n";
 import { AssemblyFocus } from "../AssemblyFocus";
 import { recordManualMilestone } from "../analytics-client";
 import { lazy, Suspense } from "react";
@@ -635,7 +636,7 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
           onClick={() =>
             void download(
               "ip-rasm.txt",
-              toTxt(instruction),
+              toTxt(instruction, locale),
               "text/plain",
             ).catch((e) => setError(String(e)))
           }
@@ -665,13 +666,7 @@ export function AssembleScreen({ context }: { context: ScreenContext }) {
       </div>
       <details className="card">
         <summary>
-          {locale === "en"
-            ? "Animation"
-            : locale === "ru"
-              ? "Анимация"
-              : locale === "uz-Cyrl"
-                ? "Анимация"
-                : "Animatsiya"}
+          {animationText(locale,"title")}
         </summary>
         <Suspense fallback={<span>…</span>}>
           <SequenceAnimation instruction={instruction} locale={locale} />

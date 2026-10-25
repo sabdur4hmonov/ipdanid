@@ -10,7 +10,9 @@ import {
   type PDFPage,
   type PDFFont,
 } from "pdf-lib";
-import type { MaterialProfile } from "./types";
+import fontkit from "@pdf-lib/fontkit";
+import { kitTemplateText } from "../kit-template-i18n";
+import type { MaterialProfile, Locale } from "./types";
 import {
   standardProfiles,
   combinedHoles,
@@ -24,7 +26,6 @@ const colours = [
   rgb(0.35, 0.35, 0.35),
   rgb(0.57, 0.08, 0.2),
 ];
-const names = ["Circle 46", "Square", "Heart"];
 export type KitPdfKind = "sheet" | "tiles" | "stickers";
 export function stickerMarks(p: MaterialProfile) {
   return p.pins.map((pin, id) => {
@@ -56,13 +57,22 @@ export function stickerMarks(p: MaterialProfile) {
 export async function standardKitPdf(
   c: StandardKitConfig,
   kind: KitPdfKind,
+  options: { locale?: Locale; fontBytes?: Uint8Array } = {},
 ): Promise<Uint8Array> {
   const profiles = standardProfiles(c),
     holes = combinedHoles(profiles),
     digest = await hash(c);
   const doc = await PDFDocument.create(),
     font = await doc.embedFont(StandardFonts.Helvetica);
-  doc.setTitle(`Ip Rasm standard kit ${kind}`);
+  const locale = options.locale ?? "en";
+  const t = (key: Parameters<typeof kitTemplateText>[1], fields?: readonly (string|number)[]) => kitTemplateText(locale,key,fields);
+  const names = [t("circle46"),t("square"),t("heart")];
+  let bodyFont = font;
+  if(locale !== "en") {
+    doc.registerFontkit(fontkit);
+    bodyFont = await doc.embedFont(options.fontBytes ?? new Uint8Array(await (await fetch("/fonts/NotoSans-Regular.ttf")).arrayBuffer()),{subset:true});
+  }
+  doc.setTitle(`Ip Rasm | ${t(kind)}`);
   doc.setSubject(`standard-kit/1 revision ${c.revision} SHA256 ${digest}`);
   doc.setKeywords([digest, "physical-mm/y-down/1", String(holes.length)]);
   const width = kind === "sheet" ? c.baseMm : 210,
@@ -81,8 +91,9 @@ export async function standardKitPdf(
     x: number,
     y: number,
     size = 6,
-    fontToUse: PDFFont = font,
+    fontToUse: PDFFont = bodyFont,
   ) {
+    size = Math.min(size, size * ((width - x - 8) * MM) / Math.max(1,fontToUse.widthOfTextAtSize(s,size)));
     page.drawText(s, {
       x: x * MM,
       y: (height - y) * MM,
@@ -117,14 +128,14 @@ export async function standardKitPdf(
           });
         text(
           page,
-          `IP RASM | ${kind.toUpperCase()} | ${pattern < 0 ? "CIRCLE / SQUARE / HEART" : names[pattern]} | r${c.revision}`,
+          `IP RASM | ${t(kind)} | ${pattern < 0 ? [t("circle"),t("square"),t("heart")].join(" / ").toLocaleUpperCase(locale) : names[pattern]} | r${c.revision}`,
           kind === "sheet" ? 8 : 10,
           kind === "sheet" ? 7 : 8,
           kind === "sheet" ? 7 : 9,
         );
         text(
           page,
-          `100% / ACTUAL SIZE - NO FIT | ${c.baseMm} x ${c.baseMm} mm | ${kind === "sheet" ? "single sheet" : `tile ${col + 1},${row + 1} / ${cols}x${rows}; overlap 10 mm`}`,
+          `${t("actual")} | ${c.baseMm} x ${c.baseMm} mm | ${kind === "sheet" ? t("single") : t("tile",[col+1,row+1,cols,rows])}`,
           kind === "sheet" ? 8 : 10,
           kind === "sheet" ? 11 : 13,
           6,
@@ -132,7 +143,7 @@ export async function standardKitPdf(
         if (kind !== "sheet")
           text(
             page,
-            `BOARD TOP y=0 | FRONT | ${digest.slice(0, 20)} | origin ${ox},${oy} mm`,
+            `${t("topFront",["y=0"])} | ${digest.slice(0, 20)} | ${t("origin")} ${ox},${oy} mm`,
             10,
             18,
             6,
@@ -251,10 +262,10 @@ export async function standardKitPdf(
           stroke(10, y, 60, y, rgb(0, 0, 0), 0.6);
           stroke(10, y - 1.5, 10, y + 1.5);
           stroke(60, y - 1.5, 60, y + 1.5);
-          text(page, "50 mm calibration", 11, y - 2, 6);
+          text(page, t("calibration"), 11, y - 2, 6);
           text(
             page,
-            `C Circle ${c.circleDiameterMm} mm | S Square ${c.squareSideMm} mm | H Heart envelope ${c.heartEnvelopeMm} mm | pin shaft ${c.shaftMm} mm; test pilot size on scrap | centre gap >=${c.minHoleGapMm} mm`,
+            `C ${t("circle")} ${c.circleDiameterMm} mm | S ${t("square")} ${c.squareSideMm} mm | H ${t("heartEnvelope")} ${c.heartEnvelopeMm} mm | ${t("shaft",[c.shaftMm])} | ${t("gap",[c.minHoleGapMm])}`,
             90,
             c.baseMm - 6,
             5,
@@ -267,7 +278,7 @@ export async function standardKitPdf(
           });
           text(
             page,
-            "50 mm calibration | match ticks before cutting/sticking",
+            `${t("calibration")} | ${t("ticks")}`,
             10,
             height - 12,
             6,

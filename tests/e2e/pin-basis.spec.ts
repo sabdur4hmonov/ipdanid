@@ -121,7 +121,7 @@ for (const mode of ["dark", "light"] as const)
       },
     );
     await page.reload();
-    await page.getByLabel("Language", { exact: true }).selectOption("en");
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
     await page
       .getByRole("button", { name: "Resume saved optimization", exact: true })
       .click();

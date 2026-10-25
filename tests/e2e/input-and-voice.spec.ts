@@ -6,7 +6,7 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   const upload = page.locator("input[type=file]").first();
   await upload.setInputFiles("tests/fixtures/orientation-6.jpg");
   await expect(page.getByLabel("Edited photo")).toBeVisible();
@@ -79,9 +79,9 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
     input.dispatchEvent(new Event("change", { bubbles: true }));
   });
   await expect(page.getByRole("alert")).toContainText("Maximum file size");
-  await page.getByLabel("Language", { exact: true }).selectOption("uz");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("uz");
   await expect(page.getByRole("alert")).toContainText("Fayl 15 MB dan katta");
-  await page.getByLabel("Language", { exact: true }).selectOption("ru");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("ru");
   await expect(page.getByRole("alert")).toContainText("Файл больше 15 МБ");
   // Rejecting a new input must retain the last valid working photo.
   await expect(page.getByLabel("Edited photo")).toBeVisible();
@@ -121,7 +121,7 @@ test("matching voice fallback and cancellation keep playback distinct from confi
     };
   });
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
@@ -150,7 +150,7 @@ test("matching voice fallback and cancellation keep playback distinct from confi
       ),
     )
     .toBeGreaterThan(0);
-  await page.getByLabel("Language", { exact: true }).selectOption("uz");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("uz");
   await expect(page.getByRole("checkbox", { name: "Ovozli qo‘llanma", exact: true })).toBeEnabled();
   await page.getByLabel("Instruktor tili", { exact: true }).selectOption("uz");
   await expect(
@@ -174,7 +174,7 @@ test("matching voice fallback and cancellation keep playback distinct from confi
           .length,
     ),
   ).toBe(before);
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByLabel("Guide language", { exact: true }).selectOption("en");
   await revealControl(page.getByLabel("Seconds per step", { exact: true }));
   await page.getByLabel("Seconds per step", { exact: true }).fill("2");

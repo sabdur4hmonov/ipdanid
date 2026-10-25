@@ -38,7 +38,7 @@ test("generic manual marks are crop-bound, locally reviewed and dispatched to re
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   const rgb = syntheticSubject("dog", 160),
     rgba = new Uint8Array(160 * 160 * 4),
     UPNG: any = (UPNGModule as any).default ?? UPNGModule;
@@ -238,7 +238,7 @@ test("generic guide has exact zero-progress offline JSON TXT and optical PDF", a
     }),
   );
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.locator('input[accept=".json,.txt"]').setInputFiles(fixture);
   await expect(page.getByTestId("player-hash")).toHaveText(i.sequenceHash);

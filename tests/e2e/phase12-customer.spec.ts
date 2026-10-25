@@ -32,7 +32,7 @@ test("three customer screens preserve real mouse/touch crop through regeneration
   await expect(flow).toHaveAttribute("data-screen", "start");
   for (const locale of ["uz", "uz-Cyrl", "ru", "en"] as const) {
     await page.getByTestId("customer-menu").locator("summary").click();
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await page.getByTestId("customer-menu").locator("summary").click();
     await expect(
       page.getByRole("button", {
@@ -266,7 +266,7 @@ test("photo failure keeps all four customer languages plain and generation unava
   await expect(page.getByRole("alert")).toBeVisible();
   for (const locale of ["uz", "uz-Cyrl", "ru", "en"] as const) {
     await page.getByTestId("customer-menu").locator("summary").click();
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await page.getByTestId("customer-menu").locator("summary").click();
     await expect(page.getByRole("alert")).toContainText(
       customerFlowText(locale, "error"),

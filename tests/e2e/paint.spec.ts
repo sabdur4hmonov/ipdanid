@@ -8,7 +8,7 @@ import {
 } from "../../src/core/paint";
 async function enter(page: any) {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();
@@ -145,14 +145,14 @@ test("paint uses connected regions, independent progress, undo, same immutable o
     ["ru", "Раскраска PDF"],
     ["uz", "Bo‘yash PDF"],
   ] as const) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     const pdf = page.waitForEvent("download");
     await page.getByRole("button", { name: label, exact: true }).click();
     await (
       await pdf
     ).saveAs(`output/current-paint/${test.info().project.name}-${locale}-guide.pdf`);
   }
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.screenshot({
     path: `output/current-paint/${test.info().project.name}.png`,
     fullPage: true,

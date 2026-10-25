@@ -184,7 +184,7 @@ test("owner one-page administration prints kit QR/PDF, edits UZS prices and cust
   await page.goto("/");
   const menu = page.getByTestId("customer-menu");
   await menu.locator("summary").click();
-  await menu.getByLabel("Language", { exact: true }).selectOption("en");
+  await menu.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await menu
     .getByRole("button", { name: "Account / Admin", exact: true })
     .click();

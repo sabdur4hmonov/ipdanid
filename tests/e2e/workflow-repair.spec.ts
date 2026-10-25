@@ -4,7 +4,7 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
@@ -126,7 +126,7 @@ test("head fit requires correction; burst gestures accumulate and per-photo regi
     ["ru", "Текущие параметры генерации"],
     ["en", "Current generation settings"],
   ]) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(page.getByTestId("actual-settings")).toContainText(text);
   }
 });

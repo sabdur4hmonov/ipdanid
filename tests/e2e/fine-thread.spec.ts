@@ -9,7 +9,7 @@ test("real fine-thread guide retains exact material, progress and reusable prese
     readFileSync("output/thread-fineness/candidate.json", "utf8"),
   ).project.instruction;
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[type=file][accept=".json,.txt"]')

@@ -5,7 +5,7 @@ const upload = (page: import("@playwright/test").Page) =>
   page.locator("input[type=file]").first();
 async function start(page: import("@playwright/test").Page) {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
 }
 async function synthetic(
   page: import("@playwright/test").Page,

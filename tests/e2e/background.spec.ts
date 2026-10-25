@@ -25,7 +25,7 @@ test("localized optional photo advice, reversible local brush and exact exported
     ["ru", "Подойдут и существующие фотографии"],
     ["en", "Existing photographs are welcome"],
   ]) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(page.getByTestId("photo-guidance")).toContainText(fragment);
   }
   // Patterned image is accepted; no background classifier or mandatory face detector.

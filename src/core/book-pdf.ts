@@ -19,7 +19,7 @@ export async function bookPdf(
       ),
     { subset: true },
   );
-  doc.setTitle("Ip Rasm - book folding");
+  doc.setTitle("Ip Rasm - " + bookText(locale,"title"));
   doc.setSubject(g.sequenceHash);
   const t = (k: Parameters<typeof bookText>[1]) => bookText(locale, k);
   const text = (

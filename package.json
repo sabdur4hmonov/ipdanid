@@ -13,6 +13,7 @@
     "mobile:sync": "npm run build && cap sync",
     "mobile:android": "cap open android",
     "check": "npm run build && npm test",
+    "check:locales": "node scripts/check-locales.mjs",
     "server": "tsx server/index.ts",
     "test:sandbox": "node scripts/verify-sandbox.mjs",
     "test:customer:http": "node --import tsx scripts/verify-customer-http.mjs",

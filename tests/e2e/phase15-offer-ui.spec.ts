@@ -10,7 +10,7 @@ const admin = () => ({
 });
 async function enter(page: Page) {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })
@@ -427,7 +427,7 @@ test("Admin enables referrals and the customer sees a private usable code and se
     ["ru", "Пригласить друга"],
     ["en", "Invite a friend"],
   ]) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(referral.locator("summary")).toHaveText(label);
     await expect(page.getByTestId("referral-code")).toHaveText(code);
   }

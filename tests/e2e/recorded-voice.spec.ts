@@ -131,7 +131,7 @@ for (const corrupt of [false, true])
       }),
     );
     await page.goto("/");
-    await page.getByLabel("Language", { exact: true }).selectOption("en");
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
     await page
       .getByRole("button", { name: "My projects", exact: true })
       .click();

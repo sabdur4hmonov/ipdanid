@@ -8,7 +8,7 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
 }, info) => {
   test.setTimeout(120000);
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
@@ -147,7 +147,7 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
     ["ru", "не автоматическое распознавание"],
     ["en", "not automatic detection"],
   ]) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(page.locator("body")).toContainText(text);
   }
   await revealControl(page.getByRole("button", { name: "Fit marked face to shape", exact: true, includeHidden: true }));

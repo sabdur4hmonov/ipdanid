@@ -14,7 +14,7 @@ import {
 import { tutorialPhrase } from "../../src/tutorial-i18n";
 async function enter(page: Page) {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true }).click();
   await page
@@ -238,7 +238,7 @@ test("original panel model rotates by touch or pointer and timed playback never 
     page.getByText("All steps completed", { exact: true }),
   ).toBeVisible();
   for (const locale of ["uz", "uz-Cyrl", "ru", "en"] as const) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(page.getByTestId("tutorial-step-text")).toHaveText(
       tutorialPhrase(TUTORIALS.paper.steps[5], locale),
     );

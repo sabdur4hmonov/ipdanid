@@ -7,7 +7,7 @@ test("owner issues scoped staff access, staff sees only duties, revocation block
   const root = ({ LOCAL_ADMIN_TOKEN: process.env.LOCAL_ADMIN_TOKEN! }).LOCAL_ADMIN_TOKEN;
   const name = `Synthetic support ${info.project.name} ${Date.now()}`;
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })

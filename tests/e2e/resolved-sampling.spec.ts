@@ -12,7 +12,7 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     ),
     i = file.project.instruction;
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[type=file][accept=".json,.txt"]')
@@ -112,10 +112,10 @@ test("resolved/pruned import uses the exact optical canvas, immutable offline ex
     page.getByLabel("Computation resolution", { exact: true }),
   ).toHaveValue("320");
   for(const [locale,hint] of [["uz","Ko‘proq hisoblash sifatni kafolatlamaydi."],["ru","Больше вычислений не гарантирует сходство."],["en","More computation does not guarantee likeness."]]){
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(page.getByText(hint,{exact:false})).toBeVisible();
   }
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByText("Dimensions and materials", { exact: true }).click();
   await expect(page.getByLabel("Number of pins", { exact: true })).toHaveValue(
     "240",

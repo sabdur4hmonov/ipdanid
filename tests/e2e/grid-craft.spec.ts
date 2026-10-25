@@ -14,7 +14,7 @@ for (const kind of ["mosaic", "diamond"] as const)
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/");
-    await page.getByLabel("Language", { exact: true }).selectOption("en");
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
     await openMore(page);
     await page.getByRole("button", { name: "Grid crafts", exact: true })
       .click();
@@ -185,7 +185,7 @@ test("insufficient actual stock is refused before a guide is created", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();
@@ -208,7 +208,7 @@ test("two windows reject stale grid confirmations without losing another window 
   context,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true })
     .click();

@@ -493,7 +493,7 @@ export function StandardKitStudio({
                   await download(
                     `ip-rasm-standard-${kind}-r${config.revision}.pdf`,
                     new Blob(
-                      [new Uint8Array(await standardKitPdf(config, kind))],
+                      [new Uint8Array(await standardKitPdf(config, kind, {locale}))],
                       { type: "application/pdf" },
                     ),
                   );

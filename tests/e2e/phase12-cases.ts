@@ -95,7 +95,7 @@ export async function gallery(page: Page, c: (typeof photoCases)[number]) {
 }
 export async function english(page: Page) {
   await page.getByTestId("customer-menu").locator("summary").click();
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByTestId("customer-menu").locator("summary").click();
 }
 export async function png(page: Page, id: string) {

@@ -43,7 +43,7 @@ export async function solidPdf(
       ),
     { subset: true },
   );
-  doc.setTitle("Ip Rasm - measured 3D parts");
+  doc.setTitle("Ip Rasm - " + solidText(locale,"title"));
   doc.setSubject(g.sequenceHash);
   const t = (key: Parameters<typeof solidText>[1]) => solidText(locale, key),
     text = (

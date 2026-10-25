@@ -20,7 +20,7 @@ test("completed physical fit remains archived after recovery marker is cleared a
 }) => {
   test.setTimeout(150000);
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
   await page.locator(".more-menu")
@@ -110,7 +110,7 @@ test("group Continue survives reload using frozen private pixels; deleting them 
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByText("More", { exact: true }).click();
   await openMore(page);
   await page.locator(".more-menu")

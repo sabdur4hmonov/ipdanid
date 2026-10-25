@@ -11,7 +11,7 @@ for (const solver of ["guarded", "multiscale"] as const)
   }) => {
     test.setTimeout(180000);
     await page.goto("/");
-    await page.getByLabel("Language", { exact: true }).selectOption("en");
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
     await openMore(page);
     await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })

@@ -121,7 +121,7 @@ for (const c of cases)
         buffer: Buffer.from(jpg, "base64"),
       });
       await expect(studio.getByTestId("standard-photo-preview")).toBeVisible();
-      await page.getByLabel("Language", { exact: true }).selectOption("en");
+      await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
       await studio
         .locator("summary")
         .filter({ hasText: "Revision printed on your kit" })

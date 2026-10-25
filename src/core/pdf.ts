@@ -1,3 +1,4 @@
+import { uiText } from "../ui-i18n";
 import { usesOpticalRaster } from "./render-model";
 import {
   PDFDocument,
@@ -180,7 +181,7 @@ export async function exportPdf(
       thickness: 0.5,
       color: pdfRgb(0.5, 0.5, 0.5),
     });
-    text(p, "TOP / y=0", left + side / 2 - 25, bottom + side + 10, 9);
+    text(p, uiText(locale,"top") + " / y=0", left + side / 2 - 25, bottom + side + 10, 9);
     text(p, t("orientationMap"), margin, bottom + side + 27, 8);
     for (const pin of i.profile.pins) {
       const x = left + pin.x * side,

@@ -112,7 +112,7 @@ test("native opt-in owns offline background steps and lock-screen pause without 
   ).toBe(0);
   for (const locale of ["uz", "uz-Cyrl", "ru", "en"] as const) {
     await page
-      .getByLabel("Language", { exact: true })
+      .locator('[data-testid="locale-picker"]:visible')
       .filter({ visible: true })
       .first()
       .selectOption(locale);

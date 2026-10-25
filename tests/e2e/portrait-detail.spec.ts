@@ -21,7 +21,7 @@ test("contour target toggles exactly; real Worker, preset, progress and offline 
     } as typeof Worker;
   });
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
@@ -130,7 +130,7 @@ test("preserved real portrait import retains exact path/progress and contour pre
   page,
 }) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[type=file][accept=".json,.txt"]')

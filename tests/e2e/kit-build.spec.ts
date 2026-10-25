@@ -31,7 +31,7 @@ async function importGuide(page: Page, file: string) {
   const customerMenu = page.getByTestId("customer-menu");
   if (await customerMenu.isVisible())
     await customerMenu.locator("summary").click();
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.locator('input[accept=".json,.txt"]').setInputFiles(file);
 }
@@ -198,7 +198,7 @@ test("admin configures default4/no expiry and downloads real local printable QR 
   page,
 }, info) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page
     .getByRole("button", { name: "Account & shop", exact: true })

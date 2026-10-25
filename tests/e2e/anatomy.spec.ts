@@ -102,7 +102,7 @@ test("manual anatomical objective survives reload and exact real Worker recovery
     },
   );
   await page.reload();
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page
     .getByRole("button", { name: "Resume saved optimization", exact: true })
     .click();
@@ -175,7 +175,7 @@ test("source-matched anatomy action creates a separate variant and preserves sav
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page
     .locator("nav")
     .getByRole("button", { name: "My projects", exact: true })

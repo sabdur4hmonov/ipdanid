@@ -1,3 +1,5 @@
+import { exportText } from "../export-i18n";
+import type { Locale } from "./types";
 import { frameFreePhoto } from "./free-photo-framing";
 import { frameProduct } from "./product-framing";
 import { withPortraitCaption } from "./portrait-caption";
@@ -1141,7 +1143,7 @@ export function mergeProgress(
     return { progress: local, conflict: false };
   return { progress: local, conflict: true };
 }
-export function toTxt(i: Instruction): string {
+export function toTxt(i: Instruction, locale: Locale = "en"): string {
   const tag = (id: number) =>
     i.profile.pins[id].sectorLabel
       ? `${i.profile.pins[id].sectorLabel} [${id}]`
@@ -1171,11 +1173,11 @@ export function toTxt(i: Instruction): string {
     ? i.segments
         .map(
           (s, j) =>
-            `# Segment ${j + 1}: tie ${s.color} to pin ${tag(s.path[0])}; follow its ordered steps without cutting; secure a finishing knot at pin ${tag(s.path.at(-1)!)}.`,
+            exportText(locale,"segment",[j+1,s.color,tag(s.path[0]),tag(s.path.at(-1)!)]),
         )
         .join("\n") + "\n"
     : "";
-  return `IP_RASM_TXT_V1\n${JSON.stringify(i)}\n\n${knots}# Ordered steps: step from to color\n${flatten(
+  return `IP_RASM_TXT_V1\n${JSON.stringify(i)}\n\n${knots}${exportText(locale,"columns")}\n${flatten(
     i,
   )
     .map(

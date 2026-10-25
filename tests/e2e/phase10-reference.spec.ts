@@ -44,7 +44,7 @@ test("real portrait JPG gallery upload prepares and generates the default standa
       buffer: Buffer.from(jpg, "base64"),
     });
     await expect(studio.getByTestId("standard-photo-preview")).toBeVisible();
-    await page.getByLabel("Language", { exact: true }).selectOption("en");
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
     await expect(studio.getByTestId("background-status")).not.toHaveAttribute(
       "data-status",
       "processing",

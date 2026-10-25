@@ -9,7 +9,7 @@ test("mosaic baseplates use real inventory, exact sequence, local positions and 
   context,
 }, info) => {
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.getByRole("button", { name: "Grid crafts", exact: true }).click();
   await page

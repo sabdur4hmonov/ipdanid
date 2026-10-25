@@ -1,3 +1,4 @@
+import { uiText } from "../ui-i18n";
 import type { AppScreenContext } from "../useAppController";
 type ScreenContext = Pick<
   AppScreenContext,
@@ -732,7 +733,7 @@ export function CreateScreen({ context }: { context: ScreenContext }) {
                     ref={photo}
                     width={384}
                     height={384}
-                    aria-label="Edited photo"
+                    aria-label={uiText(locale,"editedPhoto")}
                   />
                   <button
                     className="floating"
@@ -1718,15 +1719,15 @@ export function CreateScreen({ context }: { context: ScreenContext }) {
                     {result.metrics.lines.toLocaleString(locale)} {t("lines")}
                   </p>
                   <p>
-                    {result.algorithm} · {result.profile.pins.length} pins ·{" "}
+                    {result.algorithm} · {result.profile.pins.length} {t("pinCount")} ·{" "}
                     {result.profile.threadMm} mm · {result.profile.widthMm} ×{" "}
                     {result.profile.heightMm} mm
                   </p>
                   <p className="fineprint">{t("plateauHint")}</p>
                   <p className="fineprint" style={{ overflowWrap: "anywhere" }}>
-                    Target: {result.imageHash}
+                    {uiText(locale,"target")}: {result.imageHash}
                     <br />
-                    Sequence: {result.sequenceHash}
+                    {uiText(locale,"sequence")}: {result.sequenceHash}
                   </p>
                 </details>
                 <Supply instruction={result} locale={locale} />

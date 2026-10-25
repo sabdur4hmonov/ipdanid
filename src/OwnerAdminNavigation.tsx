@@ -1,3 +1,4 @@
+import { uiText } from "./ui-i18n";
 import { trialText } from "./trial-i18n";
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
@@ -27,13 +28,7 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
     <nav
       className="card customer-actions"
       data-testid="owner-admin-navigation"
-      aria-label={
-        locale === "ru"
-          ? "Разделы управления"
-          : locale === "en"
-            ? "Administration sections"
-            : "Boshqaruv bo‘limlari"
-      }
+      aria-label={uiText(locale,"ownerSections")}
     >
       {["kits", "credits", "orders", "prices", "delivery", "announcements"].map(
         (name, j) => (

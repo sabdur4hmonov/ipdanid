@@ -91,7 +91,7 @@ test("v17 import keeps zero progress and exact JSON TXT optical PDF sequence", a
     ),
     i = file.project.instruction;
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page
     .locator('input[accept=".json,.txt"]')

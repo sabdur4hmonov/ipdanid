@@ -73,7 +73,7 @@ test("owner announcement queues through the real UI, mocks delivery and protects
     const config = await (await request.get("/api/push/config")).json();
     expect(config).toMatchObject({ mode: "mock", web: null });
     await page.goto("/");
-    await page.getByLabel("Language", { exact: true }).selectOption("en");
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
     await page.getByText("More", { exact: true }).click();
     await page
       .getByRole("button", { name: "Account & shop", exact: true })

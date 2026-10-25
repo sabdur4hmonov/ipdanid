@@ -1,3 +1,4 @@
+import { uiText } from "./ui-i18n";
 import { frameFreePhoto, freePhotoCanvas } from "./core/free-photo-framing";
 import { whiteBackground } from "./person-background";
 import { paintPersonMask, type PersonMask } from "./core/person-mask";
@@ -784,7 +785,7 @@ export function CustomerStudio({
             </button>
             {active && (
               <select
-                aria-label="Language"
+                data-testid="locale-picker" aria-label={uiText(locale,"language")}
                 value={locale}
                 onChange={(e) => setLocale(e.target.value as Locale)}
               >

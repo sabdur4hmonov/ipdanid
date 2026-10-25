@@ -23,7 +23,7 @@ test("isolated storefront pickup retries a lost response after reload without du
  let config=await(await request.get("/api/admin/settings",{headers})).json();
  originalSettings = { ...config };
  config=await(await request.post("/api/admin/settings",{headers,data:{...config,pickupAddress:"Test pickup A",sellerName:"Test seller A",paymentDetails:"Test terms A",deliveryEnabled:true,deliveryFeeMinor:12500}})).json();
- await page.goto("/");await page.getByLabel("Language", { exact: true }).selectOption("en");
+ await page.goto("/");await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
  async function openAccount(){await page.getByText("More",{exact:true}).click();await page.getByRole("button",{name:"Account & shop",exact:true}).click();}
  await openAccount();const hub=page.locator(".customer-hub");await hub.getByRole("button",{name:"Start sandbox session",exact:true}).click();
  await hub.getByRole("button",{name:"Shop",exact:true}).click();await hub.getByRole("button",{name:"Add to cart",exact:true}).first().click();

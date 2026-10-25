@@ -11,7 +11,7 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
 }, info) => {
   test.setTimeout(180000);
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
@@ -23,7 +23,7 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
     ["ru", "приблизительные"],
     ["en", "proportional estimates"],
   ]) {
-    await page.getByLabel("Language", { exact: true }).selectOption(locale);
+    await page.locator('[data-testid="locale-picker"]:visible').selectOption(locale);
     await expect(page.getByTestId("region-editor")).toContainText(text);
   }
   const mouth = page.locator('[data-region="mouth"]');
@@ -247,7 +247,7 @@ test("cancel during asynchronous validation and reject mismatched Worker jobs", 
     { first, second },
   );
   await page.goto("/");
-  await page.getByLabel("Language", { exact: true }).selectOption("en");
+  await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
   await openMore(page);
   await page.locator(".more-menu")
     .getByRole("button", { name: "Try an original sample", exact: true })
