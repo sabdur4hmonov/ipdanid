@@ -460,3 +460,7 @@ Kompyuter va mobil ko‘rinishda avtomatik sinov o‘tdi: oyna yopilgan bo‘lsa
 ## 2026-10-25 — mushuk va yozuv tuzatmasi (yangi manzil keyin beriladi)
 
 4213 eski taqqoslash uchun saqlanadi. Yangi nusxada rasm turini bosh ekranda tanlash mumkin: Avtomatik, Odam, Hayvon, Transport, Buyum yoki Yozuv. Mushuk rasmini yuklang: boshi/tanasi qolishi, fon oq bo'lishi kerak. Joylashuvni o'zingiz surib yoki kattalashtirib belgilang; turni almashtirib qayta qirqish joylashuvni buzmasligi kerak. Noma'lum buyum ishonchli ajratilmasa, rasm butun qoladi; O'chirish/Tiklash bilan to'g'rilang. Yozuvda arabcha va lotincha matnni birga sinash mumkin, masalan «سَلام Ali»; harf nuqtalari va belgilari saqlanadi. Ipli natijadagi burun/tiniqlik hali qabul qilinmagan, bu tuzatma faqat qirqish va matn joylashuvini yaxshilaydi. Avtomatik desktop/mobil tekshiruvlar egani kutmasdan bajariladi.
+
+##2026-10-25 — yangi sinov nusxasi
+
+http://127.0.0.1:4214/ — Avtomatik/Hayvon orqali mushukni tanlang; bosh va tana qolishi,fon oq bo'lishi kerak. Shaklni tanlab,surish/kattalashtirish bilan o'zingiz joylashtiring. Yozuv rejimida «سَلام Ali» kabi aralash yozuvni sinash mumkin. Test kit kodi output/phase15/subject-repair/manual-testing.txt da. Yig'ishni boshlash orqali birinchi qadamni ko'ring. Burun tiniqligi hali to'liq tuzalmagan; yangi nusxada qirqish/yozuv tuzatmasi bor. Avtomatik desktop/mobil8/8 test o'tgan. Eski4213 va yangi4214 nusxalari saqlanadi.

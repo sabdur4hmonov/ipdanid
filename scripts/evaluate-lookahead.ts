@@ -14,13 +14,17 @@ import {
   viewingSsimPrepared,
 } from "../tests/helpers/viewing-ssim";
 import { researchLookahead } from "./chord-lookahead";
+import { sourceMidcontrast } from "./source-midcontrast";
 const UPNG =
   (UPNGModule as unknown as { default: typeof UPNGModule }).default ??
   UPNGModule;
+const preparationProbe = process.argv.includes("--source-contrast");
 const dir = "output/phase13/desktop/owner-phase9-circle",
-  out = process.argv.includes("--arithmetic-check")
-    ? "output/lookahead-physical-v1-arithmetic/owner-circle"
-    : "output/lookahead-physical-v1/owner-circle";
+  out = preparationProbe
+    ? "output/source-midcontrast/owner-circle"
+    : process.argv.includes("--arithmetic-check")
+      ? "output/lookahead-physical-v1-arithmetic/owner-circle"
+      : "output/lookahead-physical-v1/owner-circle";
 if (existsSync(out + "/metrics.json"))
   throw Error("Preserve completed experiment");
 const guide = await validateInstruction(
@@ -59,7 +63,16 @@ writeFileSync(
       fixture: dir,
       targetHash: guide.imageHash,
       regions,
-      beam: [4, 8],
+      ...(preparationProbe
+        ? {
+            preparation: {
+              sigmaSmall: 2,
+              sigmaLarge: 8,
+              strength: 0.8,
+              originalEvaluationTarget: true,
+            },
+          }
+        : { beam: [4, 8] }),
       gates: {
         face: 0.02,
         nose: 0.03,
@@ -85,14 +98,25 @@ console.log(
     directionalChords: control.reversedDifferences,
   }),
 );
-const result = researchLookahead(guide.profile, pixels, 500, 3000, faces, {
-  progress: (p) => {
-    if (performance.now() - last > 3000) {
-      last = performance.now();
-      console.log(JSON.stringify({ progress: p }));
-    }
+const preparationStarted = performance.now();
+const solverPixels = preparationProbe ? sourceMidcontrast(pixels, 500) : pixels;
+const preparationMs = performance.now() - preparationStarted;
+const result = researchLookahead(
+  guide.profile,
+  solverPixels,
+  500,
+  3000,
+  faces,
+  {
+    greedyControl: preparationProbe,
+    progress: (p) => {
+      if (performance.now() - last > 3000) {
+        last = performance.now();
+        console.log(JSON.stringify({ progress: p }));
+      }
+    },
   },
-});
+);
 // Independent route audit, without trusting the generator's internal bookkeeping.
 const degrees = new Uint16Array(guide.profile.pins.length),
   used = new Set<number>();
@@ -190,6 +214,12 @@ const save = (rgb: Float32Array, n: number, name: string) => {
 };
 save(before, 1000, "before");
 save(after, 1000, "after");
+if (preparationProbe)
+  save(
+    Float32Array.from(solverPixels, (v) => v / 255),
+    500,
+    "solver-input",
+  );
 writeFileSync(out + "/target.png", file);
 // Diagnostic only: solver additive model versus the real coverage render. Not a preview.
 const counts = new Uint16Array(500 * 500),
@@ -210,13 +240,16 @@ const metrics = {
   path: undefined,
   controlExact: true,
   controlMs: control.elapsedMs,
+  preparationProbe,
+  preparationMs,
+  solverInputHash: await hash(solverPixels),
   old,
   next,
   white,
   accepted,
   verdict: accepted
     ? "FIRST-CASE PASS ONLY — multi-case and UI acceptance still required"
-    : "REJECTED — no default change; no beam/weight sweep",
+    : "REJECTED — no default change; no parameter sweep",
 };
 writeFileSync(out + "/metrics.json", JSON.stringify(metrics, null, 2));
 writeFileSync(
@@ -229,6 +262,6 @@ writeFileSync(
 );
 writeFileSync(
   out + "/report.html",
-  `<!doctype html><meta charset="utf-8"><title>Two-chord lookahead</title><style>body{font:16px system-ui;margin:24px}section{display:flex;gap:12px}figure{margin:0;flex:1}img{width:100%}pre{white-space:pre-wrap}</style><h1>Owner Circle: fixed 4×8 lookahead</h1><p>Same target, pins, 3000 chords, .12mm/.9. Independent exact physical render. ${metrics.verdict}</p><section>${["target", "before", "after", "solver-additive-diagnostic"].map((n) => `<figure><img src="${n}.png"><figcaption>${n}</figcaption></figure>`).join("")}</section><pre>${JSON.stringify(metrics, null, 2)}</pre>`,
+  `<!doctype html><meta charset="utf-8"><title>Portrait detail research</title><style>body{font:16px system-ui;margin:24px}section{display:flex;gap:12px}figure{margin:0;flex:1}img{width:100%}pre{white-space:pre-wrap}</style><h1>Owner Circle: ${preparationProbe ? "source-derived midscale contrast" : "fixed 4×8 lookahead"}</h1><p>${preparationProbe ? "Changed solver input evaluated against unchanged ORIGINAL target." : "Same target."} Same pins, 3000 chords, .12mm/.9. Independent exact physical render. ${metrics.verdict}</p><section>${["target", ...(preparationProbe ? ["solver-input"] : []), "before", "after", "solver-additive-diagnostic"].map((n) => `<figure><img src="${n}.png"><figcaption>${n}</figcaption></figure>`).join("")}</section><pre>${JSON.stringify(metrics, null, 2)}</pre>`,
 );
 console.log(JSON.stringify(metrics));

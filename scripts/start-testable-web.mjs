@@ -15,10 +15,20 @@ import {
 import { join, relative, resolve, sep } from "node:path";
 import net from "node:net";
 import { freshTestDatabase } from "./test-artifacts.mjs";
+const args = process.argv.slice(2);
+assert(
+  args.length === 0 || (args.length === 2 && args[0] === "--name"),
+  "Expected --name subject-repair",
+);
+const snapshotName = args[1] ?? "testable-web";
+assert(
+  ["testable-web", "subject-repair"].includes(snapshotName),
+  "Unknown preview snapshot",
+);
 const root = realpathSync("."),
   source = realpathSync("output/phase15-dist"),
-  webDir = "output/phase15-testable-web-dist",
-  evidence = "output/phase15/testable-web";
+  webDir = `output/phase15-${snapshotName}-dist`,
+  evidence = `output/phase15/${snapshotName}`;
 assert.equal(source, join(root, "output", "phase15-dist"));
 assert.equal(realpathSync("output"), join(root, "output"));
 assert(
@@ -57,11 +67,11 @@ async function freePort(start) {
   }
   throw Error("No free test port");
 }
-const port = await freePort(4213),
-  apiPort = await freePort(4653),
+const port = await freePort(snapshotName === "subject-repair" ? 4214 : 4213),
+  apiPort = await freePort(snapshotName === "subject-repair" ? 4654 : 4653),
   site = `http://127.0.0.1:${port}`,
   api = `http://127.0.0.1:${apiPort}/api`;
-const isolated = freshTestDatabase("owner-testable-web"),
+const isolated = freshTestDatabase(`owner-${snapshotName}`),
   admin = randomBytes(32).toString("base64url");
 const child = spawn(process.execPath, ["scripts/run-local.mjs"], {
   windowsHide: true,
