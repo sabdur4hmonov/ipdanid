@@ -496,3 +496,8 @@ Menyu → Til: O‘zbekcha / Ўзбекча / Русский / English. Surat ta
 ### C23 — natija chiqqanda qotish tuzatildi
 
 Yaratish tugagach rasmni chizish ham alohida hisoblash oqimida; eski iplar va barcha piksellar aynan saqlandi.17unit/17desktop-mobil oqim o‘tdi; do‘konni ochib qaytganda joylashuv/burilish saqlanadi. Chrome sahifasi4×sinovida yaratish4.2–5.8s, ekran javobidagi eng katta uzilish0.423s. Bu haqiqiy telefon yoki Workerning4×sinovi emas: Chrome uni sekinlatmadi, butun telefon uchun20smezon hali qabul qilinmagan. Keyin o‘z telefoningizda Doira/Kvadrat/Yurakni yaratib vaqtni tekshiring; hozir bu sinovni kutib turmayman. Tafsilot PHONE_PERFORMANCE_CHECKPOINT.md.
+
+
+### C24a — xavfsizlik paketlari
+
+Vite7.3.7/Vitest4.1.12 bilan npm auditi0ta zaiflik ko‘rsatdi.28tegishli unit va4desktop/mobil eski-yangi yo‘riqnoma/eksport/oflayn sinovi o‘tdi. Gitdagi barcha mavjud lokal tarix tekshirildi; tekshiruvchi maxfiy qiymatni chiqarmaydi. Tizim/telefon dasturi o‘rnatilmadi, eski saytlar o‘zgarmadi. ServerIP/rate-limit/galereya/CSP bosqichi hali davom etadi; hozir sizdan sinov talab qilinmaydi.
