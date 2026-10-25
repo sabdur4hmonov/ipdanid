@@ -39,3 +39,6 @@ Web va keyingi app bir HTTPS API va bazaga ulanganda bir hisobdan foydalanadi. G
 Bu ishlayotgan rivojlantirish nusxasi. Qolgan CODE vazifalari [auditda](docs/REMAINING_WORK.md), aniq keyingi qadam [progressda](AGENT/PROGRESS.md). Barcha roadmap bandlari tugagan yoki har bir suratning o‘xshashligi qabul qilingan deb hisoblamang. Hozirgi asosiy surat oqimi va hisob sinovlari bo‘yicha bajarilgan tekshiruvlar progressda yozilgan.
 
 Tekshirish: `npm test`, `npm run build`. Brauzer testlari uchun Playwright/Chrome va bo‘sh ajratilgan portlar kerak; mavjud serverga test yubormang.
+
+
+Instagram sinov kodi va do‘kon/dostavka: [INSTAGRAM_TRIAL_UZ.md](docs/INSTAGRAM_TRIAL_UZ.md). Kod faqat raqamli yig‘ish huquqi; jismoniy kit/dostavka alohida. Kampaniya o‘chiq, jo‘natish egasi tomonidan.

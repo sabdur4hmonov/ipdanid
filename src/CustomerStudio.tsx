@@ -55,11 +55,14 @@ import { photoDraftText } from "./photo-draft-i18n";
 const SequenceAnimation = lazy(() => import("./SequenceAnimation"));
 const PhotoDraftPanel = lazy(() => import("./PhotoDraftPanel"));
 
+import { trialText } from "./trial-i18n";
+
 type Props = {
   kitConfig?: StandardKitConfig;
   active: boolean;
   locale: Locale;
   setLocale: (l: Locale) => void;
+  onShop: () => void;
   onExpert: () => void;
   onNavigate: (v: "library" | "customer") => void;
   onGuide: (i: Instruction) => void;
@@ -71,6 +74,7 @@ export function CustomerStudio({
   locale,
   setLocale,
   onExpert,
+  onShop,
   onNavigate,
   onGuide,
   onPersist,
@@ -806,6 +810,7 @@ export function CustomerStudio({
             >
               {t("account")}
             </button>
+            <button data-testid="customer-shop" onClick={event => { event.currentTarget.closest("details")?.removeAttribute("open"); onShop(); }}>{trialText(locale,"shop")}</button>
             <button data-testid="enter-expert" onClick={onExpert}>
               {t("expert")}
             </button>
@@ -1255,7 +1260,7 @@ export function CustomerStudio({
             preview={<span />}
             onBuy={() => {
               setGate(undefined);
-              onNavigate("customer");
+              onShop();
             }}
           />
         </dialog>

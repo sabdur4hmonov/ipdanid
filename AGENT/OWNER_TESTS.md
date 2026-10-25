@@ -481,3 +481,8 @@ Hozir sizdan qo'lda tekshiruv kerak emas. Eski backupni tiklashda ham o'chirilga
 ### C28 — Instagram sinov kodi (API tayyor, oynalar hali tugamagan)
 
 Hozir qo‘lda sinash shart emas; server17unit va1HTTP sinovdan o‘tdi. Kampaniya o‘chiq qoladi. Kod faqat bitta raqamli yig‘ishga; taxta/dostavka alohida. Keyingi oynalar tayyor bo‘lganda to‘liq qadamlar yoziladi. docs/INSTAGRAM_TRIAL_UZ.md.
+
+
+### C28 — sinov kodi va do‘kon tayyor
+
+Avtomatik20unit va6desktop/mobil oqim o‘tdi; hozir qo‘lda sinash talab qilinmaydi. Keyin Menyu → Hisob/Admin → Instagram sinovi: muddat/budjetni saqlab, shaxsiy kod yarating/TXTsaqlang. Mijoz email hisobida Sinov kodi bo‘limidan yoki natijadagi yig‘ish oynasidan oladi. Bir kod bitta raqamli yig‘ish; taxta/dostavka pullik. Menyu → Do‘kon va buyurtmalar: savat, telefon/manzil, mahsulot+yetkazish+jami, sandbox to‘lov, holat/tracking. Dam olishdan keyin internetsiz qadam saqlanadi. To‘liq yo‘l docs/INSTAGRAM_TRIAL_UZ.md. Haqiqiy kampaniya/to‘lov o‘chiq.

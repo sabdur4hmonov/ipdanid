@@ -189,7 +189,7 @@ export function adminRoutePermission(
   method: string,
   path: string,
 ): AdminPermission | null {
-  if(method==="POST"&&path==="/api/admin/trials/policy")return "settings";
+  if(["GET","POST"].includes(method)&&path==="/api/admin/trials/policy")return "settings";
   if((method==="GET"&&path==="/api/admin/trials")||(method==="POST"&&["/api/admin/trials/batch","/api/admin/trials/revoke"].includes(path)))return "codes";
   if(method==='GET'&&path==='/api/admin/analytics')return 'audit';
   if ((method === "GET" && path === "/api/admin/finance/reconciliation") || (method === "POST" && (path === "/api/admin/finance/statement" || /^\/api\/admin\/finance\/orders\/[a-f0-9-]{36}\/(receipt|refund)$/.test(path)))) return "finance";

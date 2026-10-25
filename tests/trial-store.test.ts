@@ -54,6 +54,10 @@ test("campaign is disabled by default; strict bounded settings and optimistic re
   expect(adminRoutePermission("POST", "/api/admin/trials/policy")).toBe(
     "settings",
   );
+  expect(adminRoutePermission("GET", "/api/admin/trials/policy")).toBe(
+    "settings",
+  );
+  expect(adminRoutePermission("GET", "/api/admin/trials")).toBe("codes");
   expect(adminRoutePermission("POST", "/api/admin/trials/batch")).toBe("codes");
 });
 test("private hashed codes claim exactly one non-transferable digital credit per registered account", () => {

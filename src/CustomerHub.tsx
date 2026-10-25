@@ -1,4 +1,6 @@
 import type {RecoverySnapshot} from './recovery-types';
+const TrialClaimPanel=lazy(()=>import('./TrialClaimPanel'));
+const TrialAdmin=lazy(()=>import('./TrialAdmin'));
 const RecoveryPanel=lazy(()=>import('./RecoveryPanel'));
 const AccountErasurePanel=lazy(()=>import('./AccountErasurePanel'));
 import { PaymentOptions } from "./PaymentOptions";
@@ -131,6 +133,7 @@ const freshProduct = (): Product => ({
 
 export function CustomerHub({
   locale,
+  initialPane = "account",
   projects,
   onImport,
   onProgress,
@@ -142,6 +145,7 @@ export function CustomerHub({
   onGiftHandled,
 }: {
   locale: Locale;
+  initialPane?: "account" | "shop";
   projects: Project[];
   onRestore: (instruction: Instruction, snapshot: RecoverySnapshot, valid:()=>boolean) => Promise<void>;
   onImport: (instruction: Instruction, progress: Progress) => void;
@@ -157,7 +161,7 @@ export function CustomerHub({
   const bt = (key: Parameters<typeof businessText>[1]) =>
     businessText(locale, key);
   const t = (key: CustomerWord) => customerText(locale, key);
-  const [pane, setPane] = useState<Pane>("account"),
+  const [pane, setPane] = useState<Pane>(initialPane),
     [connected, setConnected] = useState(false),
     [busy, setBusy] = useState(false);
   const requestScope = useRef({ alive: true, life: 0, customer: 0, admin: 0 });
@@ -710,6 +714,7 @@ export function CustomerHub({
                 />
               </Suspense>
             )}
+            <Suspense fallback={null}><TrialClaimPanel key={api.session?.token ?? "guest"} locale={locale} onCredits={async () => { await refresh(); }} /></Suspense>
             <KitLogin locale={locale} onLogin={refresh} />
             {connected && (
               <Suspense fallback={<p role="status">…</p>}>
@@ -1518,6 +1523,7 @@ export function CustomerHub({
                 {can("codes") && (
                   <KitAdmin locale={locale} token={adminToken} />
                 )}
+                {(can("codes") || can("settings")) && <Suspense fallback={null}><TrialAdmin key={adminToken} locale={locale} token={adminToken} settingsAllowed={can("settings")} codesAllowed={can("codes")} /></Suspense>}
                 <BusinessAdmin
                   locale={locale}
                   token={adminToken}

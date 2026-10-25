@@ -1,3 +1,4 @@
+import { trialText } from "./trial-i18n";
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 import { galleryText } from "./gallery-i18n";
@@ -49,6 +50,7 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
           </button>
         ),
       )}
+      <button className="outline" onClick={()=>document.getElementById("admin-trials")?.scrollIntoView({behavior:"smooth",block:"start"})}>{trialText(locale,"admin")}</button>
       <button
         className="outline"
         onClick={() =>

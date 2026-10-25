@@ -30,6 +30,7 @@ export default function App() {
   );
   const [standard, setStandard] = useState(true);
   const [customerFlow, setCustomerFlow] = useState(true);
+  const [customerPane, setCustomerPane] = useState<"account" | "shop">("account");
   const context = useAppController(
     kitClaim || giftClaim ? "customer" : "create",
   );
@@ -260,6 +261,7 @@ export default function App() {
           )}
           {view === "customer" && (
             <CustomerHub
+              initialPane={customerPane}
               kitClaim={kitClaim}
               giftClaim={giftClaim}
               onGiftHandled={() => setGiftClaim(null)}
@@ -336,7 +338,8 @@ export default function App() {
                   setCustomerFlow(false);
                   setStandard(true);
                 }}
-                onNavigate={nav}
+                onShop={() => { setCustomerPane("shop"); nav("customer"); }}
+                onNavigate={(v) => { setCustomerPane("account"); nav(v); }}
                 onPersist={(i) => {
                   if (!loaded) return;
                   setProjects((ps) =>

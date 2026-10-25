@@ -215,6 +215,7 @@ export class TrialStore {
         )
         .get(user);
     return {
+      durable: !!this.store.db.prepare("SELECT 1 FROM accounts WHERE user_id=?").get(user),
       enabled:
         p.enabled && this.clock() >= p.startsAt && this.clock() < p.expiresAt,
       creditDays: p.creditDays,

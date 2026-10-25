@@ -1,3 +1,9 @@
+# 2026-10-25 — hisob, sinov kodi va buyurtma bosqichlari yakunlandi
+
+C21: eski bazadan tiklanganda ham hisobni o‘chirish kuchda qoladi;624unit,6HTTP/UI va ajratilgan Docker tiklash sinovi o‘tdi. C28: bir hisobga bitta raqamli sinov kodi, Admin budjet/kodlar, do‘kon/dostavka, Click/Payme sandbox va internetsiz yo‘riqnoma tekshirildi:20tegishli unit,6desktop/mobil,TypeScript/build2128. Yo‘l docs/INSTAGRAM_TRIAL_UZ.md. Haqiqiy xabar yoki pul yuborilmadi.
+
+Taxta yasash paketi quyida tayyor. C19b/C20/C22-C26 hamda burun/tiniqlik qabul sinovi hali ochiq; barcha kod tugadi deb aytilmaydi. Keyingi ish to‘rt til/CI, telefon tezligi, xavfsizlik, yakuniy suite/APK/PR.
+
 # 2026-10-25 — yasash paketi tayyor, kod yakunlash davom etmoqda
 
 500x500mm taxta uchun katta PDF,6A4andoza,18sektor sahifasi va o'zbek qo'llanma tayyor: output/ip-rasm-yasash-paketi-500mm-20261025.zip. 720mix nuqtasi va50mm belgilar mustaqil tekshirildi.8/8desktop/mobil sinovda rasm->kit->birinchi ip->dam olish->internetsiz qaytish o'tdi;6PDFdagi18000qadam va rasm pikseli aynan teng.17unit/TypeScript/build o'tdi. Yo'l: docs/BUILD_TODAY_UZ.md. Yangi ilova4214,kit kodi faqat lokal manual-testing.txt da.

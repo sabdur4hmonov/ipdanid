@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import type { Instruction, Locale } from "./core/types";
 import { kitText } from "./kit-i18n";
 import { buildAccess } from "./build-access";
@@ -6,6 +6,7 @@ import { customerApi } from "./customer-api";
 import { renderInstruction } from "./core/render";
 import { download } from "./download";
 import { standardText } from "./standard-kit-i18n";
+const TrialClaimPanel = lazy(() => import("./TrialClaimPanel"));
 export function BuildGate({
   instruction: i,
   locale,
@@ -24,14 +25,23 @@ export function BuildGate({
     [error, setError] = useState("");
   useEffect(() => {
     let live = true;
-    buildAccess
-      .account()
-      .then((a) => {
-        if (live) setCredits(a.credits);
-      })
-      .catch(() => {});
+    let epoch = 0;
+    const reload = () => {
+      const ticket = ++epoch;
+      setCredits(undefined); setCode(""); setError("");
+      void (async () => {
+        await customerApi.restore();
+        const token = customerApi.session?.token;
+        const a = await customerApi.request<{credits:number}>("/builds/account", undefined, token);
+        if (live && ticket === epoch && token === customerApi.session?.token) setCredits(a.credits);
+      })().catch(() => {});
+    };
+    customerApi.sessionChanged.add(reload);
+    reload();
     return () => {
       live = false;
+      ++epoch;
+      customerApi.sessionChanged.delete(reload);
     };
   }, []);
   async function run(fn: () => Promise<void>) {
@@ -141,6 +151,7 @@ export function BuildGate({
         </button>
         <button onClick={onBuy}>{t("buy")}</button>
       </div>
+      <Suspense fallback={null}><TrialClaimPanel locale={locale} onCredits={setCredits} /></Suspense>
       {busy && <p role="status">…</p>}
       {error && <p role="alert">{error}</p>}
     </section>

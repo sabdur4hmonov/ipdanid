@@ -384,6 +384,7 @@ const server = createServer(async (req, res) => {
         );
       const actor = session.id;
       if(path==="/api/admin/trials"&&req.method==="GET"){send(200,trials.report());return;}
+      if(path==="/api/admin/trials/policy"&&req.method==="GET"){send(200,trials.policy());return;}
       if(path==="/api/admin/trials/policy"&&req.method==="POST"){send(200,trials.update(actor,body));return;}
       if(path==="/api/admin/trials/batch"&&req.method==="POST"){send(201,trials.issue(actor,body));return;}
       if(path==="/api/admin/trials/revoke"&&req.method==="POST"){send(200,trials.revoke(actor,body));return;}

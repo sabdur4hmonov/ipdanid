@@ -21,3 +21,24 @@ export type TrialClaim = {
   credits: number;
   expiresAt: number;
 };
+export type TrialStatus = {
+  durable: boolean;
+  enabled: boolean;
+  creditDays: number;
+  claimed: boolean;
+  remaining: number;
+  expiresAt: number | null;
+};
+export type TrialReport = {
+  policy: TrialPolicy;
+  claimed: number;
+  pending: number;
+  used: number;
+  batches: {
+    id: string;
+    count: number;
+    created_at: number;
+    claimed: number;
+    revoked: number;
+  }[];
+};
