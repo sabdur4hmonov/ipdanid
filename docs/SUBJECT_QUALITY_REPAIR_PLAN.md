@@ -23,3 +23,19 @@ Predeclared first-case gate (owner Circle): face SSIM improves at least .02, fro
 ## Handoff requirements
 
 Keep a single exact next step, fixture locations/hashes, executed commands, real timings, report and acceptance verdict. A weaker implementation model should only be handed a verified mechanism and precise remaining changes; do not claim the portrait-quality problem is solved or recommend switching solely because scaffolding exists. Later versioning must cover Worker progress/cancel/checkpoint, validators/replay, exact player/PDF/JSON/TXT and old guide compatibility. Protected previews/data remain untouched; milestone commit/export scan/feature-only push before the next substantial stage.
+
+## Milestone 2 result — 2026-10-25: rejected
+
+Frozen owner Circle, exact original 3000 path reproduced by cached greedy control. Both directional DDA ULPs (12 chords) and reverse summation order matter; retain first-encounter orientation, Float32 target/residual rounding and direct recomputation near ties. Initial symmetric-circle test exposed these issues; corrected control now matches production for Circle, polished Square and Heart. Five tests pass (lookahead-final-unit-v4.json), TSC/build2125/21.89s pass. Independent audit checks unique legal chords, minGap25, degree160 and continuity. Original probe and arithmetic verification are retained separately; identical candidate path/metrics after correction.
+
+| Metric | Original | 4x8 lookahead |
+| --- | --- | --- |
+| Face SSIM | .612201 | .611339 |
+| Nose SSIM | .625123 | .613663 |
+| Eyes SSIM | .657147 | .657359 |
+| Mouth SSIM | .609024 | .624136 |
+| White-region darkness | .339017 | .339871 |
+
+Final initialization+route2.036s,106906670cachebytes, degree66. Runtime is Node research generation, not browser end-to-end. Real physical visual review confirms weak nose and crossing haze. **Reject; no production change, no beam-width or weighting sweep.** Local report: output/lookahead-physical-v1-arithmetic/owner-circle/report.html. scripts/chord-lookahead.ts and evaluate-lookahead.ts are research-only; research route cannot be imported as an old guide. Source/photo/report never committed.
+
+Next bounded diagnosis: separate the current-pin routing restriction from chord-basis/image loss. Run exactly one globally best-chord selection with the same target, 3000 unique legal chords, .08/gamma1.6, exact profile/material and degree160. It is explicitly an UNROUTED GRAPH, not a continuous build or accepted preview. Same frozen regional metrics. If even this relaxed diagnostic loses nose detail, routing/lookahead is not a sufficient remedy; do not spend on an Euler-router implementation. If it materially clears the existing face/nose gates, plan a separately versioned continuous route with all real connector strands counted before any product promotion. No gain may be sold as assembly-ready until routing and multi-case acceptance pass.
