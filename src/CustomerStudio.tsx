@@ -1,5 +1,6 @@
 import { uiText } from "./ui-i18n";
 import { frameFreePhoto, freePhotoCanvas } from "./core/free-photo-framing";
+import { suggestPortraitPlacement } from "./core/portrait-placement";
 import { whiteBackground } from "./person-background";
 import { paintPersonMask, type PersonMask } from "./core/person-mask";
 import { usePhotoTone } from "./usePhotoTone";
@@ -154,6 +155,12 @@ export function CustomerStudio({
           )
         : undefined,
     [source, analysis, shape, adjustments, rotation, kind],
+  );
+  const portraitPlacement = useMemo(
+    () => kind === "people" && source && analysis
+      ? suggestPortraitPlacement(analysis.faces.map(f => f.face), shape, source.width / source.height, rotation)
+      : undefined,
+    [kind, source, analysis, shape, rotation],
   );
   const framing = useMemo(() => {
     if (!baseFraming || kind !== "people") return baseFraming;
@@ -1069,6 +1076,18 @@ export function CustomerStudio({
                 />
               </label>
               <div className="customer-adjust-tools">
+                {portraitPlacement && (
+                  <button
+                    data-testid="portrait-placement"
+                    disabled={!display || busy}
+                    onClick={() => {
+                      setAdjustments([portraitPlacement]);
+                      setSelected(0);
+                    }}
+                  >
+                    {t("portraitFit")}
+                  </button>
+                )}
                 <button
                   disabled={!display || busy}
                   onClick={() =>

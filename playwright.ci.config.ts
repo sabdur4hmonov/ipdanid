@@ -10,6 +10,7 @@ export default defineConfig({
     "optical-render.spec.ts",
     "photo-actions.spec.ts",
     "web-kit-contract.spec.ts",
+    "portrait-placement.spec.ts",
   ],
   reporter: [["line"], ["json", { outputFile: ".ci-evidence/browser.json" }]],
 });

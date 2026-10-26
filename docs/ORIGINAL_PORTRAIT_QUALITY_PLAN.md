@@ -1,0 +1,40 @@
+# Genuine-original portrait repair — 2026-10-26
+
+The owner rejects the4201 portrait and supplies the original960x1280JPEG. The image is a local-only fixture; never commit/upload it. Reproduction through unchanged f1901e2 customer UI succeeded in5725ms on an isolated4220/API4740 server. Prepared tones retain the nostrils. Independent physical replay is byte-exact to the displayed result, so a cosmetic preview change cannot fix the real guide.
+
+## Frozen evidence
+
+Local root `output/quality-original-20261026`: source/hash proof, actual Worker target/options/guide, full display/result and equal-size face crops. Baseline physical viewing-SSIM: face .58116356995, nose .43400230339, eyes .63834069848, mouth .65483856809. Model linear-image face .64153591219 is substantially better than actual coverage rendering. Fixed-path attribution at500/1500/3000 shows different model/physical candidate rankings; at3000 a remaining legal chord ranked7by additive score improves exact physical nose SSIM .00510, while the highest additive chord worsens nose .00055. The next-chord approximate physical MSE leader also worsens nose .00319. Merely replacing mean with sum or using raw optical MSE is not supported.
+
+## One distinct bounded hypothesis
+
+Build a research-only continuous route **from blank using the analytic derivative of local SSIM of a physically attenuated viewing image**. This differs from rejected additive gamma/log/sum variants and single-vertex refinement of an existing route. No per-feature bumps, generated facial content, target edits, material/renderer changes, auto recropping or shoulder deletion.
+
+Fixed before the run:160px viewing model; local7x7/sigma1.5 SSIM/C1=.0001/C2=.0009; target is the existing viewingImage of the unchanged500px Worker target; weight1+existing face Gaussian, board exterior excluded; bilinear max-coverage attenuation with actual .12mm/.9/460mm and unchanged pins. Refresh the analytic SSIM derivative every10connections; select the legal next chord with greatest first-order SSIM gain. Fixed3000, startpin0, minGap25, unique chords, degree160, same Square and Heart guards. No lineDarkness/gamma, no lookahead, sweep or repeated fitting. Report initialization+route time and cache bytes. Analytic derivatives must first match independent central differences including reflect101 borders.
+
+Evaluate the complete research path with the retained independent1000px physical renderer against the ORIGINAL unmodified target. Require face +.02, nose +.03, eyes/mouth regression at most .005, white-region darkness increase at most .01, initialization+route under15s, and a visible improvement at equal size. If failed, record rejection without varying refresh rate/view resolution/weights. A first-case pass still requires unchanged ownerSquare/olderownerCircle/synthetic-single/pairHeart/cat/mixed-lettering comparisons, per-person gates, all legality tests and actual UI acceptance before a new engine/default. Never serialize a research route as classic-greedy/3 or change old guides.
+
+This is a repair experiment, not a100percent photographic-equality promise or an impossibility proof. Current4201and earlier snapshots stay frozen; no production default has changed at this checkpoint.
+
+
+## First one-shot result: rejected; one derived feasibility hypothesis
+
+Unconstrained SSIM-from-blank: face .581164->.632956, nose .434002->.696135, eyes .638341->.620259, mouth .654839->.732352; white-region darkness .386014->.473508.9.718s/40.15MB/degree50/legal3000. The nose metric improves substantially but eyes and background fail; actual image has heavy haze/rings. NO production promotion, and no view/refresh/weight sweep.
+
+Distinct next check: preserve that exact SSIM derivative/model/refresh/weights and reject candidate chords that would exceed the EXISTING /3 control prefix's white-region optical attenuation plus the predeclared .01 allowance. This is an explicit feasibility constraint derived from the failed gate, not a weight or parameter search. Compute all control-prefix budgets with the identical160px forward operator; no extra face-feature objective. Fixed one run on the same original; test all original regional/runtime/white gates in the exact1000px renderer. If it fails, retain the rejection and stop these SSIM-greedy variants. Optional reversible portrait-zoom assistance is separately tested and must not be described as a solved nose/engine quality problem.
+
+
+The fixed white-prefix variant failed with no feasible next chord and is rejected; no slack/refresh/weight search or SSIM-greedy retry. Existing stable /2 on this newly supplied original is also worse overall: face .516458, nose .497465, eyes .539482, mouth .584380, white .415271;1.621s. It is not selected merely for its better nose score.
+
+New-original regression of an existing preparation (not an old-fixture refit): run the already fixed source-midcontrast sigma2/8/strength.8 recipe ONCE on the newly supplied960x1280source's frozen actual500px Worker target, preserving all constants and evaluating against its unmodified target. The prior320px fixture rejection stays sealed and will not be rerun. No global promotion follows from a single new-case improvement; any future use would need explicit per-image non-regression selection and independent multi-case acceptance. If it fails this original, no alternate preparation strength/scale will be attempted.
+
+
+## New-original fixed-filter first-case pass (not a universal default)
+
+Exact unchanged filter constants, original frozen composition: face .581164->.615851, nose .434002->.496525, eyes .638341->.666510, mouth .654839->.688285, white .386014->.383513.2.276s/3000legal unique chords/degree72. It passes the numerical first-case gates. Actual visual improvement is modest; weak fine detail remains and100percent equality is NOT achieved. Prior320crop rejection is unchanged; a blind global filter default would be unjustified.
+
+NEXT implementation hypothesis: a bounded two-candidate selection in the Worker, both using unchangedclassic-greedy/3/pins/physics. Original remains the evaluation target. Apply the fixed filter only to people without captions, generate a candidate, independently measure exact1000px renders, and select it only if whole-face +.02/nose +.03 and each person's eyes/mouth regress <=.005, each face non-regresses, white excess <=+.01. Otherwise return the unmodified baseline. No per-feature optimization weights or target painting. Store selected filter as a new preparation identity; old preparation/3guide replay must stay immutable. Verify old rejected fixture falls back, all original3shapes/desktop/mobile, synthetic3/pair/cat/mixed-text. Include both solves/scoring/render in actual UI timing; no claim from solver-only2.276s.
+
+Optional user-initiated portrait zoom passed3unit plus analytic-gradient1unit, TypeScript/Vite2141modules/27.79s, publicdesktop/mobile2/2 (4languages/3shapes/rotate/reset/realgenerate/regeneratehash), actual-originalCircle1/1/5161ms. Originalwhole-photo default/mask/shoulders remain unchanged; this assistance alone did not solve the missing nose. Initial public test assumed a nonexistentcanvas hash attribute and failed2/2; corrected to observe actualWorker hashes, without a product change or weakened hash check.
+
+Primary-source review: [roy-hachnochi/string-art](https://github.com/roy-hachnochi/string-art) is AGPL3 and was NOT copied/installed; [author's String description](https://sean-reid.github.io/blog/string.html) discusses antialiasing and greedy banding. No owner image was sent to an external site, no repository/model/runtime installed, and no comparative quality claim follows from those sources.

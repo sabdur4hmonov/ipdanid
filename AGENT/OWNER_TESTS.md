@@ -2,6 +2,12 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-26 — original surat bo‘yicha sifat tekshiruvi davom etmoqda
+
+4201nusxasi o‘zgartirilmagan. Keyingi sinov nusxasida **Yuzga yaqinlashtirish** ixtiyoriy tugmasi bor: surat butunligicha ochiladi, tugmani bossangiz kattalashadi; **Qaytarish** asl joylashuvga qaytaradi, qo‘lda surish/burish saqlanadi. Bu tugmaning o‘zi burun masalasini hal qildi deyilmaydi. Desktop/mobil4til/3shakl/Reset/burish/aynan qayta yaratish avtomatik o‘tdi; hozir sizdan qo‘lda sinov kutilmaydi.
+
+Original surat faqat mahalliy `output/quality-original-20261026`da. Ip natijasini tiniqlashtirish tanlovi hali ulanmoqda: yaxshiroq bo‘lmagan variant asosiy natijani almashtirmaydi.100%fotografik tenglik va’da qilinmaydi; yangi havola faqat haqiqiy tekshiruvdan keyin yoziladi.
+
 ## 2026-10-26 — yangi sayt, parolsiz quti kodi
 
 **http://127.0.0.1:4201/** ni oching. Kit kodlari `output/phase15/manual-testing.txt`da; bu faylni boshqalarga yubormang.

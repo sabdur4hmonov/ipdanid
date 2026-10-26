@@ -29,6 +29,7 @@ const words = {
     caption: "Name / date (optional)",
     captionError: "Use a shorter name or date with supported letters.",
     zoom: "Zoom",
+    portraitFit: "Zoom to faces",
     generate: "Create",
     creating: "Creating…",
     preparing: "Preparing your photo…",
@@ -80,6 +81,7 @@ const words = {
     caption: "Ism / sana (ixtiyoriy)",
     captionError: "Qisqaroq ism yoki sana va qo‘llanadigan harflarni kiriting.",
     zoom: "Kattalashtirish",
+    portraitFit: "Yuzga yaqinlashtirish",
     generate: "Yaratish",
     creating: "Yaratilmoqda…",
     preparing: "Surat tayyorlanmoqda…",
@@ -132,6 +134,7 @@ const words = {
     captionError:
       "Введите более короткое имя или дату поддерживаемыми буквами.",
     zoom: "Масштаб",
+    portraitFit: "Приблизить лица",
     generate: "Создать",
     creating: "Создаём…",
     preparing: "Готовим фото…",
