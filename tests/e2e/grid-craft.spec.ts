@@ -161,9 +161,15 @@ for (const kind of ["mosaic", "diamond"] as const)
       "data-grid-hash",
       hash!,
     );
+    const editedHash = await page.locator("canvas[data-grid-hash]")
+      .getAttribute("data-grid-hash");
     await page
       .getByRole("button", { name: "Save grid project", exact: true })
       .click();
+    await expect.poll(() => page.evaluate(() =>
+      JSON.parse(localStorage.getItem("iprasm.grid-projects.v1") ?? "[]")[0]
+        ?.guide.sequenceHash,
+    )).toBe(editedHash);
     const stored = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("iprasm.grid-projects.v1")!),
     );

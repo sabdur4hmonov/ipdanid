@@ -51,6 +51,11 @@ for (const [shape, text] of [
     await expect(page.getByTestId("customer-result")).toBeVisible({
       timeout: 60000,
     });
+    // The visible preview precedes the serialized durable write.
+    await expect.poll(() => page.evaluate(() =>
+      JSON.parse(localStorage.getItem("iprasm.projects.v1") ?? "[]")[0]
+        ?.instruction.sequenceHash,
+    )).toBeTruthy();
     const guide = await page.evaluate(
       () =>
         JSON.parse(localStorage.getItem("iprasm.projects.v1")!)[0].instruction,

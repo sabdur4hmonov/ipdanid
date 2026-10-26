@@ -261,6 +261,11 @@ test("real owner terms volume authorization partner PDF links and recipient clai
     await expect(recipient.getByTestId("customer-result")).toBeVisible({
       timeout: 60000,
     });
+    // The visible preview precedes the serialized durable write.
+    await expect.poll(() => recipient.evaluate(() =>
+      JSON.parse(localStorage.getItem("iprasm.projects.v1") ?? "[]")[0]
+        ?.instruction.sequenceHash,
+    )).toBeTruthy();
     const guide = await recipient.evaluate(
       () =>
         JSON.parse(localStorage.getItem("iprasm.projects.v1")!)[0].instruction,
