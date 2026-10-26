@@ -4,7 +4,7 @@ Yangi sayt: **http://127.0.0.1:4215/**. Quti kodi `output/phase15/portrait-revie
 
 Originalingizda doira/yurak yuz va burun ko‘rsatkichlari biroz yaxshilandi. Kvadratda foyda bermagan o‘zgarish tanlanmaydi.100%fotografik tenglik yo‘q; nozik chiziqlar va oq joylardagi iplar ko‘rinadi.24desktop/mobil surat/shakl/yozuv/mushuk holati2.5–7.2soniyada o‘tdi; hammasida haqiqiy ip ketma-ketligi tekshirildi.2haqiqiy kod/eksport/dam/oflayn sinovi ham o‘tdi; ikkala79betlik PDFdagi6000qadam va rasm pikseli teng.19tegishli unit, yakuniy6server-himoya testi va build o‘tdi. Mahalliy taqqoslash `output/quality-original-20261026/report.html`; suratlaringiz GitHubga yuborilmagan.
 
-Hozir keng C26matritsa va eski lokal imzoli yangi APK tekshiruvi yakunlanmoqda. Bu bandlar o‘tdi deb hali yozilmaydi. PR uchun repoda main yo‘q; ruxsatsiz main yaratilmaydi. Egasi keyin ulaydigan tashqi xizmatlar ro‘yxati quyidagi hujjatlarda; sizdan hozir hech narsa so‘ralmaydi. Quyidagi sanali bo‘limlar tarixiy.
+Yangi APK tayyor: `output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk`;121fayl/same eski imzo/91oldingi APK tekshirildi, native-mode server sinovi2/2o‘tdi. GitHub679unit va18ochiq desktop/mobil testi o‘tdi. Haqiqiy telefon o‘rnatilmagan. Hozir faqat keng C26matritsa yakunlanmoqda; u o‘tdi deb hali yozilmaydi. PR uchun repoda main yo‘q; ruxsatsiz main yaratilmaydi. Egasi keyin ulaydigan tashqi xizmatlar ro‘yxati quyidagi hujjatlarda; sizdan hozir hech narsa so‘ralmaydi. Quyidagi sanali bo‘limlar tarixiy.
 
 # 2026-10-26 — sayt sinovga tayyor, avval web
 

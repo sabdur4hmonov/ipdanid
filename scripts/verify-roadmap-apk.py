@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import zipfile
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'output/mobile'
@@ -42,7 +43,14 @@ parser.add_argument('--customer-flow', action='store_true')
 parser.add_argument('--classic-least-squares', action='store_true')
 parser.add_argument('--finish-product', action='store_true')
 parser.add_argument('--finish-every-code', action='store_true')
+parser.add_argument('--native-api-base', help='Exact public build-time native API URL; historical checks retain their old default')
+parser.add_argument('--portrait-quality', action='store_true')
 args = parser.parse_args()
+if args.native_api_base:
+    endpoint = urlsplit(args.native_api_base)
+    assert endpoint.scheme == 'https' or (endpoint.scheme == 'http' and endpoint.hostname in ['localhost','127.0.0.1','::1']), 'Native API requires HTTPS or local development HTTP'
+    assert endpoint.hostname and not endpoint.username and not endpoint.password and not endpoint.query and not endpoint.fragment, 'Native API must not contain credentials, query or fragment'
+
 assert re.fullmatch(r'[a-zA-Z0-9._-]+',args.series) and re.fullmatch(r'[a-zA-Z0-9._-]+\.json',args.snapshot), 'Unsafe archive name'
 SNAPSHOT = OUT / args.snapshot
 OUT.mkdir(parents=True, exist_ok=True)
@@ -91,11 +99,11 @@ with zipfile.ZipFile(APP) as apk:
         for marker in ['classic-greedy/3','classic-reference/3','axis-centre-skip/1','classic3','referenceEngine']:
             assert marker in code, 'Required Phase13 least-squares feature absent: '+marker
     if args.finish_product:
-        for marker in ['reviewed-product-framing/5','axis-interior-skip/2','assembly-current-route','iprasm.assembly-session.v1','IpRasmAwake','payment-options','kit-inserts-pdf','admin-password-login','http://127.0.0.1:4482/api']:
+        for marker in ['reviewed-product-framing/5','axis-interior-skip/2','assembly-current-route','iprasm.assembly-session.v1','IpRasmAwake','payment-options','kit-inserts-pdf','admin-password-login',args.native_api_base or 'http://127.0.0.1:4482/api']:
             assert marker in code, 'Required Phase14 product feature absent: '+marker
         assert any(b'IpRasmAwakePlugin' in apk.read(n) for n in apk.namelist() if re.fullmatch(r'classes\d*\.dex',n)), 'Native app-window screen-awake plugin missing from DEX'
     if args.finish_every_code:
-        for marker in ['reviewed-free-photo/9','assembly-commands','assembly-photos','iprasm.board-checkpoints','IpRasmCommands','IpRasmAssemblyAudio','portrait-caption','trial-claim','http://127.0.0.1:4483/api']:
+        for marker in ['reviewed-free-photo/9','assembly-commands','assembly-photos','iprasm.board-checkpoints','IpRasmCommands','IpRasmAssemblyAudio','portrait-caption','trial-claim',args.native_api_base or 'http://127.0.0.1:4483/api']:
             assert marker in code, 'Required Phase15 feature absent: '+marker
         assert apk.read('assets/public/asset-manifest.json') == (dist / 'asset-manifest.json').read_bytes(), 'Build manifest missing from APK'
         dex = [apk.read(n) for n in apk.namelist() if re.fullmatch(r'classes\d*\.dex',n)]
@@ -103,6 +111,9 @@ with zipfile.ZipFile(APP) as apk:
             assert any(plugin in data for data in dex), 'Native Phase15 plugin missing from DEX'
         manifest = subprocess.run([args.aapt, 'dump', 'xmltree', str(APP), 'AndroidManifest.xml'], capture_output=True, text=True, check=True, timeout=60).stdout
         assert re.search(r'android:allowBackup\([^)]*\)=\(type 0x12\)0x0\b', manifest), 'Private device data must not opt into Android Auto Backup'
+    if args.portrait_quality:
+        for marker in ['standard-preparation/10','quality-gated-midcontrast/1','portrait-placement','classic-cache/size']:
+            assert marker in code, 'Required portrait quality feature absent: '+marker
     assert hashlib.sha256(apk.read('assets/public/fonts/NotoNaskhArabic-Regular.ttf')).hexdigest() == 'a87da9e7687b097af15f9dc217fe3e2dd80bcb3d50eccb394a4aece74b1ca4d9'
     voices = json.loads(apk.read('assets/public/voices/manifest.json'))
     assert len(voices['profiles']) == 2 and not any(p['clips'] for p in voices['profiles']), 'Unexpected fictional/undeclared voice assets'
@@ -131,6 +142,7 @@ evidence = dict(debug=True, nativeDeviceTested=False, phoneInstalled=False, prod
                 classicReferenceVerified=args.classic_reference, portraitFramingVerified=args.portrait_framing, customerFlowVerified=args.customer_flow, classicLeastSquaresVerified=args.classic_least_squares,
                 productCodeVerified=args.finish_product,
                 phase15CodeVerified=args.finish_every_code,
+                nativeApiBaseVerified=args.native_api_base, portraitQualityVerified=args.portrait_quality,
                 previousApksVerifiedUnchanged=old_count, webAssetsVerified=len(assets),
                 archivedApks=[str(p.relative_to(ROOT)) for p in archives], signatures=signatures,
                 applicationBadging=badging.splitlines()[:6], recordedVoicesInstalled=0,

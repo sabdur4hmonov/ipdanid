@@ -1,3 +1,9 @@
+# 2026-10-27 — yangi debug nusxa
+
+`output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk` yangi portret tayyorlovi bilan yig‘ildi.121fayl va eski imzo tekshirildi;91avvalgi APK saqlangan. U faqat lokal sinov uchun4655APIga sozlangan. USBtelefon bilan keyin sinashda `adb reverse tcp:4655 tcp:4655` ishlating; yoki Admin → Server manzili orqali owner HTTPSAPI ni tanlang. Hech qanday telefon o‘rnatish/instrumentation bajarilmadi. Web-first sayt4215da, quti kodi faqat `output/phase15/portrait-review/manual-testing.txt`da.
+
+Verifier yangi nusxada `--native-api-base http://127.0.0.1:4655/api --portrait-quality` oladi; eski tekshiruvlarning tarixiy manzilini o‘zgartirish shart emas. Noto‘g‘ri4482qiymat rad etilishi amalda sinaldi. Production/release uchun quyidagi HTTPS va egasining alohida kaliti bo‘yicha yo‘l saqlanadi.
+
 # APK: server manzili va egasining imzosi
 
 Debug APK Admin sahifasida **Server manzili** maydonini ko‘rsatadi. `VITE_NATIVE_DEBUG_SETTINGS=1` bilan yoqiladi. HTTPS manzilni `/api` bilan kiriting va **Saqlash va qayta ochish**ni bosing. Boshqa server tanlanganda eski hisob tokeni yangi manzilga yuborilmaydi. Oddiy browser shu saytning `/api` manzilidan foydalanadi; maydon APK sinovi uchun.

@@ -2,6 +2,12 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — yangi APK ham tayyor
+
+APK: `output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk`. Eski ilova imzosi saqlangan,91oldingi APK o‘zgarmadi.121ichki fayl va serverga ulanishning desktop/mobil native-mode sinovi o‘tdi. Hozir telefon o‘rnatilishi kutilmaydi; bu sinov haqiqiy telefon tekshiruvining o‘rnini bosmaydi.
+
+Bu debug nusxa kompyuterdagi4655APIga sozlangan. Keyin USBtelefon bilan sinash uchun `docs/APK_SERVER_AND_SIGNING_UZ.md`dagi adb reverse yo‘lini4655port bilan bajaring, yoki Admin → Server manzili orqali o‘zingizning HTTPSAPI manzilingizni kiriting. Production uchun owner domen/VPS va shaxsiy release kaliti kerak; yangi kalit yaratilmagan. Webda davom etish uchun4215saytdan foydalaning.
+
 ## 2026-10-27 — yangi tekshirilgan sayt
 
 **http://127.0.0.1:4215/** ni oching. Yangi3ta yasashga yetadigan quti kodi faqat `output/phase15/portrait-review/manual-testing.txt`da. Faylni boshqalarga yubormang. Sizdan hozir javob yoki qo‘lda sinov kutilmaydi.
