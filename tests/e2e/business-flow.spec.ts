@@ -1,4 +1,7 @@
 import { test,expect } from "./legacy-test";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 let originalSettings: any;
 let announcementTitle: string | undefined;
 test.afterEach(async ({ request }) => {

@@ -5,6 +5,9 @@ import { openMore } from "./navigation";
 import { galleryPng } from "../../server/gallery-image";
 import { GALLERY_CONSENT } from "../../src/gallery-types";
 import { mkdirSync, writeFileSync } from "node:fs";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 const network = new WeakMap<Page, unknown[]>();
 test.beforeEach(async ({ page }) => {

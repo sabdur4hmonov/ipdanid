@@ -8,6 +8,9 @@ import { english } from "./phase12-cases";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { newEvidenceRoot } from "../helpers/evidence-paths";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 const admin = () => ({
   Authorization: "Bearer " + process.env.LOCAL_ADMIN_TOKEN!,

@@ -9,6 +9,9 @@ import { createProfile } from "../../src/core/geometry";
 import { DEFAULT_EDITS } from "../../src/core/types";
 import { progressFor } from "../../src/core/validation";
 import { openMore } from "./navigation";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 async function fixture(request: APIRequestContext) {
   const guest = await (await request.post("/api/session")).json(),
@@ -118,13 +121,15 @@ test("explicit retry survives reload and second login restores exact paused posi
     .getByRole("button", { name: "Refresh from server", exact: true })
     .click();
   let blocked = true;
+  let uploadIntercepted = false;
   await page.route("**/api/instructions/*/recovery", async (route) => {
-    if (blocked && route.request().method() === "POST") await route.abort();
+    if (blocked && route.request().method() === "POST") { uploadIntercepted = true; await route.abort(); }
     else await route.continue();
   });
   await panel
     .getByRole("button", { name: "Save this device’s copy", exact: true })
     .click();
+  await expect.poll(() => uploadIntercepted).toBe(true);
   await expect(panel).toContainText("Not saved");
   await expect(
     panel.getByRole("button", { name: "Retry upload", exact: true }),

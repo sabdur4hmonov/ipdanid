@@ -1,3 +1,5 @@
+import { unlockKitGuide } from "./kit-access";
+import { uiText } from "../../src/ui-i18n";
 import { animationText } from "../../src/animation-i18n";
 import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
@@ -57,6 +59,19 @@ test("ordinary v3 result exports actual video and GIF with exact final physical 
     canvas = page.getByTestId("animation-canvas"),
     out = newEvidenceRoot(`output/current-animation/${info.project.name}`);
   mkdirSync(out, { recursive: true });
+  // A free preview must never reveal the ordered assembly through an animation.
+  await expect(ui.getByRole("button", { name: "Download thread video", exact: true })).toBeDisabled();
+  await expect(ui.getByRole("button", { name: "Download thread GIF", exact: true })).toBeDisabled();
+  await page.getByRole("button", { name: "Start assembling", exact: true }).click();
+  await expect(page.getByTestId("build-gate").locator('input[type="password"]')).toHaveCount(0);
+  await unlockKitGuide(page, `standard-base-r${g.profile.standardKit.config.revision}`);
+  await expect(page.getByTestId("player-hash")).toHaveText(g.sequenceHash);
+  await page.getByRole("navigation", { name: uiText("en", "main"), exact: true })
+    .getByRole("button", { name: "Create", exact: true }).click();
+  await expect(page.getByTestId("customer-result")).toBeVisible();
+  const details = page.locator(".customer-details");
+  if (!(await details.evaluate((n: HTMLDetailsElement) => n.open))) await details.locator("summary").click();
+  await expect(ui.getByRole("button", { name: "Download thread video", exact: true })).toBeEnabled();
   await ui
     .getByRole("button", { name: "Download thread video", exact: true })
     .click();

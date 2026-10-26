@@ -7,6 +7,9 @@ import {
 import { gallery, photoCases, png } from "./phase12-cases";
 import { encodePhotoDraft, type PhotoDraft } from "../../src/photo-draft";
 import { DEFAULT_STANDARD_KIT } from "../../src/core/standard-kit";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 async function account(request: APIRequestContext) {
   const guest = await (await request.post("/api/session")).json(),

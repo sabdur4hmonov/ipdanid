@@ -2,6 +2,9 @@ import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { english, png } from "./phase12-cases";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 test("automatic cat cutout keeps the head and body; changing type retains placement", async ({
   page,

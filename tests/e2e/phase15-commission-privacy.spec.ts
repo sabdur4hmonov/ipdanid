@@ -1,6 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 import { commissionFixture } from "./commission-fixture";
 import { english } from "./phase12-cases";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 async function enter(page: Page, code: string) {
   await page.goto("/");

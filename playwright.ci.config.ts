@@ -9,6 +9,7 @@ export default defineConfig({
     "ci-public.spec.ts",
     "optical-render.spec.ts",
     "photo-actions.spec.ts",
+    "web-kit-contract.spec.ts",
   ],
   reporter: [["line"], ["json", { outputFile: ".ci-evidence/browser.json" }]],
 });

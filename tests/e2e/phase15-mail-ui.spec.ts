@@ -5,6 +5,9 @@ import { english } from "./phase12-cases";
 import { financeFixture } from "./finance-fixture";
 import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { mailText } from "../../src/mail-i18n";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 async function open(page: Page, code: string) {
   await page.goto("/");

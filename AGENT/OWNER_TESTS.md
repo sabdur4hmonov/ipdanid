@@ -529,3 +529,7 @@ Avtomatik desktop/mobil sinovda rasm yuklash, Hayvon tanlash, maxsus sozlamani y
 ##2026-10-26 — Eski loyihani davom ettirish
 
 Avtomatik desktop/mobil sinovda eski loyiha → Hisoblashni davom ettirish natijasi kerakli muharrirda ochilishi tuzatildi. Sozlamalarni qayta ishlatish, asl piksel va eski qadamlarning saqlanishi ham tekshirildi. Hozir qo‘lda tekshirish talab qilinmaydi; yakuniy yangi build sinovi davom etadi.
+
+## 2026-10-26 — quti kodi bilan sayt
+
+Kodsiz rasm yuklab tayyor ipli ko‘rinishni ko‘ring. PDF/yig‘ish tugmasi kit kodini so‘rashi, ketma-ket video/GIF esa yopiq bo‘lishi kerak. Har qutining o‘z kodi parolsiz3ta yangi yo‘riqnomani ochadi; ayni ishni qayta ochish bepul. To‘rtinchi yangi rasm ko‘rinishi chiqadi, uning yo‘riqnomasi ochilmaydi. Telegram/telefonni keyin qo‘shamiz. Yangi havola tekshirilgan web builddan keyin manual-testing.txt ga yoziladi; hozir e’lon qilingan degan da’vo yo‘q.

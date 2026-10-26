@@ -6,6 +6,9 @@ import { english, gallery, photoCases } from "./phase12-cases";
 import { financeFixture } from "./finance-fixture";
 import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { analyticsText } from "../../src/analytics-i18n";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 async function accountMenu(page: Page) {
   const menu = page.getByTestId("customer-menu");

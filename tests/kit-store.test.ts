@@ -135,3 +135,23 @@ it("claimed guest ownership and legacy credits remain usable without mixing expi
     s.unlockBuild(a.id, seq("a"), device, "unlock-revoked-old").duplicate,
   ).toBe(true);
 });
+
+it("each physical box defaults to three passwordless full builds; previews and reopens never replenish credits", () => {
+  const s = setup();
+  const batch = s.issueKitBatch("admin", "board", 2, "three-build-boxes");
+  expect(batch.codes.map(c => c.quota)).toEqual([3, 3]);
+  expect(batch.codes[0].code).not.toBe(batch.codes[1].code);
+  const owner = s.loginKit(batch.codes[0].code);
+  const other = s.loginKit(batch.codes[1].code);
+  expect(owner.id).not.toBe(other.id);
+  expect(owner.credits).toBe(3);
+  expect(s.loginKit(batch.codes[0].code).id).toBe(owner.id);
+  for (const [index, hash] of ["a", "b", "c"].entries()) {
+    expect(s.unlockBuild(owner.id, seq(hash), device, `box-build-${hash.repeat(8)}`).credits).toBe(2 - index);
+  }
+  expect(() => s.unlockBuild(owner.id, seq("d"), device, "box-fourth-build")).toThrow(/kit code/);
+  expect(s.loginKit(batch.codes[0].code)).toMatchObject({ id: owner.id, credits: 0 });
+  expect(s.unlockBuild(owner.id, seq("a"), "other-device-123456", "box-reopen-guide").duplicate).toBe(true);
+  expect(s.kitBalance(owner.id)).toBe(0);
+  expect(s.kitBalance(other.id)).toBe(3);
+});

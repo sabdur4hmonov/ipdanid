@@ -6,6 +6,8 @@ import {
 } from "./sequence-animation-export";
 import { animationText } from "./animation-i18n";
 import { download } from "./download";
+import { useBuildAccess } from "./useBuildAccess";
+import { kitText } from "./kit-i18n";
 export default function SequenceAnimation({
   instruction,
   locale,
@@ -22,6 +24,8 @@ export default function SequenceAnimation({
     [error, setError] = useState(false),
     [done, setDone] = useState(false),
     [shown, setShown] = useState(false);
+  const allowed = useBuildAccess([instruction]);
+  const permitted = allowed(instruction);
   const t = (key: Parameters<typeof animationText>[1]) =>
       animationText(locale, key),
     supported = !!videoMime();
@@ -30,7 +34,7 @@ export default function SequenceAnimation({
     setDone(false);
     setError(false);
     return () => controller.current?.abort();
-  }, [instruction.sequenceHash, active]);
+  }, [instruction.sequenceHash, active, permitted]);
   useEffect(() => {
     const hide = () => {
       if (document.hidden) controller.current?.abort();
@@ -39,7 +43,7 @@ export default function SequenceAnimation({
     return () => document.removeEventListener("visibilitychange", hide);
   }, []);
   async function start(mode: "video" | "gif") {
-    if (busy || !active) return;
+    if (busy || !active || !permitted) return;
     const job = new AbortController();
     controller.current = job;
     setBusy(true);
@@ -76,6 +80,7 @@ export default function SequenceAnimation({
       <h3>{t("title")}</h3>
       <p>{t("hint")}</p>
       {!supported && <p>{t("unsupported")}</p>}
+      {!permitted && <p data-testid="animation-locked">{kitText(locale, "hint")}</p>}
       <canvas
         ref={canvas}
         width={1000}
@@ -88,12 +93,12 @@ export default function SequenceAnimation({
       />
       <div className="grid-actions">
         <button
-          disabled={busy || !active || !supported}
+          disabled={busy || !active || !permitted || !supported}
           onClick={() => void start("video")}
         >
           {t("video")}
         </button>
-        <button disabled={busy || !active} onClick={() => void start("gif")}>
+        <button disabled={busy || !active || !permitted} onClick={() => void start("gif")}>
           {t("gif")}
         </button>
         {busy && (

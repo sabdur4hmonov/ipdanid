@@ -5,6 +5,9 @@ import {
   type APIRequestContext,
 } from "@playwright/test";
 import { english } from "./phase12-cases";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test.use({ trace: "off" });
 const root = () => ({
   Authorization: "Bearer " + process.env.LOCAL_ADMIN_TOKEN!,

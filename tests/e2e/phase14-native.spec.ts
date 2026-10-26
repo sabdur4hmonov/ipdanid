@@ -13,6 +13,9 @@ import { DEFAULT_EDITS } from "../../src/core/types";
 import { unlockKitGuide } from "./kit-access";
 import { openMore } from "./navigation";
 import { mkdirSync, writeFileSync } from "node:fs";
+// These cases inject network responses; dedicated offline suites retain service workers.
+test.use({ serviceWorkers: "block" });
+
 test("native-mode browser uses real local API for kit redeem, signed unlock and backend-scoped restart", async ({
   page,
 }, info) => {

@@ -5,6 +5,9 @@ permissions:
 jobs:
   web-domain:
     runs-on: ubuntu-latest
+    env:
+      VITE_NATIVE_API_BASE: http://127.0.0.1:4483/api
+      VITE_NATIVE_DEBUG_SETTINGS: "1"
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -13,6 +16,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm audit --audit-level=high
       - run: npm run check:locales
       - run: npm run build
       - run: node scripts/audit-customer-bundle.mjs dist
@@ -23,6 +27,11 @@ jobs:
       - run: npx playwright install --with-deps chromium
       # Private portrait experiments require local evidence and are not public CI inputs.
       - run: npm run test:e2e:ci
+      - run: node scripts/package-web-handoff.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ip-rasm-web-sandbox
+          path: web-handoff
       - uses: actions/upload-artifact@v4
         if: always()
         with:

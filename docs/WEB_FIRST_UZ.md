@@ -8,3 +8,10 @@
 6. Instagramdagi ilk sinov: obunani siz tekshirib, odamga alohida kod yuborasiz. Boshlang‘ich taklif — bir hisobga bitta to‘liq raqamli yo‘riqnoma; taxta va dostavka avtomatik bepul bo‘lmaydi. Agar bepul jismoniy kit aksiyasi xohlasangiz, uning soni va budjeti alohida belgilanadi. Hozir hech kimga xabar yuborilmaydi.
 
 Chegirma sozlash: **docs/OFFERS_UZ.md**. Domen/VPS: **docs/DEPLOY_VPS_UZ.md**. Keyingi app imzolash: **docs/APK_SERVER_AND_SIGNING_UZ.md**. Texnik ishlar va sinov mezonlari: **docs/WEB_FIRST_LAUNCH_PLAN.md**.
+
+
+## 2026-10-26 — birinchi saytning qoidasi
+
+Surat yuklash va ipli tayyor ko‘rinishni sinash bepul. Har qutiga alohida maxfiy kit kodi beriladi; qo‘shimcha parol yoki email shart emas. Standart kod3ta yangi to‘liq yo‘riqnomani ochadi. Ayni ochilgan ishni qayta ko‘rish yoki davom ettirish yana kredit sarflamaydi. Kod ochilmaguncha ip yo‘li, qadamlar, PDF/TXT/JSON hamda ketma-ket video/GIF yopiq.3ta huquq tugasa ham yangi rasmlarning tayyor ko‘rinishini bepul sinash mumkin.
+
+Telegram va telefon buyurtma bo‘limiga egasi keyin haqiqiy ma’lumotlarni berganda qo‘shiladi. Hozir soxta kontakt yozilmaydi va haqiqiy buyurtma/to‘lov/xabar yuborilmaydi. Avval sayt sinov nusxasi topshiriladi; Android va yakuniy keng qabul sinovlari alohida holat sifatida yoziladi.
