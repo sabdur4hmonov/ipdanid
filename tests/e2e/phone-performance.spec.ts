@@ -163,6 +163,10 @@ for (const index of [0, 3, 4, 5] as const)
     await instrument(page);
     await page.goto("/");
     await english(page);
+    // Role-name searches walk the entire accessibility tree. CPU profiling showed
+    // those driver queries competing with the UI during this timed interval.
+    // Keep real, visible clicks and the same label/latency/pixel assertions.
+    const action = page.locator("button.customer-main-action");
     const cdp = await context.newCDPSession(page),
       setRate = async (n: number) => {
         await cdp.send("Emulation.setCPUThrottlingRate", { rate: n });
@@ -202,21 +206,24 @@ for (const index of [0, 3, 4, 5] as const)
           exact: true,
         })
         .click();
+    await expect(action).toHaveText("Create");
     if (index === 0) {
       await setRate(4);
-      await page.getByRole("button", { name: "Create", exact: true }).click();
+      await action.click();
       await expect
         .poll(() =>
           page.locator(".customer-progress progress").getAttribute("value"),
         )
         .not.toBe("0");
+      await expect(action).toHaveText("Cancel");
       const t = Date.now();
-      await page.getByRole("button", { name: "Cancel", exact: true }).click();
+      await action.click();
       const cancellationMs = Date.now() - t;
       expect(cancellationMs).toBeLessThan(700);
       await expect(
-        page.getByRole("button", { name: "Create", exact: true }),
+        action,
       ).toBeEnabled();
+      await expect(action).toHaveText("Create");
       expect(
         await page.evaluate(() => {
           const j = (window as any).__phonePerf.jobs.at(-1);
@@ -229,16 +236,17 @@ for (const index of [0, 3, 4, 5] as const)
       );
       await setRate(1);
     }
-    await page.getByRole("button", { name: "Create", exact: true }).click();
+    await action.click();
     const baseline = await result(page);
     await page
       .getByRole("button", { name: "Adjust again", exact: true })
       .click();
     await setRate(4);
-    await page.getByRole("button", { name: "Create", exact: true }).click();
+    await action.click();
     await expect(
-      page.getByRole("button", { name: "Cancel", exact: true }),
+      action,
     ).toBeVisible();
+    await expect(action).toHaveText("Cancel");
     const menu = page.getByTestId("customer-menu"),
       start = Date.now();
     await menu.locator("summary").click();

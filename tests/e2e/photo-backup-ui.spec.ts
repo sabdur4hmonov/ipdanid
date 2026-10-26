@@ -367,8 +367,18 @@ for (const native of [false, true])
       await p
         .getByLabel("Password (at least 12 characters)", { exact: true })
         .fill(f.password);
+      const loginReply = p.waitForResponse((r) =>
+        new URL(r.url()).pathname === "/api/account/login" && r.request().method() === "POST");
+      const responseErrors: { path: string; status: number }[] = [];
+      p.on("response", (r) => {
+        const path = new URL(r.url()).pathname;
+        if (path.startsWith("/api/") && r.status() >= 400)
+          responseErrors.push({ path, status: r.status() });
+      });
       await p.getByRole("button", { name: "Sign in", exact: true }).click();
-      await expect(p.getByTestId("customer-credits")).toHaveText("0");
+      expect((await loginReply).status(), "Second-device login HTTP status").toBe(200);
+      await expect(p.getByTestId("customer-credits"),
+        `Second-device API errors: ${JSON.stringify(responseErrors)}`).toHaveText("0");
       // A reload returns to the photo start screen with the persisted account.
       await p.reload();
       const remote = await open(p);

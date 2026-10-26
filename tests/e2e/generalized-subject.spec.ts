@@ -47,7 +47,7 @@ test("generic manual marks are crop-bound, locally reviewed and dispatched to re
     rgba[k * 4 + 3] = 255;
   }
   await page
-    .locator('input[type=file][accept="image/jpeg,image/png"]')
+    .locator('.photo-card input[type=file][accept="image/jpeg,image/png"]')
     .setInputFiles({
       name: "dog.png",
       mimeType: "image/png",

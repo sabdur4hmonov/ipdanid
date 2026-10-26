@@ -316,6 +316,10 @@ test("real owner terms volume authorization partner PDF links and recipient clai
     ),
   );
 });
+test.describe("held partner response ownership", () => {
+  // Routing-controlled failure injection must reach Playwright, not a service worker.
+  // The preceding real kit/offline flow keeps its service worker enabled.
+  test.use({ serviceWorkers: "block" });
 test("lost one-time issuance cannot duplicate codes and stale partner responses cannot cross logout", async ({
   page,
   request,
@@ -379,6 +383,7 @@ test("lost one-time issuance cannot duplicate codes and stale partner responses 
     .getByRole("button", { name: "Check access and campaigns", exact: true })
     .click();
   let done!: () => void;
+  let issuanceIntercepted = false;
   const lost = new Promise<void>((resolve) => {
     done = resolve;
   });
@@ -386,11 +391,13 @@ test("lost one-time issuance cannot duplicate codes and stale partner responses 
     const response = await route.fetch();
     expect(response.ok()).toBe(true);
     await route.abort("failed");
+    issuanceIntercepted = true;
     done();
   });
   await card
     .getByRole("button", { name: "Issue kit codes", exact: true })
     .click();
+  await expect.poll(() => issuanceIntercepted).toBe(true);
   await lost;
   await expect(p.getByRole("alert")).toBeVisible();
   await page.unroute(`**/api/partner/campaigns/${id}/issue`);
@@ -404,6 +411,7 @@ test("lost one-time issuance cannot duplicate codes and stale partner responses 
   await expect(page.getByTestId("partner-issued")).toHaveCount(0);
   await expect(p).toContainText("Codes are shown once");
   let release!: () => void, arrive!: () => void, delivered!: () => void;
+  let partnerIntercepted = false;
   const held = new Promise<void>((r) => {
       release = r;
     }),
@@ -415,6 +423,7 @@ test("lost one-time issuance cannot duplicate codes and stale partner responses 
     });
   await page.route("**/api/partner", async (route) => {
     const response = await route.fetch();
+    partnerIntercepted = true;
     arrive();
     await held;
     await route.fulfill({ response });
@@ -423,6 +432,7 @@ test("lost one-time issuance cannot duplicate codes and stale partner responses 
   await p
     .getByRole("button", { name: "Check access and campaigns", exact: true })
     .click();
+  await expect.poll(() => partnerIntercepted).toBe(true);
   await waiting;
   await page
     .locator(".customer-session")
@@ -459,4 +469,6 @@ test("lost one-time issuance cannot duplicate codes and stale partner responses 
       2,
     ),
   );
+});
+
 });

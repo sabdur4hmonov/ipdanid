@@ -417,7 +417,13 @@ export default function App() {
             </>
           )}
           {view === "assemble" && <AssembleScreen context={context} expert={!customerFlow} />}
-          {view === "library" && <LibraryScreen context={context} />}
+          {view === "library" && <LibraryScreen context={context} onCreateCustom={() => {
+            // Saved legacy calculations own their editor; a prior standard-kit
+            // selection must not hide their progress, result or reused settings.
+            setCustomerFlow(false);
+            setStandard(false);
+            nav("create");
+          }} />}
           {view === "materials" && <MoreScreen context={context} />}
           {view === "crafts" && (
             <CraftStudio

@@ -42,7 +42,7 @@ test("local landmarks place mouth on actual source pixels; photo inference leave
       last = now;
     }, 50);
   });
-  await page.locator("input[type=file]").first().setInputFiles(single);
+  await page.locator('.photo-card input[type=file][accept="image/jpeg,image/png"]').setInputFiles(single);
   // R1: the subject is chosen explicitly; people analysis is not the default.
   await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
   await openBackgroundOptions(page);
@@ -150,7 +150,7 @@ test("two detected faces enable group controls; fitting removes lost-foreground 
 }) => {
   test.skip(!existsSync(group), "Private repeated-portrait diagnostic absent.");
   await start(page);
-  await page.locator("input[type=file]").first().setInputFiles(group);
+  await page.locator('.photo-card input[type=file][accept="image/jpeg,image/png"]').setInputFiles(group);
   // R1: the subject is chosen explicitly; people analysis is not the default.
   await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
   await openBackgroundOptions(page);
@@ -190,7 +190,7 @@ test("missing face model keeps successful white-background preparation and manua
     (r) => r.abort(),
   );
   await start(page);
-  await page.locator("input[type=file]").first().setInputFiles(single);
+  await page.locator('.photo-card input[type=file][accept="image/jpeg,image/png"]').setInputFiles(single);
   // R1: the subject is chosen explicitly; people analysis is not the default.
   await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
   await openBackgroundOptions(page);
@@ -220,7 +220,7 @@ test("cleanup failure preserves the primary mask, face suggestions and honest co
     (r) => r.abort(),
   );
   await start(page);
-  await page.locator("input[type=file]").first().setInputFiles(single);
+  await page.locator('.photo-card input[type=file][accept="image/jpeg,image/png"]').setInputFiles(single);
   // R1: the subject is chosen explicitly; people analysis is not the default.
   await page.getByTestId("subject-kind").locator('[data-kind="people"]').click();
   await openBackgroundOptions(page);

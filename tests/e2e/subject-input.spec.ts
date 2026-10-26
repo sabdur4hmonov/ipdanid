@@ -56,8 +56,7 @@ async function uploadFixture(page: Page, kind: SyntheticSubject, name: string) {
     { pixels, n: N },
   );
   await page
-    .locator("input[type=file]")
-    .first()
+    .locator('.photo-card input[type=file][accept="image/jpeg,image/png"]')
     .setInputFiles({
       name,
       mimeType: "image/png",

@@ -103,12 +103,12 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
     ).toBeHidden({ timeout: 120000 });
     hashes.push(
       (await page
-        .locator("canvas[data-sequence-hash]")
+        .locator("canvas[data-sequence-hash]:visible")
         .getAttribute("data-sequence-hash"))!,
     );
     canvases.push(
       await page
-        .locator("canvas[data-sequence-hash]")
+        .locator("canvas[data-sequence-hash]:visible")
         .evaluate((c: HTMLCanvasElement) => c.toDataURL()),
     );
   }
@@ -123,7 +123,7 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
     await expect
       .poll(() =>
         page
-          .locator("canvas[data-sequence-hash]")
+          .locator("canvas[data-sequence-hash]:visible")
           .evaluate((c: HTMLCanvasElement) => c.toDataURL()),
       )
       .toBe(canvases[index]);
@@ -171,7 +171,7 @@ test("independent mouse/touch regions, localized estimates, persistence and rapi
   await page.reload();
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.getByRole("button", { name: "Resume", exact: true }).click();
-  await expect(page.locator("canvas[data-sequence-hash]")).toHaveAttribute(
+  await expect(page.locator("canvas[data-sequence-hash]:visible")).toHaveAttribute(
     "data-sequence-hash",
     hashes[0],
   );
@@ -260,14 +260,14 @@ test("cancel during asynchronous validation and reject mismatched Worker jobs", 
   await page
     .getByRole("button", { name: "Calculate thread path", exact: true })
     .click();
-  await expect(page.locator("canvas[data-sequence-hash]")).toHaveAttribute(
+  await expect(page.locator("canvas[data-sequence-hash]:visible")).toHaveAttribute(
     "data-sequence-hash",
     second.sequenceHash,
   );
   await page.evaluate(() => (window as any).releaseValidation());
   await page.waitForFunction(() => (window as any).validationReturned === 2);
   await expect(page.locator(".variant-tabs button")).toHaveCount(1);
-  await expect(page.locator("canvas[data-sequence-hash]")).toHaveAttribute(
+  await expect(page.locator("canvas[data-sequence-hash]:visible")).toHaveAttribute(
     "data-sequence-hash",
     second.sequenceHash,
   );

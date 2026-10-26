@@ -525,3 +525,7 @@ Hozir qo‘lda sinov shart emas: kamera maketi, xotira xatosi, saqlash, internet
 ##2026-10-26 — Mutaxassis muharriri
 
 Avtomatik desktop/mobil sinovda rasm yuklash, Hayvon tanlash, maxsus sozlamani yoqish, belgilarni ko‘chirish va hisoblash tekshirildi. Sozlama yoqilganda butun ekran yo‘qolishi tuzatildi. Hozir qo‘lda tekshirish shart emas; yakuniy yangi havola hali tayyorlanmoqda.
+
+##2026-10-26 — Eski loyihani davom ettirish
+
+Avtomatik desktop/mobil sinovda eski loyiha → Hisoblashni davom ettirish natijasi kerakli muharrirda ochilishi tuzatildi. Sozlamalarni qayta ishlatish, asl piksel va eski qadamlarning saqlanishi ham tekshirildi. Hozir qo‘lda tekshirish talab qilinmaydi; yakuniy yangi build sinovi davom etadi.

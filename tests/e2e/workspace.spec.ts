@@ -22,7 +22,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
   const png = await page
     .getByLabel("Edited photo", { exact: true })
     .screenshot();
-  await page.locator("input[type=file]").first().setInputFiles({
+  await page.locator('.photo-card input[type=file][accept="image/jpeg,image/png"]').setInputFiles({
     name: "original-illustration.png",
     mimeType: "image/png",
     buffer: png,
@@ -44,7 +44,7 @@ test("actual worker generation, explicit confirmation, reload, offline import/PD
     path: newEvidenceRoot(`output/evidence/${testInfo.project.name}-quality-result.png`),
   });
   const previewHash = await page
-    .locator("canvas[data-sequence-hash]")
+    .locator("canvas[data-sequence-hash]:visible")
     .getAttribute("data-sequence-hash");
   await revealControl(page.getByLabel("Project name", { exact: true }));
   await page.getByLabel("Project name", { exact: true }).fill("Verified original sample");
@@ -206,7 +206,7 @@ test("rectangular material dimensions drive crop, worker, preview and multicolor
   await expect(
     page.getByRole("button", { name: "Save & assemble" }),
   ).toBeVisible({ timeout: 60000 });
-  const canvas = page.locator("canvas[data-sequence-hash]");
+  const canvas = page.locator("canvas[data-sequence-hash]:visible");
   expect(await canvas.getAttribute("height")).toBe("540");
   await page.getByRole("button", { name: "Save & assemble" }).click();
   await unlockIfNeeded(page);
@@ -234,7 +234,7 @@ test("photo candidates retain edits and reusable settings persist without storin
     .screenshot();
   await revealControl(page.getByLabel("Brightness", { exact: true }));
   await page.getByLabel("Brightness", { exact: true }).fill("25");
-  await page.locator("input[type=file]").first().setInputFiles({
+  await page.locator('.photo-card input[type=file][accept="image/jpeg,image/png"]').setInputFiles({
     name: "second-photo.png",
     mimeType: "image/png",
     buffer: png,

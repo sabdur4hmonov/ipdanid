@@ -1,3 +1,4 @@
+import { animationText } from "../../src/animation-i18n";
 import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { photoCases, gallery, english } from "./phase12-cases";
@@ -171,7 +172,7 @@ test("unsupported video has a real GIF fallback for an offline legacy guide", as
   }, project);
   await page.goto("/");
   await expect(page.getByTestId("assembly-focus")).toBeVisible();
-  await page.getByText("Animation", { exact: true }).click();
+  await page.locator("summary").filter({ hasText: animationText("en", "title") }).click();
   const ui = page.getByTestId("sequence-animation");
   await expect(
     ui.getByRole("button", { name: "Download thread video", exact: true }),

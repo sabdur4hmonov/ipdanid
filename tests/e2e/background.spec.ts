@@ -49,8 +49,7 @@ test("localized optional photo advice, reversible local brush and exact exported
     return c.toDataURL().split(",")[1];
   });
   await page
-    .locator("input[type=file]")
-    .first()
+    .locator('.photo-card input[type=file][accept="image/jpeg,image/png"]')
     .setInputFiles({
       name: "patterned-portrait.png",
       mimeType: "image/png",

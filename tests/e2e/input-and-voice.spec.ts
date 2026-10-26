@@ -1,3 +1,4 @@
+import { uiText } from "../../src/ui-i18n";
 import { unlockIfNeeded } from "./kit-access";
 import { openMore, revealControl } from "./navigation";
 import { test, expect } from "./legacy-test";
@@ -7,7 +8,7 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
 }) => {
   await page.goto("/");
   await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");
-  const upload = page.locator("input[type=file]").first();
+  const upload = page.locator('.photo-card input[type=file][accept="image/jpeg,image/png"]');
   await upload.setInputFiles("tests/fixtures/orientation-6.jpg");
   await expect(page.getByLabel("Edited photo")).toBeVisible();
   const colors = await page
@@ -47,6 +48,8 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
       ...canvas.getContext("2d")!.getImageData(5, 5, 1, 1).data,
     ]);
   expect(corner).toEqual([255, 255, 255, 255]);
+  const retainedPhoto = await page.getByLabel("Edited photo", { exact: true })
+    .evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
   await upload.setInputFiles({
     name: "unsupported.svg",
     mimeType: "image/svg+xml",
@@ -83,8 +86,11 @@ test("normalizes JPEG orientation, composites PNG alpha, and rejects unsafe inpu
   await expect(page.getByRole("alert")).toContainText("Fayl 15 MB dan katta");
   await page.locator('[data-testid="locale-picker"]:visible').selectOption("ru");
   await expect(page.getByRole("alert")).toContainText("Файл больше 15 МБ");
-  // Rejecting a new input must retain the last valid working photo.
-  await expect(page.getByLabel("Edited photo")).toBeVisible();
+  // Locale changes translate the label; unsafe inputs must retain exact pixels.
+  const retainedCanvas = page.getByLabel(uiText("ru", "editedPhoto"), { exact: true });
+  await expect(retainedCanvas).toBeVisible();
+  expect(await retainedCanvas.evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL()))
+    .toBe(retainedPhoto);
 });
 
 test("matching voice fallback and cancellation keep playback distinct from confirmation", async ({

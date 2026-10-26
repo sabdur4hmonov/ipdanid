@@ -176,7 +176,10 @@ for (const style of ["outline", "target"] as const)
     await page.evaluate(async () => navigator.serviceWorker.ready);
     await context.setOffline(true);
     await page.reload();
-    await expect(page.getByTestId("player-hash")).toHaveCount(0);
+    // Restart restores the saved guide paused; it never confirms a strand.
+    await expect(page.getByTestId("player-hash")).toHaveText(sequenceHash!);
+    await expect(page.getByTestId("confirmed-step")).toContainText("0/");
+    await expect(page.getByRole("button", { name: "Play", exact: true })).toBeVisible();
     await page
       .getByRole("button", { name: "My projects", exact: true })
       .click();

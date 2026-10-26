@@ -178,7 +178,7 @@ test("owner enables app-only purchase; customer pays once with no physical deliv
     ["en", "No board or shipping is included."],
   ]) {
     await page
-      .getByRole("combobox", { name: "Language", exact: true })
+      .locator('[data-testid="locale-picker"]:visible')
       .selectOption(locale);
     await expect(page.getByTestId("digital-studio")).toContainText(phrase);
     expect(
@@ -250,7 +250,7 @@ test("paid gift link opens a private explicit claim; one recipient receives cred
   });
   await recipient.goto(link);
   await recipient
-    .getByRole("combobox", { name: "Language", exact: true })
+    .locator('[data-testid="locale-picker"]:visible')
     .selectOption("en");
   await expect.poll(() => recipient.url().includes("#gift=")).toBe(false);
   const claim = recipient.getByTestId("gift-claim");

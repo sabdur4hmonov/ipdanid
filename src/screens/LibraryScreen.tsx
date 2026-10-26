@@ -29,10 +29,9 @@ type ScreenContext = Pick<
   | "setLibraryQuery"
   | "setNotice"
   | "setProjects"
-  | "setView"
   | "t"
 >;
-export function LibraryScreen({ context }: { context: ScreenContext }) {
+export function LibraryScreen({ context, onCreateCustom }: { context: ScreenContext; onCreateCustom: () => void }) {
   const {
     ArrowRight,
     CAPABILITIES,
@@ -62,7 +61,6 @@ export function LibraryScreen({ context }: { context: ScreenContext }) {
     setLibraryQuery,
     setNotice,
     setProjects,
-    setView,
     t,
   } = context;
   return (
@@ -189,7 +187,7 @@ export function LibraryScreen({ context }: { context: ScreenContext }) {
                         disabled={busy}
                         data-testid="continue-saved-calculation"
                         onClick={() => {
-                          setView("create");
+                          onCreateCustom();
                           void generate(
                             p.instruction,
                             continuationStrategy(p.instruction),
@@ -209,7 +207,7 @@ export function LibraryScreen({ context }: { context: ScreenContext }) {
                           className="outline"
                           disabled={busy}
                           data-testid="extend-saved-portrait"
-                          onClick={() => void extendSavedPortrait(p)}
+                          onClick={() => { onCreateCustom(); void extendSavedPortrait(p); }}
                         >
                           {portraitChoiceText(locale, "extendedSearch")}
                         </button>
@@ -281,7 +279,7 @@ export function LibraryScreen({ context }: { context: ScreenContext }) {
                                       ? "global"
                                       : "continuous",
                         });
-                        nav("create");
+                        onCreateCustom();
                         setNotice(t("reuseNotice"));
                       }}
                     >

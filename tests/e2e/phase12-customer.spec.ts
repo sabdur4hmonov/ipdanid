@@ -206,9 +206,9 @@ test("auto-fit reaches the result in three taps including the native file select
     "Local synthetic acceptance portrait is not committed.",
   );
   await page.goto("/");
-  await expect(
-    page.getByRole("button", { name: "Doira", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
+  // Photo-first flow: shapes appear only after the chosen photo is ready.
+  await expect(page.getByTestId("customer-flow")).toHaveAttribute("data-screen", "start");
+  await expect(page.getByRole("button", { name: "Doira", exact: true })).toHaveCount(0);
   await page.evaluate(() => {
     (window as unknown as { taps: string[] }).taps = [];
     document.addEventListener(
@@ -224,6 +224,8 @@ test("auto-fit reaches the result in three taps including the native file select
     );
   });
   await gallery(page, photoCases[0]);
+  await expect(page.getByRole("button", { name: "Doira", exact: true }))
+    .toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Yaratish", exact: true }).click();
   await expect(page.getByTestId("customer-result")).toBeVisible({
     timeout: 60000,
@@ -277,6 +279,7 @@ test("photo failure keeps all four customer languages plain and generation unava
         exact: true,
       }),
     ).toBeDisabled();
+    await expect(page.getByTestId("customer-flow")).toHaveAttribute("data-screen", "adjust");
   }
 });
 

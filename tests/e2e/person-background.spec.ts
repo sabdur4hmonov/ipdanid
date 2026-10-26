@@ -2,7 +2,7 @@ import { test, expect } from "./legacy-test";
 import { readFileSync, existsSync } from "node:fs";
 const fixture = "output/white-background/source.png";
 const upload = (page: import("@playwright/test").Page) =>
-  page.locator("input[type=file]").first();
+  page.locator('.photo-card input[type=file][accept="image/jpeg,image/png"]');
 async function start(page: import("@playwright/test").Page) {
   await page.goto("/");
   await page.locator('[data-testid="locale-picker"]:visible').selectOption("en");

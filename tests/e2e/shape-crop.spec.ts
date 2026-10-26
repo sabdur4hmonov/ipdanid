@@ -178,7 +178,7 @@ test("shape framing uses mouse/touch, reversible fit and immutable saved crop", 
   expect(p.edits).toEqual(expected);
   expect(p.instruction.profile.shape).toBe("heart");
   expect(p.progress.confirmed).toBe(0);
-  await expect(page.locator("canvas[data-sequence-hash]")).toHaveAttribute(
+  await expect(page.locator("canvas[data-sequence-hash]:visible")).toHaveAttribute(
     "data-sequence-hash",
     p.instruction.sequenceHash,
   );

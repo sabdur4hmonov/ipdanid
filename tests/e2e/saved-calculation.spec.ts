@@ -140,6 +140,7 @@ test("group Continue survives reload using frozen private pixels; deleting them 
   await page.reload();
   await page.getByRole("button", { name: "My projects", exact: true }).click();
   await page.getByTestId("continue-saved-calculation").first().click();
+  await expect(page.locator(".photo-card")).toBeVisible();
   await expect(preview).toBeVisible({ timeout: 90000 });
   const next = await preview.getAttribute("data-sequence-hash");
   expect(next).not.toBe(root);
