@@ -34,6 +34,11 @@ for (const [shape, label] of [
     });
     const generationMs = Date.now() - start;
     expect(generationMs).toBeLessThan(15000);
+    // Rendering and the serialized durable-library write finish separately.
+    // Wait for actual persistence before reading it; still fail on a lost save.
+    await expect.poll(() => page.evaluate(() =>
+      JSON.parse(localStorage.getItem("iprasm.projects.v1") ?? "[]").length,
+    )).toBeGreaterThan(0);
     const guide = await validateInstruction(
       await page.evaluate(
         () =>
