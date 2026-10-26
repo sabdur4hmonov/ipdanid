@@ -4,6 +4,8 @@ Yangi sayt: **http://127.0.0.1:4201/**. Uchta alohida test kit kodi faqat `outpu
 
 GitHub f1901e2: web build,662unit/145fayl,16desktop/mobil ochiq sinov, xavfsizlik/tarjima/HTTP tekshiruvlari va Android debug build o‘tdi. Sinovlar GitHub runnerida bajarildi; lokal RAM cheklovi yashirilmadi. Olingan artifact va121ta saytda berilayotgan faylning SHA tengligi alohida tekshirildi. Eski serverlar/rasmlar/bazaga tegilmadi. To‘lov/xabar/dostavka bu nusxada sandbox. Yangi APKning eski lokal imzo bilan mosligi va keng xususiy matritsa hali yakuniy qabul qilinmagan.
 
+Manba `feat/full-roadmap`ga push qilindi: https://github.com/sabdur4hmonov/ipdanid/tree/feat/full-roadmap . PR yaratilmadi: repoda `main` branchi yo‘q, GitHub422baza xatosi qaytardi. Ruxsatsiz `main` yaratilmaydi yoki boshqa branchga merge qilinmaydi. Saytni hozir sinash va ZIP yuklash mumkin.
+
 **Ochiq holat:** burun/tiniqlik va haqiqiy taxta/telefon sifati yaxshilandi deb yangi da’vo yo‘q; ular avtomatik kod testlariga teng emas. Barcha Phase15 qabul bandlari tugadi deyilmaydi. Hozirgi topshiriq — ishlayotgan sayt va GitHub manbasi; aniq dalil `docs/WEB_HANDOFF_CHECKPOINT.md`, keyingi ish `AGENT/PROGRESS.md`da.
 
 Egasi keyin ulaydi: domen/VPS — `docs/DEPLOY_VPS_UZ.md`; merchant kalitlari — `docs/PAYMENTS_UZ.md`; ovoz — `docs/VOICE_RECORDING_UZ.md`; app imzosi — `docs/APK_SERVER_AND_SIGNING_UZ.md`; taxta — `docs/BUILD_TODAY_UZ.md` va `docs/PHYSICAL_BOARD_UZ.md`; iOS — `docs/IOS_UZ.md`. Telegram/telefon hozir so‘ralmaydi. Quyidagi sana bo‘yicha hisobotlar tarixiy.

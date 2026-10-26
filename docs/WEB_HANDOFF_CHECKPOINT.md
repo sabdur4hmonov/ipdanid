@@ -22,3 +22,10 @@ Local records (ignored): `output/phase15/web-ci-f1901e2/{github-verification,loc
 This is a local sandbox website handoff, as requested before app completion. CI debug APK build succeeded, but its ephemeral runner signing key does not prove compatibility with the owner's earlier locally signed APKs. Full current private-photo matrix/local-signer APK verification remain open C26 acceptance. Portrait/nose likeness, full-device4x timing, physical board/phone acceptance and production/domain/merchant setup are not declared passed. Earlier interrupted matrices are diagnostic, not substituted for current acceptance.
 
 Owner instructions: `README_UZ.md`, `docs/WEB_FIRST_UZ.md`, `AGENT/OWNER_TESTS.md`. Feature branch only; final review PR targets main and must not be merged automatically.
+
+
+## Feature push and unavailable PR base
+
+Handoff documentation commit27ac70c was pushed normally to `origin feat/full-roadmap`; the tested product remains f1901e2. Export scan549files/67commits found zero prohibited paths/credential patterns. Full local history scan4837objects/3277text blobs found zero prohibited paths, secret findings or oversized text; matching values were never printed. New sandbox Admin verification also confirms all3codes are unused with quota3each, without exposing their values.
+
+The authorized draft feature-to-main PR could not be created: GitHub returned422 `PullRequest.base invalid`. Read-only `git ls-remote --heads origin` confirms only `feat/full-roadmap` and `wip/2026-10-13`, with no `main`. No PR exists from this attempt; no main branch was created/pushed and no alternative base or merge was substituted. Website/feature ZIP download is usable independently. A legitimate main base is required before the requested PR can be opened.
