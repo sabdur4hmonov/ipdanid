@@ -1,4 +1,5 @@
 import { generateClassicLeastSquares } from "./classic-least-squares";
+import { generatePortraitEnhanced } from "./portrait-enhancement";
 import { physicalPreviewRgba } from "./physical-preview";
 import { refineHairCycles } from "./hair-cycles";
 import { generateClassic } from "./classic";
@@ -123,7 +124,7 @@ self.onmessage = async ({ data }) => {
       );
     const classicGenerator =
       data.strategy === "classic3"
-        ? generateClassicLeastSquares
+        ? data.portraitEnhancement === true ? generatePortraitEnhanced : generateClassicLeastSquares
         : generateClassicReference;
     const instruction =
       data.strategy === "classic2" || data.strategy === "classic3"

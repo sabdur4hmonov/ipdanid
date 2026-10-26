@@ -215,6 +215,7 @@ export async function validateInstruction(
               "standard-preparation/7",
               "standard-preparation/8",
               "standard-preparation/9",
+              "standard-preparation/10",
             ]
           : ["standard-preparation/1"]
       ).includes(k.version) ||
@@ -222,7 +223,7 @@ export async function validateInstruction(
       !["automatic", "manual", "original"].includes(k.whiteBackground) ||
       JSON.stringify(k.transform) !==
         JSON.stringify(
-          k.version === "standard-preparation/9"
+          ["standard-preparation/9", "standard-preparation/10"].includes(k.version)
             ? withPortraitCaption(
                 frameFreePhoto(
                   k.transform.product!.kind,
@@ -307,6 +308,15 @@ export async function validateInstruction(
         )
     )
       throw Error("Invalid reviewed kit preparation");
+    if (k.version === "standard-preparation/10"
+      ? i.algorithm !== "classic-greedy/3" || i.params.resolution !== 500 ||
+        !k.transform.targetFaces?.length || k.transform.targetFaces.length > 3 ||
+        k.tone?.version !== "quality-gated-midcontrast/1" ||
+        !/^[a-f0-9]{64}$/.test(k.tone.parentImageHash) || k.tone.parentImageHash === i.imageHash ||
+        Object.keys(k.tone).sort().join(",") !== "parentImageHash,version" ||
+        k.transform.product?.kind !== "people" || !!k.transform.caption
+      : k.tone !== undefined)
+      throw Error("Invalid portrait tone preparation");
   }
   if (["standard-accent/20", "standard-accent/21"].includes(i.algorithm))
     await validateHeartAccent(i);

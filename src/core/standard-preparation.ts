@@ -65,7 +65,12 @@ export interface KitPreparation {
     | "standard-preparation/6"
     | "standard-preparation/7"
     | "standard-preparation/8"
-    | "standard-preparation/9";
+    | "standard-preparation/9"
+    | "standard-preparation/10";
+  tone?: {
+    version: "quality-gated-midcontrast/1";
+    parentImageHash: string;
+  };
   sourceHash: string;
   sourceAspect: number;
   whiteBackground: "automatic" | "manual" | "original";

@@ -738,6 +738,7 @@ export function CustomerStudio({
     };
     w.postMessage({
       strategy: "classic3",
+      portraitEnhancement: kind === "people" && !caption.trim(),
       physicalPreview: true,
       jobId: id,
       pixels: prepared.pixels,

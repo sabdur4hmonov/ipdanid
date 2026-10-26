@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-26 — tiniqlik tanlovi, hali eski saytda emas
+
+Yangi kod original va tiniqlashtirilgan variantni haqiqiy ip natijasida solishtiradi; yuz/burun/ko‘z/lab yoki oq fon yomonlashsa eski variantni saqlaydi. Originalingizda doira/yurak ko‘rsatkichlari yaxshilandi; kvadrat o‘zgarmadi.100%moslik hali yo‘q.6avtomatik desktop/mobil testda3shakl10.3–13.0soniyada yaratildi.4201va undan oldingi nusxalar o‘zgartirilmagan; yangi havola qolgan regressiyalardan keyin beriladi. Hozir sizdan test javobi kutilmaydi.
+
 ## 2026-10-26 — original surat bo‘yicha sifat tekshiruvi davom etmoqda
 
 4201nusxasi o‘zgartirilmagan. Keyingi sinov nusxasida **Yuzga yaqinlashtirish** ixtiyoriy tugmasi bor: surat butunligicha ochiladi, tugmani bossangiz kattalashadi; **Qaytarish** asl joylashuvga qaytaradi, qo‘lda surish/burish saqlanadi. Bu tugmaning o‘zi burun masalasini hal qildi deyilmaydi. Desktop/mobil4til/3shakl/Reset/burish/aynan qayta yaratish avtomatik o‘tdi; hozir sizdan qo‘lda sinov kutilmaydi.
