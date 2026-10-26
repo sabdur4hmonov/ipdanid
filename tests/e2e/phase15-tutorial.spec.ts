@@ -245,9 +245,14 @@ test("original panel model rotates by touch or pointer and timed playback never 
     );
   }
 });
+test.describe("owned media network fixture", () => {
+  // Routed fixture responses must not be replaced by the actual offline cache.
+  // The real offline workshop cases above retain service workers.
+  test.use({ serviceWorkers: "block" });
 test("optional owner media verifies its content and a bad digest keeps the free instructions usable", async ({
   page,
 }) => {
+  let manifestRequests = 0;
   const png = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA2UAAAAASUVORK5CYII=",
     "base64",
@@ -262,8 +267,9 @@ test("optional owner media verifies its content and a bad digest keeps the free 
     credit: "Original test fixture",
     license: "Owned test",
   };
-  await page.route("**/tutorials/manifest.json", (route) =>
-    route.fulfill({
+  await page.route("**/tutorials/manifest.json", (route) => {
+    manifestRequests++;
+    return route.fulfill({
       json: {
         schema: "iprasm.tutorial-media/1",
         assets: [
@@ -276,12 +282,13 @@ test("optional owner media verifies its content and a bad digest keeps the free 
           },
         ],
       },
-    }),
-  );
+    });
+  });
   await page.route("**/tutorials/owned/*.png", (route) =>
     route.fulfill({ body: png, contentType: "image/png" }),
   );
   await enter(page);
+  await expect.poll(() => manifestRequests).toBeGreaterThan(0);
   await start(page, "paper");
   await expect(
     page.getByTestId("tutorial-owned-media").locator("img"),
@@ -307,4 +314,6 @@ test("optional owner media verifies its content and a bad digest keeps the free 
     "data-confirmed",
     "1",
   );
+});
+
 });

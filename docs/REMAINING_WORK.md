@@ -61,6 +61,7 @@ Implementation order: C01 → C02 → C03 → C04–C21 (product/business/experi
 | O08 | macOS/Xcode/iOS device/signing | ios/ project already exists; C26 verifies shared config and writes exact Uzbek Mac procedure. No iOS build claim on Windows. |
 | O09 | Firebase project/service account/app config and consented production device tokens | C03 supplies env/config slots, adapter/token lifecycle/admin UI/mock tests and Uzbek setup instructions; real external sends disabled by default. |
 | O10 | Optional owned professional tutorial/product catalog media and real messaging-provider credentials | C10/C16 supply original procedural tutorials, replaceable slots and mocked delivery interfaces/docs. Lack of footage/credentials does not excuse missing player/retry code. |
+| O11 | Repository owner chooses and creates a legitimate main base for the already-authorized PR | Origin has feature and wip only; GitHub rejects absent main. docs/PR_BASE_UZ.md. Agent has no permission to create/push main or substitute a base; website/APK use does not wait. |
 
 ## Reconciliation of every matrix family and historical FINAL open row
 
