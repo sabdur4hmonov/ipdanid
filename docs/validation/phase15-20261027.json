@@ -1,0 +1,60 @@
+{
+  "schema": "iprasm.public-validation/1",
+  "date": "2026-10-27",
+  "sourceCommit": "6f2f021ade0ea5c581a4426b2f5fdf1f47d32416",
+  "buildFingerprint": "f563bb9fdfcc6781778e2a2488dd2edc601c1595961e6a7f4a3cffc9cfb450aa",
+  "unit": {
+    "passed": 679,
+    "failed": 0,
+    "workflowRun": 40409136802
+  },
+  "publicBrowser": {
+    "passed": 18,
+    "skipped": 0,
+    "flaky": 0
+  },
+  "currentLocalBrowser": {
+    "files": 80,
+    "jobs": 159,
+    "passed": 346,
+    "skipped": 0,
+    "flaky": 0,
+    "archivedResearchFilesExcluded": 30,
+    "firstRunClean": false,
+    "diagnosticFailedJobs": 4,
+    "supersededOrRetriedJobs": 5
+  },
+  "portrait": {
+    "additionalLocalCases": 26,
+    "generationMinMs": 2484,
+    "generationMaxMs": 7128,
+    "physicalPixelsExact": true,
+    "privatePhotosPublished": false,
+    "photographicEquality": false
+  },
+  "pageCpu4x": {
+    "generationMinMs": 5199.6,
+    "generationMaxMs": 6227.2,
+    "p95HeartbeatMaxMs": 146.2,
+    "menuLatencyMaxMs": 124,
+    "workerThrottled": false,
+    "wholeDeviceMeasured": false,
+    "conservativeEstimateMs": [
+      20306.4,
+      23599.3
+    ]
+  },
+  "android": {
+    "debug": true,
+    "sha256": "83b3e7b659b0f6b8d29937852a60e052387ec4fd0242b985912411b16b571985",
+    "assets": 121,
+    "oldApksUnchanged": 91,
+    "sameDevelopmentSigner": true,
+    "phoneInstalled": false
+  },
+  "pr": {
+    "created": false,
+    "reason": "Origin has no main base; feature-only writes authorized"
+  },
+  "productionActive": false
+}

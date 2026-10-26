@@ -1,3 +1,36 @@
+# 2026-10-27 — sayt, kod va APK sinovga tayyor
+
+**Sayt: http://127.0.0.1:4215/**. Quti kodi faqat `output/phase15/portrait-review/manual-testing.txt`da. Parol shart emas: har qutiga3ta alohida to‘liq yo‘riqnoma; ipli ko‘rinishni ko‘rish bepul, qadam/PDF/TXT/JSON/video kit bilan ochiladi. Ochilgan loyihaga qaytish kredit sarflamaydi.
+
+**Manba:** https://github.com/sabdur4hmonov/ipdanid/tree/feat/full-roadmap . **APK:** `output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk`. Eski imzo va91ta avvalgi APK saqlandi.121ichki fayl yakuniy buildga aynan teng. APK lokal4655API uchun; telefon bilan keyin sinash yoki HTTPSAPIga sozlash yo‘li `docs/APK_SERVER_AND_SIGNING_UZ.md`da. Hozir sayt bilan sinash mumkin.
+
+679unit va18ochiq brauzer sinovi GitHub’da o‘tdi. To‘liq lokal desktop/mobil matritsa:80fayl,159joriy guruh,346holat; yakuniy natijada skip/flaky/unexpected0. Dastlab4diagnostik muvaffaqiyatsizlik bo‘ldi: saqlashni erta o‘qigan2test, kesh chetlab o‘tgan media-mock va bitta vaqt oshishi. Tegishli testlar tuzatildi, vaqt holati original chegaralarda to‘liq qayta o‘tdi; eski muvaffaqiyatsizliklar saqlangan. Takroriy eski natijalar346songa qo‘shilmagan. TypeScript/build va yakuniy APK verifikatsiyasi o‘tdi. Hamma ish birinchi urinishdayoq xatosiz bo‘ldi deyilmaydi.
+
+Original surat uchun sifat tanlovi faqat foyda bergan variantni qoldiradi. Doira/yurakda yuz va burun ko‘rsatkichlari biroz yaxshilandi; kvadrat va juftlikda foyda yetmasa eski yo‘l saqlanadi. Eski yo‘riqnomalar o‘zgarmadi. Qo‘shimcha24surat/shakl/yozuv/mushuk holati2.5–7.2soniyada,2haqiqiy kit/eksport/oflayn/dam holati ham o‘tdi; ikkala79betlik PDFning6000qadami va tasviri teng. Taqqoslash faqat lokal `output/quality-original-20261026/report.html`da; original suratlar GitHubga qo‘yilmadi. **100%fotografik tenglik yoki haqiqiy taxta o‘xshashligi tasdiqlanmagan.**
+
+4×sahifa-CPU sinovida yaratish5.2–6.3soniya, ekran/menu javobi belgilangan chegaralardan o‘tdi. Chrome WorkerCPUni sekinlashtirmadi; butun telefon4×sinovi bajarildi deyilmaydi.20.3–23.6soniya konservativ hisob — o‘lchov emas. Haqiqiy telefon,6soatlik yig‘ish va taxta/material qabul sinovi egasi bilan keyin bajariladi.
+
+Barcha qurish mumkin bo‘lgan CODE bandlari va C26lokal/CI dastur tekshiruvlari yakunlandi. **PR yaratilmagan:** origin’da main yo‘q. Agent feature-only ruxsatni saqladi; main yaratilmagan, main’ga push yoki merge qilinmagan. Aniq owner yo‘li: `docs/PR_BASE_UZ.md`. Sayt va manbani yuklash bunga bog‘liq emas.
+
+## Faqat egasi bajaradigan tashqi ishlar
+
+| Ish | Aniq yo‘riqnoma |
+| --- | --- |
+| Domen/VPS/DNS/HTTPS, Admin paroli va haqiqiy e’lon qilish | docs/DEPLOY_VPS_UZ.md |
+| Narx/dostavka/real kontaktlar; Telegram va telefonni keyin kiritish | docs/CATALOG_UZ.md va docs/WEB_LAUNCH_CONTRACT.md |
+| Click/Payme merchant kalitlari, shartnoma va live tasdiq | docs/PAYMENTS_UZ.md — hozir sandbox, pul olinmaydi |
+| Shaxsiy release kaliti/store; haqiqiy Android telefon | docs/APK_SERVER_AND_SIGNING_UZ.md |
+|746rozilikli ovoz fayli va talaffuz tekshiruvi | docs/VOICE_RECORDING_UZ.md va docs/VOICE_RECORDING_LIST.csv |
+| Firebase/APNs loyihasi, servis kaliti va haqiqiy push roziligi | docs/PUSH_NOTIFICATIONS_UZ.md |
+|500×500mm taxta,50mm belgi, mix/ip/taranglik/metraj va birinchi yig‘ish | docs/BUILD_TODAY_UZ.md va docs/PHYSICAL_BOARD_UZ.md |
+| Istalsa QBRIX original/crop/natijalari va turli haqiqiy suratlar bilan solishtirish | docs/QBRIX_COMPARE_HOWTO_UZ.md |
+| iOS uchun Mac/Xcode va signing | docs/IOS_UZ.md |
+| Istalsa o‘ziga tegishli professional media/xabar provayderlari | docs/FREE_WORKSHOPS_UZ.md va docs/TRANSACTIONAL_MESSAGES_UZ.md |
+| PR uchun qonuniy main bazasini tanlab tayyorlash | docs/PR_BASE_UZ.md |
+
+Bu fayllar/kalitlar kutilib kod ishi to‘xtamadi. Haqiqiy pul/xabar/jo‘natma, telefon o‘rnatish yoki publicVPS amali bajarilmadi. Maxfiy qiymatlar commit qilinmadi. Quyidagi sanali yozuvlar tarixiy holat; hozirgi natija yuqorida.
+
+
 # 2026-10-27 — yangi sayt va original surat tekshiruvi
 
 Yangi sayt: **http://127.0.0.1:4215/**. Quti kodi `output/phase15/portrait-review/manual-testing.txt`da: parolsiz3ta to‘liq yo‘riqnoma, bepul ipli ko‘rinish, ochilgan ishga bepul qaytish. Eski saytlar va ma’lumotlar saqlangan.

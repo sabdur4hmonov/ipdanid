@@ -1,3 +1,7 @@
+# Latest software handoff —2026-10-27
+
+Owner site http://127.0.0.1:4215/ API4655, frozen121files; private code only output/phase15/portrait-review/manual-testing.txt. Free genuine preview/passwordless per-box3unique builds/same-guide free resume; instructions and ordered exports gated. Current source featurebranch includes all completed code. Final679unit/18publicCI,346current localbrowser/159jobs/80files and signed121assetAPK/91oldarchives verified; validation/phase15-20261027.json. Native/matrix121files match byte-for-byte; frozenweb was independently hash-verified and differs only in native config flags. All prior servers/data preserved. Main missing prevents PR, not website use; PR_BASE_UZ.md. Quality gain modest, no100percent/physical/phone/production claim. Earlier handoff below remains historical.
+
 # Website-first handoff — 2026-10-26
 
 Current local website: http://127.0.0.1:4201/, isolated API4483. Source commit `f1901e25ac23bcdbe9309861aa3b4551571d7a8e`. The snapshot `output/phase15-release-candidate-dist` is immutable; keep its launcher and all earlier previews running. Credentials remain only in ignored `output/phase15/manual-testing.txt`. Never publish that file.

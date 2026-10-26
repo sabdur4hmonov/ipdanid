@@ -1,3 +1,20 @@
+# C26 software release validation — COMPLETE2026-10-27
+
+All feasible CODE items are implemented and software-tested. The PR has an external repository prerequisite: no main exists; see PR_BASE_UZ.md. No main was created/pushed and no merge/force/history rewrite occurred. Hardware, physical likeness, whole-device performance and production activation remain distinct OWNER acceptance.
+
+- Exact local current matrix:80files,159unique current-spec-hash jobs,346passed cases,0acceptedskips/flaky/unexpected. One mobile-only performance file;30archived rejected experiments explicitly excluded. Every job uses a fresh isolated API/DB, serial heavy work and>=1.5GiB freeRAM.
+- Independent verifier rechecked actual one-pass per-test results, current source hashes, API/harness/build fingerprints and all121frozen ownerweb files. Four diagnostic failures and one superseded successful board hash retained, excluded from the unique acceptance count. This was not a clean first run.
+- CI source6f2f021, run40409136802, BOTH jobs successful. Downloaded verificationartifact12693205970 confirms679unit/18publicbrowser. Sanitized public proof: validation/phase15-20261027.json; no private input/report upload.
+- Final TSC/build2142 passed. Matrix/native source manifestf563bb9fdfcc6781778e2a2488dd2edc601c1595961e6a7f4a3cffc9cfb450aa. All121APKsource files byte-exact to final working build; same8e43cf signer,91oldAPKs unchanged, privacy/noAutoBackup/DEXplugins/legacy+newquality markers verified. App archive83b3e7b659b0; no device install or instrumentation execution.
+- Owner site4215/API4655 serves immutable121-file portrait-review snapshot; credentials only output/phase15/portrait-review/manual-testing.txt. All old previews/data stay frozen. Web snapshot/native differ in native-only config flags; regular web uses relative API. Native debug base4655, editable in debug Admin; owner HTTPS/release key later.
+-24actual photo/mode cases plus2paid/export/offline/cancel cases passed.2.5–7.2s normal UI generation; independent scalar hashes/physicalpixels, two79pagePDFs/all6000steps exact. Original Circle/Heart gain modestly, Square/pair fallback exact. No source overlay, photo upload or photographic-equality claim.
+- Page4x final4cases5.2–6.3s, p95<=146.2/menu124/maxgap341.2ms, exact hash/PNG across rates. Earlier160.6ms p95 outlier retained; diagnosticprofile and original strict full4case rerun passed, no thresholds changed. Workers are demonstrably unthrottled.20.3–23.6s conservative whole4x estimate is not a phone pass.
+
+Raw private evidence stays local: test-results/c26-release-dAZ4E1 and output/quality-original-20261026. Final owner checklist and tests are AGENT/FINAL_REPORT.md and OWNER_TESTS.md. No CODE waits for credentials, media, devices or owner response.
+
+## Historical preparation notes — superseded by the completion above
+
+
 # C26 release candidate — ACTIVE2026-10-26
 
 Preparation is tested; the final product browser matrix, preserved APK and PR are not yet accepted. Resume AGENT/PROGRESS.md, not an older final report.

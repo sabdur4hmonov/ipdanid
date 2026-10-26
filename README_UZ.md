@@ -1,3 +1,9 @@
+## Shu kompyuterdagi tayyor nusxa —2026-10-27
+
+Sayt: http://127.0.0.1:4215/ . Quti kodi faqat mahalliy `output/phase15/portrait-review/manual-testing.txt`da. APK `output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk`.679unit va346to‘liq desktop/mobil holat o‘tdi; CI dagi18ochiq brauzer sinovi lokal matritsaga ham kiradi. Dalil: [yakuniy software tekshiruvi](docs/RELEASE_CANDIDATE_CHECKPOINT.md), [sanitizatsiya qilingan JSON](docs/validation/phase15-20261027.json). Mayda detallar fotografiyaga teng emas, real telefon/taxta/public xizmatlar hali alohida tekshiriladi.
+
+Yangi yuklangan kompyuter uchun pastdagi ishga tushirish yo‘lidan foydalaning; lokal preview kodlari GitHubga qo‘yilmagan. PR uchun repo main bazasi yo‘q: [egasi bajaradigan repo qadami](docs/PR_BASE_UZ.md).
+
 # Ip Rasm — yuklab olish va sinash
 
 Node.js **24 LTS** kerak. GitHub’da `feat/full-roadmap` branchini tanlab **Code → Download ZIP** bosing va arxivni alohida papkaga oching. Yoki:

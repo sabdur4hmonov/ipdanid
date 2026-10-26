@@ -1,3 +1,7 @@
+## Final acceptance2026-10-27
+
+13cache/portrait parity units, full679unit suite,24actualdesktop/mobile photo-mode cases plus2paid/export/offline/cancel cases and full346case current software matrix passed. Normal generation2484–7128ms, original scalar path hashes and every physical RGB pixel match; two79pagePDFs/all6000steps exact.160MiB typed geometry limit unchanged. Page4x5.2–6.3s passed original responsiveness gates after one retained timing outlier; worker not throttled/realphone untested. Source/domain/hardware limitations remain explicit. No numerical/default/material/old-guide change beyond versioned quality selection.
+
 # Exact classic3 score cache
 
 The portrait quality selector in `portrait-enhancement.ts` runs two fixed targets through the same immutable classic3 solver. The additional solve exceeded the unchanged 15-second UI gate on synthetic1 (17.290 seconds). An initial fully directed inverted cache made the real browser slower (22.482 seconds); it was rejected and retained only as local diagnostic evidence.

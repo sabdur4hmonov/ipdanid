@@ -2,6 +2,18 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — yakuniy saytni o‘zingiz sinash
+
+http://127.0.0.1:4215/ . Kit kodi faqat `output/phase15/portrait-review/manual-testing.txt`da. Admin tokeni ham shu shaxsiy faylda; uni ulashmang. Hozir sizdan javob kutilmaydi.
+
+1. Galereyadan surat → Doira/Kvadrat/Yurak → surish/kattalashtirish/Burish. Yuzga yaqinlashtirish ixtiyoriy; Qaytarish butun suratni tiklaydi. Oldin/Keyin va qayta qirqish bilan ko‘ring.
+2. Yaratishdan keyin haqiqiy ip ko‘rinishi bepul. Yoqsa Yig‘ishni boshlash → quti kodi. Parol shart emas;3ta alohida yo‘riqnoma ochiladi.
+3. Bitta qadamni tasdiqlang → Dam olish → sahifani qayta oching. Qolgan joydan davom eting; kerak bo‘lsa Loyihalarim → Davom etish. Ayni ochilgan loyihaga yana kredit ketmaydi. Oflayn ham avtomatik sinaldi.
+4. PDF/TXT/JSON va katta sektor yozuvi bir xil yo‘lni ko‘rsatadi.346yakuniy brauzer holati,679unit, qo‘shimcha26sifat/kit/oflayn holati va APK tekshirildi. Mayda detallar hali fotografiyaga teng emas; taqqoslash lokal report.html da.
+5. Keyin taxta uchun docs/BUILD_TODAY_UZ.md:500×500mm andozani100%masshtabda chop eting,50mm belgini o‘lchang, tanlangan240mixni qo‘ying, sektorlarni yopishtiring. Jismoniy taranglik/metraj/o‘xshashlikni hali odam tekshiradi.
+
+APK: `output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk`. Telefon/HTTPSsozlash uchun docs/APK_SERVER_AND_SIGNING_UZ.md. Tashqi owner ishlari va PR main bazasi bo‘yicha aniq ro‘yxat AGENT/FINAL_REPORT.md da.
+
 ## 2026-10-27 — yangi APK ham tayyor
 
 APK: `output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk`. Eski ilova imzosi saqlangan,91oldingi APK o‘zgarmadi.121ichki fayl va serverga ulanishning desktop/mobil native-mode sinovi o‘tdi. Hozir telefon o‘rnatilishi kutilmaydi; bu sinov haqiqiy telefon tekshiruvining o‘rnini bosmaydi.
