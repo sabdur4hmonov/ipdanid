@@ -1,7 +1,16 @@
 import { newEvidenceRoot } from "../helpers/evidence-paths";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { gallery, photoCases, english, png } from "./phase12-cases";
+import {
+  gallery,
+  photoCases,
+  english,
+  png,
+  captureStudioTarget,
+  studioTargetPng,
+} from "./phase12-cases";
+import { hash } from "../../src/core/engine";
+import { sourceMidcontrast } from "../../src/core/source-midcontrast";
 import { validateInstruction } from "../../src/core/validation";
 import { referenceRaster } from "../../src/core/classic-reference";
 import UPNGModule from "@pdf-lib/upng";
@@ -15,8 +24,11 @@ for (const index of [0, 5] as const)
   }, info) => {
     // Two full local segmentation passes plus mask editing; generation retains its 15 s bound.
     test.setTimeout(240000);
-    const out = newEvidenceRoot(`output/current-free-photo/${info.project.name}/${index}`);
+    const out = newEvidenceRoot(
+      `output/current-free-photo/${info.project.name}/${index}`,
+    );
     mkdirSync(out, { recursive: true });
+    await captureStudioTarget(page);
     await page.goto("/");
     await english(page);
     await expect(page.locator(".shape-chips")).toHaveCount(0);
@@ -154,7 +166,23 @@ for (const index of [0, 5] as const)
             .instruction,
       ),
     );
-    expect(i.params.kitPreparation!.version).toBe("standard-preparation/9");
+    const targetPng = UPNG.decode(
+        Uint8Array.from(Buffer.from(await studioTargetPng(page), "base64"))
+          .buffer,
+      ),
+      targetPixels = new Uint8Array(UPNG.toRGBA8(targetPng)[0]).filter(
+        (_, k) => k % 4 !== 3,
+      ),
+      preparation = i.params.kitPreparation!;
+    if (preparation.version === "standard-preparation/10") {
+      expect(preparation.tone!.parentImageHash).toBe(await hash(targetPixels));
+      expect(i.imageHash).toBe(
+        await hash(sourceMidcontrast(targetPixels, 500)),
+      );
+    } else {
+      expect(preparation.version).toBe("standard-preparation/9");
+      expect(i.imageHash).toBe(await hash(targetPixels));
+    }
     expect(i.params.kitPreparation!.transform).toEqual(chosen);
     const result = Buffer.from(
       await png(page, "customer-thread-result"),

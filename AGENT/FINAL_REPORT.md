@@ -1,3 +1,11 @@
+# 2026-10-27 — yangi sayt va original surat tekshiruvi
+
+Yangi sayt: **http://127.0.0.1:4215/**. Quti kodi `output/phase15/portrait-review/manual-testing.txt`da: parolsiz3ta to‘liq yo‘riqnoma, bepul ipli ko‘rinish, ochilgan ishga bepul qaytish. Eski saytlar va ma’lumotlar saqlangan.
+
+Originalingizda doira/yurak yuz va burun ko‘rsatkichlari biroz yaxshilandi. Kvadratda foyda bermagan o‘zgarish tanlanmaydi.100%fotografik tenglik yo‘q; nozik chiziqlar va oq joylardagi iplar ko‘rinadi.24desktop/mobil surat/shakl/yozuv/mushuk holati2.5–7.2soniyada o‘tdi; hammasida haqiqiy ip ketma-ketligi tekshirildi.2haqiqiy kod/eksport/dam/oflayn sinovi ham o‘tdi; ikkala79betlik PDFdagi6000qadam va rasm pikseli teng.19tegishli unit, yakuniy6server-himoya testi va build o‘tdi. Mahalliy taqqoslash `output/quality-original-20261026/report.html`; suratlaringiz GitHubga yuborilmagan.
+
+Hozir keng C26matritsa va eski lokal imzoli yangi APK tekshiruvi yakunlanmoqda. Bu bandlar o‘tdi deb hali yozilmaydi. PR uchun repoda main yo‘q; ruxsatsiz main yaratilmaydi. Egasi keyin ulaydigan tashqi xizmatlar ro‘yxati quyidagi hujjatlarda; sizdan hozir hech narsa so‘ralmaydi. Quyidagi sanali bo‘limlar tarixiy.
+
 # 2026-10-26 — sayt sinovga tayyor, avval web
 
 Yangi sayt: **http://127.0.0.1:4201/**. Uchta alohida test kit kodi faqat `output/phase15/manual-testing.txt`da. Har biri3ta yangi to‘liq yo‘riqnomani ochadi, parol/email shart emas. Rasmning tayyor ipli ko‘rinishi bepul; kod ochilmaguncha qadamlar, ip yo‘li va ketma-ket video/GIF yopiq. Ayni ochilgan ishga qaytish kredit sarflamaydi. Telegram va telefonni buyurtmaga keyin haqiqiy ma’lumot berilganda qo‘shamiz.

@@ -1,0 +1,11 @@
+# Exact classic3 score cache
+
+The portrait quality selector in `portrait-enhancement.ts` runs two fixed targets through the same immutable classic3 solver. The additional solve exceeded the unchanged 15-second UI gate on synthetic1 (17.290 seconds). An initial fully directed inverted cache made the real browser slower (22.482 seconds); it was rejected and retained only as local diagnostic evidence.
+
+The replacement shares an inverted score bucket only when the forward and reverse DDA arrays are exact reversals. Directed arrays remain separate: floating-point ties can change a chord's pixels, and the original first-encounter direction and accumulation order must survive. Different pixel sets never share a bucket.
+
+For every applied pixel, the cache first performs the original Float32 residual subtraction, then updates affected sums using the actual rounded residual delta. Candidate scores within 1e-6 of the current winner are recomputed in their canonical direct order, including the incumbent. Ascending pin traversal and the original strict `>` tie rule remain unchanged. The conservative repair window exceeds the Float64 accumulation bound for the supported 500-pixel, 3500-strand, darkness-at-most-.16 domain. Cache construction is bounded to 160 MiB; unsupported or unavailable geometry uses the scalar solver. Cancellation is propagated, never treated as quality rejection.
+
+The ordinary exported classic3 function remains scalar unless given an explicitly bound geometry object. The quality selector reuses one geometry for its two targets. No settings, pins, material physics, sequence identity, quality thresholds, old guide contracts or time gates change. Typed cache memory is reported rather than claiming the smaller scalar cache footprint. This is a speed optimization, not a new quality algorithm or proof of real phone performance.
+
+Acceptance requires independent scalar sequence hashes and exact physical canvas pixels, in addition to residual/score parity, all three shapes, seeded replay, distinct targets, cancellation and profile binding. Local original photographs and reports remain ignored and are never uploaded. The owner-original comparisons still show only a modest Circle/Heart gain; Square correctly retains its original sequence. Photographic equality and physical likeness are not claimed.

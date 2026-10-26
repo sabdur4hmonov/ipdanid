@@ -2,6 +2,18 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — yangi tekshirilgan sayt
+
+**http://127.0.0.1:4215/** ni oching. Yangi3ta yasashga yetadigan quti kodi faqat `output/phase15/portrait-review/manual-testing.txt`da. Faylni boshqalarga yubormang. Sizdan hozir javob yoki qo‘lda sinov kutilmaydi.
+
+1. Galereyadan surat tanlang, Doira/Kvadrat/Yurakdan birini bosing. Rasmni o‘zingiz suring, kattalashtiring yoki buring. Yuzga yaqinlashtirish ixtiyoriy; Qaytarish butun suratni tiklaydi.
+2. Oldin/Keyin va fonni qayta qirqish orqali qirqimni ko‘ring. Yaratishdan keyin haqiqiy ip natijasi bepul ko‘rinadi.
+3. Yoqsa Yig‘ishni boshlash → quti kodi. Parol shart emas. Kod3ta alohida yo‘riqnomaga yetadi; avval ochilgan ishga qaytish bepul.
+4. Katta sektor ko‘rsatmasi bo‘yicha bitta qadamni tasdiqlang, Dam olishni bosing. Sahifani qayta ochganda shu joydan davom eting; kerak bo‘lsa Loyihalarim → Davom etish. Oflayn davom etish avtomatik tekshirildi.
+5. PDF/TXT/JSON ayni ip ketma-ketligini beradi. Originalga100%tenglik yo‘q: doira/yurakdagi burun/yuz biroz yaxshiroq, kvadrat foyda bo‘lmasa avvalgi variantni saqlaydi. Mahalliy taqqoslash: `output/quality-original-20261026/report.html`.
+
+24sifat/moslik va2to‘lovsiz test-kod/eksport/oflayn holati desktop hamda mobilda o‘tdi. Yaratish2.5–7.2soniya. Bu mobil ekranli desktop sinovi; haqiqiy telefon/taxta tekshiruvining o‘rnini bosmaydi. Eski4194–4214nusxalar saqlangan.
+
 ## 2026-10-26 — tiniqlik tanlovi, hali eski saytda emas
 
 Yangi kod original va tiniqlashtirilgan variantni haqiqiy ip natijasida solishtiradi; yuz/burun/ko‘z/lab yoki oq fon yomonlashsa eski variantni saqlaydi. Originalingizda doira/yurak ko‘rsatkichlari yaxshilandi; kvadrat o‘zgarmadi.100%moslik hali yo‘q.6avtomatik desktop/mobil testda3shakl10.3–13.0soniyada yaratildi.4201va undan oldingi nusxalar o‘zgartirilmagan; yangi havola qolgan regressiyalardan keyin beriladi. Hozir sizdan test javobi kutilmaydi.

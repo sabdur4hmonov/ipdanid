@@ -159,6 +159,12 @@ test("a full procedural500px photo preserves pins, monotone progress, provenance
       baseline.imageHash,
     );
     expect(selected.imageHash).toBe(await hash(sourceMidcontrast(pixels, 500)));
+    const directEnhanced = await generateClassicLeastSquares({
+      ...options,
+      pixels: sourceMidcontrast(pixels, 500),
+      kitPreparation: selected.params.kitPreparation,
+    });
+    expect(selected.sequenceHash).toBe(directEnhanced.sequenceHash);
   } else expect(selected.sequenceHash).toBe(baseline.sequenceHash);
 }, 60000);
 test("source filter is byte-identical to its frozen recipe and never inks white pixels", () => {

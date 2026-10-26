@@ -5,6 +5,11 @@ import { assertPinSpacing, connectionAllowed } from "./geometry";
 import { Distribution } from "./distribution";
 import { validateStandardProfile } from "./standard-kit";
 import {
+  ClassicScoreCache,
+  ClassicScoreGeometry,
+  CLASSIC_SCORE_REPAIR,
+} from "./classic-score-cache";
+import {
   classicPins,
   referenceRaster,
   referenceLinePixels,
@@ -160,6 +165,7 @@ export function leastSquaresImportance(n: number, faces: RegionBox[]) {
 
 export async function generateClassicLeastSquares(
   o: GenerateOptions & { onCheckpoint?: (i: Instruction) => void },
+  sharedGeometry?: ClassicScoreGeometry,
 ): Promise<Instruction> {
   const { resolution: n, profile: p } = o,
     started = performance.now();
@@ -181,6 +187,13 @@ export async function generateClassicLeastSquares(
     throw Error("classic3/combination");
   assertPinSpacing(p);
   validateStandardProfile(p);
+  if (
+    sharedGeometry &&
+    (sharedGeometry.profile !== p ||
+      sharedGeometry.resolution !== n ||
+      o.lines > 3500)
+  )
+    throw Error("classic3/cache-binding");
   const faces = o.kitPreparation?.transform.targetFaces ?? [],
     settings: ClassicLeastSquaresSettings = {
       ...CLASSIC_LS_DEFAULTS,
@@ -206,6 +219,12 @@ export async function generateClassicLeastSquares(
     used = new Set<number>(),
     distribution = new Distribution(count),
     weave = new SquareWeave(p);
+  const accelerated = sharedGeometry
+      ? new ClassicScoreCache(sharedGeometry, err, darkness)
+      : undefined,
+    directions = accelerated
+      ? new Int32Array(count * count).fill(-1)
+      : undefined;
   let prev = -1,
     meters = 0.5,
     peakCacheBytes = 0;
@@ -214,8 +233,12 @@ export async function generateClassicLeastSquares(
     const k = key(a, b);
     let pixels = cache.get(k);
     if (!pixels) {
-      pixels = referenceLinePixels(pins[a], pins[b], n);
+      pixels = sharedGeometry
+        ? sharedGeometry.lines[a * count + b]
+        : referenceLinePixels(pins[a], pins[b], n);
+      if (!pixels) throw Error("classic3/cache-legality");
       cache.set(k, pixels);
+      if (directions) directions[k] = a * count + b;
       peakCacheBytes += pixels.byteLength;
     }
     return pixels;
@@ -293,7 +316,11 @@ export async function generateClassicLeastSquares(
         stoppedReason: "requested",
         stockShortfallMeters: Math.max(0, meters - p.stockMeters),
         durationMs: performance.now() - started,
-        peakCacheBytes,
+        peakCacheBytes: sharedGeometry
+          ? sharedGeometry.bytes +
+            accelerated!.sums.byteLength +
+            directions!.byteLength
+          : peakCacheBytes,
       },
     };
     i.sequenceHash = await hash(sequencePayload(i));
@@ -320,16 +347,34 @@ export async function generateClassicLeastSquares(
         continue;
       // Keep an exit available after arrival when the incident guard is near full.
       if (s + 1 < o.lines && distribution.degree[b] >= 159) continue;
-      if (!legalCache.has(k)) legalCache.set(k, connectionAllowed(p, cur, b));
+      if (!legalCache.has(k))
+        legalCache.set(
+          k,
+          sharedGeometry
+            ? !!sharedGeometry.legal[cur * count + b]
+            : connectionAllowed(p, cur, b),
+        );
       if (!legalCache.get(k)) continue;
       const pixels = chord(cur, b);
-      let sum = 0;
-      for (let j = 0; j < pixels.length; j++) {
-        const e = err[pixels[j]],
-          dd = darkness[pixels[j]];
-        sum += dd * (2 * e - dd);
+      let sum = 0,
+        score: number;
+      if (accelerated) score = accelerated.score(directions![k]);
+      else {
+        for (let j = 0; j < pixels.length; j++) {
+          const e = err[pixels[j]],
+            dd = darkness[pixels[j]];
+          sum += dd * (2 * e - dd);
+        }
+        score = sum / pixels.length;
       }
-      const score = sum / pixels.length;
+      if (
+        accelerated &&
+        best >= 0 &&
+        Math.abs(score - bestScore) < CLASSIC_SCORE_REPAIR
+      ) {
+        score = accelerated.directScore(directions![k]);
+        bestScore = accelerated.directScore(directions![key(cur, best)]);
+      }
       if (score > bestScore) {
         bestScore = score;
         best = b;
@@ -337,8 +382,10 @@ export async function generateClassicLeastSquares(
     }
     if (best < 0) throw Error("classic3/fixed-budget-has-no-legal-path");
     const pixels = chord(cur, best);
-    for (let j = 0; j < pixels.length; j++)
-      err[pixels[j]] -= darkness[pixels[j]];
+    if (accelerated) accelerated.apply(directions![key(cur, best)]);
+    else
+      for (let j = 0; j < pixels.length; j++)
+        err[pixels[j]] -= darkness[pixels[j]];
     used.add(key(cur, best));
     distribution.apply([[cur, best]]);
     path.push(best);

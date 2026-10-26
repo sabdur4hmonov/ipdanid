@@ -1,7 +1,10 @@
 import type { GenerateOptions } from "./engine";
-import { hash } from "./engine";
 import type { Instruction } from "./types";
-import { generateClassicLeastSquares } from "./classic-least-squares";
+import {
+  generateClassicLeastSquares,
+  squareChordExcluded,
+} from "./classic-least-squares";
+import { ClassicScoreGeometry } from "./classic-score-cache";
 import { referenceRaster } from "./classic-reference";
 import { sourceMidcontrast } from "./source-midcontrast";
 import { viewingImage, viewingSsimPrepared } from "./viewing-ssim";
@@ -96,7 +99,7 @@ export function portraitDetailScore(
 
 // Bounded two-candidate preparation selection, not a new/modified /3 solver.
 // Both physical paths are measured against the ORIGINAL reviewed target. A
-// failed/slow candidate cannot replace a valid baseline. No feature painting.
+// failed/unhelpful candidate cannot replace a valid baseline. No feature painting.
 export async function generatePortraitEnhanced(
   o: GenerateOptions & { onCheckpoint?: (i: Instruction) => void },
 ): Promise<Instruction> {
@@ -104,6 +107,7 @@ export async function generatePortraitEnhanced(
     proof = o.kitPreparation;
   if (
     o.resolution !== 500 ||
+    ![2500, 3000, 3500].includes(o.lines) ||
     proof?.version !== "standard-preparation/9" ||
     proof.transform.product?.kind !== "people" ||
     proof.transform.caption ||
@@ -111,32 +115,56 @@ export async function generatePortraitEnhanced(
     proof.transform.targetFaces.length > 3
   )
     return generateClassicLeastSquares(o);
-  const baseline = await generateClassicLeastSquares({
-    ...o,
-    onProgress: (p) => o.onProgress?.(p * 0.45),
-  });
+  const filtered = sourceMidcontrast(o.pixels, 500);
+  let changed = false;
+  for (let k = 0; k < filtered.length; k++)
+    if (filtered[k] !== o.pixels[k]) {
+      changed = true;
+      break;
+    }
+  if (!changed) return generateClassicLeastSquares(o); // Identical candidates cannot clear the gain gates.
+  let geometry: ClassicScoreGeometry | undefined;
+  try {
+    geometry = new ClassicScoreGeometry(
+      o.profile,
+      500,
+      (a, b) => squareChordExcluded(o.profile, a, b),
+      o.cancelled,
+    );
+  } catch {
+    if (o.cancelled?.()) throw new DOMException("Cancelled", "AbortError");
+    o.onDiagnostic?.({ stage: "portrait-detail-cache", available: false });
+  }
+  const baseline = await generateClassicLeastSquares(
+    {
+      ...o,
+      onProgress: (p) => o.onProgress?.(p * 0.45),
+    },
+    geometry,
+  );
   let selected = baseline,
     reason = "baseline";
   try {
     if (o.cancelled?.()) throw new DOMException("Cancelled", "AbortError");
     {
-      const pixels = sourceMidcontrast(o.pixels, 500),
+      const pixels = filtered,
         parentImageHash = baseline.imageHash;
-      if ((await hash(pixels)) === parentImageHash)
-        throw Error("portrait-detail/unchanged-tone");
-      const candidate = await generateClassicLeastSquares({
-        ...o,
-        pixels,
-        seed: undefined,
-        onCheckpoint: undefined,
-        kitPreparation: {
-          ...structuredClone(proof),
-          version: "standard-preparation/10",
-          tone: { version: "quality-gated-midcontrast/1", parentImageHash },
+      const candidate = await generateClassicLeastSquares(
+        {
+          ...o,
+          pixels,
+          seed: undefined,
+          onCheckpoint: undefined,
+          kitPreparation: {
+            ...structuredClone(proof),
+            version: "standard-preparation/10",
+            tone: { version: "quality-gated-midcontrast/1", parentImageHash },
+          },
+          cancelled: () => !!o.cancelled?.(),
+          onProgress: (p) => o.onProgress?.(0.45 + p * 0.4),
         },
-        cancelled: () => !!o.cancelled?.(),
-        onProgress: (p) => o.onProgress?.(0.45 + p * 0.4),
-      });
+        geometry,
+      );
       {
         o.onProgress?.(0.9);
         const targetView = viewingImage(

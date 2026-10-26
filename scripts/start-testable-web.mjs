@@ -19,13 +19,16 @@ import { OWNER_PREVIEW_PORTS } from "../server/test-safety.mjs";
 const args = process.argv.slice(2);
 assert(
   args.length === 0 || (args.length === 2 && args[0] === "--name"),
-  "Expected --name testable-web, subject-repair or release-candidate",
+  "Expected --name testable-web, subject-repair, portrait-review or release-candidate",
 );
 const snapshotName = args[1] ?? "testable-web";
 assert(
-  ["testable-web", "subject-repair", "release-candidate"].includes(
-    snapshotName,
-  ),
+  [
+    "testable-web",
+    "subject-repair",
+    "portrait-review",
+    "release-candidate",
+  ].includes(snapshotName),
   "Unknown preview snapshot",
 );
 const root = realpathSync("."),
@@ -79,10 +82,22 @@ async function freePort(start) {
 }
 const release = snapshotName === "release-candidate",
   port = await freePort(
-    release ? 4201 : snapshotName === "subject-repair" ? 4214 : 4213,
+    release
+      ? 4201
+      : snapshotName === "portrait-review"
+        ? 4215
+        : snapshotName === "subject-repair"
+          ? 4214
+          : 4213,
   ),
   apiPort = await freePort(
-    release ? 4483 : snapshotName === "subject-repair" ? 4654 : 4653,
+    release
+      ? 4483
+      : snapshotName === "portrait-review"
+        ? 4655
+        : snapshotName === "subject-repair"
+          ? 4654
+          : 4653,
   ),
   site = `http://127.0.0.1:${port}`,
   api = `http://127.0.0.1:${apiPort}/api`;
@@ -179,7 +194,7 @@ try {
   }
   writeFileSync(
     `${evidence}/manual-testing.txt`,
-    `IP RASM — YANGI WEB SINOV\nIlova: ${site}/\nKit kodi (${batch.codes[0].quota} natija): ${batch.codes[0].code}\nAdministrator tokeni: ${admin}\nAPI: ${api}\n\n1. Galereyadan o‘z rasmingizni tanlang.\n2. Doira / Kvadrat / Yurak, keyin surish, kattalashtirish yoki Burish bilan joylashtiring.\n3. Oldin / Keyin bilan qirqimni ko‘ring, kerak bo‘lsa fonni qayta qirqing.\n4. Yaratish → natijani ko‘ring → Yig‘ishni boshlash, yuqoridagi test kit kodini kiriting.\n5. Qadam/ovoz/dam olishni tekshiring; sahifani yangilab qolgan joyga qayting.\n6. Hisob ochsangiz, Menyu → Suratni keyin davom ettirish orqali mahalliy yoki rozilik bilan hisob zaxirasini sinang.\n\nBu yangi ajratilgan sinov bazasi. Eski 4212 hisoblari bu test bazasiga ko‘chirilmagan. Production web va app bir API bilan ayni hisobni ishlatadi. Haqiqiy pul/xabar yuborilmaydi. Sifat tadqiqoti katta o‘sish bermagani uchun standart engine almashtirilmadi. Qolgan qabul ishlari AGENT/PROGRESS.md da.\n`,
+    `IP RASM — YANGI WEB SINOV\nIlova: ${site}/\nKit kodi (${batch.codes[0].quota} natija): ${batch.codes[0].code}\nAdministrator tokeni: ${admin}\nAPI: ${api}\n\n1. Galereyadan o‘z rasmingizni tanlang.\n2. Doira / Kvadrat / Yurak, keyin surish, kattalashtirish yoki Burish bilan joylashtiring.\n3. Oldin / Keyin bilan qirqimni ko‘ring, kerak bo‘lsa fonni qayta qirqing.\n4. Yaratish → natijani ko‘ring → Yig‘ishni boshlash, yuqoridagi test kit kodini kiriting.\n5. Qadam/ovoz/dam olishni tekshiring; sahifani yangilab qolgan joyga qayting.\n6. Hisob ochsangiz, Menyu → Suratni keyin davom ettirish orqali mahalliy yoki rozilik bilan hisob zaxirasini sinang.\n\nBu yangi ajratilgan sinov bazasi. Eski 4212 hisoblari bu test bazasiga ko‘chirilmagan. Production web va app bir API bilan ayni hisobni ishlatadi. Haqiqiy pul/xabar yuborilmaydi. Sifatga foyda bergan portret tayyorlovi avtomatik tanlanadi; klassik ip hisoblash va haqiqiy ip qalinligi saqlanadi. Nozik detallar original surat bilan aynan teng bo‘lishi kafolatlanmaydi. Qolgan qabul ishlari AGENT/PROGRESS.md da.\n`,
     { mode: 0o600 },
   );
   const metadata = {
