@@ -1,3 +1,13 @@
+# 2026-10-26 — sayt sinovga tayyor, avval web
+
+Yangi sayt: **http://127.0.0.1:4201/**. Uchta alohida test kit kodi faqat `output/phase15/manual-testing.txt`da. Har biri3ta yangi to‘liq yo‘riqnomani ochadi, parol/email shart emas. Rasmning tayyor ipli ko‘rinishi bepul; kod ochilmaguncha qadamlar, ip yo‘li va ketma-ket video/GIF yopiq. Ayni ochilgan ishga qaytish kredit sarflamaydi. Telegram va telefonni buyurtmaga keyin haqiqiy ma’lumot berilganda qo‘shamiz.
+
+GitHub f1901e2: web build,662unit/145fayl,16desktop/mobil ochiq sinov, xavfsizlik/tarjima/HTTP tekshiruvlari va Android debug build o‘tdi. Sinovlar GitHub runnerida bajarildi; lokal RAM cheklovi yashirilmadi. Olingan artifact va121ta saytda berilayotgan faylning SHA tengligi alohida tekshirildi. Eski serverlar/rasmlar/bazaga tegilmadi. To‘lov/xabar/dostavka bu nusxada sandbox. Yangi APKning eski lokal imzo bilan mosligi va keng xususiy matritsa hali yakuniy qabul qilinmagan.
+
+**Ochiq holat:** burun/tiniqlik va haqiqiy taxta/telefon sifati yaxshilandi deb yangi da’vo yo‘q; ular avtomatik kod testlariga teng emas. Barcha Phase15 qabul bandlari tugadi deyilmaydi. Hozirgi topshiriq — ishlayotgan sayt va GitHub manbasi; aniq dalil `docs/WEB_HANDOFF_CHECKPOINT.md`, keyingi ish `AGENT/PROGRESS.md`da.
+
+Egasi keyin ulaydi: domen/VPS — `docs/DEPLOY_VPS_UZ.md`; merchant kalitlari — `docs/PAYMENTS_UZ.md`; ovoz — `docs/VOICE_RECORDING_UZ.md`; app imzosi — `docs/APK_SERVER_AND_SIGNING_UZ.md`; taxta — `docs/BUILD_TODAY_UZ.md` va `docs/PHYSICAL_BOARD_UZ.md`; iOS — `docs/IOS_UZ.md`. Telegram/telefon hozir so‘ralmaydi. Quyidagi sana bo‘yicha hisobotlar tarixiy.
+
 #2026-10-26 — Yakuniy tekshiruv davom etmoqda
 
 C19ovozli buyruqlar, C20qurilmadagi taxta rasmlari, C22tarjimalar, C23ekran tezligi, C24xavfsizlik va C25tozalash kodi tugadi. To‘liq660unit/145fayl sinovi o‘tdi;8ta releaseharness himoya testi va build ham o‘tdi. Hozir C26to‘liq desktop/mobil matritsa, yangi APK, yangi havola va PR yakunlanadi. Barcha ish yakunlandi degan da’vo hali yo‘q. Burun/tiniqlik hamda haqiqiy telefon/taxta sifati hali qabul qilinmagan. Aniq holat AGENT/PROGRESS.md; quyidagi yozuvlar tarixiy.

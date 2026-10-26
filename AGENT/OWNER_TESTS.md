@@ -2,6 +2,18 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-26 — yangi sayt, parolsiz quti kodi
+
+**http://127.0.0.1:4201/** ni oching. Kit kodlari `output/phase15/manual-testing.txt`da; bu faylni boshqalarga yubormang.
+
+1. Galereyadan surat → Doira/Kvadrat/Yurak → o‘zingiz suring/kattalashtiring/buring → Yaratish. Tayyor ipli rasm bepul ko‘rinadi.
+2. Kod kiritilmaguncha ip yo‘li, qadamlar va ketma-ket video/GIF ochilmasin.
+3. Yig‘ishni boshlash → bitta kit kodi. Parol/email kiritish shart emas. Birinchi yangi yo‘riqnoma uchun3huquqdan2qolsin.
+4. Bir necha qadamni tasdiqlang → Dam olish → sahifani qayta oching. Qolgan joy saqlansin, ayni ishni ochish yana kredit olmasin.
+5. Shu kod bilan yana2ta yangi yo‘riqnoma ochish mumkin; undan keyin yangi rasmni ko‘rish bepul, yangi ip yo‘li yopiq.
+
+Bu asosiy tartib GitHub’da desktop/mobil avtomatik sinovdan o‘tdi; sizdan hozir qo‘lda test javobi kutilmaydi. Eski4214va undan oldingi sahifalar saqlangan. Haqiqiy pul/xabar/jo‘natma yo‘q; Telegram va raqam keyingi bosqich.
+
 ## 2026-10-24 — GitHub’dan yangi nusxani sinash
 
 Hozir shu kompyuterda ochilgan yangi sayt: **http://127.0.0.1:4213/**. Kit kodi va Admin tokeni `output/phase15/testable-web/manual-testing.txt`da. 92fayl test qilingan build bilan aynan teng; real pul/xabar o‘chiq. Eski4212sayti ham saqlangan.

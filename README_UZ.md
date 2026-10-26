@@ -12,6 +12,8 @@ node scripts/start-testable-web.mjs --name release-candidate
 
 Terminalda chiqqan manzilni brauzerda oching. Terminalni ochiq qoldiring. Bu yangi mahalliy sinov bazasi; eski server yoki hisoblar ko‘chirilmaydi. Uchta test kit kodi va mahalliy Admin tokeni faqat kompyuteringizdagi `output/phase15/manual-testing.txt` faylida bo‘ladi. Uni boshqalarga yubormang. Launcher mavjud sinov nusxasini qayta yozmaydi va eski serverlarni qayta ishlatmaydi.
 
+Kompyuterda build uchun RAM yetmasa: GitHub → Actions → **Verify Ip Rasm** → ikkala tekshiruvi yashil bo‘lgan ayni manba commitining runini oching. **ip-rasm-web-sandbox** artifactini yuklang; undagi `verification.json` manba SHA sini yuklagan kod bilan solishtiring. Yangi papkada `npm ci`dan keyin artifactdagi `dist`ni hali mavjud bo‘lmagan `output/phase15-dist`ga joylang va yuqoridagi launcher buyrug‘ini bajaring. Oldingi ishlayotgan nusxani qayta yozmang. Artifact faqat sayt buildi va ochiq avtomatik hisobotlardan iborat; kit kodlari/rasmlar/baza berilmaydi. Joriy tekshirilgan nusxa dalili: [sayt topshirig‘i](docs/WEB_HANDOFF_CHECKPOINT.md).
+
 ## Rasm bilan sinash
 
 Taxtani hozir yasash uchun aniq500mm/A4/sektor paketini chiqarish va birinchi ipgacha yo'l: [Birinchi taxtani yasash](docs/BUILD_TODAY_UZ.md). Har bir andozada50mm masshtab tekshiruvi bor.
@@ -23,6 +25,8 @@ Taxtani hozir yasash uchun aniq500mm/A4/sektor paketini chiqarish va birinchi ip
 5. Hisobga kirib loyihani sinxronlang. Suratni boshqa qurilmada tahrirlash uchun uning shaxsiy zaxirasiga alohida rozilik kerak. Faqat yo‘riqnomani saqlash asl suratni saqlamaydi.
 
 Menyu → **Hisob / Admin** orqali hisob, do‘kon, buyurtmalar va boshqaruv ochiladi. Admin uchun mahalliy fayldagi tokenni kiriting; kit kodlari, narxlar, buyurtmalar va e’lonlarni shu yerda boshqarasiz. Mahalliy to‘lov/dostavka — sandbox, haqiqiy pul olinmaydi yoki jo‘natma yaratilmaydi.
+
+Har bir jismoniy qutiga alohida kit kodi beriladi. Parol/email shart emas; standart huquq3ta yangi to‘liq yo‘riqnoma. Ayni ishni qayta ochish kredit olmaydi. Natija rasmi bepul, ip yo‘li/qadamlar/ketma-ket video esa kit bilan ochiladi. Telegram va telefon buyurtma kontaktlari egasi keyin ma’lumot berganda qo‘shiladi.
 
 ## Server va keyingi app
 
