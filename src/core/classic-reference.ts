@@ -98,7 +98,14 @@ export function referenceRaster(
   )
     throw Error("classic2/render-bounds");
   completed = Math.max(0, Math.min(i.metrics.lines, Math.floor(completed)));
-  if(incremental && (incremental.pixels.length!==outSize*outSize*3 || !Number.isInteger(incremental.completed) || incremental.completed<0 || incremental.completed>completed))throw Error('classic2/incremental-render-bounds');
+  if (
+    incremental &&
+    (incremental.pixels.length !== outSize * outSize * 3 ||
+      !Number.isInteger(incremental.completed) ||
+      incremental.completed < 0 ||
+      incremental.completed > completed)
+  )
+    throw Error("classic2/incremental-render-bounds");
   const previous = rasterCache.get(i)?.get(outSize);
   if (previous?.completed === completed) return previous.pixels;
   const p = i.profile,
@@ -114,6 +121,13 @@ export function referenceRaster(
     weights = new Float64Array(outSize * outSize),
     marks = new Uint32Array(outSize * outSize),
     touched = new Uint32Array(outSize * outSize);
+  // Every channel of a fresh black-only raster has identical Float32 updates.
+  // Evaluate it once, then replicate. Colored and incremental guides retain
+  // their original three-channel path; old output bytes remain identical.
+  const mono =
+    !incremental && i.segments.every((s) => s.color.toLowerCase() === "#000000")
+      ? new Float32Array(outSize * outSize).fill(1)
+      : undefined;
   let epoch = 0,
     at = 0;
   for (const segment of i.segments) {
@@ -157,13 +171,18 @@ export function referenceRaster(
       for (let k = 0; k < count; k++) {
         const pixel = touched[k],
           a = alpha * weights[pixel];
-        for (let c = 0; c < 3; c++) {
-          const idx = pixel * 3 + c;
-          out[idx] *= 1 - a * (1 - ink[c]);
-        }
+        if (mono) mono[pixel] *= 1 - a;
+        else
+          for (let c = 0; c < 3; c++) {
+            const idx = pixel * 3 + c;
+            out[idx] *= 1 - a * (1 - ink[c]);
+          }
       }
     }
   }
+  if (mono)
+    for (let k = 0; k < mono.length; k++)
+      out[k * 3] = out[k * 3 + 1] = out[k * 3 + 2] = mono[k];
   // Immutable completed guides share their exact preview with player and PDF.
   // Mutable construction snapshots are intentionally not cached.
   if (Object.isFrozen(i)) {

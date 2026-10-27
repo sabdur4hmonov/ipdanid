@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — yangi nusxa tekshiruvi davom etmoqda
+
+Hozir sizdan javob kutilmaydi. Eski4215server o‘chiq ekan; u qayta ishga tushirilmadi. Yangi alohida havola tayyorlangandan keyin shu faylga yoziladi. Ixtiyoriy kattalashtirishda15soniyadan oshgan holatlar aniqlandi; ular o‘tdi deb yozilmaydi.29ta tenglik/moslik testi va yangi build o‘tdi. Original suratlar faqat kompyuterda.
+
 ## 2026-10-27 — yakuniy saytni o‘zingiz sinash
 
 http://127.0.0.1:4215/ . Kit kodi faqat `output/phase15/portrait-review/manual-testing.txt`da. Admin tokeni ham shu shaxsiy faylda; uni ulashmang. Hozir sizdan javob kutilmaydi.

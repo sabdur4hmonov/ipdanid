@@ -7,7 +7,7 @@ import {
 import { ClassicScoreGeometry } from "./classic-score-cache";
 import { referenceRaster } from "./classic-reference";
 import { sourceMidcontrast } from "./source-midcontrast";
-import { viewingImage, viewingSsimPrepared } from "./viewing-ssim";
+import { portraitViewingImage, viewingSsimPrepared } from "./viewing-ssim";
 import { viewingMask } from "./viewing-mask";
 
 export type PortraitDetailScore = {
@@ -51,14 +51,14 @@ export function portraitDetailScore(
       { length: 250000 },
       (_, k) => pixels[k * 3] / 255,
     ),
-    targetView = preparedTargetView ?? viewingImage(target, 500),
+    targetView = preparedTargetView ?? portraitViewingImage(target, 500, faces),
     rgb = referenceRaster(i, 1000),
-    view = viewingImage(
-      rgb.filter((_, k) => k % 3 === 0),
-      1000,
-    ),
+    mono = new Float32Array(1000 * 1000),
     boardMask = viewingMask(i.profile.shape, 160),
     mask = viewingMask(i.profile.shape, 1000);
+  for (let k = 0; k < mono.length; k++) mono[k] = rgb[k * 3];
+  const view = portraitViewingImage(mono, 1000, faces);
+
   const regions = faces.flatMap((f) => {
     const b = (x: number, y: number, w: number, h: number) => ({
       left: f.left + x * f.width,
@@ -167,12 +167,13 @@ export async function generatePortraitEnhanced(
       );
       {
         o.onProgress?.(0.9);
-        const targetView = viewingImage(
+        const targetView = portraitViewingImage(
           Float32Array.from(
             { length: 250000 },
             (_, k) => o.pixels[k * 3] / 255,
           ),
           500,
+          proof.transform.targetFaces,
         );
         const before = portraitDetailScore(o.pixels, baseline, targetView),
           after = portraitDetailScore(o.pixels, candidate, targetView);
