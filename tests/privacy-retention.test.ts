@@ -17,6 +17,9 @@ test("all production feature tables have a reviewed privacy disposition; new pri
     expect(rows.find((r) => r.table === "credit_ledger")?.disposition).toBe(
       "accounting",
     );
+    for (const table of ["kit_inventories", "kit_inventory_batches"])
+      expect(rows.find(r => r.table === table)?.disposition).toBe("accounting");
+    expect(rows.find(r => r.table === "protected_generations")?.disposition).toBe("erase");
     store.db.exec(
       "CREATE TABLE unreviewed_private_data(user_id TEXT,payload TEXT)",
     );

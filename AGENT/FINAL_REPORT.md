@@ -1,5 +1,7 @@
 ## 28.10.2026 — yangi Phase16: bir million kod tayyor, qolgan ishlar ochiq
 
+Keyingi server yadrosi ham tekshirildi: 57 ta tegishli unit, 48 ta eski kit HTTP, 30 ta yangi haqiqiy HTTP tekshiruvi va build o‘tdi. Oxirgi sun’iy rasm sinovi 5,1 soniya; ketma-ketlik va rasm mahalliy hisob bilan aynan teng. Oddiy mijoz oynasi/Androidga ulash hali ochiq, shu sabab bu rejim avtomatik yoqilmagan. Tafsilot: `docs/PROTECTED_GENERATION_UZ.md`.
+
 **1 000 000 ta haqiqiy shaxsiy kod** chiqarildi, har biri 3 ta alohida ishni ochadi. Hammasi bazaga aniq tekshirildi va ishlatilmagan. Uch namunada haqiqiy kirish/3 ta ish/to‘rtinchisini rad etish/bepul qayta ochish tekshirildi; sinov huquqlarni sarflamagan. 19 ta unit/himoya testi, 15 ta HTTP tekshiruvi, 4 ta brauzer orqali shaxsiy faylni rad etish tekshiruvi, chop etish sinovi va yangi build o‘tdi.
 
 Kodlar GitHub yoki APKga qo‘shilmaydi. Yopiq zaxira va chop etish: `docs/KIT_MILLION_UZ.md`. Eski 4216 serverga avtomatik ulanmagan. Burun sifati, serverda yopiq yo‘riqnoma yaratish, yangi UI/dastavka tekshiruvi va yakuniy Android hali Phase16da ochiq. Brauzerga yuborilgan sayt kodini butunlay yashirish mumkin emas; maxfiy server qismlari alohida himoyalanadi. Oldingi “tugallangan” yozuvlar Phase15ga tegishli.

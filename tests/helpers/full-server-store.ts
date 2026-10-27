@@ -1,4 +1,5 @@
 import { KitStore } from "../../server/kit-store";
+import { GenerationStore } from "../../server/generation-store";
 import { RecoveryStore } from "../../server/recovery-store";
 import { PhotoBackupStore } from "../../server/photo-backup-store";
 import { BusinessStore } from "../../server/business-store";
@@ -23,6 +24,7 @@ import { TrialStore } from "../../server/trial-store";
 export function fullServerStore(path = ":memory:", pepper = "p".repeat(32)) {
   const store = new KitStore(path, pepper, "k".repeat(32));
   store.seed();
+  new GenerationStore(store);
   new RecoveryStore(store);
   const photos = new PhotoBackupStore(store);
   const business = new BusinessStore(store);

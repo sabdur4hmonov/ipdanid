@@ -9,6 +9,9 @@ import { dirname,join } from "node:path";
 import "./local-config.ts";
 import { DomainError } from "./store.ts";
 import { KitStore } from "./kit-store.ts";
+import { GenerationStore } from "./generation-store.ts";
+import { GenerationQueue } from "./generation-queue.ts";
+import { decodeGenerationRecipe } from "./generation-recipe.ts";
 import { RecoveryStore } from "./recovery-store.ts";
 import { PhotoBackupStore } from "./photo-backup-store.ts";
 import { AccountErasureStore } from "./account-erasure-store.ts";
@@ -51,6 +54,12 @@ const store = new KitStore(
   paymentKey,
 );
 if (!production) store.seed();
+const serverGenerationEnabled = process.env.SERVER_GENERATION === "1";
+if (process.env.SERVER_GENERATION && !["0", "1"].includes(process.env.SERVER_GENERATION))
+  throw Error("Invalid SERVER_GENERATION configuration");
+const generated = new GenerationStore(store);
+const generationQueue = new GenerationQueue(generated);
+const generationPrune = setInterval(() => generated.prune(), 60000).unref();
 const recovery = new RecoveryStore(store);
 const photoBackups = new PhotoBackupStore(store);
 const business = new BusinessStore(store);
@@ -153,6 +162,8 @@ const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://127.0.0.1"),
       path = url.pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
+    if (path.startsWith("/api/generation") && url.search)
+      throw new DomainError("Generation credentials must not be in the URL");
     if((path.startsWith("/api/trial")||path.startsWith("/api/admin/trial"))&&url.search)throw new DomainError("Trial parameters must not be in the URL");
     const maxBodyBytes=requestBodyLimit(path,req.headers);
     if(req.method === "GET" && (req.headers["transfer-encoding"]!==undefined || Number(req.headers["content-length"]??0)>0)) {
@@ -252,6 +263,10 @@ const server = createServer(async (req, res) => {
       send(200, store.standardKit());
       return;
     }
+    if (req.method === "GET" && path === "/api/generation/config") {
+      send(200, { version: "protected-generation/1", enabled: serverGenerationEnabled, consent: "prepared-target-transfer/1", targetSize: 500, previewSize: 1000, expiryMinutes: 30 });
+      return;
+    }
     if (req.method === "GET" && path === "/api/push/config") {
       const web =
         notificationAdapter.mode === "fcm" &&
@@ -302,6 +317,39 @@ const server = createServer(async (req, res) => {
         : JSON.parse(raw)
       : {};
     if(!body || typeof body !== "object" || Array.isArray(body))throw new DomainError("Request body must be an object");
+    if (path.startsWith("/api/generation/") && req.method === "POST") {
+      if (!serverGenerationEnabled) throw new DomainError("Server generation is unavailable", 503);
+      if (path === "/api/generation/start") {
+        // Validate/bound image input before allocating a worker. Existing public
+        // request/body limits also apply; the dedicated start budget is tighter.
+        budgets.take("generation-global", "all", 20);
+        budgets.take("generation-ip", ip, 3);
+        const recipe = decodeGenerationRecipe(body, store.standardKit());
+        // A retry must work even when the queue is full; enqueue only new jobs.
+        const previous = store.db.prepare("SELECT id,recipe_hash FROM protected_generations WHERE capability_hash=? AND request_key=? AND expires_at>?")
+          .get(store.digest(recipe.secret), recipe.requestKey, Date.now());
+        if (!previous) generationQueue.available();
+        const job = generated.begin(recipe.secret, recipe.requestKey, recipe.recipeHash);
+        if (!job.duplicate) {
+          try { generationQueue.enqueue(job.id, recipe); }
+          catch (error) { generated.fail(job.id); throw error; }
+        }
+        send(job.duplicate ? 200 : 202, job);
+        return;
+      }
+      const expected = path === "/api/generation/unlock"
+        ? ["id", "secret", "deviceId", "requestKey"] : ["id", "secret"];
+      if (Object.keys(body).sort().join() !== expected.sort().join()) throw new DomainError("Invalid generation request fields");
+      if (path === "/api/generation/status") { send(200, generated.state(body.id, body.secret)); return; }
+      if (path === "/api/generation/cancel") {
+        const state = generated.cancel(body.id, body.secret); generationQueue.cancel(state.id); send(200, state); return;
+      }
+      if (path === "/api/generation/unlock") {
+        const account = store.authenticate(token);
+        send(200, generated.unlock(account, body.id, body.secret, body.deviceId, body.requestKey)); return;
+      }
+      throw new DomainError("Generation route unavailable", 404);
+    }
     if (req.method === "GET" && path === "/api/payments/config") {
       send(200, payments.availability());
       return;
@@ -1040,11 +1088,13 @@ const cleanup = setInterval(() => {
   accountErasure.prune();
 }, 60_000);
 cleanup.unref();
-const shutdown=()=>{
+const shutdown=async()=>{
   outbox.stop();
   if(mailTimer)clearInterval(mailTimer);
   if(pushTimer)clearInterval(pushTimer);
   clearInterval(cleanup);
+  clearInterval(generationPrune);
+  await generationQueue.close();
   server.close(() => {
     accountErasure.close();
     store.close();

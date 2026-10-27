@@ -1,5 +1,7 @@
 # Account erasure, retention and restore — C21
 
+Phase16 additions: `kit_inventories` and `kit_inventory_batches` retain stock issuance/accounting metadata, like `kit_batches`; neither stores plaintext box codes. `protected_generations` is an erase-class table: claimed rows are removed by account erasure and restore replay, with late owner writes blocked by the tombstone trigger. Anonymous/unclaimed rows have no account link and expire after30minutes. Prepared target pixels are never persisted in this table; they exist only in the bounded queue/worker memory. Paid permanent guides use the existing archive erasure policy. This does not promise forensic removal from prior backups or SQLite storage blocks.
+
 This is an application policy, not a legal retention-period certification or secure disk-erasure claim. Current-password/claimed-kit confirmation and maker-account authorization precede a durable erasure intent. No photo, email, password, token or customer name is stored in the separate erasure journal: only an opaque account ID, timestamp and authenticated chain metadata.
 
 ## Durable restore protection

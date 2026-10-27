@@ -16,6 +16,8 @@ export const RETENTION_TABLES = {
     "messages",
     "photo_backups",
     "progress",
+    // Owned temporary guides are erased; unclaimed rows expire after30minutes.
+    "protected_generations",
     "projects",
     "push_deliveries",
     "push_devices",
@@ -49,6 +51,8 @@ export const RETENTION_TABLES = {
     "kit_batches",
     "kit_codes",
     "kit_grants",
+    "kit_inventories",
+    "kit_inventory_batches",
     "kit_limits",
     "manual_receipts",
     "manual_refunds",

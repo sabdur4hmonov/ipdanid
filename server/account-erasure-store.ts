@@ -33,6 +33,7 @@ export class AccountErasureStore {
       ["mail_preferences", "user_id", "1"],
       ["transactional_outbox", "user_id", "1"],
       ["push_devices", "account_id", "NEW.cipher!=''"],
+      ["protected_generations", "owner_id", "NEW.owner_id IS NOT NULL"],
     ])
       if (this.tables.has(table))
         for (const action of ["INSERT", "UPDATE"])
@@ -144,6 +145,7 @@ export class AccountErasureStore {
         remove(table);
       remove("push_deliveries", "account_id");
       remove("push_devices", "account_id");
+      remove("protected_generations", "owner_id");
       for (const table of ["analytics_blocks", "notification_blocks"])
         if (this.tables.has(table))
           db.prepare(`INSERT OR IGNORE INTO ${table}(user_id) VALUES(?)`).run(

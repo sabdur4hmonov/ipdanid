@@ -3,8 +3,10 @@ import { randomBytes, verify, createPublicKey } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { freshTestDatabase } from "./test-artifacts.mjs";
+import { assertTestPorts } from "../server/test-safety.mjs";
+import { createServer as probePort } from "node:net";
 const { directory, databasePath } = freshTestDatabase("kit-http"),
-  port = 4448,
+  port = Number(process.env.KIT_HTTP_TEST_PORT ?? 4448),
   base = `http://127.0.0.1:${port}/api`,
   admin = randomBytes(32).toString("base64url"),
   env = {
@@ -16,6 +18,12 @@ const { directory, databasePath } = freshTestDatabase("kit-http"),
     CODE_PEPPER: randomBytes(32).toString("base64url"),
     SANDBOX_PAYMENT_KEY: randomBytes(32).toString("base64url"),
   };
+assertTestPorts(port + 1, port);
+await new Promise((resolve, reject) => {
+  const probe = probePort();
+  probe.once("error", reject);
+  probe.listen(port, "127.0.0.1", () => probe.close(resolve));
+});
 let child,
   checks = 0;
 async function start() {

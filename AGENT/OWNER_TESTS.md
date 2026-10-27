@@ -2,6 +2,8 @@
 
 ## 2026-10-28 — bir million shaxsiy quti kodi
 
+Serverdagi yopiq hisoblash yadrosi ham sinaldi: oxirgi haqiqiy sinovda 5,1 soniya, mahalliy hisob bilan ketma-ketlik va PNG aynan teng; 57 ta tegishli test, 48 ta eski kit HTTP va 30 ta yangi HTTP tekshiruvi o‘tdi. Bu hali oddiy mijoz oynasiga ulanmagan, hozir yoqish shart emas. Oynaga ulash davom etadi; qo‘lda sinov kutilmaydi. Chegaralar va ma’lumot yuborish: `docs/PROTECTED_GENERATION_UZ.md`. Burun tuzatildi yoki yangi APK chiqdi deyilmaydi.
+
 Avtomatik tekshirildi: **1 000 000 ta ishlatilmagan kod**, har biri **3 ta to‘liq ish** uchun. Har bir kod shifrlangan fayldan bazaga aniq solishtirildi. Uch namunada uchta ish ochildi, to‘rtinchisi rad etildi, eski ish boshqa qurilmada bepul qayta ochildi; sinovlar qaytarilgani uchun haqiqiy kodlar ishlatilmagan qolgan. HTTPda 15 tekshiruv, shaxsiy faylni brauzerda ochishni rad qilishning 4 tekshiruvi va 1000 kodlik chop etish sinovi o‘tdi. Hozir qo‘lda sinov shart emas.
 
 Zaxira eski 4216 saytiga ulanmagan, alohida yopiq papkada. Uni GitHubga yubormang. Chop etish, kalitni saqlash va keyingi yangi VPSga ko‘chirish: `docs/KIT_MILLION_UZ.md`. Saytning brauzerga yuborilgan JavaScript qismini butunlay yashirib bo‘lmaydi; yo‘riqnoma ketma-ketligini serverda saqlash alohida keyingi ish bo‘lib qoladi. Burun sifati va yakuniy Android hali shu yangi bosqichda tugallandi deyilmaydi.

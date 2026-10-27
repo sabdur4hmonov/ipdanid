@@ -52,6 +52,8 @@ test("restoring a snapshot cannot resurrect an account erased after that snapsho
       "private guide body",
       "now",
     );
+  first.store.db.prepare("INSERT INTO protected_generations(id,capability_hash,request_key,recipe_hash,status,created_at,expires_at,owner_id,guide,preview) VALUES(?,?,?,?,?,?,?,?,?,?)")
+    .run("private-generation", "fixture-capability-hash", "fixture-request", "fixture-recipe", "ready", Date.now(), Date.now()+1800000, user.id, "private temporary guide", Buffer.from("private preview"));
   await backup(first.store.db, snapshot);
   erase.erase(user.id, { confirm: "erase-account/1", credential: password });
   expect(() => first.store.authenticate(user.token)).toThrow();
@@ -74,6 +76,7 @@ test("restoring a snapshot cannot resurrect an account erased after that snapsho
     second.store.db.prepare("SELECT count(*) AS n FROM instructions").get()!.n,
   ).toBe(0);
   expect(second.store.db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
+  expect(second.store.db.prepare("SELECT COUNT(*) n FROM protected_generations WHERE owner_id=?").get(user.id)!.n).toBe(0);
   expect(
     auditRetentionSchema(second.store.db).find(
       (r) => r.table === "erasure_ledger_binding",

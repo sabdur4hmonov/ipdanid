@@ -1,4 +1,8 @@
-import UPNG from "@pdf-lib/upng";
+import UPNGModule from "@pdf-lib/upng";
+// Native Node ESM exposes this CommonJS package as {default: UPNG}; Vite
+// already unwraps it. Use the same encoder in both runtimes, without rendering
+// changes or a second PNG implementation.
+const UPNG = (UPNGModule as unknown as { default?: typeof UPNGModule }).default ?? UPNGModule;
 import type { Instruction } from "./types";
 import { rasterSequence } from "./optical";
 import { referenceRaster } from "./classic-reference";
