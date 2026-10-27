@@ -2,7 +2,7 @@
 
 ## Decision
 
-**The first implementation candidate is Virtually Passed's continuous monochrome Radon method.** Its actual MATLAB source and MIT notice are available, and it produces an ordered nail list. This is a more useful new comparison than another adjustment of our rejected local route searches. It is a candidate, **not a measured winner on the owner's portrait**. No new external solver was executed, no customer default changed, and no sharpness improvement is claimed by this research milestone.
+**The first implementation candidate was Virtually Passed's continuous monochrome Radon method.** Its actual MATLAB source and MIT notice are available, and it produces an ordered nail list. The predeclared kit adaptation has now been executed and **REJECTED**; see the outcome below. This does not establish that the original MATLAB implementation or every Radon method fails. The exact original runtime was not executed and MATLAB numerical parity is not claimed. No customer default changed.
 
 The strongest fabrication-oriented scientific reference reviewed is Birsak et al. (2018). Its finite-pin contact model merits a separate geometry study if needed. It does not authorize repeating our completed graph-exchange/material/raster experiments or copying unlicensed source. A universal best algorithm is not established by repository popularity or attractive examples.
 
@@ -54,7 +54,9 @@ Missing license verification means no permission was established in this inspect
 - Paul MH: [Building a String Art Machine](https://www.youtube.com/watch?v=LPYEd50j3s0). Hardware reference; not a controlled solver comparison.
 - [Petros Vrellis's own fabrication page](https://artof01.com/vrellis/works/knit.html) describes 200 pegs and 3000-4000 continuous passes on a larger rim. Therefore **240 pins alone does not establish why our nose detail is weak**. That inference does not mean every image is photographically reproducible at our scale.
 
-## Exact next implementation experiment - fixed before execution
+## Original experiment plan - fixed before execution, now completed/rejected
+
+The following plan was committed and pushed in **ab02655 before implementation or the original-photo trial**. It is retained to prevent retrospective parameter selection; it is not an instruction to rerun the rejected candidate.
 
 1. Read the pinned MIT Circle implementation and retain its notice if porting. Build a **research-only** TypeScript projection-domain solver, separate from classic3. First test endpoint continuity, projection normalization/interpolation, and analytic stripe updates on procedural images. Check source conventions carefully; a direct chord-mean initialization is an adaptation, not numerically identical MATLAB `radon` parity. Do not claim MATLAB parity without an actual common fixture.
 2. Use the existing original Circle's frozen 500px target/options and actual current pin coordinates, with source/preparation/target hashes. Compare with current preparation10, not a weaker historic baseline. Preserve 3000 connections, minGap25, no repeated chord, degree160, white board, .12 mm thread, .9 opacity and the existing 1000px physical renderer. Disclose every kit adaptation, especially disabling the author's early stop. If a legal continuation cannot reach 3000, fail the candidate rather than teleport or relax guards.
@@ -62,7 +64,27 @@ Missing license verification means no permission was established in this inspect
 4. Independently replay and measure against the current baseline: face SSIM +.02, nose +.03, eyes/mouth losses at most .005 each, white darkness increase at most .01, plus clearly visible equal-size improvement. Report initialization, solve, independent verification, peak memory and total time separately; the ordinary-flow 15s gate still applies before promotion. Current baseline: face .6158505489781417; nose .49652544044974173; eyes .6665095680123039; mouth .6882849515378566; white .3835131962164373.
 5. Only a pass authorizes unchanged synthetic / Square / pair / cat / mixed-Arabic comparisons and a properly versioned Worker/replay/export integration. The Circle analytic domain cannot simply be relabelled Heart; nonconvex-heart legality and a corresponding projection model need independent validation. Existing actual text shaping and subject segmentation remain unchanged. Failure is recorded without promoting the method or repeating the same parameter search.
 
-This is a concrete new mechanism selected from external evidence. It is **not yet implemented or run**, and it does not close the owner's likeness request. The protected4216 website/API4656, current APK, old guides and photographs remain untouched.
+At the initial research checkpoint this was a concrete unimplemented mechanism selected from external evidence. Its subsequent implementation and single execution are recorded below; it does not close the owner's likeness request. The protected4216 website/API4656, current APK, old guides and photographs remain untouched.
+
+## Executed follow-up - rejected kit adaptation
+
+Research-only `scripts/projection-circle.ts` retains the published analytic stripe constants and MIT notice. Direct bilinear normalized chord integration replaces MATLAB Radon/griddata interpolation; the source's threshold is disabled for our fixed budget. No face feature weights, additional target edits, material changes, search sweep or reference-style display opacity were introduced. The solver input hash exactly matches the current production preparation10; evaluation uses the unchanged original reviewed target, not the enhanced optimization input.
+
+The **single** actual-original Circle trial produced all3000legal continuous unique connections, minGap25, maximum incident86<=160.22920legal candidate chords;64258500analytic residual updates. Initialization7.019s, solve2.261s, source-filter reconstruction.158s:9.439s from the already prepared input. Independent verification3.485s; combined preparation/solve/verification12.929s. This is a local Node research measurement, not an ordinary-UI/Worker/phone timing pass. Whole-process high-water RSS183005184bytes includes imports and verification;206760typed-array bytes do not represent total solver memory.
+
+| Physical1000px metric against original target | Current production | Projection adaptation |
+| --- | ---: | ---: |
+| Face SSIM | .61585055 | .40354146 |
+| Nose SSIM | .49652544 | .30082401 |
+| Eyes SSIM | .66650957 | .36157767 |
+| Mouth SSIM | .68828495 | .43127611 |
+| White-region darkness (lower is better) | .38351320 | .29928816 |
+
+The lighter background does not compensate for the lost facial structure. Equal-size original physical PNGs were visually inspected: the candidate has stronger central rings/fans and worse facial definition. **Reject; no app integration or follow-up parameter sweep.** All returned chords and the exact Float32 output were independently verified with the frozen physical renderer. This rejection applies to this particular disclosed kit adaptation; no claim about unexecuted source-runtime quality is made.
+
+Private report: `output/quality-projection-20261027/owner-circle/report.html`; images/routes/photo-derived inputs remain local. Sanitized counters/scores: [validation/projection-circle-20261027.json](validation/projection-circle-20261027.json). Final21/21related tests pass, including seven analytic/continuity/constant+affine integral/fade/guard/cancellation checks. Strict standalone TypeScript and TSC/Vite2142build pass (Vite21.18s); existing fontkit chunk warning remains.120/121frozenfilesexact, only SW precache order differs, exact119URLset/cache/logic/8301eee2manifest unchanged. Source MIT notice verified unchanged. No full-suite/UI/phone success is inferred from these research checks. Publication results are verified from Git; old scans below belong to the initial survey stage.
+
+Actual likeness remains OPEN. Next work must diagnose the transform/physical-model discrepancy on independent procedural fixtures **without another portrait fit or kernel retuning** before proposing a distinct mechanism. A claim that the internet search found a proven better portrait engine would be false. Existing sealed searches remain sealed; the original current engine remains the stronger measured control of this comparison.
 
 ## Research milestone validation
 

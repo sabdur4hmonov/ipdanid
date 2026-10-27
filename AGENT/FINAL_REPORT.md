@@ -1,4 +1,8 @@
-## 27.10.2026 — tashqi usullar bo‘yicha yangi qaror
+## 27.10.2026 — tashqi usulning birinchi aniq sinovi
+
+Topilgan Virtually Passed usulining kitimizga moslashtirilgan varianti original suratda bir marta sinaldi:240mix,3000uzluksizqonuniyip,9.4soniya. Lekin yuz ko‘rsatkichi.616→.404,burun.497→.301bo‘lib yomonlashdi; tasvirni ham ko‘rib rad etdim. Standart hisobga qo‘shilmadi,4216sayt/APK o‘zgarmadi. Muallifning original MATLABdasturi yoki barcha Radonusullari yomon degan xulosa chiqarilmaydi. Sifat talabi hali ochiq. Aniq natija `docs/STRING_ART_METHOD_RESEARCH_20261027.md`da, rasmlar faqat lokal `output/quality-projection-20261027/owner-circle/report.html`da.
+
+## 27.10.2026 — tashqi usullar bo‘yicha yangi qaror (sinovdan oldingi yozuv)
 
 GitHub/YouTube mualliflari va ilmiy manbalar qidirildi:16ta repo versiyasi va4ta video nomi/muallifi tasdiqlandi. Virtually Passed’ning MITkodli uzluksiz Radon usuli keyingi aniq solishtirish uchun tanlandi. U hali ilovaga qo‘shilmagan va original suratda sinalmagan;100%yaxshilanish yoki eng yaxshi natija isbotlandi deyilmaydi.4216sayt/APK o‘zgarmadi. Manbalar va bitta qat’iy sinov rejasi: `docs/STRING_ART_METHOD_RESEARCH_20261027.md`. Sifat talabi ochiq, sizdan yangi kirish ma’lumoti kutilmaydi.
 

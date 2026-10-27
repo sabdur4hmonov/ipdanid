@@ -1,0 +1,89 @@
+{
+  "version": "projection-circle-verification/1",
+  "date": "2026-10-27",
+  "predeclaredPlanCommit": "ab026555a11c42d806ce7bee268f19ac4549839b",
+  "upstream": "https://github.com/virtuallypassedsmartsparrow/StringArt/tree/c96b9ac6316f84c17e0adb644c2df4a971406305",
+  "codeReuseLicense": "MIT",
+  "notice": "scripts/licenses/virtually-passed-MIT.txt",
+  "verdict": "rejected-kit-adaptation",
+  "ownerPhotoCommitted": false,
+  "customerSourceChanged": false,
+  "candidate": "projection-circle-research/1",
+  "complete": true,
+  "reason": "fixed-budget",
+  "qualityPass": false,
+  "promoted": false,
+  "uiTimingTested": false,
+  "baseline": {
+    "faces": [
+      {
+        "face": 0.6158505489781417,
+        "nose": 0.49652544044974173,
+        "eyes": 0.6665095680123039,
+        "mouth": 0.6882849515378566
+      }
+    ],
+    "white": 0.3835131962164373
+  },
+  "candidateScore": {
+    "faces": [
+      {
+        "face": 0.40354145759553267,
+        "nose": 0.30082400583275803,
+        "eyes": 0.3615776733528796,
+        "mouth": 0.43127610677313244
+      }
+    ],
+    "white": 0.29928815657507685
+  },
+  "solver": {
+    "requestedLines": 3000,
+    "actualLines": 3000,
+    "chords": 22920,
+    "initializationMs": 7019.4743,
+    "solveMs": 2261.3765999999996,
+    "totalMs": 9280.8675,
+    "updates": 64258500,
+    "thresholdCrossingAt": null,
+    "minimumSelectedScore": 0.04886263863038877,
+    "maxIncident": 86,
+    "typedArrayBytes": 206760,
+    "memoryNote": "Typed-array bytes only; JS objects, input, runtime and physical verification excluded."
+  },
+  "sourcePreparationMs": 158.21889999999996,
+  "samePreparedInputGenerationMs": 9439.0864,
+  "generationBelow15s": true,
+  "independentVerificationMs": 3485.4997999999996,
+  "preparationSolveAndVerificationMs": 12928.7768,
+  "memory": {
+    "processHighWaterRssBytes": 183005184,
+    "scope": "Whole Node process including imports/preparation/physical verification; not isolated solver peak or phone measurement."
+  },
+  "allReturnedChordsLegal": true,
+  "noTeleportOrConnector": true,
+  "independentPhysicalFloatsExact": true,
+  "currentPreparation10InputHashMatched": true,
+  "externalSolverOriginalRuntimeExecuted": false,
+  "matlabNumericalParity": false,
+  "sourcePhotoUploaded": false,
+  "validation": {
+    "focusedUnitPassed": 21,
+    "failed": 0,
+    "pending": 0,
+    "strictStandaloneTypecheck": true,
+    "productionBuildPassed": true,
+    "viteModules": 2142,
+    "viteBuildSeconds": 21.18,
+    "customerParity": {
+      "frozenFiles": 121,
+      "rebuiltFiles": 121,
+      "different": [
+        "sw.js"
+      ],
+      "extra": [],
+      "swSameUrlSet": 119,
+      "swSameCacheAndLogic": true,
+      "manifestSha256": "8301eee2ad7c2c832120ccca248365b5c83daf36252f13f96906beb0b4e3ae34"
+    }
+  }
+}

@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — topilgan yangi usul originalda solishtirildi
+
+Virtually Passed usulining kitimizga mos alohida varianti original suratingizda bir marta sinaldi.240mix/3000uzluksizip yo‘li9.4soniyada chiqdi, lekin yuz va burun sifati yomonlashdi. Shu sabab standart hisobga qo‘shilmadi. Bu aynan moslashtirilgan variant natijasi; muallifning MATLABdasturi bajarilgani aytilmaydi.4216sayt va APK saqlandi, yangi qo‘lda sinov shart emas. Lokal ko‘rish: `output/quality-projection-20261027/owner-circle/report.html`. Surat GitHubga yuborilmagan. Hali sifat yaxshilandi deyilmaydi.
+
 ## 2026-10-27 — GitHub va tashqi usullar qidirildi
 
 16ta repo versiyasi, YouTube’dagi4ta video nomi/muallifi va ilmiy manbalar tekshirildi. Keyingi sinov uchun Virtually Passed’ning MITkodli, uzluksiz ip yo‘li beradigan usuli tanlandi. Videolar to‘liq tomosha qilingani yoki shu usul suratingizda allaqachon yutgani aytilmaydi. Hozir qo‘lda sinov yoki yangi surat kerak emas.4216sayt va APK o‘zgarmadi; original surat tashqariga yuborilmadi. Aniq solishtirish rejasi va manbalar `docs/STRING_ART_METHOD_RESEARCH_20261027.md`da. Yangi usulning aynan bizning kitda natijasi keyingi avtomatik sinovda tekshiriladi.
