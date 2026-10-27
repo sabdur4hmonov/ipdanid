@@ -6,13 +6,14 @@
   "unit": {
     "passed": 687,
     "failed": 0,
-    "workflowRun": 40504929717,
-    "artifact": 12734667445
+    "workflowRun": 40509926604,
+    "artifact": 12737610419
   },
   "publicBrowser": {
     "passed": 18,
     "skipped": 0,
-    "flaky": 0
+    "flaky": 0,
+    "workflowRun": 40509926604
   },
   "localBrowser": {
     "uniqueAccepted": 38,
@@ -65,7 +66,22 @@
   "frozenWebFiles": 121,
   "workingBuildByteEqualFiles": 120,
   "workingSwPrecacheOrderOnly": true,
-  "nativeRepackage": "pending",
   "phoneInstalled": false,
-  "productionActive": false
+  "productionActive": false,
+  "android": {
+    "debug": true,
+    "sha256": "dbdc474e6f6831c883d00ff060e7224d58ccb943077abc35fad1c595dce50864",
+    "assets": 121,
+    "oldApksUnchanged": 95,
+    "sameDevelopmentSigner": true,
+    "nativeApiBase": "http://127.0.0.1:4656/api",
+    "exactFrozenWebsiteFiles": 121,
+    "phoneInstalled": false,
+    "instrumentationExecuted": false
+  },
+  "pr": {
+    "created": false,
+    "reason": "Fresh origin heads contain feature and wip only; no legitimate main base. No main created or pushed."
+  },
+  "verifiedCodeCommit": "b3e34b07d4dfc8eb94db75cd7bcc00f7df4b807e"
 }

@@ -2,7 +2,7 @@
 
 Written before Phase15 implementation. Sources: AGENT/MASTER_PLAN.md; all current and historical open/remaining rows in AGENT/FINAL_REPORT.md; docs/ROADMAP.md, FEATURE_MATRIX.md and BLOCKERS.md; Phase14 source and acceptance records. Historical checkpoint next-task paragraphs are not new instructions. A partial device/physical/production column does not itself mean missing code. Conversely, a schema, disabled card or mock is not a completed customer feature.
 
-Status: **ALL feasible CODE C01–C28 DONE / SOFTWARE VALIDATED2026-10-27. C26:679unit,346current local browser cases/159jobs/80files,18publicCI,121asset preserved-signer APK. No CODE item remains open. OWNER O01–O11 activation/physical/phone/likeness and absent-main PR prerequisite remain explicit; no photographic/production/hardware acceptance is fabricated.**
+Status: **ALL feasible CODE C01–C28 DONE. Latest follow-up687unit/18publicCI and38current local browser cases,6guardunits,2142build,121asset same-signer APK/95oldarchives;4216/API4656. Earlier346case f563bb9f matrix is baseline ONLY. OWNER O01–O11 activation/physical/phone/likeness/absent-main PR prerequisite remain; no perfect photo/device/production acceptance.**
 
 ## 2026-10-26 website handoff
 

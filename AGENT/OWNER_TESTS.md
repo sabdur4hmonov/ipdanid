@@ -13,7 +13,7 @@ Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak
 5.687unit/18ochiqCI va38joriy lokal brauzer holati o‘tdi; eski346matritsa oldingi buildga tegishli. Dastlabki3vaqt oshishi saqlangan, ayni kvadrat4holati takroran9.3–9.9soniyada o‘tdi. Har safar15soniyadan kam bo‘lishi yoki foto bilan100%tenglik va’da qilinmaydi.
 6. Jismoniy taxta uchun `docs/BUILD_TODAY_UZ.md`:500×500mm,100%chop etish,50mm belgini o‘lchash,240tanlangan mix va sektorlar. Haqiqiy taxta/telefon tekshiruvi keyin.
 
-Mahalliy surat taqqoslash: `output/quality-original-20261026/final-review.html`. Original surat GitHubga qo‘yilmagan. Yangi APK shu saytga moslab yig‘ilmoqda; avvalgi fayllar saqlanadi. Quyidagi yozuvlar tarixiy.
+Mahalliy surat taqqoslash: `output/quality-original-20261026/final-review.html`. Original surat GitHubga qo‘yilmagan. APK: `output/mobile/ip-rasm-phase15-final-20261027-dbdc474e6f68-debug.apk`. Saytdagi121faylga aynan teng va avvalgi imzo saqlangan. API4656; keyin USBtelefon uchun `docs/APK_SERVER_AND_SIGNING_UZ.md`dagi adb reverse yo‘lini4656port bilan bajaring yoki Admin → Server manziliga HTTPSAPI kiriting. Telefon o‘rnatilishi/sinovi bajarilgani da’vo qilinmaydi. Quyidagi yozuvlar tarixiy.
 
 ## 2026-10-27 — yangi nusxa tekshiruvi davom etmoqda
 

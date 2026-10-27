@@ -1,8 +1,12 @@
-## Eng yangi sayt —2026-10-27,4216
+## Sinovga tayyor nusxa — 27.10.2026
 
-**http://127.0.0.1:4216/**. Quti kodi faqat mahalliy `output/phase15/final-review/manual-testing.txt`da: har qutiga3ta to‘liq yo‘riqnoma, bepul rasmli ko‘rinish, ochilgan loyihaga bepul qaytish. GitHub `feat/full-roadmap`da.687unit/18ochiqCI va38joriy lokal brauzer holati o‘tdi. Yangi APK saytga moslab yig‘ilmoqda; keyingi yozuvda aniq fayli beriladi.
+Sayt: **http://127.0.0.1:4216/**. Yangi quti kodi faqat shu kompyuterdagi `output/phase15/final-review/manual-testing.txt` faylida. Parol shart emas: bitta kod 3 ta alohida to‘liq yo‘riqnomani ochadi. Ipli ko‘rinishni ko‘rish bepul; avval ochilgan loyihaga qaytish yana kredit olmaydi.
 
-Eski346holat oldingi buildga tegishli; yangi asl-surat sinovida dastlab3vaqt oshishi bo‘ldi, ayni kvadrat4holati qayta9.3–9.9soniyada o‘tdi. Yuz/burun oldingi sifat tanlovi saqlangan,100%fotografik tenglik yo‘q. Hisobot: `docs/PORTRAIT_SCORE_WINDOW_CHECKPOINT.md`, sanitizatsiya qilingan dalil `docs/validation/phase15-20261027-followup.json`. Suratlar faqat lokal. Eski4215server qayta yoqilmadi; yangi sayt alohida bazada. Tashqi domen/kalit/ovoz/taxta/telefon va yo‘q main bazasi bo‘yicha owner ro‘yxati quyida. Quyidagi boshqa sayt/APK yozuvlari tarixiy.
+APK: `output/mobile/ip-rasm-phase15-final-20261027-dbdc474e6f68-debug.apk`. Uning 121 ta fayli aynan yangi saytga teng. Avvalgi imzo va 95 ta eski APK saqlandi. Mahalliy API 4656; keyin telefon/HTTPSserverga ulash uchun `docs/APK_SERVER_AND_SIGNING_UZ.md`ni bajaring. Haqiqiy telefon hali sinalmagan.
+
+687 ta kod sinovi,18 ta ochiq CI va38 ta joriy mahalliy brauzer holati o‘tdi. Dastlab 3 ta holat 15 soniyadan oshdi; kvadratning 4 ta holati aynan shu kod bilan qayta 9.3–9.9soniyada o‘tdi. Oldingi xatolar hisobotda saqlangan. Eski 346 ta sinov oldingi buildga tegishli. Surat bilan 100% tenglik va’da qilinmaydi; haqiqiy taxta va telefon qabul sinovi hali bor.
+
+Manba: https://github.com/sabdur4hmonov/ipdanid/tree/feat/full-roadmap . Natijalar: `docs/PORTRAIT_SCORE_WINDOW_CHECKPOINT.md` va `docs/validation/phase15-20261027-followup.json`. Original suratlar faqat shu kompyuterda. Mahalliy taqqoslash: `output/quality-original-20261026/final-review.html`. PR yaratilmagan: repoda main bazasi yo‘q; egasi uchun aniq yo‘l `docs/PR_BASE_UZ.md`da. Domen/kalit/ovoz/taxta kabi tashqi ishlar ro‘yxati quyidagi yakuniy hisobotda. Boshqa sayt va APK haqidagi sanali yozuvlar tarixiy.
 
 # 2026-10-27 — sayt, kod va APK sinovga tayyor
 
