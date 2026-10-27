@@ -1,3 +1,9 @@
+## 27.10.2026 — QBRIX / Xitoy bozoridan aniq dalillar
+
+QBRIXning yopiq hisob formulasi topildi deyilmaydi. Rasm/variant tanlash jarayoni, SiSiRuYingdizayner tuzatish vositalari va ALINEDECOning haqiqiy hisob/ko‘rinish sozlamalari tekshirildi. Shaxsiy surat, quti kodi yoki hisob ma’lumoti yuborilmagan. Ochiq boshqa tijoriy4058qadamlik namuna faqat1ta takror ishlatadi; bu QBRIXyo‘riqnomasi emas.
+
+Oldingi Radonmoslashtirishidagi bir-ip hisob javobi, aynan500pikselda solishtirilganda, bizning saqlangan ip ko‘rinishidan1.63–2.07baravar past chiqdi. Bu o‘lchangan farq; hozirgi ilova tuzatildi yoki burun muammosi hal bo‘ldi degani emas. Aniq keyingi yo‘l: oldin hisob/ko‘rinish tengligi uchun mustaqil sun’iy sinovlar, so‘ng alohida asoslangan sifat tajribasi.4216sayt/APKsaqlanadi. Hisobot `docs/QBRIX_CHINA_METHOD_RESEARCH_20261027.md`, lokal dalillar `output/competitor-qbrix-china-20261027/report.html`da.
+
 ## 27.10.2026 — tashqi usulning birinchi aniq sinovi
 
 Topilgan Virtually Passed usulining kitimizga moslashtirilgan varianti original suratda bir marta sinaldi:240mix,3000uzluksizqonuniyip,9.4soniya. Lekin yuz ko‘rsatkichi.616→.404,burun.497→.301bo‘lib yomonlashdi; tasvirni ham ko‘rib rad etdim. Standart hisobga qo‘shilmadi,4216sayt/APK o‘zgarmadi. Muallifning original MATLABdasturi yoki barcha Radonusullari yomon degan xulosa chiqarilmaydi. Sifat talabi hali ochiq. Aniq natija `docs/STRING_ART_METHOD_RESEARCH_20261027.md`da, rasmlar faqat lokal `output/quality-projection-20261027/owner-circle/report.html`da.

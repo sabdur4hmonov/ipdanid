@@ -1,5 +1,7 @@
 # Public competitor workflow survey
 
+Historical October14 survey. The owner's targeted October27 QBRIX/China-market request is covered by [QBRIX_CHINA_METHOD_RESEARCH_20261027.md](QBRIX_CHINA_METHOD_RESEARCH_20261027.md), including actual supplier-UI observations, designer editing, a fully counted public sequence and same-grid procedural diagnosis. Old quota/material/quality assumptions below are not current defaults or a matched competitor benchmark.
+
 Checked 2026-10-14. Public GET/search only; no account creation, code submission, photo upload, private API inspection or competitor asset copying. Specifications below are seller statements, not verified physical measurements. Missing values stay unknown. This survey establishes workflow ideas, not a likeness ranking.
 
 ## Observed products and customer steps

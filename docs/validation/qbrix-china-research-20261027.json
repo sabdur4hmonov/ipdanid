@@ -1,0 +1,210 @@
+{
+  "version": "competitor-method-research/1",
+  "date": "2026-10-27",
+  "scope": "Primary public pages, actual unauthed supplier UI, public instruction sample, three fixed procedural strand measurements. No same-photo competitor benchmark.",
+  "qbrixInternalAlgorithmIdentified": false,
+  "competitorQualityWinnerEstablished": false,
+  "sourcePhotosUploaded": false,
+  "kitCodesEntered": false,
+  "accountsCreated": false,
+  "privateApiCalled": false,
+  "contactMessagesSent": false,
+  "purchasesMade": false,
+  "competitorCodeReusedInProduct": false,
+  "customerAppChanged": false,
+  "providers": [
+    {
+      "name": "QBRIX",
+      "urls": [
+        "https://qbrix.me/ru/stringart/faq",
+        "https://qbrix.me/en/stringart/code"
+      ],
+      "verified": "Public photo/variant/assembly workflow and9digit code gate; internal solver unknown."
+    },
+    {
+      "name": "RingString",
+      "urls": [
+        "https://ringstring.art/ru/faq"
+      ],
+      "verified": "Public portrait selection and physical finishing recommendations; no matched output."
+    },
+    {
+      "name": "SiSiRuYing",
+      "urls": [
+        "https://www.sisiruying.com/zh-hans/product/rxh.html",
+        "https://www.sisiruying.com/zh-hans/article/610/",
+        "https://www.sisiruying.com/zh-hans/doc/33/"
+      ],
+      "verified": "Chinese-market software/OEM/designer workflows and documented post-calculation line editing. Continuity after editing not independently tested."
+    },
+    {
+      "name": "ALINEDECO",
+      "urls": [
+        "https://www.alinedeco.com/",
+        "https://design.alinedeco.com/"
+      ],
+      "verified": "Actual public Mono UI and two help dialogs inspected; no input photo or generated result. Corporate country not verified."
+    },
+    {
+      "name": "China-market retail names",
+      "urls": [
+        "https://www.jd.com/chanpin/903754.html",
+        "https://www.jd.com/brand/1672b7327955504fc732.html"
+      ],
+      "verified": "Custom thread-art listings only; no independent solver, material or quality verification."
+    }
+  ],
+  "browserUi": {
+    "site": "https://design.alinedeco.com/",
+    "mode": "Mono",
+    "algorithmSelected": "A",
+    "algorithmChoices": [
+      "A",
+      "B"
+    ],
+    "nails": 300,
+    "lines": 2500,
+    "toneSoftening": 0,
+    "lineStrength": 30,
+    "thickness": 0.7,
+    "thicknessUnit": "unknown",
+    "calculationStrengthUnit": "unknown",
+    "background": 255,
+    "yarn": "#000000",
+    "candidateCounter": "0/5",
+    "lineStrengthHelp": "Calculation darkness per strand is separate from thread thickness/count.",
+    "screenshotsSavedLocally": true,
+    "photoSelected": false,
+    "resultGenerated": false,
+    "agentCreatedTabClosed": true,
+    "ownerTabsPreserved": true
+  },
+  "rawPublicResponseFingerprints": [
+    {
+      "name": "qbrix-public-app",
+      "url": "https://qbrix.me/js/app.js?v=202609040013",
+      "bytes": 197668,
+      "sha256": "a20e322b3a9ca2e7b5057ca300fbc609154d1d6946cbdce7cd97461370995ede",
+      "scope": "Original served response before optional local formatting; not a copied product dependency."
+    },
+    {
+      "name": "alinedeco-public-app",
+      "url": "https://design.alinedeco.com/assets/index-cache-4286c06f1039.js",
+      "bytes": 635237,
+      "sha256": "4286c06f1039816743601ee13fe0866884fc4fc187d2edfa477217b968e643a9",
+      "scope": "Original served response before optional local formatting; not a copied product dependency."
+    },
+    {
+      "name": "sisiruying-string-manual",
+      "url": "https://www.sisiruying.com/zh-hans/doc/33/",
+      "bytes": 21677,
+      "sha256": "2d2115cfe09b145baad60ebb657be2682dce8f48e359facf9cdd0b2d8418d1ff",
+      "scope": "Original served response before optional local formatting; not a copied product dependency."
+    },
+    {
+      "name": "sisiruying-line-editing",
+      "url": "https://www.sisiruying.com/zh-hans/article/610/",
+      "bytes": 13673,
+      "sha256": "447824496e0c6468e9a7710514b8aada040d39dae38c23ee7c8e84a238edcfd1",
+      "scope": "Original served response before optional local formatting; not a copied product dependency."
+    }
+  ],
+  "publicInstructionAudit": {
+    "source": "https://s-art.pro/docs/Product_description.pdf",
+    "sourceSha256": "ca4a09eec15dd6faa6ec171d1a0be0de7e600823d6d5a9a604b08aaf5804103f",
+    "kind": "Published commercial example, not a QBRIX or Chinese-brand sequence",
+    "pins": 250,
+    "declaredConnections": 4058,
+    "parsedConnections": 4058,
+    "englishRussianSampleParity": true,
+    "selfLoops": 0,
+    "uniqueUndirectedChords": 4057,
+    "repeatedChords": 1,
+    "passesBeyondFirstOnEachChord": 1,
+    "maximumChordMultiplicity": 2,
+    "minimumCyclicPinGap": 10,
+    "connectionsBelowCurrentClassicMinGap25": 58,
+    "maximumIncidentConnections": 48,
+    "immediateBacktracks": 1,
+    "sourcePictureUploaded": false,
+    "sourceAlgorithmIdentified": false,
+    "ownerPhotoBenchmarked": false,
+    "appPolicyChanged": false
+  },
+  "proceduralDiagnosis": {
+    "version": "single-strand-projection-diagnosis/2",
+    "measurements": [
+      {
+        "pins": [
+          0,
+          60
+        ],
+        "native1000Samples": 703,
+        "predictedMeanDarkness": 0.036,
+        "sourceGrid500PhysicalMeanDarkness": 0.0738015264054015,
+        "sourceGrid500Ratio": 2.050042400150042,
+        "native1000PhysicalMeanDarkness": 0.14968907577800097,
+        "frozenFloat32Exact": true
+      },
+      {
+        "pins": [
+          0,
+          90
+        ],
+        "native1000Samples": 919,
+        "predictedMeanDarkness": 0.036,
+        "sourceGrid500PhysicalMeanDarkness": 0.07466676523100683,
+        "sourceGrid500Ratio": 2.0740768119724122,
+        "native1000PhysicalMeanDarkness": 0.13732515117978403,
+        "frozenFloat32Exact": true
+      },
+      {
+        "pins": [
+          0,
+          120
+        ],
+        "native1000Samples": 994,
+        "predictedMeanDarkness": 0.036,
+        "sourceGrid500PhysicalMeanDarkness": 0.05866613406200409,
+        "sourceGrid500Ratio": 1.6296148350556694,
+        "native1000PhysicalMeanDarkness": 0.23478263616560754,
+        "frozenFloat32Exact": true
+      }
+    ],
+    "measurementMs": 129.1567,
+    "verdict": "Published fixed projection response is not calibrated to our existing physical renderer.",
+    "scope": "Three fixed procedural single-strand fixtures. This is a surrogate/display mismatch, not measured real-board optics, source-MATLAB parity or proof of the sole cause of portrait quality loss.",
+    "fitExecuted": false,
+    "ownerImageRead": false,
+    "kernelRetuned": false,
+    "appChanged": false,
+    "defaultChanged": false,
+    "newPortraitTrialAuthorizedByMeasurement": false
+  },
+  "excludedEvidence": [
+    "Official CBP CROSS response contained application shell only, so a secondary mirror thread measurement was not accepted as verified material evidence.",
+    "qbrix.io / @optiqio/qbrix is unrelated to the QBRIX photo kit.",
+    "No public paper, patent, video or compiled UI file inspected establishes the private QBRIX numerical algorithm."
+  ],
+  "next": "Specify a distinct renderer-consistent projection forward operator and procedural parity tests before any further portrait fit; do not retune the sealed failed kernel or repeat old physical/route searches.",
+  "validation": {
+    "focusedUnitPassed": 13,
+    "failed": 0,
+    "pending": 0,
+    "strictStandaloneTypecheck": true,
+    "productionBuildPassed": true,
+    "viteModules": 2142,
+    "viteBuildSeconds": 30.45,
+    "customerParity": {
+      "frozenFiles": 121,
+      "rebuiltFiles": 121,
+      "different": [
+        "sw.js"
+      ],
+      "extra": [],
+      "swSameUrlSet": 119,
+      "swSameCacheAndLogic": true,
+      "manifestSha256": "8301eee2ad7c2c832120ccca248365b5c83daf36252f13f96906beb0b4e3ae34"
+    }
+  }
+}

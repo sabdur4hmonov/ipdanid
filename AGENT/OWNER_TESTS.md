@@ -2,6 +2,12 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — QBRIX va Xitoy bozoridagi dasturlar tekshirildi
+
+QBRIX ochiq sahifalarida ichki hisob formulasi berilmagan. Xitoydagi SiSiRuYing dizaynerga iplarni qo‘shish/o‘chirish va natijani tuzatish imkonini beradi; ALINEDECOoynasida hisob kuchi va ko‘rinish qalinligi alohida. Hech qayerga shaxsiy surat yoki quti kodi yuborilmadi. Boshqa ochiq tijoriy namunadagi4058qadamda faqat1ta takror bor: “takrorni ko‘paytirsak tuzaladi” degan xulosa yo‘q.
+
+Uchta sun’iy bitta-ip o‘lchovi oldingi rad etilgan Radonvariantining hisob/ko‘rinishi mos emasligini ko‘rsatdi; hozirgi standart hisobdagi xato yoki haqiqiy taxta sifati tasdiqlandi deyilmaydi.4216/APKo‘zgarmadi, qo‘lda sinov shart emas. Dalillar: lokal `output/competitor-qbrix-china-20261027/report.html`; texnik xulosa `docs/QBRIX_CHINA_METHOD_RESEARCH_20261027.md`. Keyingi ish avval hisob modeli va ip ko‘rinishi tengligini mustaqil namunalarda tekshirish.
+
 ## 2026-10-27 — topilgan yangi usul originalda solishtirildi
 
 Virtually Passed usulining kitimizga mos alohida varianti original suratingizda bir marta sinaldi.240mix/3000uzluksizip yo‘li9.4soniyada chiqdi, lekin yuz va burun sifati yomonlashdi. Shu sabab standart hisobga qo‘shilmadi. Bu aynan moslashtirilgan variant natijasi; muallifning MATLABdasturi bajarilgani aytilmaydi.4216sayt va APK saqlandi, yangi qo‘lda sinov shart emas. Lokal ko‘rish: `output/quality-projection-20261027/owner-circle/report.html`. Surat GitHubga yuborilmagan. Hali sifat yaxshilandi deyilmaydi.
