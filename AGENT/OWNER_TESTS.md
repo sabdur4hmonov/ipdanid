@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — GitHub va tashqi usullar qidirildi
+
+16ta repo versiyasi, YouTube’dagi4ta video nomi/muallifi va ilmiy manbalar tekshirildi. Keyingi sinov uchun Virtually Passed’ning MITkodli, uzluksiz ip yo‘li beradigan usuli tanlandi. Videolar to‘liq tomosha qilingani yoki shu usul suratingizda allaqachon yutgani aytilmaydi. Hozir qo‘lda sinov yoki yangi surat kerak emas.4216sayt va APK o‘zgarmadi; original surat tashqariga yuborilmadi. Aniq solishtirish rejasi va manbalar `docs/STRING_ART_METHOD_RESEARCH_20261027.md`da. Yangi usulning aynan bizning kitda natijasi keyingi avtomatik sinovda tekshiriladi.
+
 ## 2026-10-27 — yangi tiniqlik sinovi foyda bermadi
 
 Original suratingizda ip juftlarini almashtirish sinovi bajarildi. Yuz/burun/ko‘z/lab sifati yaxshilanmagan:0ta o‘zgarish qoldi. Shu sabab4216saytdagi hisob va APK o‘zgartirilmadi. Qo‘shimcha qo‘lda sinov yoki surat so‘ralmaydi.100%foto tengligi va’da qilinmaydi. Natija faqat lokal `output/quality-two-opt-20261027/owner-circle/report.html`da; original GitHubga yuborilmagan.

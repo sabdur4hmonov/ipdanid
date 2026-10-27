@@ -1,0 +1,249 @@
+{
+  "version": "external-method-research/1",
+  "date": "2026-10-27",
+  "sourceInspectionOnly": true,
+  "externalSolverExecuted": false,
+  "customerSourceChanged": false,
+  "ownerPhotoUploaded": false,
+  "measuredBestExternalSolver": null,
+  "selectedNextCandidate": "virtuallypassedsmartsparrow/StringArt",
+  "reason": "MIT notice verified; distinct projection-domain method with continuous monochrome nail instructions. Same-kit quality not yet measured.",
+  "repositoryMetadata": {
+    "attempted": 17,
+    "pinned": 16
+  },
+  "repositories": [
+    {
+      "name": "halfmonty/StringArtGenerator",
+      "url": "https://github.com/halfmonty/StringArtGenerator",
+      "head": "f9c996fd1cd5a3d1f8c4f90aa0dc9f98e3fd67b0",
+      "defaultBranch": "master",
+      "githubLicenseId": "MIT",
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/halfmonty/StringArtGenerator/tree/f9c996fd1cd5a3d1f8c4f90aa0dc9f98e3fd67b0"
+    },
+    {
+      "name": "birsakm/StringArt",
+      "url": "https://github.com/birsakm/StringArt",
+      "head": "52350f5020e8715d347896fc407ca60f0f8f9ef0",
+      "defaultBranch": "master",
+      "githubLicenseId": null,
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/birsakm/StringArt/tree/52350f5020e8715d347896fc407ca60f0f8f9ef0"
+    },
+    {
+      "name": "usedhondacivic/string-art-gen",
+      "url": "https://github.com/usedhondacivic/string-art-gen",
+      "head": "98749c1ec69acb9f30531886d94bc61c32f3aa4f",
+      "defaultBranch": "main",
+      "githubLicenseId": null,
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/usedhondacivic/string-art-gen/tree/98749c1ec69acb9f30531886d94bc61c32f3aa4f"
+    },
+    {
+      "name": "sean-reid/string",
+      "url": "https://github.com/sean-reid/string",
+      "head": "4dea2ee2e7d741c2a48a17c8476f11a39708df81",
+      "defaultBranch": "main",
+      "githubLicenseId": null,
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/sean-reid/string/tree/4dea2ee2e7d741c2a48a17c8476f11a39708df81"
+    },
+    {
+      "name": "LuisAugenstein/string_art",
+      "url": "https://github.com/LuisAugenstein/string_art",
+      "head": "8b30e2cf4830762e711729ad6aeb9d4759608114",
+      "defaultBranch": "main",
+      "githubLicenseId": null,
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/LuisAugenstein/string_art/tree/8b30e2cf4830762e711729ad6aeb9d4759608114"
+    },
+    {
+      "name": "ThetaMogwai/String-Art-Generator",
+      "url": "https://github.com/ThetaMogwai/String-Art-Generator",
+      "head": "e8eaeda4a953b52f60edcc1921662306af7d813b",
+      "defaultBranch": "main",
+      "githubLicenseId": null,
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/ThetaMogwai/String-Art-Generator/tree/e8eaeda4a953b52f60edcc1921662306af7d813b"
+    },
+    {
+      "name": "roy-hachnochi/string-art",
+      "url": "https://github.com/roy-hachnochi/string-art",
+      "head": "2a1d75e0845901fb078cead87d96812fce262db2",
+      "defaultBranch": "main",
+      "githubLicenseId": "AGPL-3.0",
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/roy-hachnochi/string-art/tree/2a1d75e0845901fb078cead87d96812fce262db2"
+    },
+    {
+      "name": "DanAla/String_Art",
+      "url": "https://github.com/DanAla/String_Art",
+      "head": "ac50ad2d8dcd2bd6bb6b1a3217252d7ad34ebd6b",
+      "defaultBranch": "main",
+      "githubLicenseId": "MIT",
+      "licenseNoticeSha256": "a1de5306375b348e15c91b487216a54f123f8eb387d4561a0b3810c977a23978",
+      "pinnedSourceUrl": "https://github.com/DanAla/String_Art/tree/ac50ad2d8dcd2bd6bb6b1a3217252d7ad34ebd6b"
+    },
+    {
+      "name": "christiansiegel/knitter",
+      "url": "https://github.com/christiansiegel/knitter",
+      "head": "f30a3e20c5f9bc61b5c27bf1f0cea1bb4c40ffe7",
+      "defaultBranch": "master",
+      "githubLicenseId": "MIT",
+      "licenseNoticeSha256": "e060186ea69497f077aae57b521d090bae6929662d784552ef5fa87147bda67f",
+      "pinnedSourceUrl": "https://github.com/christiansiegel/knitter/tree/f30a3e20c5f9bc61b5c27bf1f0cea1bb4c40ffe7"
+    },
+    {
+      "name": "99ecarvalho/StringArt2",
+      "url": "https://github.com/99ecarvalho/StringArt2",
+      "head": "4e81babd7fd802c0a35915a074d08a5b70dfaf45",
+      "defaultBranch": "main",
+      "githubLicenseId": "LGPL-3.0",
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/99ecarvalho/StringArt2/tree/4e81babd7fd802c0a35915a074d08a5b70dfaf45"
+    },
+    {
+      "name": "neumann-mlucas/StringArt.jl",
+      "url": "https://github.com/neumann-mlucas/StringArt.jl",
+      "head": "e80b2a7a005ce7efac059971271cadf57110a167",
+      "defaultBranch": "main",
+      "githubLicenseId": "MIT",
+      "licenseNoticeSha256": "6fea45f81a5ac701e83a0d0f1e41e8dfc447c72c8b2409420c4bd97316948376",
+      "pinnedSourceUrl": "https://github.com/neumann-mlucas/StringArt.jl/tree/e80b2a7a005ce7efac059971271cadf57110a167"
+    },
+    {
+      "name": "JB1071017/str_art",
+      "url": "https://github.com/JB1071017/str_art",
+      "head": "5b273a1e4f491890f4be769091cad105ba5efe30",
+      "defaultBranch": "main",
+      "githubLicenseId": null,
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/JB1071017/str_art/tree/5b273a1e4f491890f4be769091cad105ba5efe30"
+    },
+    {
+      "name": "Dementophobia/string-art",
+      "url": "https://github.com/Dementophobia/string-art",
+      "head": "805f2c50f1ac38e1c4c25f9b32d1126404da991d",
+      "defaultBranch": "master",
+      "githubLicenseId": null,
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/Dementophobia/string-art/tree/805f2c50f1ac38e1c4c25f9b32d1126404da991d"
+    },
+    {
+      "name": "i-make-robots/weaving_algorithm",
+      "url": "https://github.com/i-make-robots/weaving_algorithm",
+      "metadataFetchFailed": true
+    },
+    {
+      "name": "bdring/StringArt",
+      "url": "https://github.com/bdring/StringArt",
+      "head": "53aadddd3463c886d2db7632336f57c891747bca",
+      "defaultBranch": "master",
+      "githubLicenseId": null,
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/bdring/StringArt/tree/53aadddd3463c886d2db7632336f57c891747bca"
+    },
+    {
+      "name": "virtuallypassedsmartsparrow/StringArt",
+      "url": "https://github.com/virtuallypassedsmartsparrow/StringArt",
+      "head": "c96b9ac6316f84c17e0adb644c2df4a971406305",
+      "defaultBranch": "main",
+      "githubLicenseId": "MIT",
+      "licenseNoticeSha256": "89528ba96fdb66a544281f8e5d34ea95f82582671eb4c1636accd91aa33088a9",
+      "pinnedSourceUrl": "https://github.com/virtuallypassedsmartsparrow/StringArt/tree/c96b9ac6316f84c17e0adb644c2df4a971406305"
+    },
+    {
+      "name": "Hirnmoder/thread-art",
+      "url": "https://github.com/Hirnmoder/thread-art",
+      "head": "dc38369d1601326b37e990f647a76f0b4d1bee82",
+      "defaultBranch": "main",
+      "githubLicenseId": "MIT",
+      "licenseNoticeSha256": null,
+      "pinnedSourceUrl": "https://github.com/Hirnmoder/thread-art/tree/dc38369d1601326b37e990f647a76f0b4d1bee82"
+    }
+  ],
+  "selectedSource": {
+    "url": "https://raw.githubusercontent.com/virtuallypassedsmartsparrow/StringArt/c96b9ac6316f84c17e0adb644c2df4a971406305/Circular_String_Art_BlackWhite_Nail_List.m",
+    "sha256": "e7f20be182aaabfb71d3e43a78f1bcfdc55ddac7cc5e19889e5b00962bbd5b9a",
+    "actualLicenseNoticeInspected": true,
+    "license": "MIT",
+    "sourceRuntimeExecuted": false,
+    "matlabNumericalParityEstablished": false
+  },
+  "videos": [
+    {
+      "url": "https://www.youtube.com/watch?v=WGccIFf6MF8",
+      "title": "The Mathematics of String Art",
+      "author": "Virtually Passed",
+      "transcriptRead": false,
+      "videoWatched": false
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=dBlSmg5T13M",
+      "title": "How To Make a Computer Create Something Beautiful: String Art #SoMEpi",
+      "author": "Virtually Passed",
+      "transcriptRead": false,
+      "videoWatched": false
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=UsbBSttaJos",
+      "title": "I Wrote an Algorithm to Draw Portraits from Thread | Thread Art",
+      "author": "Jenny Ma",
+      "transcriptRead": false,
+      "videoWatched": false
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=LPYEd50j3s0",
+      "title": "Building a String Art Machine",
+      "author": "Paul MH",
+      "transcriptRead": false,
+      "videoWatched": false
+    }
+  ],
+  "publications": [
+    {
+      "title": "String Art: Towards Computational Fabrication of String Images",
+      "year": 2018,
+      "url": "https://www.cg.tuwien.ac.at/research/publications/2018/Birsak2018-SA/",
+      "doi": "10.1111/cgf.13359",
+      "inspected": "Author project, paper and source examples; no compatible source license verified."
+    },
+    {
+      "title": "A Greedy Algorithm for Generative String Art",
+      "year": 2022,
+      "url": "https://archive.bridgesmathart.org/2022/bridges2022-63.pdf",
+      "sha256": "cb9e834f83f95b7aa6791b0a0cf1275246b1a1a7673869831ee22ac941b2c63e",
+      "pages": 8,
+      "inspected": "Full text extracted; first-page figure visually inspected. Not every page visually inspected."
+    },
+    {
+      "title": "New Methods in String Art",
+      "year": 2024,
+      "url": "https://research.tue.nl/en/studentTheses/new-methods-in-string-art/",
+      "inspected": "University record and thesis method/conclusion."
+    }
+  ],
+  "additionalReadmeScreening": [
+    "https://github.com/atomAltera/string-art-studio",
+    "https://github.com/TrevorPeters0n/string-art-studio"
+  ],
+  "acceptanceForNextExperiment": {
+    "baseline": "Current original Circle preparation10",
+    "pins": 240,
+    "connections": 3000,
+    "threadMm": 0.12,
+    "opacity": 0.9,
+    "physicalPreviewPx": 1000,
+    "minGap": 25,
+    "maxChordRepeat": 1,
+    "maxIncident": 160,
+    "minimumFaceSsimGain": 0.02,
+    "minimumNoseSsimGain": 0.03,
+    "maximumEyesOrMouthSsimLoss": 0.005,
+    "maximumWhiteDarknessIncrease": 0.01,
+    "ordinaryFlowSecondsGateBeforePromotion": 15,
+    "implemented": false,
+    "executed": false
+  }
+}

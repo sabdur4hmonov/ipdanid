@@ -18,6 +18,8 @@ Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQL
 
 ## 1. Working protocol (read every session)
 
+Latest owner2026-10-27 asks for a broad GitHub/YouTube/external-method search. Research decision: docs/STRING_ART_METHOD_RESEARCH_20261027.md. The first distinct implementation candidate is the MIT Virtually Passed continuous monochrome projection-domain method, not yet ported or benchmarked. Its published examples are not matched-kit acceptance. Follow its fixed research-only Circle experiment and independent physical gates before any promotion; preserve classic3/old guides/4216/API4656 and sealed failed searches. Birsak finite-pin geometry remains a separate cited scientific reference, not permission to repeat old sweeps. Research completion is not quality completion.
+
 2026-10-21 latest owner request in attachments/303b7c70-0818-4d31-b676-734009d69df2/Pasted text.txt explicitly restores normal milestone push on feat/full-roadmap and the final feature→main PR. This supersedes the2026-10-20 no-push restriction for that feature branch only. Exact origin previously owner-confirmed: https://github.com/sabdur4hmonov/ipdanid.git. No main/force/reset/rewrite/merge; all protected previews/data remain frozen.
 
 1. Start of EVERY session (including after "continue"):

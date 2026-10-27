@@ -1,5 +1,7 @@
 # Public string-art algorithm survey
 
+Historical October14 survey. The owner's October27 external-search request and the current candidate decision are recorded in [STRING_ART_METHOD_RESEARCH_20261027.md](STRING_ART_METHOD_RESEARCH_20261027.md). Its verified continuous MIT Radon implementation was absent here. The old ranked hypotheses below are historical, not instructions to repeat completed/rejected experiments. No external algorithm has yet won a matched current-owner physical comparison.
+
 Checked 2026-10-14. Public papers, author documentation and repository/license pages only. No third-party code, examples or images were incorporated. No public implementation has been benchmarked on our frozen owner target in this research phase; therefore **no external engine is established as better than Ip Rasm**.
 
 ## Methods and reuse decisions

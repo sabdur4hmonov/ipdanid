@@ -1,3 +1,7 @@
+## 27.10.2026 — tashqi usullar bo‘yicha yangi qaror
+
+GitHub/YouTube mualliflari va ilmiy manbalar qidirildi:16ta repo versiyasi va4ta video nomi/muallifi tasdiqlandi. Virtually Passed’ning MITkodli uzluksiz Radon usuli keyingi aniq solishtirish uchun tanlandi. U hali ilovaga qo‘shilmagan va original suratda sinalmagan;100%yaxshilanish yoki eng yaxshi natija isbotlandi deyilmaydi.4216sayt/APK o‘zgarmadi. Manbalar va bitta qat’iy sinov rejasi: `docs/STRING_ART_METHOD_RESEARCH_20261027.md`. Sifat talabi ochiq, sizdan yangi kirish ma’lumoti kutilmaydi.
+
 ## 27.10.2026 — egasining yangi sifat talabi hali ochiq
 
 Yangi ip juftlarini almashtirish usuli original suratingizda sinab ko‘rildi. Yaxshilanish bermadi:256ta vaqtinchalik almashtirishning barchasi rad etildi, haqiqiy ip natijasi o‘zgarmadi. Usul standart hisobga qo‘shilmadi.4216sayt va avvalgi APK saqlanadi.100%foto tengligi yoki sezilarli yangi yaxshilanish e’lon qilinmaydi. Bu tashqi kalit yoki yana surat kutilayotgani emas; sifat bo‘yicha isbotlangan yangi yechim topilmadi. Texnik natija `docs/ROUTE_TWO_OPT_PLAN.md`da. Quyidagi dasturiy sinovlar bu yangi sifat talabini bajardi degani emas.
