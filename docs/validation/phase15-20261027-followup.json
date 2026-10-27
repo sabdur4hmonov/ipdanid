@@ -1,0 +1,71 @@
+{
+  "schema": "iprasm.followup-validation/1",
+  "date": "2026-10-27",
+  "runtimeSourceCommit": "7221ddfc24421de114872caf1a9dd838ff73fbce",
+  "buildFingerprint": "8301eee2ad7c2c832120ccca248365b5c83daf36252f13f96906beb0b4e3ae34",
+  "unit": {
+    "passed": 687,
+    "failed": 0,
+    "workflowRun": 40504929717,
+    "artifact": 12734667445
+  },
+  "publicBrowser": {
+    "passed": 18,
+    "skipped": 0,
+    "flaky": 0
+  },
+  "localBrowser": {
+    "uniqueAccepted": 38,
+    "originalAndPlacement": 12,
+    "modes": 18,
+    "paidOfflineExport": 2,
+    "nativeApi": 2,
+    "pageCpu4x": 4,
+    "earlierCombinedOriginalBatch": {
+      "passed": 9,
+      "timingFailed": 3
+    },
+    "unchangedEntireSquareRepeat": {
+      "passed": 4,
+      "failed": 0
+    },
+    "uniqueOriginalMinMs": 9327,
+    "uniqueOriginalMaxMs": 14951,
+    "modeMinMs": 3548,
+    "modeMaxMs": 9322
+  },
+  "exactness": {
+    "originalScalarPaths": 12,
+    "originalPhysicalFloat32": 12,
+    "originalFullScoreFloats": 12,
+    "modePhysicalCanvas": 18,
+    "pdfCovers": 2,
+    "pdfPagesEach": 79,
+    "pdfOrderedSteps": 6000,
+    "defaultCropChanged": false,
+    "qualityThresholdChanged": false,
+    "photographicEqualityClaimed": false
+  },
+  "baselineMatrix": {
+    "passed": 346,
+    "buildFingerprint": "f563bb9fdfcc6781778e2a2488dd2edc601c1595961e6a7f4a3cffc9cfb450aa",
+    "currentBuild": false
+  },
+  "pageCpu4x": {
+    "generationMinMs": 7929.399999856949,
+    "generationMaxMs": 8382.899999856949,
+    "p95HeartbeatMaxMs": 146.80000019073486,
+    "menuLatencyMaxMs": 144,
+    "maxGapMs": 360.10000014305115,
+    "workerThrottled": false,
+    "physicalPhoneMeasured": false,
+    "conservativeEstimateMinMs": 29761.89999985695,
+    "conservativeEstimateMaxMs": 33022.7999997139
+  },
+  "frozenWebFiles": 121,
+  "workingBuildByteEqualFiles": 120,
+  "workingSwPrecacheOrderOnly": true,
+  "nativeRepackage": "pending",
+  "phoneInstalled": false,
+  "productionActive": false
+}

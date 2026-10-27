@@ -3,8 +3,8 @@ import { existsSync, realpathSync } from "node:fs";
 
 export const OWNER_PREVIEW_PORTS = Object.freeze([
   4194, 4195, 4196, 4197, 4198, 4199, 4200, 4201, 4210, 4211, 4212, 4213, 4214,
-  4215, 4331, 4465, 4478, 4479, 4480, 4481, 4482, 4483, 4650, 4651, 4652, 4653,
-  4654, 4655,
+  4215, 4216, 4331, 4465, 4478, 4479, 4480, 4481, 4482, 4483, 4650, 4651, 4652, 4653,
+  4654, 4655, 4656,
 ]);
 export function assertTestPorts(preview, api) {
   for (const port of [preview, api])

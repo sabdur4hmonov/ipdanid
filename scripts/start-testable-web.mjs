@@ -19,7 +19,7 @@ import { OWNER_PREVIEW_PORTS } from "../server/test-safety.mjs";
 const args = process.argv.slice(2);
 assert(
   args.length === 0 || (args.length === 2 && args[0] === "--name"),
-  "Expected --name testable-web, subject-repair, portrait-review or release-candidate",
+  "Expected --name testable-web, subject-repair, portrait-review, final-review or release-candidate",
 );
 const snapshotName = args[1] ?? "testable-web";
 assert(
@@ -27,6 +27,7 @@ assert(
     "testable-web",
     "subject-repair",
     "portrait-review",
+    "final-review",
     "release-candidate",
   ].includes(snapshotName),
   "Unknown preview snapshot",
@@ -84,20 +85,24 @@ const release = snapshotName === "release-candidate",
   port = await freePort(
     release
       ? 4201
-      : snapshotName === "portrait-review"
-        ? 4215
-        : snapshotName === "subject-repair"
-          ? 4214
-          : 4213,
+      : snapshotName === "final-review"
+        ? 4216
+        : snapshotName === "portrait-review"
+          ? 4215
+          : snapshotName === "subject-repair"
+            ? 4214
+            : 4213,
   ),
   apiPort = await freePort(
     release
       ? 4483
-      : snapshotName === "portrait-review"
-        ? 4655
-        : snapshotName === "subject-repair"
-          ? 4654
-          : 4653,
+      : snapshotName === "final-review"
+        ? 4656
+        : snapshotName === "portrait-review"
+          ? 4655
+          : snapshotName === "subject-repair"
+            ? 4654
+            : 4653,
   ),
   site = `http://127.0.0.1:${port}`,
   api = `http://127.0.0.1:${apiPort}/api`;

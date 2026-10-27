@@ -19,3 +19,12 @@ Fresh all-black physical renders evaluate one identical Float32 channel and repl
 - Final combined arithmetic and actual-UI results are recorded below only after execution.
 
 The existing 346-case/80-file C26 matrix describes the earlier f563bb9f build. It is baseline evidence, not a claim that every file was rerun on this changed Worker bundle. Source photos and private timing reports are never committed or uploaded. Photographic/physical likeness, actual phone performance and public production activation remain separate acceptance questions.
+
+
+## Executed final software checks
+
+Runtime7221ddf: GitHub run40504929717 bothjobsSUCCESS; downloaded artifact12734667445 verifies687unit/18publicbrowser. Local29related units and6launcher/frozen-server units pass. Current local38unique browser cases pass:12actual original/crop,18othermodes,2paid/offline/export/cancel,2nativeAPI,4pageCPU4x. First combined12run9pass/3timingfails; unchanged entireSquare4case repeat4PASS. Same input/hash produced15.224s and6.148s in different original passes, so host/JIT timing variability is explicit. Accepted original range9.327-14.951s, generic3.548-9.322s. Earlier failed/prototype artifacts remain. No claim of a clean first run or a new346case full matrix.
+
+Independent original12 verification proves exact scalar selected paths, all original physical Float32 channels, all full-frame-reference face/feature/white scores and displayed RGB. Two actual downloaded79page PDFs have all6000ordered steps and raw1000pxcovers equal to the old renderer; rendered layout samples reviewed. Page4x generation7.929-8.383s,p95<=146.8ms/menu144/maxgap360.1; Worker unthrottled and29.8-33.0s conservative extrapolation is NOT a whole-device measurement.
+
+New4216/API4656website freezes121originally tested files. Final2142module rebuild has the same8301eee2 manifest,120exact files and only a different sw.js precache listing order. Both119URLsets/cacheversion/remainingworker source are identical. No frozen file was rewritten. Native packaging will read the frozen snapshot so its121files match the exact tested website. Native result is recorded only after its verifier runs. Public sanitized evidence: validation/phase15-20261027-followup.json.

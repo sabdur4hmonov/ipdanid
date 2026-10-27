@@ -1,3 +1,9 @@
+## Eng yangi sayt —2026-10-27,4216
+
+**http://127.0.0.1:4216/**. Quti kodi faqat mahalliy `output/phase15/final-review/manual-testing.txt`da: har qutiga3ta to‘liq yo‘riqnoma, bepul rasmli ko‘rinish, ochilgan loyihaga bepul qaytish. GitHub `feat/full-roadmap`da.687unit/18ochiqCI va38joriy lokal brauzer holati o‘tdi. Yangi APK saytga moslab yig‘ilmoqda; keyingi yozuvda aniq fayli beriladi.
+
+Eski346holat oldingi buildga tegishli; yangi asl-surat sinovida dastlab3vaqt oshishi bo‘ldi, ayni kvadrat4holati qayta9.3–9.9soniyada o‘tdi. Yuz/burun oldingi sifat tanlovi saqlangan,100%fotografik tenglik yo‘q. Hisobot: `docs/PORTRAIT_SCORE_WINDOW_CHECKPOINT.md`, sanitizatsiya qilingan dalil `docs/validation/phase15-20261027-followup.json`. Suratlar faqat lokal. Eski4215server qayta yoqilmadi; yangi sayt alohida bazada. Tashqi domen/kalit/ovoz/taxta/telefon va yo‘q main bazasi bo‘yicha owner ro‘yxati quyida. Quyidagi boshqa sayt/APK yozuvlari tarixiy.
+
 ## Shu kompyuterdagi tayyor nusxa —2026-10-27
 
 Sayt: http://127.0.0.1:4215/ . Quti kodi faqat mahalliy `output/phase15/portrait-review/manual-testing.txt`da. APK `output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk`.679unit va346to‘liq desktop/mobil holat o‘tdi; CI dagi18ochiq brauzer sinovi lokal matritsaga ham kiradi. Dalil: [yakuniy software tekshiruvi](docs/RELEASE_CANDIDATE_CHECKPOINT.md), [sanitizatsiya qilingan JSON](docs/validation/phase15-20261027.json). Mayda detallar fotografiyaga teng emas, real telefon/taxta/public xizmatlar hali alohida tekshiriladi.

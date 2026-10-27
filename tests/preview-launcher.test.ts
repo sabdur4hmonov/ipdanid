@@ -19,6 +19,6 @@ test("preview launcher refuses extra arguments rather than silently ignoring the
   );
   expect(r.status).not.toBe(0);
   expect(r.stderr).toContain(
-    "Expected --name testable-web, subject-repair, portrait-review or release-candidate",
+    "Expected --name testable-web, subject-repair, portrait-review, final-review or release-candidate",
   );
 });

@@ -2,6 +2,19 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — yangi yakuniy sayt:4216
+
+**http://127.0.0.1:4216/**. Yangi quti kodi faqat `output/phase15/final-review/manual-testing.txt`da; Admin qiymatini ulashmang. Parolsiz3ta alohida yo‘riqnoma, bepul ipli ko‘rinish va ochilgan ishga bepul qaytish ishlaydi. Sizdan hozir javob kutilmaydi.
+
+1. Galereyadan surat → Doira/Kvadrat/Yurak → o‘zingiz surish/kattalashtirish/Burish. Yuzga yaqinlashtirish ixtiyoriy, Qaytarish asl joylashuvni tiklaydi.
+2. Oldin/Keyin bilan qirqimni ko‘ring; mushuk uchun tegishli tur, yozuv uchun Yozuvni tanlang. Lotin/kirill/arabcha aralash yozuv sinaldi.
+3. Yaratish → bepul ip ko‘rinishi. Yoqsa Yig‘ishni boshlash → shu yangi quti kodi. Yangi suratlarni ko‘rish kredit olmaydi.
+4. Bitta qadam → Dam olish → sahifani qayta ochish → qolgan joydan davom etish. Oflayn davom etish/PDF/TXT/JSON avtomatik tekshirildi.
+5.687unit/18ochiqCI va38joriy lokal brauzer holati o‘tdi; eski346matritsa oldingi buildga tegishli. Dastlabki3vaqt oshishi saqlangan, ayni kvadrat4holati takroran9.3–9.9soniyada o‘tdi. Har safar15soniyadan kam bo‘lishi yoki foto bilan100%tenglik va’da qilinmaydi.
+6. Jismoniy taxta uchun `docs/BUILD_TODAY_UZ.md`:500×500mm,100%chop etish,50mm belgini o‘lchash,240tanlangan mix va sektorlar. Haqiqiy taxta/telefon tekshiruvi keyin.
+
+Mahalliy surat taqqoslash: `output/quality-original-20261026/final-review.html`. Original surat GitHubga qo‘yilmagan. Yangi APK shu saytga moslab yig‘ilmoqda; avvalgi fayllar saqlanadi. Quyidagi yozuvlar tarixiy.
+
 ## 2026-10-27 — yangi nusxa tekshiruvi davom etmoqda
 
 Hozir sizdan javob kutilmaydi. Eski4215server o‘chiq ekan; u qayta ishga tushirilmadi. Yangi alohida havola tayyorlangandan keyin shu faylga yoziladi. Ixtiyoriy kattalashtirishda15soniyadan oshgan holatlar aniqlandi; ular o‘tdi deb yozilmaydi.29ta tenglik/moslik testi va yangi build o‘tdi. Original suratlar faqat kompyuterda.
