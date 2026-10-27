@@ -1,5 +1,11 @@
 # Egasi uchun sinovlar (agent shu yerga yozadi, o'zbekcha)
 
+## 2026-10-28 — bir million shaxsiy quti kodi
+
+Avtomatik tekshirildi: **1 000 000 ta ishlatilmagan kod**, har biri **3 ta to‘liq ish** uchun. Har bir kod shifrlangan fayldan bazaga aniq solishtirildi. Uch namunada uchta ish ochildi, to‘rtinchisi rad etildi, eski ish boshqa qurilmada bepul qayta ochildi; sinovlar qaytarilgani uchun haqiqiy kodlar ishlatilmagan qolgan. HTTPda 15 tekshiruv, shaxsiy faylni brauzerda ochishni rad qilishning 4 tekshiruvi va 1000 kodlik chop etish sinovi o‘tdi. Hozir qo‘lda sinov shart emas.
+
+Zaxira eski 4216 saytiga ulanmagan, alohida yopiq papkada. Uni GitHubga yubormang. Chop etish, kalitni saqlash va keyingi yangi VPSga ko‘chirish: `docs/KIT_MILLION_UZ.md`. Saytning brauzerga yuborilgan JavaScript qismini butunlay yashirib bo‘lmaydi; yo‘riqnoma ketma-ketligini serverda saqlash alohida keyingi ish bo‘lib qoladi. Burun sifati va yakuniy Android hali shu yangi bosqichda tugallandi deyilmaydi.
+
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
 ## 2026-10-27 — QBRIX va Xitoy bozoridagi dasturlar tekshirildi

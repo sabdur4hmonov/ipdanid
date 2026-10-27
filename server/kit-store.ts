@@ -47,6 +47,13 @@ export class KitStore extends CustomerStore {
  CREATE TABLE IF NOT EXISTS kit_limits(account_id TEXT PRIMARY KEY REFERENCES users(id),data TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS build_unlocks(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES users(id),sequence_hash TEXT NOT NULL,created_at INTEGER NOT NULL,source TEXT NOT NULL,UNIQUE(account_id,sequence_hash));
  CREATE TABLE IF NOT EXISTS build_requests(account_id TEXT NOT NULL REFERENCES users(id),request_key TEXT NOT NULL,sequence_hash TEXT NOT NULL,PRIMARY KEY(account_id,request_key));
+ CREATE TABLE IF NOT EXISTS kit_inventories(id TEXT PRIMARY KEY,actor TEXT NOT NULL,profile TEXT NOT NULL,total INTEGER NOT NULL CHECK(total BETWEEN 1 AND 1000000),issued INTEGER NOT NULL DEFAULT 0 CHECK(issued>=0 AND issued<=total),status TEXT NOT NULL CHECK(status IN ('staging','ready','failed','revoked')),created_at INTEGER NOT NULL);
+ CREATE TABLE IF NOT EXISTS kit_inventory_batches(batch_id TEXT PRIMARY KEY REFERENCES kit_batches(id),inventory_id TEXT NOT NULL REFERENCES kit_inventories(id));
+ CREATE INDEX IF NOT EXISTS kit_inventory_lookup ON kit_inventory_batches(inventory_id);
+ CREATE INDEX IF NOT EXISTS kit_codes_account ON kit_codes(account_id);
+ CREATE INDEX IF NOT EXISTS kit_codes_batch ON kit_codes(batch_id);
+ CREATE INDEX IF NOT EXISTS kit_grants_account ON kit_grants(account_id,expires_at);
+ CREATE INDEX IF NOT EXISTS kit_unlock_account_time ON build_unlocks(account_id,created_at);
  `);
     this.ktx(() => {
       this.db
@@ -230,14 +237,13 @@ export class KitStore extends CustomerStore {
       this.db
         .prepare("INSERT INTO kit_batches VALUES(?,?,?,?,?)")
         .run(id, profile.trim(), now, actor, Number(count));
+      const insertCode = this.db.prepare(
+        "INSERT INTO kit_codes(hash,batch_id,profile,quota,credit_days,expires_at) VALUES(?,?,?,?,?,?)",
+      );
       for (let j = 0; j < Number(count); j++) {
         const code = randomBytes(24).toString("base64url"),
           expiresAt = p.codeDays ? now + p.codeDays * 86400000 : null;
-        this.db
-          .prepare(
-            "INSERT INTO kit_codes(hash,batch_id,profile,quota,credit_days,expires_at) VALUES(?,?,?,?,?,?)",
-          )
-          .run(
+        insertCode.run(
             this.digest(code),
             id,
             profile.trim(),
@@ -266,10 +272,16 @@ export class KitStore extends CustomerStore {
       )
     );
   }
+  private inventoryReady(batchId: string) {
+    const row = this.db.prepare(
+      "SELECT i.status FROM kit_inventory_batches b JOIN kit_inventories i ON i.id=b.inventory_id WHERE b.batch_id=?",
+    ).get(batchId);
+    return !row || row.status === "ready";
+  }
   private claim(account: string, code: string, now = Date.now()) {
     const h = this.digest(code),
       r = this.db.prepare("SELECT * FROM kit_codes WHERE hash=?").get(h);
-    if (!r || r.revoked) throw new DomainError("Kit code unavailable", 403);
+    if (!r || r.revoked || !this.inventoryReady(String(r.batch_id))) throw new DomainError("Kit code unavailable", 403);
     if (r.account_id) {
       if (r.account_id !== account)
         throw new DomainError("Kit belongs to another account", 409);
@@ -321,9 +333,9 @@ export class KitStore extends CustomerStore {
       throw new DomainError("Kit code unavailable", 401);
     return this.ktx(() => {
       const r = this.db
-        .prepare("SELECT account_id,revoked FROM kit_codes WHERE hash=?")
+        .prepare("SELECT account_id,revoked,batch_id FROM kit_codes WHERE hash=?")
         .get(this.digest(code));
-      if (!r || r.revoked) throw new DomainError("Kit code unavailable", 401);
+      if (!r || r.revoked || !this.inventoryReady(String(r.batch_id))) throw new DomainError("Kit code unavailable", 401);
       if (r.account_id && currentAccount && r.account_id !== currentAccount)
         throw new DomainError("Kit belongs to another account", 409);
       const account = r.account_id
@@ -377,6 +389,7 @@ export class KitStore extends CustomerStore {
   }
   kitAdmin() {
     return {
+      inventories: this.db.prepare("SELECT id,profile,total,issued,status,created_at FROM kit_inventories ORDER BY created_at DESC,id LIMIT 50").all(),
       policy: this.kitPolicy(),
       codes: this.db
         .prepare(

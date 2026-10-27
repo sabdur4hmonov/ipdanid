@@ -54,6 +54,11 @@ export default defineConfig({
   },
   // Native build caches and private evidence are served on demand, never source watched.
   server: {
+    fs: {
+      // Keep Vite's default denials when adding private inventory protection.
+      // Ignoring a directory in the watcher does not prevent HTTP file serving.
+      deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "**/phase16-private/**", "**/*.sqlite*", "**/*.db", "**/private-keys.json"],
+    },
     proxy: {
       "/api": process.env.IP_RASM_BACKEND_PROXY || "http://127.0.0.1:4311",
     },

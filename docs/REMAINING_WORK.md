@@ -2,6 +2,8 @@ Latest owner quality override2026-10-27: actual likeness is OPEN again, not an O
 
 # Phase15 exhaustive remaining-work audit — 2026-10-17
 
+NEW owner request2026-10-27 opens Phase16; see PHASE16_PRODUCT_PLAN.md and current PROGRESS. P16.1nose quality,P16.2actual million private box codes,P16.3server-protected generation,P16.4UI/delivery audit,P16.5Android/release acceptance are OPEN. The Phase15 DONE status below does not cover those new requirements.
+
 Written before Phase15 implementation. Sources: AGENT/MASTER_PLAN.md; all current and historical open/remaining rows in AGENT/FINAL_REPORT.md; docs/ROADMAP.md, FEATURE_MATRIX.md and BLOCKERS.md; Phase14 source and acceptance records. Historical checkpoint next-task paragraphs are not new instructions. A partial device/physical/production column does not itself mean missing code. Conversely, a schema, disabled card or mock is not a completed customer feature.
 
 Status: **ALL feasible CODE C01–C28 DONE. Latest follow-up687unit/18publicCI and38current local browser cases,6guardunits,2142build,121asset same-signer APK/95oldarchives;4216/API4656. Earlier346case f563bb9f matrix is baseline ONLY. OWNER O01–O11 activation/physical/phone/likeness/absent-main PR prerequisite remain; no perfect photo/device/production acceptance.**

@@ -1,3 +1,9 @@
+## 28.10.2026 — yangi Phase16: bir million kod tayyor, qolgan ishlar ochiq
+
+**1 000 000 ta haqiqiy shaxsiy kod** chiqarildi, har biri 3 ta alohida ishni ochadi. Hammasi bazaga aniq tekshirildi va ishlatilmagan. Uch namunada haqiqiy kirish/3 ta ish/to‘rtinchisini rad etish/bepul qayta ochish tekshirildi; sinov huquqlarni sarflamagan. 19 ta unit/himoya testi, 15 ta HTTP tekshiruvi, 4 ta brauzer orqali shaxsiy faylni rad etish tekshiruvi, chop etish sinovi va yangi build o‘tdi.
+
+Kodlar GitHub yoki APKga qo‘shilmaydi. Yopiq zaxira va chop etish: `docs/KIT_MILLION_UZ.md`. Eski 4216 serverga avtomatik ulanmagan. Burun sifati, serverda yopiq yo‘riqnoma yaratish, yangi UI/dastavka tekshiruvi va yakuniy Android hali Phase16da ochiq. Brauzerga yuborilgan sayt kodini butunlay yashirish mumkin emas; maxfiy server qismlari alohida himoyalanadi. Oldingi “tugallangan” yozuvlar Phase15ga tegishli.
+
 ## 27.10.2026 — QBRIX / Xitoy bozoridan aniq dalillar
 
 QBRIXning yopiq hisob formulasi topildi deyilmaydi. Rasm/variant tanlash jarayoni, SiSiRuYingdizayner tuzatish vositalari va ALINEDECOning haqiqiy hisob/ko‘rinish sozlamalari tekshirildi. Shaxsiy surat, quti kodi yoki hisob ma’lumoti yuborilmagan. Ochiq boshqa tijoriy4058qadamlik namuna faqat1ta takror ishlatadi; bu QBRIXyo‘riqnomasi emas.
