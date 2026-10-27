@@ -6,18 +6,24 @@ import { customerApi } from "./customer-api";
 import { renderInstruction } from "./core/render";
 import { download } from "./download";
 import { standardText } from "./standard-kit-i18n";
+import type { ProtectedPreview } from "./protected-generation";
 const TrialClaimPanel = lazy(() => import("./TrialClaimPanel"));
 export function BuildGate({
   instruction: i,
   locale,
   preview,
   onBuy,
+  onReleased,
 }: {
-  instruction: Instruction;
+  instruction: Instruction | ProtectedPreview;
   locale: Locale;
   preview: ReactNode;
   onBuy: () => void;
+  onReleased?: (guide: Instruction) => void;
 }) {
+  const local = "schema" in i ? i : undefined,
+    remote = "schema" in i ? undefined : i,
+    lines = local?.metrics.lines ?? remote!.lines;
   const t = (k: Parameters<typeof kitText>[1]) => kitText(locale, k),
     [code, setCode] = useState(""),
     [credits, setCredits] = useState<number>(),
@@ -28,12 +34,19 @@ export function BuildGate({
     let epoch = 0;
     const reload = () => {
       const ticket = ++epoch;
-      setCredits(undefined); setCode(""); setError("");
+      setCredits(undefined);
+      setCode("");
+      setError("");
       void (async () => {
         await customerApi.restore();
         const token = customerApi.session?.token;
-        const a = await customerApi.request<{credits:number}>("/builds/account", undefined, token);
-        if (live && ticket === epoch && token === customerApi.session?.token) setCredits(a.credits);
+        const a = await customerApi.request<{ credits: number }>(
+          "/builds/account",
+          undefined,
+          token,
+        );
+        if (live && ticket === epoch && token === customerApi.session?.token)
+          setCredits(a.credits);
       })().catch(() => {});
     };
     customerApi.sessionChanged.add(reload);
@@ -69,12 +82,26 @@ export function BuildGate({
       <button
         onClick={() =>
           void run(async () => {
+            if (remote) {
+              await download(
+                "ip-rasm-preview.png",
+                new Blob(
+                  [
+                    Uint8Array.from(atob(remote.preview), (c) =>
+                      c.charCodeAt(0),
+                    ),
+                  ],
+                  { type: "image/png" },
+                ),
+              );
+              return;
+            }
             const c = document.createElement("canvas");
             c.width = 1024;
             c.height = Math.round(
-              (1024 * i.profile.heightMm) / i.profile.widthMm,
+              (1024 * local!.profile.heightMm) / local!.profile.widthMm,
             );
-            renderInstruction(c.getContext("2d")!, i);
+            renderInstruction(c.getContext("2d")!, local!);
             const blob = await new Promise<Blob>((resolve, reject) =>
               c.toBlob((b) =>
                 b ? resolve(b) : reject(Error("Preview unavailable")),
@@ -87,10 +114,26 @@ export function BuildGate({
         {t("previewDownload")}
       </button>
       <p>
-        {i.metrics.lines} {t("steps")} · {i.metrics.estimatedMeters.toFixed(1)}{" "}
-        m · {((i.metrics.lines * (i.profile.standardKit?.config.secondsPerConnection??8)) / 60).toFixed(1)} {t("minutes")}
+        {lines} {t("steps")} ·{" "}
+        {local ? `${local.metrics.estimatedMeters.toFixed(1)} m · ` : ""}
+        {(
+          (lines *
+            (local?.profile.standardKit?.config.secondsPerConnection ?? 8)) /
+          60
+        ).toFixed(1)}{" "}
+        {t("minutes")}
       </p>
-      {i.profile.standardKit && <p data-testid="assembly-hours">{standardText(locale,"hours")}: {(i.metrics.lines*i.profile.standardKit.config.secondsPerConnection/3600).toFixed(1)} h</p>}
+      {(local?.profile.standardKit || remote) && (
+        <p data-testid="assembly-hours">
+          {standardText(locale, "hours")}:{" "}
+          {(
+            (lines *
+              (local?.profile.standardKit?.config.secondsPerConnection ?? 8)) /
+            3600
+          ).toFixed(1)}{" "}
+          h
+        </p>
+      )}
       {credits !== undefined && (
         <p data-testid="kit-credits">
           {t("credits")}: {credits}
@@ -139,10 +182,20 @@ export function BuildGate({
         <button
           className="primary"
           data-testid="unlock-build"
-          disabled={busy || credits === undefined}
+          disabled={busy || credits === undefined || (!!remote && !onReleased)}
           onClick={() =>
             void run(async () => {
-              const r = await buildAccess.unlock(i);
+              const r = await buildAccess.unlock(
+                local ?? {
+                  sequenceHash: remote!.sequenceHash,
+                  params: { accessPolicy: "kit-build/1" },
+                },
+                remote,
+              );
+              if (remote) {
+                if (!r.instruction) throw Error("build-access/signature");
+                onReleased!(r.instruction);
+              }
               setCredits(r.credits);
             })
           }
@@ -151,7 +204,9 @@ export function BuildGate({
         </button>
         <button onClick={onBuy}>{t("buy")}</button>
       </div>
-      <Suspense fallback={null}><TrialClaimPanel locale={locale} onCredits={setCredits} /></Suspense>
+      <Suspense fallback={null}>
+        <TrialClaimPanel locale={locale} onCredits={setCredits} />
+      </Suspense>
       {busy && <p role="status">…</p>}
       {error && <p role="alert">{error}</p>}
     </section>

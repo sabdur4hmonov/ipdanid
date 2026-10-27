@@ -3,6 +3,8 @@ import type { Locale, Project, Shape } from "./core/types";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { startPushRuntime } from "./push-client";
 import { CustomerStudio } from "./CustomerStudio";
+import { protectedGenerationMode } from "./protected-generation";
+import { protectedText } from "./protected-generation-i18n";
 import { customerFlowText } from "./customer-flow-i18n";
 import { standardText } from "./standard-kit-i18n";
 import { takeKitClaim, kitClaimCode } from "./kit-claim-link";
@@ -162,7 +164,7 @@ export default function App() {
         <div className="sidebar-bottom">
           <div className="local-badge">
             <ShieldCheck size={18} />
-            {t("private")}
+            {protectedGenerationMode ? protectedText(locale, "private") : t("private")}
           </div>
           <button className="text-button" onClick={() => setShowPrivacy(true)}>
             {t("privacy")}
@@ -453,7 +455,7 @@ export default function App() {
           <span>{storefront.brandName || PRODUCT_NAME}</span>
           <span>
             <ShieldCheck size={14} />
-            {t("private")}
+            {protectedGenerationMode ? protectedText(locale, "private") : t("private")}
           </span>
         </footer>
       </div>
@@ -477,7 +479,7 @@ export default function App() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2>{t("privacy")}</h2>
-            <p>{t("privacyText")}</p>
+            <p>{protectedGenerationMode ? protectedText(locale, "privacy") : t("privacyText")}</p>
             <button
               className="primary"
               autoFocus

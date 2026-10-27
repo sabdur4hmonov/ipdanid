@@ -1,5 +1,11 @@
 # Egasi uchun sinovlar (agent shu yerga yozadi, o'zbekcha)
 
+## 2026-10-28 — himoyalangan uch ekranli sayt oqimi
+
+Avtomatik desktop3/3 va mobil3/3 o‘tdi: tanlash → moslash → bepul ipli PNG; bir xil joylashuvda qayta yaratish yangi hisob boshlamaydi. Kod bilan kirishda parol kerak emas, ochishda faqat1kredit sarflandi. Qayta ochish bepul, internetsiz qayta yuklab1-qadamdan davom etish va JSON zaxira ham tekshirildi. Bekor qilish yoki menyudan chiqish kechikkan natijani qaytarmaydi. Server o‘chiq bo‘lsa maxfiy yo‘l mahalliy hisobga yashirin o‘tmaydi. UZ Latin/UZ Cyrillic/RU/EN matni sig‘adi.
+
+Sun’iy rasm uchun yaratish desktop4,026soniya/mobil4,009soniya. Buni burun sifati tuzatildi yoki barcha surat bir xil vaqtda tayyor bo‘ladi deb tushunmang. Eski mahalliy rejim ham desktop/mobil sinovida3ishdan keyin4-ishni yopdi (2/2). Tegishli64unit va ikkala build o‘tdi. Hozir qo‘lda sinov kutilmaydi; yakuniy yangi URL/APK keyingi yakunlash bosqichida. Rejimlar: `docs/PROTECTED_GENERATION_UZ.md`.
+
 ## 2026-10-28 — bir million shaxsiy quti kodi
 
 Serverdagi yopiq hisoblash yadrosi ham sinaldi: oxirgi haqiqiy sinovda 5,1 soniya, mahalliy hisob bilan ketma-ketlik va PNG aynan teng; 57 ta tegishli test, 48 ta eski kit HTTP va 30 ta yangi HTTP tekshiruvi o‘tdi. Bu hali oddiy mijoz oynasiga ulanmagan, hozir yoqish shart emas. Oynaga ulash davom etadi; qo‘lda sinov kutilmaydi. Chegaralar va ma’lumot yuborish: `docs/PROTECTED_GENERATION_UZ.md`. Burun tuzatildi yoki yangi APK chiqdi deyilmaydi.

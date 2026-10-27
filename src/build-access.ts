@@ -2,6 +2,7 @@ import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { customerApi, customerCacheNamespace } from "./customer-api";
 import type { Instruction } from "./core/types";
+import { validateInstruction } from "./core/validation";
 export type BuildAccessReference = {
   sequenceHash: string;
   params: Pick<Instruction["params"], "accessPolicy">;
@@ -150,7 +151,10 @@ export const buildAccess = {
       "/builds/account",
     );
   },
-  async unlock(i: BuildAccessReference) {
+  async unlock(
+    i: BuildAccessReference,
+    remote?: { id: string; secret: string },
+  ) {
     return serial(async () => {
       await customerApi.restore();
       if (!customerApi.session) throw Error("build-access/login");
@@ -173,8 +177,11 @@ export const buildAccess = {
         receipt: BuildReceipt;
         credits: number;
         duplicate: boolean;
-      }>("/builds/unlock", {
-        sequenceHash: i.sequenceHash,
+        instruction?: Instruction;
+      }>(remote ? "/generation/unlock" : "/builds/unlock", {
+        ...(remote
+          ? { id: remote.id, secret: remote.secret }
+          : { sequenceHash: i.sequenceHash }),
         deviceId: c.deviceId,
         requestKey: `unlock-${i.sequenceHash}`,
       });
@@ -187,7 +194,17 @@ export const buildAccess = {
         }))
       )
         throw Error("build-access/signature");
-      if (customerApi.session?.token !== session.token) throw Error("build-access/login");
+      if (remote) {
+        const guide = await validateInstruction(response.instruction);
+        if (
+          guide.sequenceHash !== i.sequenceHash ||
+          guide.params.accessPolicy !== "kit-build/1"
+        )
+          throw Error("build-access/signature");
+        response.instruction = guide;
+      }
+      if (customerApi.session?.token !== session.token)
+        throw Error("build-access/login");
       c.receipts[i.sequenceHash] = response.receipt;
       await write(c);
       window.dispatchEvent(new Event("iprasm-build-access"));

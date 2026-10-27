@@ -137,3 +137,82 @@ it("opt-in access policy changes only bound metadata; legacy exact guides remain
   await expect(validateInstruction(stripped)).rejects.toThrow("integrity");
   expect(await hash(sequencePayload(stripped))).toBe(old.sequenceHash);
 });
+it("remote release verifies the actual guide before caching; a corrupted paid response retries without another debit", async () => {
+  const memory = new Map<string, string>();
+  vi.stubGlobal("localStorage", {
+    getItem: (k: string) => memory.get(k) ?? null,
+    setItem: (k: string, v: string) => memory.set(k, v),
+    removeItem: (k: string) => memory.delete(k),
+  });
+  vi.stubGlobal("window", new EventTarget());
+  const { s, a } = setup(),
+    guide = await generate({
+      profile: createProfile("circle", 24),
+      pixels: new Uint8Array(32 * 32 * 3).fill(170),
+      resolution: 32,
+      lines: 40,
+      mode: "dark",
+      accessPolicy: "kit-build/1",
+    });
+  await customerApi.retain({ id: a.id, token: a.token });
+  let corrupted = true;
+  const request = vi.spyOn(customerApi, "request").mockImplementation((async (
+    path: string,
+    body: any,
+  ) => {
+    if (path === "/builds/key") return s.buildKey();
+    if (path !== "/generation/unlock") throw Error("Unexpected remote route");
+    expect(Object.keys(body).sort()).toEqual([
+      "deviceId",
+      "id",
+      "requestKey",
+      "secret",
+    ]);
+    const result = s.unlockBuild(
+      a.id,
+      guide.sequenceHash,
+      body.deviceId,
+      body.requestKey,
+    );
+    return {
+      ...result,
+      instruction: corrupted
+        ? { ...guide, sequenceHash: "0".repeat(64) }
+        : guide,
+    };
+  }) as any);
+  const remote = {
+    id: "12345678-1234-1234-1234-123456789abc",
+    secret: "synthetic-capability-never-a-real-code",
+  };
+  await expect(buildAccess.unlock(guide, remote)).rejects.toThrow();
+  expect(await buildAccess.allowed(guide)).toBe(false);
+  expect(s.kitBalance(a.id)).toBe(2);
+  corrupted = false;
+  const retry = await buildAccess.unlock(guide, remote);
+  expect(retry.duplicate).toBe(true);
+  expect(retry.instruction?.sequenceHash).toBe(guide.sequenceHash);
+  expect(s.kitBalance(a.id)).toBe(2);
+  expect(await buildAccess.allowed(guide)).toBe(true);
+  expect(request.mock.calls.some((c) => c[0] === "/builds/unlock")).toBe(false);
+  const second = structuredClone(guide);
+  second.imageHash = "b".repeat(64);
+  second.sequenceHash = await hash(sequencePayload(second));
+  const other = setup().a;
+  request.mockImplementation((async (path: string, body: any) => {
+    if (path === "/builds/key") return s.buildKey();
+    const result = s.unlockBuild(
+      a.id,
+      second.sequenceHash,
+      body.deviceId,
+      body.requestKey,
+    );
+    await customerApi.retain({ id: other.id, token: other.token });
+    return { ...result, instruction: second };
+  }) as any);
+  await expect(buildAccess.unlock(second, remote)).rejects.toThrow("signature");
+  expect(await buildAccess.allowed(second)).toBe(false);
+  expect(s.kitBalance(a.id)).toBe(1);
+  request.mockRejectedValue(Error("offline"));
+  expect(await buildAccess.allowed(guide)).toBe(true);
+});

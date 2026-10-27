@@ -46,6 +46,17 @@ import { analyticsClient } from "./analytics-client";
 import { validateInstruction } from "./core/validation";
 import { useBuildAccess } from "./useBuildAccess";
 import { BuildGate } from "./BuildGate";
+import {
+  protectedGenerationMode,
+  generationAttempt,
+  runProtectedGeneration,
+  cancelGeneration,
+  GenerationFailure,
+  type GenerationAttempt,
+  type GenerationJob,
+  type ProtectedPreview,
+} from "./protected-generation";
+import { protectedText } from "./protected-generation-i18n";
 import { download } from "./download";
 import {
   saveOptimizerRecovery,
@@ -114,7 +125,11 @@ export function CustomerStudio({
     [fraction, setFraction] = useState(0),
     [error, setError] = useState<"" | "error" | "noFace">(""),
     [result, setResult] = useState<Instruction>(),
-    [resultPreview, setResultPreview] = useState<{sequenceHash:string; pixels:Uint8ClampedArray<ArrayBuffer>}>(),
+    [remoteResult, setRemoteResult] = useState<ProtectedPreview>(),
+    [resultPreview, setResultPreview] = useState<{
+      sequenceHash: string;
+      pixels: Uint8ClampedArray<ArrayBuffer>;
+    }>(),
     [lines, setLines] = useState<number>(DEFAULT_CUSTOMER_LINES),
     [gate, setGate] = useState<"pdf" | "start">(),
     [pdfBusy, setPdfBusy] = useState(false),
@@ -124,6 +139,10 @@ export function CustomerStudio({
     upload = useRef(0),
     controller = useRef<AbortController | undefined>(undefined),
     worker = useRef<Worker | undefined>(undefined),
+    remoteRunning = useRef<GenerationJob | undefined>(undefined),
+    remoteAttempt = useRef<GenerationAttempt | undefined>(undefined),
+    remoteResultRef = useRef<ProtectedPreview | undefined>(undefined),
+    activeRef = useRef(active),
     canvas = useRef<HTMLCanvasElement>(null),
     actual = useRef<HTMLCanvasElement>(null),
     surface = useRef<HTMLDivElement>(null),
@@ -133,6 +152,15 @@ export function CustomerStudio({
       undefined,
     );
   const profiles = useMemo(() => standardProfiles(config), [config]);
+  remoteResultRef.current = remoteResult;
+  activeRef.current = active;
+  function stopGeneration() {
+    generation.current++;
+    worker.current?.terminate();
+    const job = remoteRunning.current;
+    remoteRunning.current = undefined;
+    if (job) void cancelGeneration(job).catch(() => {});
+  }
   const profile = useMemo(
     () =>
       leastSquaresProfile(
@@ -157,9 +185,15 @@ export function CustomerStudio({
     [source, analysis, shape, adjustments, rotation, kind],
   );
   const portraitPlacement = useMemo(
-    () => kind === "people" && source && analysis
-      ? suggestPortraitPlacement(analysis.faces.map(f => f.face), shape, source.width / source.height, rotation)
-      : undefined,
+    () =>
+      kind === "people" && source && analysis
+        ? suggestPortraitPlacement(
+            analysis.faces.map((f) => f.face),
+            shape,
+            source.width / source.height,
+            rotation,
+          )
+        : undefined,
     [kind, source, analysis, shape, rotation],
   );
   const framing = useMemo(() => {
@@ -254,19 +288,27 @@ export function CustomerStudio({
   useEffect(
     () => () => {
       upload.current++;
-      generation.current++;
+      stopGeneration();
       controller.current?.abort();
-      worker.current?.terminate();
     },
     [],
   );
   useEffect(() => {
-    generation.current++;
-    worker.current?.terminate();
+    stopGeneration();
     setBusy(false);
     setResult(undefined);
+    setRemoteResult(undefined);
+    remoteAttempt.current = undefined;
+    setGate(undefined);
     setStep((s) => (s === "result" ? "adjust" : s));
   }, [framing, profile]);
+  useEffect(() => {
+    if (!active) {
+      stopGeneration();
+      remoteAttempt.current = undefined;
+      setBusy(false);
+    }
+  }, [active]);
   useEffect(() => {
     const c = canvas.current;
     if (!c || !source) return;
@@ -303,7 +345,10 @@ export function CustomerStudio({
   useEffect(() => {
     if (result && actual.current) {
       actual.current.width = actual.current.height = 1000;
-      if(resultPreview?.sequenceHash === result.sequenceHash) actual.current.getContext("2d")!.putImageData(new ImageData(resultPreview.pixels,1000,1000),0,0);
+      if (resultPreview?.sequenceHash === result.sequenceHash)
+        actual.current
+          .getContext("2d")!
+          .putImageData(new ImageData(resultPreview.pixels, 1000, 1000), 0, 0);
       else renderInstruction(actual.current.getContext("2d")!, result);
     }
   }, [result, resultPreview, step]);
@@ -350,9 +395,10 @@ export function CustomerStudio({
         if (id === upload.current) setError("error");
       });
     controller.current?.abort();
-    worker.current?.terminate();
-    generation.current++;
+    stopGeneration();
     setResult(undefined);
+    setRemoteResult(undefined);
+    remoteAttempt.current = undefined;
     setSource(undefined);
     setAnalysis(undefined);
     setSourceHash("");
@@ -436,10 +482,9 @@ export function CustomerStudio({
     // Restored drafts have passed bounded integrity checks. Never rerun segmentation
     // or silently replace their kit configuration with today's Admin revision.
     ++upload.current;
-    ++generation.current;
+    stopGeneration();
     ++configRead.current;
     controller.current?.abort();
-    worker.current?.terminate();
     const c = document.createElement("canvas");
     c.width = d.width;
     c.height = d.height;
@@ -462,6 +507,8 @@ export function CustomerStudio({
       JSON.stringify(old) === JSON.stringify(d.config) ? old : d.config,
     );
     setResult(undefined);
+    setRemoteResult(undefined);
+    remoteAttempt.current = undefined;
     setBefore(false);
     setMaskEdit(false);
     setMaskHistory([]);
@@ -663,16 +710,13 @@ export function CustomerStudio({
   async function generate(budget = lines) {
     const telemetry = analyticsClient.capture();
     if (!prepared || !framing || !source || !sourceHash) return;
-    worker.current?.terminate();
-    const id = ++generation.current,
-      w = new Worker(new URL("./core/generator.worker.ts", import.meta.url), {
-        type: "module",
-      });
-    worker.current = w;
+    stopGeneration();
+    const id = generation.current;
     setLines(budget);
     setBusy(true);
     setFraction(0);
     setError("");
+    setGate(undefined);
     const proof: KitPreparation = {
       version: "standard-preparation/9",
       sourceHash,
@@ -685,6 +729,61 @@ export function CustomerStudio({
             : "automatic",
       transform: framing,
     };
+    if (protectedGenerationMode) {
+      setStep("adjust");
+      setResult(undefined);
+      setRemoteResult(undefined);
+      try {
+        const attempt = await generationAttempt(
+          {
+            pixels: prepared.pixels,
+            shape,
+            revision: config.revision,
+            lines: budget,
+            preparation: proof,
+          },
+          remoteAttempt.current,
+        );
+        if (id !== generation.current) return;
+        remoteAttempt.current = attempt;
+        const preview = await runProtectedGeneration(attempt, {
+          cancelled: () => id !== generation.current,
+          onJob: (job) => {
+            remoteRunning.current = job;
+          },
+          onProgress: (progress) => {
+            if (id === generation.current) setFraction(progress);
+          },
+        });
+        if (id !== generation.current) return;
+        setRemoteResult(preview);
+        setResultPreview(undefined);
+        telemetry({ kind: "preview-ready", shape });
+        setStep("result");
+      } catch (e) {
+        if (id === generation.current) {
+          if (e instanceof GenerationFailure && e.terminal)
+            remoteAttempt.current = undefined;
+          if (
+            (e as { status?: number })?.status === 404 ||
+            (e as { status?: number })?.status === 409
+          )
+            remoteAttempt.current = undefined;
+          setError("error");
+        }
+      } finally {
+        if (id === generation.current) {
+          remoteRunning.current = undefined;
+          setBusy(false);
+        }
+      }
+      return;
+    }
+    const w = new Worker(
+      new URL("./core/generator.worker.ts", import.meta.url),
+      { type: "module" },
+    );
+    worker.current = w;
     w.onmessage = async ({ data }) => {
       if (id !== generation.current) return;
       if (data.type === "progress") setFraction(data.fraction);
@@ -710,9 +809,16 @@ export function CustomerStudio({
         try {
           const i = await validateInstruction(data.instruction);
           if (id !== generation.current) return;
-          const p=data.physicalPreview;
-          if(p?.sequenceHash!==i.sequenceHash || p.width!==1000 || p.height!==1000 || !(p.pixels instanceof Uint8ClampedArray) || p.pixels.length!==4000000) throw Error("physical-preview/missing");
-          setResultPreview({sequenceHash:i.sequenceHash,pixels:p.pixels});
+          const p = data.physicalPreview;
+          if (
+            p?.sequenceHash !== i.sequenceHash ||
+            p.width !== 1000 ||
+            p.height !== 1000 ||
+            !(p.pixels instanceof Uint8ClampedArray) ||
+            p.pixels.length !== 4000000
+          )
+            throw Error("physical-preview/missing");
+          setResultPreview({ sequenceHash: i.sequenceHash, pixels: p.pixels });
           setResult(i);
           telemetry({ kind: "preview-ready", shape: i.profile.shape });
           onPersist(i);
@@ -751,6 +857,7 @@ export function CustomerStudio({
     });
   }
   const pins = classicPins(profile, 500),
+    resultEpoch = generation.current,
     shapePath =
       shape === "heart"
         ? HEART_POLYGON.map(
@@ -771,8 +878,8 @@ export function CustomerStudio({
             aria-label={t("back")}
             onClick={() => {
               if (busy) {
-                generation.current++;
-                worker.current?.terminate();
+                stopGeneration();
+                remoteAttempt.current = undefined;
                 setBusy(false);
               }
               setStep(step === "result" ? "adjust" : "start");
@@ -799,7 +906,8 @@ export function CustomerStudio({
             </button>
             {active && (
               <select
-                data-testid="locale-picker" aria-label={uiText(locale,"language")}
+                data-testid="locale-picker"
+                aria-label={uiText(locale, "language")}
                 value={locale}
                 onChange={(e) => setLocale(e.target.value as Locale)}
               >
@@ -825,7 +933,15 @@ export function CustomerStudio({
             >
               {t("account")}
             </button>
-            <button data-testid="customer-shop" onClick={event => { event.currentTarget.closest("details")?.removeAttribute("open"); onShop(); }}>{trialText(locale,"shop")}</button>
+            <button
+              data-testid="customer-shop"
+              onClick={(event) => {
+                event.currentTarget.closest("details")?.removeAttribute("open");
+                onShop();
+              }}
+            >
+              {trialText(locale, "shop")}
+            </button>
             <button data-testid="enter-expert" onClick={onExpert}>
               {t("expert")}
             </button>
@@ -845,13 +961,14 @@ export function CustomerStudio({
               setKind(next === "auto" ? "people" : next);
               if (next === "lettering" || kind === "lettering") {
                 ++upload.current;
-                ++generation.current;
+                stopGeneration();
                 controller.current?.abort();
-                worker.current?.terminate();
                 setStep("start");
                 setSource(undefined);
                 setAnalysis(undefined);
                 setResult(undefined);
+                setRemoteResult(undefined);
+                remoteAttempt.current = undefined;
                 setPreparing(false);
                 setBusy(false);
               } else if (source) void recut(next);
@@ -1184,13 +1301,18 @@ export function CustomerStudio({
               {t(tone?.failed ? "error" : "preparing")}
             </p>
           )}
+          {protectedGenerationMode && source && (
+            <p data-testid="server-generation-consent">
+              {protectedText(locale, "consent")}
+            </p>
+          )}
           <button
             className="primary customer-main-action"
             disabled={preparing || maskEdit || !prepared || !sourceHash}
             onClick={() => {
               if (busy) {
-                generation.current++;
-                worker.current?.terminate();
+                stopGeneration();
+                remoteAttempt.current = undefined;
                 setBusy(false);
               } else void generate();
             }}
@@ -1199,25 +1321,40 @@ export function CustomerStudio({
           </button>
         </div>
       )}
-      {step === "result" && result && (
+      {step === "result" && (result || remoteResult) && (
         <div data-testid="customer-result">
-          <canvas
-            ref={actual}
-            width="1000"
-            height="1000"
-            data-testid="customer-thread-result"
-            role="img"
-            aria-label={t("result")}
-          />
+          {remoteResult &&
+          (!result || result.sequenceHash === remoteResult.sequenceHash) ? (
+            <img
+              src={"data:image/png;base64," + remoteResult.preview}
+              width="1000"
+              height="1000"
+              data-testid="customer-thread-result"
+              alt={t("result")}
+            />
+          ) : (
+            <canvas
+              ref={actual}
+              width="1000"
+              height="1000"
+              data-testid="customer-thread-result"
+              role="img"
+              aria-label={t("result")}
+            />
+          )}
           <p className="customer-effort">
-            {result.metrics.lines} {t("threads")} · ~
-            {((result.metrics.lines * 8) / 3600).toFixed(1)} {t("hours")}
+            {result?.metrics.lines ?? remoteResult!.lines} {t("threads")} · ~
+            {(
+              ((result?.metrics.lines ?? remoteResult!.lines) * 8) /
+              3600
+            ).toFixed(1)}{" "}
+            {t("hours")}
           </p>
           <button
             className="primary customer-main-action"
             disabled={busy}
             onClick={() =>
-              allowed(result) ? onGuide(result) : setGate("start")
+              result && allowed(result) ? onGuide(result) : setGate("start")
             }
           >
             {t("start")}
@@ -1226,7 +1363,7 @@ export function CustomerStudio({
             className="outline customer-main-action"
             disabled={pdfBusy || busy}
             onClick={() =>
-              allowed(result) ? void pdf(result) : setGate("pdf")
+              result && allowed(result) ? void pdf(result) : setGate("pdf")
             }
           >
             {pdfBusy ? "…" : t("pdf")}
@@ -1252,13 +1389,15 @@ export function CustomerStudio({
                 </button>
               ))}
             </div>
-            <Suspense fallback={<span>…</span>}>
-              <SequenceAnimation
-                instruction={result}
-                locale={locale}
-                active={active}
-              />
-            </Suspense>
+            {result && (
+              <Suspense fallback={<span>…</span>}>
+                <SequenceAnimation
+                  instruction={result}
+                  locale={locale}
+                  active={active}
+                />
+              </Suspense>
+            )}
           </details>
         </div>
       )}
@@ -1274,7 +1413,7 @@ export function CustomerStudio({
           <button onClick={() => setStep("start")}>{t("another")}</button>
         </div>
       )}
-      {gate && result && (
+      {gate && (result || remoteResult) && (
         <dialog
           ref={dialog}
           className="customer-unlock"
@@ -1282,9 +1421,21 @@ export function CustomerStudio({
         >
           <button onClick={() => setGate(undefined)}>{t("close")}</button>
           <BuildGate
-            instruction={result}
+            instruction={result ?? remoteResult!}
             locale={locale}
             preview={<span />}
+            onReleased={(i) => {
+              // A paid guide is retained even if the dialog was closed while
+              // the response was in flight. A stale result cannot replace the
+              // user's newly adjusted photo.
+              onPersist(i);
+              if (
+                generation.current === resultEpoch &&
+                activeRef.current &&
+                remoteResultRef.current?.sequenceHash === i.sequenceHash
+              )
+                setResult(i);
+            }}
             onBuy={() => {
               setGate(undefined);
               onShop();

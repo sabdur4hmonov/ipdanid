@@ -2,7 +2,19 @@
 
 ## Hozirgi bosqich
 
-Phase16da server yadrosi qurildi va avtomatik tekshirildi. **Oddiy mijoz oynasiga ulash hali alohida keyingi ish.** `SERVER_GENERATION=0` hozirgi xavfsiz boshlang‘ich sozlama; faqat shu kalitni yoqish eski mahalliy oynani avtomatik himoyalamaydi. Yangi mijoz oynasi tekshirilmaguncha ishlab turgan saytga buni qo‘lda yoqmang. Eski 4216 sinov sayti o‘zgarmagan.
+Phase16da server va oddiy uch ekranli mijoz oqimi avtomatik tekshirildi: desktop3/3, mobil3/3. Rasm tanlash, surish/kattalashtirish/burish/qaytarish, bepul PNG, quti kodi bilan kirish, 1 kredit bilan ochish, bepul qayta ochish va internetsiz saqlangan qadamdan davom etish ishladi. To‘rt til matni va ekran kengligiga sig‘ishi tekshirildi. Tayyor rasmdan natijagacha desktop4,026soniya, mobil4,009soniya; bu sun’iy rasm sinovi, barcha suratlar uchun va’da emas.
+
+Mahalliy eski rejim ham saqlanadi: `SERVER_GENERATION=0`, `VITE_SERVER_GENERATION=0`. Himoyalangan rejim uchun **ikkalasi1** bo‘lishi kerak. `VITE_` qiymati build vaqtida, `SERVER_GENERATION` API ishga tushishida beriladi. API sozlamasini o‘zgartirishning o‘zi eski tayyor buildni o‘zgartirmaydi. Server ishlamasa himoyalangan mijoz yashirin ravishda mahalliy hisoblashga o‘tmaydi. Noto‘g‘ri build qiymati ham mahalliy rejimni yoqmaydi.
+
+Misol (PowerShell, yangi build katalogini tanlang):
+
+```powershell
+$env:VITE_SERVER_GENERATION='1'
+npm run build -- --outDir output/my-protected-build
+$env:SERVER_GENERATION='1'
+```
+
+API shu muhitda ishga tushiriladi; VPS uchun [DEPLOY_VPS_UZ.md](DEPLOY_VPS_UZ.md) dagi xavfsiz baza va kalit sozlamalarini ham bajarish kerak. Sayt kodiga merchant/pepper/imzo kalitini qo‘ymang. Eski4216sayt/APK o‘zgarmagan; yangi yakuniy preview/APK va VPS faollashtirish tekshiruvlari alohida bosqichda.
 
 ## Qanday ishlaydi
 

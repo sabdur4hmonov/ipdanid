@@ -18,6 +18,7 @@
     "capacitor.config.ts",
     "playwright.config.ts",
     "playwright.ci.config.ts",
+    "playwright.protected.config.ts",
     "server"
   ]
 }
