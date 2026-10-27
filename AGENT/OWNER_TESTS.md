@@ -2,6 +2,10 @@
 
 Har bir yozuv: sana, nima ochish kerak, nimani bosish kerak, nima bo'lishi kerak, natijani qayerga yozish kerak.
 
+## 2026-10-27 — yangi tiniqlik sinovi foyda bermadi
+
+Original suratingizda ip juftlarini almashtirish sinovi bajarildi. Yuz/burun/ko‘z/lab sifati yaxshilanmagan:0ta o‘zgarish qoldi. Shu sabab4216saytdagi hisob va APK o‘zgartirilmadi. Qo‘shimcha qo‘lda sinov yoki surat so‘ralmaydi.100%foto tengligi va’da qilinmaydi. Natija faqat lokal `output/quality-two-opt-20261027/owner-circle/report.html`da; original GitHubga yuborilmagan.
+
 ## 2026-10-27 — yangi yakuniy sayt:4216
 
 **http://127.0.0.1:4216/**. Yangi quti kodi faqat `output/phase15/final-review/manual-testing.txt`da; Admin qiymatini ulashmang. Parolsiz3ta alohida yo‘riqnoma, bepul ipli ko‘rinish va ochilgan ishga bepul qaytish ishlaydi. Sizdan hozir javob kutilmaydi.

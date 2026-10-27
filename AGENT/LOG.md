@@ -1069,3 +1069,16 @@ b3e34b0website/QA checkpoint committed, export573files/79commits and fullhistory
 ## 2026-10-27 - Publication source full CI verified
 
 b3e34b0 CI40509926604 BOTHjobsSUCCESS, actual verificationartifact12737610419 downloaded/read:687/687unit and18/18publicbrowser,0skip/flaky/unexpected. Native95oldarchives/same signer/121frozen source rechecked; owner4216/API4656listeners live by OS-only read. Reconciled roadmap/matrix/blocker/audit/web/release pointers: old346matrix explicitly baseline, current38followup scope and timing outliers retained. No additional source change or test widening required. Remaining publication record is documentation-only; normal commit/BOTHscans/featurepush/remote check then owner handoff. No mainbase, no PR fabricated, no request for owner credentials.
+
+
+## 2026-10-27 - Owner reopens actual portrait quality
+
+Owner rejects another partial likeness handoff. New predeclared research-only continuous2opt mechanism: degree-preserving nonadjacent edge replacement and interval reversal on current production original path, analyticSSIM screening rather than old vertex/MSE or graph/Euler probes. Fixed bounds and unchanged physical1000px regional gates in ROUTE_TWO_OPT_PLAN. No production change, no promised improvement or100percent claim; protected owner snapshot and exact old guides preserved. Next test surgery then one fixed original candidate, no parameter sweep.
+
+
+## 2026-10-27 - Bounded continuous two-edge original probe rejected
+
+4/4route-surgery/analyticSSIM tests PASS. One predeclared originalCircle run:4240screenedproposals,256tentative switches in32batches,0retained after face/feature constraints. Fixed tentative cap reached, not claimed48000fullproposals.2.316s refinement/4.657s refinement+independentverification/8.11MBpeakcache; baselinegeneration notincluded. All3000realchords legal, same pin degrees/start/end and oldrendererFloat32 exact. Actualface/nose/eyes/mouth/white unchanged(.61585055/.49652544/.66650957/.68828495/.38351320). REJECT, no app promotion/material/crop/rendererchange or followup sweep. This is not proof all optimizers fail. Quality goal remainsOPEN, not an OWNER-input blocker and not a100percent result. Protected4216/API4656/allpriorservers/tmpdata untouched; privatephoto/results notcommitted. Next tests/build/bookkeeping/normalfeaturepush; keep factual failure and no fakepreview.
+
+
+Final related12/12unit and TSC/Vite2142build PASS25.32s after the rejected probe. Customer asset-manifest remains8301eee2 and research scripts are not customer imports. Original4216snapshot/nativeAPK remains untouched; no newserver/APK/default or quality gain is claimed. Record rejection/OPEN likeness, normal featurepublication after BOTH secret/export scans.

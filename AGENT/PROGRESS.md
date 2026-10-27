@@ -1,7 +1,7 @@
 # Progress — keep this file current (agent updates it after every milestone)
 
 Branch: `feat/full-roadmap`, created from clean `feat/r1-r2-subjects` in this session.
-Last update:2026-10-27 — exact-score follow-up software QA COMPLETE:687CIunit/18CIbrowser,38unique current local cases,6frozen-server guard units,2142build. New4216/API4656immutablewebsite and matching121asset/same-signer APKdbdc474e6f68ready;95oldarchivesunchanged. Earlier346case matrix is baseline f563bb9f only. Realphone/physical/100percent likeness remains unclaimed.
+Last update:2026-10-27 — owner reopens actual likeness: OPEN, newest continuous2opt probe rejected. Existing software QA COMPLETE:687CIunit/18CIbrowser,38unique current local cases,6frozen-server guard units,2142build. New4216/API4656immutablewebsite and matching121asset/same-signer APKdbdc474e6f68ready;95oldarchivesunchanged. Earlier346case matrix is baseline f563bb9f only. Realphone/physical/100percent likeness remains unclaimed.
 
 
 
@@ -69,6 +69,11 @@ Phase12 milestone commits:38ec922,38da72e,fa92b83,f2fa81d,11e0058,affa4ce,ad5984
 Phase10 engineering evidence remains valid, but owner review found insufficient head size and wasted shirt/background strands. Preparation3 implemented separately; classic2 solver, preparation2 and old exports unchanged. Circle/Square87% head/18px chin fade, Heart upper-lobe compositions, independent pan/zoom, shoulders toggle and2000/2500/3000 with8s estimates. Targeted11/11 unit passed (new5+reference6), TypeScript and1968module isolated build passed. Real12/12 desktop/mobile JPG comparison passed8.7min on4336/API4476 (phase11-acceptance-v1), max9.706s. Every face height>1.3x old; equal-size agent review accepts larger/more recognizable owner/3synthetic/Square/Heart-pair, exact reference paths/raster and signed exports. Private report/visual-review saved. APK/PDF/final regression and fresh4197 handoff verified. All live previews4194/4195/4196 and directories protected.
 
 ## Exact next step
+
+OWNER QUALITY REQUEST OPEN2026-10-27. The one predeclared continuous2opt experiment is COMPLETED/REJECTED, not a likeness improvement.4invariant/analytic-gradient tests PASS. OriginalCircle:4240screened proposals,256tentative/32rollback batches,0retained. Refinement2.316s/total refinement+verification4.657s/8.11MBcache; original generation excluded. Exact final physical scores equal production: face.61585055,nose.49652544,eyes.66650957,mouth.68828495,white.38351320. Every3000chord legal, degree/endpoints preserved, Float32oldrenderer parity checked. No app engine/default/pins/physics/crop/source/guide changed. Plan/result docs/ROUTE_TWO_OPT_PLAN.md; local output/quality-two-opt-20261027/owner-circle/report.html. No photo uploaded/committed. Do NOT repeat this or older sealed searches, tune budgets/weights after failure, paint details or claim100percent.
+
+FINAL CHECKS for this rejected probe:12/12related tests and TSC/Vite2142build PASS(25.32s). No customer module changed; same8301eee2assetmanifest. EXACT NEXT for this request: commit/scans/normalfeaturepush the factual rejection if not already published; inspectgit to skip completed bookkeeping. After publication, actual likeness remains OPEN, not OWNER-input-blocked and not100percent achieved. Any subsequent code-quality experiment must state a distinct mechanism and fixed independent physical acceptance before running; current evidence does not justify changing the default. Preserve4216/API4656andallolderpreviews/tmpdata. Baseline software/API/APK below remains ready; no newAPK/server needed for rejected research-only code.
+
 
 LATEST VERIFIED PUBLICATION CODE: b3e34b0 CI40509926604 bothjobsSUCCESS; downloaded artifact12737610419 confirms687/687unit and18/18publicbrowser0skip/flaky/unexpected. NativeAPKdbdc474e6f68/121exactfiles/95oldarchives complete. Final source remains unchanged by the owner/report-only documentation below.
 

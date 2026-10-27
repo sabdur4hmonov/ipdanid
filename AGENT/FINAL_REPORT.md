@@ -1,3 +1,7 @@
+## 27.10.2026 — egasining yangi sifat talabi hali ochiq
+
+Yangi ip juftlarini almashtirish usuli original suratingizda sinab ko‘rildi. Yaxshilanish bermadi:256ta vaqtinchalik almashtirishning barchasi rad etildi, haqiqiy ip natijasi o‘zgarmadi. Usul standart hisobga qo‘shilmadi.4216sayt va avvalgi APK saqlanadi.100%foto tengligi yoki sezilarli yangi yaxshilanish e’lon qilinmaydi. Bu tashqi kalit yoki yana surat kutilayotgani emas; sifat bo‘yicha isbotlangan yangi yechim topilmadi. Texnik natija `docs/ROUTE_TWO_OPT_PLAN.md`da. Quyidagi dasturiy sinovlar bu yangi sifat talabini bajardi degani emas.
+
 ## Sinovga tayyor nusxa — 27.10.2026
 
 Sayt: **http://127.0.0.1:4216/**. Yangi quti kodi faqat shu kompyuterdagi `output/phase15/final-review/manual-testing.txt` faylida. Parol shart emas: bitta kod 3 ta alohida to‘liq yo‘riqnomani ochadi. Ipli ko‘rinishni ko‘rish bepul; avval ochilgan loyihaga qaytish yana kredit olmaydi.
