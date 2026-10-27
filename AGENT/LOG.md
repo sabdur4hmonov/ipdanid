@@ -1045,13 +1045,6 @@ Final TSC/Vite2142build PASS; matrix fingerprintf563bb9f unchanged. Final APK ve
 Final source audit closes C26feasible CODE; OWNER O01â€“O11 only. Fresh readonlyremoteheads feature+wip, no main: PR not created, never created/pushed main/substitutedbase/merged. docs/PR_BASE_UZ.md gives owner prerequisite. Sanitized committed validation JSON excludes private photos, credentials and raw report paths. FINAL_REPORT/OWNER_TESTS/MASTER/roadmap pointers updated with actual results and quality limits. Original Circle/Heart gain modest, Square/pair fallback unchanged; no100percentclaim. New4215/API4655/private3-buildcode/frozen121files kept, all older previews/tmpdata untouched. Final documentation commit then BOTH scans, normal featurepush/remotecheck and owner browser handoff; no remaining testjob.
 
 
-## 2026-10-27 — Exact physical-score acceleration checkpoint
-
-Owner asked again to finish and maximize real results. Final baseline6498565 pushed normally after fresh export/history scans; previous approval review had hit a usage limit, no unsafe workaround. Old4215/4655processes/listeners absent by read-only OS inspection; never restarted. Optional existing face zoom on original exposed16.808/17.097s failures. Region-only UI3/6 passed15s; Circle/Square timing failures retained. No threshold relaxed and no different-crop SSIM gain claim.
-
-Added only exact arithmetic accelerations: face/feature Gaussian region plus full local-SSIM halo and reflected vertical support, four-entry non-photo address cache, identical black-channel Float32 replication. Full/global SSIM and white-background measurement remain separate; colored/incremental raster unchanged. Frozen old test oracle validates physical bytes.29/29targeted tests and TSC/Vite2142build PASS; new native debug4656. Wholepipeline original hash/metric parity then fresh actual UI acceptance follows; old346matrix is baseline only after this changed Worker. No photo/output/secret/DB committed. New safe final-review launcher is separate pending publication work. Exact next recorded in PROGRESS; no other heavyjob runs concurrently.
-
-
 ## 2026-10-27 - Exact physical-score acceleration checkpoint
 
 Final baseline6498565 pushed normally after both fresh clean scans. Old4215/4655offline by OS-only inspection; never restarted. Existing optional face zoom exposed16.808/17.097s failures. Region-only UI3/6passed15s; Circle/Square timing failures retained, no weaker threshold or different-target gain claim.
