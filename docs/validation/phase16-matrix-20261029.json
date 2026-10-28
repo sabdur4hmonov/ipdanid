@@ -1,0 +1,85 @@
+{
+  "milestone": "P16.5 current complete compatibility matrix",
+  "date": "2026-10-29",
+  "sourceHead": "a86f6bb8d2f5b5e0d46c08fca81cb1861f916f4a",
+  "mode": "local-compatibility build0/API0; protected build1/API1 accepted separately",
+  "matrix": {
+    "files": 81,
+    "freshJobs": 161,
+    "acceptedCases": 348,
+    "acceptedSkippedFlakyFailed": 0,
+    "archivedRejectedExperimentsExcluded": 30,
+    "runtimeSha256": "bf58e6ae21aaf41f906cba73169b40b87d7e5406e35b2c1a3e41378239194e66",
+    "eachJobRuntimeAttested": true,
+    "oneFreshDatabasePerJob": true,
+    "retainedFailedAttempts": 1,
+    "failedAttempt": "Mobile photo-backup second-device login HTTP200 had no API errors but credits element absent within5s; stopped safely. Unchanged full3case file passed in a fresh API111.45s, no app/test/auth guard changed.",
+    "sourceAndHarnessUnchangedDuringMatrix": true
+  },
+  "fullUnit": {
+    "passed": 741,
+    "failed": 0,
+    "pending": 0
+  },
+  "separateProtectedFrozenRuntime": {
+    "uniqueCases": 7,
+    "realPhone": false
+  },
+  "mobilePerformance": [
+    {
+      "case": "owner-phase9-circle",
+      "generationMs": 4659.800000000279,
+      "workerMs": 4547.300000000279,
+      "menuLatencyMs": 139,
+      "mainThreadThrottleRatio": 6.929740791263721,
+      "workerActuallyThrottled": false,
+      "estimateIsPhysicalPhoneMeasurement": false
+    },
+    {
+      "case": "synthetic-1-circle",
+      "generationMs": 4653.399999999907,
+      "workerMs": 4485.299999999814,
+      "menuLatencyMs": 109,
+      "mainThreadThrottleRatio": 6.565860215061982,
+      "workerActuallyThrottled": false,
+      "estimateIsPhysicalPhoneMeasurement": false
+    },
+    {
+      "case": "synthetic-1-square",
+      "generationMs": 5595.100000000093,
+      "workerMs": 5089.5,
+      "menuLatencyMs": 161,
+      "mainThreadThrottleRatio": 6.954810495615344,
+      "workerActuallyThrottled": false,
+      "estimateIsPhysicalPhoneMeasurement": false
+    },
+    {
+      "case": "synthetic-pair-heart",
+      "generationMs": 4289.399999999907,
+      "workerMs": 3922.5999999996275,
+      "menuLatencyMs": 106,
+      "mainThreadThrottleRatio": 6.740582800297016,
+      "workerActuallyThrottled": false,
+      "estimateIsPhysicalPhoneMeasurement": false
+    }
+  ],
+  "build": {
+    "typescriptPassed": true,
+    "modules": 2145,
+    "viteSeconds": 31.99,
+    "files": 122,
+    "nonSwFilesExactAgainstFinalProtected": 121,
+    "knownFontkitChunkWarning": true
+  },
+  "npmAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "newApkPublished": false,
+  "newOwnerPreviewPublished": false,
+  "noseQuality": "OPEN; no new gain"
+}

@@ -1,4 +1,4 @@
-"""Preserve old APKs and verify a new local debug build; never installs or reads keys."""
+"""Preserve old APKs and verify a new local debug build; never installs or prints keys."""
 import argparse
 import hashlib
 import json

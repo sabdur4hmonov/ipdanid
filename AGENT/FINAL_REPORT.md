@@ -1,3 +1,7 @@
+## 29.10.2026 — to‘liq brauzer regressiyasi tugadi
+
+81fayl,161ta alohida API ishida348ta holat o‘tdi. Yakuniy qabul qilingan natijalarda skip/flaky/xato yo‘q. Bitta mobil surat zaxirasi kutish xatosi saqlandi; o‘zgartirilmagan uchala sinov yangi serverda o‘tdi. Telefon maketidagi sekinlashtirilgan sahifa sinovlari ham o‘tdi, bu haqiqiy telefon o‘lchovi emas.741unit,avvalgi alohida7himoyalangan oqim,yangi build va0zaiflikli npm audit qayd etildi. APK va yangi4217havolasi keyingi qadam; burun sifati hali ochiq. Hozir sizdan qo‘lda sinov talab qilinmaydi.
+
 ## 28.10.2026 — server nusxasi va to‘liq unit tekshiruvi
 
 741/741unit va serverning alohida nusxasida7ta asosiy desktop/mobil/AndroidAPI maketi sinovi o‘tdi. Bitta dastlabki Chrome ochilish xatosi saqlandi, boshlanmagan asosiy sinov alohida o‘tdi. Kod/dependency keyin o‘zgarsa ham nusxadagi yangi hisob eski kodni ishlatishi sinaldi. Yangi build tayyor; umumiy161ta alohida brauzer ishini tekshirish,APK va yangi havola hali qolgan. Play Marketdagi o‘xshash ilovalarning ochiq manbalari ko‘rildi, hozircha sifatni oshiradigan isbotlangan yangi algoritm yo‘q. Burun sifati ochiq. Sizdan qo‘lda sinov talab qilinmaydi.
