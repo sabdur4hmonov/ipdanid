@@ -1,3 +1,9 @@
+## 29.10.2026 — Phase16 himoyalangan debug APK
+
+`output/mobile/ip-rasm-phase16-20261029-be6e489bff81-debug.apk` yangi tekshirilgan nusxa.122web fayli aynan mos,eski8e43cf…imzo saqlangan,98arxiv yozuvi o‘zgarmagan. API: `http://127.0.0.1:4657/api`. Bu server yangi4217sayti bilan alohida ishga tushiriladi; eski4655/4656bilan adashtirmang. Keyingi USBtelefon sinovida `adb reverse tcp:4657 tcp:4657` yoki Admin → Server manzili orqali haqiqiy HTTPSAPI ishlatiladi. Hozir telefon o‘rnatilmadi va production release imzolanmadi. APIga ayni quti kodi bilan kirganda sayt va APK bir hisobdagi ochilgan ishlar bilan ishlaydi.
+
+Himoyalangan rejim,shaxsiy kalitlar yo‘qligi va noto‘g‘ri APIga rad tekshirildi. APKdagi sifat markerlari burun yaxshilandi degani emas;fizik/telefon/o‘xshashlik chegarasi yakuniy hisobotda.
+
 # 2026-10-27 — yangi debug nusxa
 
 `output/mobile/ip-rasm-phase15-20261027-83b3e7b659b0-debug.apk` yangi portret tayyorlovi bilan yig‘ildi.121fayl va eski imzo tekshirildi;91avvalgi APK saqlangan. U faqat lokal sinov uchun4655APIga sozlangan. USBtelefon bilan keyin sinashda `adb reverse tcp:4655 tcp:4655` ishlating; yoki Admin → Server manzili orqali owner HTTPSAPI ni tanlang. Hech qanday telefon o‘rnatish/instrumentation bajarilmadi. Web-first sayt4215da, quti kodi faqat `output/phase15/portrait-review/manual-testing.txt`da.

@@ -1,0 +1,44 @@
+{
+  "milestone": "P16.5 Android packaging",
+  "date": "2026-10-29",
+  "app": {
+    "path": "output\\mobile\\ip-rasm-phase16-20261029-be6e489bff81-debug.apk",
+    "sha256": "be6e489bff8103daa5ff2222625e98c174682df3a789fee8f015df1bda63233e",
+    "certificateSha256": "8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90"
+  },
+  "instrumentationArchive": {
+    "path": "output\\mobile\\ip-rasm-phase16-20261029-be6e489bff81-debug-androidTest.apk",
+    "sha256": "aaa9ec9b8848d575964a248645e343a0f0b6d31ea7646e76d833641430deff53",
+    "certificateSha256": "8e43cfb55a120f18a62cf955d19a5ed40816f34a96c1416b27644b08de500c90"
+  },
+  "exactWebAssets": 122,
+  "oldArchiveEntriesVerified": 98,
+  "oldArchiveCountIncludesPreservationCopiesOfPreviousBuildOutputs": true,
+  "protectedGeneration": true,
+  "nativeApiBase": "http://127.0.0.1:4657/api",
+  "privateValuesAbsent": 3,
+  "privateValuesPrinted": false,
+  "wrongApiRejectedBeforeAnyArchiveCreated": true,
+  "java": "Existing Temurin21.0.12.1+1",
+  "gradle": {
+    "offline": true,
+    "noDaemon": true,
+    "workers": 1,
+    "durationSeconds": 148,
+    "tasks": 197,
+    "executed": 21,
+    "upToDate": 176
+  },
+  "capacitor": {
+    "androidOnly": true,
+    "syncSeconds": 0.838,
+    "installedPluginCount": 5,
+    "noInstall": true
+  },
+  "physicalDeviceTested": false,
+  "phoneInstalled": false,
+  "productionSigningClaimed": false,
+  "qualityMarkerChecksAreStructuralNotNewLikenessAcceptance": true,
+  "noseQuality": "OPEN",
+  "newOwnerPreviewPublished": false
+}

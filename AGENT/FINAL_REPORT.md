@@ -1,3 +1,7 @@
+## 29.10.2026 — yangi Android APK tekshirildi
+
+Yangi fayl: output/mobile/ip-rasm-phase16-20261029-be6e489bff81-debug.apk.122web fayli aniq mos,eski imzo saqlangan,98arxiv yozuvi o‘zgarmagan.3haqiqiy shaxsiy kalit qiymati paketda yo‘q. Server manzili4657; noto‘g‘ri4656qiymat rad etildi. Telefon o‘rnatilmagan,bu debug nusxa. Telefonda keyin sinash uchun docs/APK_SERVER_AND_SIGNING_UZ.md. Yangi sayt hali ishga tushiriladi; burun sifati tuzatildi deyilmaydi.
+
 ## 29.10.2026 — to‘liq brauzer regressiyasi tugadi
 
 81fayl,161ta alohida API ishida348ta holat o‘tdi. Yakuniy qabul qilingan natijalarda skip/flaky/xato yo‘q. Bitta mobil surat zaxirasi kutish xatosi saqlandi; o‘zgartirilmagan uchala sinov yangi serverda o‘tdi. Telefon maketidagi sekinlashtirilgan sahifa sinovlari ham o‘tdi, bu haqiqiy telefon o‘lchovi emas.741unit,avvalgi alohida7himoyalangan oqim,yangi build va0zaiflikli npm audit qayd etildi. APK va yangi4217havolasi keyingi qadam; burun sifati hali ochiq. Hozir sizdan qo‘lda sinov talab qilinmaydi.
