@@ -1,0 +1,19 @@
+{
+  "mobileCreateToResultMs": 11131,
+  "milestone": "P16.5 final protected acceptance",
+  "buildModules": 2145,
+  "newPreviewLaunched": false,
+  "nativeBridgePassed": 1,
+  "immutableRuntimeSnapshotStillRequired": true,
+  "desktopPassed": 3,
+  "actualDeviceTested": false,
+  "failedSkippedFlaky": 0,
+  "qualityRequestOpen": true,
+  "desktopCreateToResultMs": 10494,
+  "photoSelectionInitialAnalysisExcluded": true,
+  "qualityImprovement": false,
+  "publicAssetsAndSolverUnchanged": true,
+  "mobilePassed": 3,
+  "newApk": false,
+  "buildAssets": 122
+}

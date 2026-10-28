@@ -1,3 +1,6 @@
+## 28.10.2026 — yakuniy himoyalangan oqim7/7
+
+Yangi122faylli buildda desktop3,mobil3,AndroidAPI maketi1sinov o‘tdi. Moslashdan keyin Yaratishdan natijagacha10,5/11,1soniya; asl rasm tanlash va dastlabki tahlil vaqti bunga kirmaydi. Kod bilan ochish,bepul qayta ochish,offline1-qadam,bekor qilish va4til tekshirildi. Keyingi topilgan ish: keyin kodlar o‘zgarsa ham yangi serverdagi hisob o‘zgarmasligi uchun serverning o‘zini ham alohida yopiq nusxaga saqlash. Shundan so‘ng qolgan matritsa vaAPK yakuni. Hozir yangi URL/APK yoki burun yaxshilandi deyilmaydi; eski sayt saqlangan. Sizdan qo‘lda sinov kerak emas.
 ## 28.10.2026 — umumiy unit va yakuniy build
 
 733ta to‘liq sozlangan unit sinovi o‘tdi. Keyin runnerga kirmay qolgan1ta render testi to‘g‘ri ulandi va yangi guardlar bilan alohida tekshirildi:jami738ta takrorlanmagan unit natijasi o‘tgan (bir buyruqdagi738degan da’vo yo‘q). Protected va mahalliy rejimning122faylli yangi buildlari tayyor. Maxfiy kod yo‘riqnomalari uchun8ta sun’iy HTTPsinovi403bilan yopildi; haqiqiy kalit yoki kod so‘ralmagan. Eski nusxalar saqlangan. Yangi yakuniy brauzer matritsasi,APK va havola hali e’lon qilinmagan; burun sifati o‘zgardi deyilmaydi. Hozir sizdan qo‘lda sinov yoki kalit kerak emas.

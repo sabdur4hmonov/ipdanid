@@ -13,8 +13,6 @@ import {
   mkdirSync,
   writeFileSync,
   cpSync,
-  copyFileSync,
-  constants,
 } from "node:fs";
 import { resolve, join, dirname, basename, relative } from "node:path";
 import net from "node:net";
@@ -165,10 +163,14 @@ try {
 } finally {
   input.close();
 }
-copyFileSync(
-  join(master, "private-keys.json"),
+// The encrypted-printing EXPORT_KEY stays only with the offline master.
+writeFileSync(
   join(privateDir, "private-keys.json"),
-  constants.COPYFILE_EXCL,
+  JSON.stringify({
+    CODE_PEPPER: keys.CODE_PEPPER,
+    SANDBOX_PAYMENT_KEY: keys.SANDBOX_PAYMENT_KEY,
+  }),
+  { flag: "wx", mode: 0o600 },
 );
 cpSync(source, webDir, { recursive: true, errorOnExist: true, force: false });
 for (const [name, hash] of Object.entries(hashes))
@@ -261,6 +263,74 @@ try {
   assert(issued.ok, "Separate private test kit issuance failed");
   const batch = await issued.json();
   assert(batch.codes.every((c) => c.quota === 3));
+  // Verify the private test code before publication without spending a build.
+  const signedIn = await fetch(api + "/account/kit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: batch.codes[0].code }),
+  });
+  assert(signedIn.ok, "Private test kit sign-in failed");
+  const testSession = await signedIn.json();
+  const balance = await (
+    await fetch(api + "/credits", {
+      headers: { Authorization: "Bearer " + testSession.token },
+    })
+  ).json();
+  assert.equal(balance.credits, 3, "Test kit credits must remain unspent");
+  assert(
+    freemem() >= 1.5 * 1024 ** 3,
+    "RAM below1.5GiB before prepublication UI acceptance",
+  );
+  const { chromium, expect } = await import("@playwright/test");
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  try {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      serviceWorkers: "block",
+    });
+    await context.route("**/*", (route) =>
+      new URL(route.request().url()).origin === site ||
+      /^(data|blob):/.test(route.request().url())
+        ? route.continue()
+        : route.abort(),
+    );
+    const page = await context.newPage();
+    await page.goto(site);
+    const menu = page.getByTestId("customer-menu");
+    await menu.locator("summary").click();
+    await page.getByTestId("locale-picker").selectOption("en");
+    await menu
+      .getByRole("button", { name: "Account / Admin", exact: true })
+      .click();
+    const hub = page.locator(".customer-hub");
+    await hub
+      .getByRole("button", { name: "Start sandbox session", exact: true })
+      .click();
+    await hub
+      .getByRole("button", { name: "Administration", exact: true })
+      .click();
+    await hub.getByLabel("Administrator token", { exact: true }).fill(admin);
+    await hub
+      .getByRole("button", { name: "Open administration", exact: true })
+      .click();
+    const summary = page.getByTestId("kit-inventories");
+    const row = summary.locator(
+      '[data-total="1000000"][data-issued="1000000"]',
+    );
+    await expect(row).toBeVisible();
+    await expect(row).toContainText("Ready");
+    assert(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      "Owner mobile UI overflow",
+    );
+    await summary.screenshot({
+      path: join(privateDir, "actual-million-inventory.png"),
+    });
+  } finally {
+    await browser.close();
+  }
   mkdirSync(dirname(manual), { recursive: true });
   assert.equal(
     realpathSync(dirname(manual)),
@@ -269,7 +339,7 @@ try {
   );
   writeFileSync(
     manual,
-    `IP RASM — PHASE16 SINOV\nIlova: ${site}/\nAPI: ${api}\nTest quti kodlari (har biri3ta yangi ish):\n${batch.codes.map((c, k) => `${k + 1}. ${c.code}`).join("\n")}\nAdministrator tokeni: ${admin}\n\n1. Rasm tanlang,shaklni belgilang,surib/kattalashtirib joylashtiring.\n2. Tayyor qora-oq rasm serverga yuborilishi haqidagi matnni ko‘rib,Yaratish bosing.\n3. Bepul PNG chiqadi;Yig‘ishni boshlashda yuqoridagi test kodidan foydalaning.\n4. Ipni bajargach tasdiqlang,Dam olish,qayta ochib ayni qadamdan davom eting.\n5. Avval ochilgan ish internetsiz ishlaydi;yangi ko‘rinish uchun server kerak.\n6. Admin kitlarida haqiqiy1000000chiqarilgan/tayyor yopiq zaxira ko‘rsatiladi;bu brauzerga kodlar ro‘yxatini bermaydi.\n\nHaqiqiy pul,xabar yoki jo‘natma yo‘q. Millionlik asosiy baza o‘zgartirilmagan,bu uning yangi yopiq nusxasi. Kelajak VPSga ayni joriy baza va kalitlarni birga ko‘chiring:docs/KIT_MILLION_UZ.md. Eski sayt/hisoblar o‘zgarmagan. Burun/foto tengligi va telefon/jismoniy taxta qabul holati AGENT/FINAL_REPORT.mdda;100foiz tenglik va’da qilinmaydi.\n`,
+    `IP RASM — PHASE16 SINOV\nIlova: ${site}/\nAPI: ${api}\nTest quti kodlari (har biri3ta yangi ish):\n${batch.codes.map((c, k) => `${k + 1}. ${c.code}`).join("\n")}\nAdministrator tokeni: ${admin}\n\n1. Rasm tanlang,shaklni belgilang,surib/kattalashtirib joylashtiring.\n2. Tayyor qora-oq rasm serverga yuborilishi haqidagi matnni ko‘rib,Yaratish bosing.\n3. Bepul PNG chiqadi;Yig‘ishni boshlashda yuqoridagi test kodidan foydalaning.\n4. Ipni bajargach tasdiqlang,Dam olish,qayta ochib ayni qadamdan davom eting.\n5. Avval ochilgan ish internetsiz ishlaydi;yangi ko‘rinish uchun server kerak.\n6. Admin kitlarida haqiqiy1000000chiqarilgan/tayyor yopiq zaxira ko‘rsatiladi;bu brauzerga kodlar ro‘yxatini bermaydi.\n\nHaqiqiy pul,xabar yoki jo‘natma yo‘q. Millionlik asosiy baza o‘zgartirilmagan,bu uning yangi yopiq nusxasi. Bu sandbox nusxani real savdoga ko‘chirmang. Production uchun ishlatilmagan toza asosiy zaxira va uning kalitlarini birga ko‘chiring:docs/KIT_MILLION_UZ.md. Eski sayt/hisoblar o‘zgarmagan. Burun/foto tengligi va telefon/jismoniy taxta qabul holati AGENT/FINAL_REPORT.mdda;100foiz tenglik va’da qilinmaydi.\n`,
     { flag: "wx", mode: 0o600 },
   );
   const metadata = {
@@ -286,6 +356,9 @@ try {
     preparedTargetsSentWithConsent: true,
     credentialPath: manual,
     masterDatabaseChanged: false,
+    actualMillionUiVerified: true,
+    testCodeLoginCredits: 3,
+    productionActivation: false,
   };
   writeFileSync(
     join(privateDir, "snapshot.json"),

@@ -37,6 +37,8 @@ Manzil yangi bo‘lishi shart. Mavjud zaxirani o‘chirmang yoki ustiga yozmang.
 
 ## VPSga ulash
 
+Yangi Phase16 owner preview alohida sandbox nusxada ishlaydi. Undagi test kodlari,namunaviy mahsulot/narxlar va sinov buyurtmalarini real savdoga ko‘chirmang. Hali real mijozlar bo‘lmasa,production uchun yuqoridagi **ishlatilmagan toza asosiy millionlik zaxira** va unga tegishli pepper/baza imzosidan boshlang. Printing `EXPORT_KEY`i preview/API papkasiga ko‘chirilmaydi. Haqiqiy mijozlar faqat bitta production API ochilgandan keyin shu doimiy baza bilan ishlashi kerak; keyin sayt va Android aynan o‘sha HTTPS APIga ulanadi. Sinov akkauntini haqiqiy xarid akkauntiga avtomatik ko‘chirildi deb hisoblamang.
+
 Avval [DEPLOY_VPS_UZ.md](DEPLOY_VPS_UZ.md) bo‘yicha yopiq serverni tayyorlang. Yangi, hali mijoz ma’lumoti bo‘lmagan o‘rnatishda bazani, unga tegishli aynan o‘sha `CODE_PEPPER`ni va bazadagi imzolash kalitini bir butun zaxira sifatida ko‘chiring. Qiymatlarni buyruq satri, terminal tarixi yoki skrinshotga chiqarmang. `EXPORT_KEY` veb-serverga kerak emas: yopiq chop etish joyida saqlang. Sandbox kaliti haqiqiy Click/Payme kaliti emas.
 
 Mijozlari bor ishlab turgan bazani yangi baza bilan **almashtirmang**. Bunday holatda nazoratli ko‘chirish va zaxira talab qilinadi; akkauntlar, imzolar va ochilgan ishlar saqlanishi kerak. Bir million kod chiqarish bir million bir vaqtdagi foydalanuvchining yuklama sinovi degani emas.

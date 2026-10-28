@@ -45,6 +45,8 @@ parser.add_argument('--finish-product', action='store_true')
 parser.add_argument('--finish-every-code', action='store_true')
 parser.add_argument('--native-api-base', help='Exact public build-time native API URL; historical checks retain their old default')
 parser.add_argument('--portrait-quality', action='store_true')
+parser.add_argument('--protected-generation', action='store_true')
+parser.add_argument('--secret-values-file', help='Optional private local key JSON; values are checked, never printed or archived')
 args = parser.parse_args()
 if args.native_api_base:
     endpoint = urlsplit(args.native_api_base)
@@ -81,6 +83,22 @@ with zipfile.ZipFile(APP) as apk:
     public_names = [n for n in apk.namelist() if n.startswith('assets/public/')]
     assert not any(re.search(r'/(output|tmp|comparison|test-results)/|local-secrets|source\.(jpg|png)|\.(sqlite|f32|bin|keystore|jks)$', n) for n in public_names), 'Private input/secret packaged'
     code = '\n'.join(apk.read(n).decode('utf-8') for n in expected if n.endswith('.js'))
+    private_values_checked = 0
+    if args.secret_values_file:
+        private_values = json.loads(Path(args.secret_values_file).read_text(encoding='utf-8'))
+        assert isinstance(private_values, dict), 'Private key fixture must be an object'
+        for value in private_values.values():
+            if isinstance(value, str) and len(value) >= 16:
+                needle = value.encode('utf-8')
+                assert not any(needle in apk.read(name) for name in public_names if not name.endswith('/')), 'Private credential value packaged'
+                private_values_checked += 1
+        assert private_values_checked > 0, 'No private key values checked'
+    if args.protected_generation:
+        assert args.native_api_base, 'Explicit expected native API is required'
+        runtime = json.loads(apk.read('assets/public/build-runtime.json'))
+        assert runtime == dict(version='iprasm.build-runtime/1', protectedGeneration=True, nativeApiBase=args.native_api_base), 'Packaged protected runtime mismatch'
+        for marker in ['protected-generation/1', 'prepared-target-transfer/1', 'kit-pin-snapshot/1', '/generation/unlock']:
+            assert marker in code, 'Protected generation client feature missing: ' + marker
     for marker in ['density-texture/17', 'density-subject/18', 'glyph-outline/19', 'normalized-subject/1', 'glyph-coordinates/1', 'thread-lettering/1', 'kit-build/1', 'iprasm.build-access/1', 'recorded-instructors/1', 'density-fit-checkpoint/1', 'pairLimit', 'pinDegreeLimit', 'processed-target/sample-centers-v1']:
         assert marker in code, 'Required feature absent: ' + marker
     if args.standard_kit:
@@ -138,6 +156,7 @@ for path in [OUT / 'ip-rasm-photo-quality-debug.apk', *archives]:
     signatures.append(dict(path=str(path.relative_to(ROOT)), sha256=digest(path), certificateSha256=CERTIFICATE))
 assert verify_old() == old_count
 evidence = dict(debug=True, nativeDeviceTested=False, phoneInstalled=False, productionActive=False,
+                protectedGenerationVerified=args.protected_generation, privateCredentialValuesChecked=private_values_checked, privateCredentialValuesPrinted=False,
                 webDirectory=str(dist.relative_to(ROOT)), standardKitVerified=args.standard_kit,
                 classicReferenceVerified=args.classic_reference, portraitFramingVerified=args.portrait_framing, customerFlowVerified=args.customer_flow, classicLeastSquaresVerified=args.classic_least_squares,
                 productCodeVerified=args.finish_product,
