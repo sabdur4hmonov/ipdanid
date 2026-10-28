@@ -1,3 +1,6 @@
+## 28.10.2026 — server va Android API tengligi tekshirildi
+
+Asl tayyorlangan rasm va boshqa12namunada server natijasi oldingi qabul qilingan ip yo‘li va har bir piksel bilan aynan teng:3,0–5,7soniya.68unit,desktop/mobil2ta,Android API maketi1ta va yangi build o‘tdi. Ochilgan ish1-qadamda API internetsiz tiklandi. Bu burun sifati yaxshilandi yoki haqiqiy telefon sinaldi degani emas. Production sozlamalari,Admin/dastavka,sifat va yangiAPK/havola hali ochiq; eski saytlar saqlangan. Sizdan hozir qo‘lda sinov talab qilinmaydi.
 # Egasi uchun sinovlar (agent shu yerga yozadi, o'zbekcha)
 
 ## 2026-10-28 — himoyalangan uch ekranli sayt oqimi

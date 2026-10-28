@@ -41,6 +41,29 @@ test("canonical prepared target uses server-selected exact kit/engine and fixed 
   );
   expect(a.enhanced).toBe(false);
 });
+test("reviewed runtime pin spellings bind the recipe but cannot inject a different kit layout or material", () => {
+  const b = recipe(),
+    before = decodeGenerationRecipe(b, DEFAULT_STANDARD_KIT),
+    pins = {
+      version: "kit-pin-snapshot/1",
+      coordinates: before.options.profile.pins.map((p) => [p.x, p.y]),
+    };
+  pins.coordinates[21][1] += Number.EPSILON;
+  const after = decodeGenerationRecipe({ ...b, pins }, DEFAULT_STANDARD_KIT);
+  expect(after.options.profile.pins[21].y).toBe(pins.coordinates[21][1]);
+  expect(after.recipeHash).not.toBe(before.recipeHash);
+  expect(after.options.profile.colors).toEqual(before.options.profile.colors);
+  expect(() =>
+    decodeGenerationRecipe(
+      { ...b, pins: { ...pins, threadMm: 0.3 } },
+      DEFAULT_STANDARD_KIT,
+    ),
+  ).toThrow();
+  pins.coordinates[21][1] += 0.001;
+  expect(() =>
+    decodeGenerationRecipe({ ...b, pins }, DEFAULT_STANDARD_KIT),
+  ).toThrow();
+});
 test("reject source/engine/profile injection, no consent, stale revision, noncanonical base64 and malformed framing", () => {
   const b = recipe();
   for (const change of [

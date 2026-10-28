@@ -7,6 +7,10 @@ import {
 } from "../src/protected-generation";
 import { customerApi } from "../src/customer-api";
 import { frameFreePhoto } from "../src/core/free-photo-framing";
+import {
+  standardProfiles,
+  DEFAULT_STANDARD_KIT,
+} from "../src/core/standard-kit";
 afterEach(() => vi.restoreAllMocks());
 test("invalid build-mode settings fail closed rather than silently enabling the local fitter", () => {
   for (const value of [undefined, "", "0"])
@@ -72,6 +76,26 @@ test("same prepared input retains exact uncertain-request identity; changed inpu
   expect(changed.body.secret === a.body.secret).toBe(false);
   expect(changed.body.requestKey === a.body.requestKey).toBe(false);
   expect(JSON.stringify(a.body).includes("segments")).toBe(false);
+});
+test("the reviewed coordinate snapshot is forwarded without regeneration and bound into retry identity", async () => {
+  const a = await attempt(),
+    coordinates = standardProfiles(DEFAULT_STANDARD_KIT)[0].pins.map(
+      (p) => [p.x, p.y] as [number, number],
+    ),
+    input = {
+      pixels: new Uint8Array(750000).fill(190),
+      shape: "circle" as const,
+      revision: 1,
+      lines: 2500,
+      preparation: a.body.preparation as any,
+      pins: { version: "kit-pin-snapshot/1" as const, coordinates },
+    };
+  const b = await generationAttempt(input);
+  expect(b.body.pins).toEqual(input.pins);
+  const changed = structuredClone(input);
+  changed.pins.coordinates[21][1] += Number.EPSILON;
+  const c = await generationAttempt(changed, b);
+  expect(c.fingerprint).not.toBe(b.fingerprint);
 });
 test("configured-off server fails closed before sending a target; no local fitter fallback", async () => {
   const a = await attempt(),

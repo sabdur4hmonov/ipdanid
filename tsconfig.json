@@ -19,6 +19,7 @@
     "playwright.config.ts",
     "playwright.ci.config.ts",
     "playwright.protected.config.ts",
+    "playwright.protected-native.config.ts",
     "server"
   ]
 }

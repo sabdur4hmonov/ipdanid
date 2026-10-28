@@ -25,6 +25,7 @@ export type GenerationInput = {
   revision: number;
   lines: number;
   preparation: KitPreparation;
+  pins?: { version: "kit-pin-snapshot/1"; coordinates: [number, number][] };
 };
 export type GenerationAttempt = {
   fingerprint: string;
@@ -65,6 +66,7 @@ export async function generationAttempt(
       lines: input.lines,
       target: base64(mono),
       preparation: input.preparation,
+      ...(input.pins ? { pins: input.pins } : {}),
     },
     fingerprint = await hash(recipe);
   if (previous?.fingerprint === fingerprint) return previous;

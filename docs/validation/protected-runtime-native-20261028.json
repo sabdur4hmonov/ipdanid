@@ -1,0 +1,22 @@
+{
+  "productionEnabled": false,
+  "buildModules": 2142,
+  "frozenCases": 12,
+  "generationMillisecondsMin": 3019.816,
+  "milestone": "P16.3 exact runtime compatibility and native bridge",
+  "nativeBundledAssetsRemainAvailable": true,
+  "currentWebCasesPassed": 2,
+  "noseImprovement": false,
+  "nativeApiActualIsolated": true,
+  "minimumParityAvailableRamGiB": 3.696,
+  "allSequenceHashesAnd1000pxRgbaExact": true,
+  "viteBuildSeconds": 11.59,
+  "nativeOfflineApiConfirmedStep": 1,
+  "unitFailedPending": 0,
+  "generationMillisecondsMax": 5709.175,
+  "regionalScoresUnchanged": true,
+  "diagnosticsRetained": "Pre-fit rounding, missing old Square PNG, incorrect native SW harness. Strict guards/hash/pixel assertions retained.",
+  "nativeBridgeCasesPassed": 1,
+  "relatedUnitsPassed": 68,
+  "newApkOrRealPhoneClaim": false
+}

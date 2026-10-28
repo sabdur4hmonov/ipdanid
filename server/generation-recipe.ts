@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { DomainError } from "./store";
+import { reviewedKitPins } from "./generation-pins";
 import {
   standardProfiles,
   type StandardKitConfig,
@@ -46,6 +47,7 @@ export function decodeGenerationRecipe(
           "preparation",
           "secret",
           "requestKey",
+          ...(b.pins === undefined ? [] : ["pins"]),
         ]
           .sort()
           .join() ||
@@ -131,9 +133,12 @@ export function decodeGenerationRecipe(
       "bidi/2",
     );
     if (JSON.stringify(canonical) !== JSON.stringify(f)) throw Error("framing");
-    const profile = leastSquaresProfile(
-        standardProfiles(config).find((p) => p.shape === b.shape)!,
-        true,
+    const profile = reviewedKitPins(
+        leastSquaresProfile(
+          standardProfiles(config).find((p) => p.shape === b.shape)!,
+          true,
+        ),
+        b.pins,
       ),
       pixels = new Uint8Array(750000);
     if (

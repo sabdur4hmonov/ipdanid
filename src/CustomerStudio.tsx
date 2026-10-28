@@ -741,6 +741,12 @@ export function CustomerStudio({
             revision: config.revision,
             lines: budget,
             preparation: proof,
+            pins: {
+              version: "kit-pin-snapshot/1",
+              coordinates: profile.pins.map(
+                (p) => [p.x, p.y] as [number, number],
+              ),
+            },
           },
           remoteAttempt.current,
         );

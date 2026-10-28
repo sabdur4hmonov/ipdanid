@@ -8,6 +8,7 @@ const servers = Array.isArray(local.webServer)
 export default defineConfig({
   ...local,
   testDir: "tests/protected-e2e",
+  testMatch: "customer-protected.spec.ts",
   timeout: 240000,
   webServer: servers.map((server, index) =>
     index === 0

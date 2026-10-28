@@ -1,3 +1,6 @@
+## 28.10.2026 — server va Android API tengligi tekshirildi
+
+Asl tayyorlangan rasm va boshqa12namunada server natijasi oldingi qabul qilingan ip yo‘li va har bir piksel bilan aynan teng:3,0–5,7soniya.68unit,desktop/mobil2ta,Android API maketi1ta va yangi build o‘tdi. Ochilgan ish1-qadamda API internetsiz tiklandi. Bu burun sifati yaxshilandi yoki haqiqiy telefon sinaldi degani emas. Production sozlamalari,Admin/dastavka,sifat va yangiAPK/havola hali ochiq; eski saytlar saqlangan. Sizdan hozir qo‘lda sinov talab qilinmaydi.
 ## 28.10.2026 — yangi Phase16: bir million kod tayyor, qolgan ishlar ochiq
 
 Oddiy uch ekranli himoyalangan sayt ham avtomatik sinaldi: desktop3/3, mobil3/3, eski rejim2/2; tegishli64unit va ikkala build o‘tdi. Natija tayyor rasmdan desktop4,026s/mobil4,009s bo‘ldi. Kod bilan ochilmaguncha faqat PNG keladi; ip yo‘li brauzerda yo‘q. Ochishda1kredit, qayta ochishda0; internetni o‘chirib qayta yuklaganda saqlangan1-qadam tiklandi. To‘rt til va bekor qilish/menyudan chiqish tekshirildi. Bu hali yangi yakuniy URL/APK yoki burun sifati o‘zgardi degani emas; asl rasmda bir xil hisob tengligi, VPS/native va qolgan sifat/dastavka yakunlari ochiq.

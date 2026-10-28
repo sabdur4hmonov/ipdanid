@@ -6,7 +6,7 @@ Written before implementation, 2026-10-28. This is new work, not a claim that th
 
 In explicitly configured server mode, the ordinary three-screen flow sends only the reviewed500px monochrome prepared target and its framing proof, after clear consent. Original photos, cutout masks and source files stay local. A prepared target is still personal image data; never call this “no photo transfer”. There is no silent local fallback in protected mode. Existing local/Expert tools, immutable guides, hashes and offline paid assembly remain compatible. Previously delivered JavaScript cannot be made secret or withdrawn from users. This protects new server-held sequences, not all algorithms or browser source.
 
-The server chooses the existing classic3 engine, exact current standard-kit profile, physical renderer and validated line budget. Client engine/material/pin injection is refused. Existing quality-gated preparation selection runs unchanged in the server worker. No source overlay, new nose feature drawing or quality claim.
+The server chooses the existing classic3 engine, exact current standard-kit profile, physical renderer and validated line budget. Client engine/material/layout injection is refused. Optional kit-pin-snapshot/1 preserves only exact reviewed runtime rounding:240finite coordinate pairs, each within8*Number.EPSILON of its server pin. IDs/sectors/materials remain server-authoritative; accepted spelling is bound into recipe and immutable guide hashes. No hash/pixel assertion is relaxed. Existing quality-gated preparation selection runs unchanged in the server worker. No source overlay, new nose feature drawing or quality claim.
 
 ## Protocol
 
