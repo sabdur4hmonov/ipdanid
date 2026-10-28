@@ -1,3 +1,6 @@
+## 28.10.2026 — production sozlamalari va lokal Docker sinovi
+
+Sayt buildi,API va egasi imzolaydigan Android release bir xil himoyalangan rejimga sozlandi.5tegishli unit,yangi build,Dockerda43tekshiruv va alohida production API sinovi o‘tdi. Lokal HTTPS ostida rasm tanlash,serverda yaratish,kod bilan ochish va PDF tekshirildi. Bu haqiqiy VPS sertifikati yoki telefonda sinov emas. Qo‘llanmalar: docs/DEPLOY_VPS_UZ.md va docs/APK_SERVER_AND_SIGNING_UZ.md. Sizdan hozir kalit yoki qo‘lda sinov kutilmaydi; yangi APK/havola va qolgan sifat/Admin/dastavka ishlari davom etadi.
 ## 28.10.2026 — server va Android API tengligi tekshirildi
 
 Asl tayyorlangan rasm va boshqa12namunada server natijasi oldingi qabul qilingan ip yo‘li va har bir piksel bilan aynan teng:3,0–5,7soniya.68unit,desktop/mobil2ta,Android API maketi1ta va yangi build o‘tdi. Ochilgan ish1-qadamda API internetsiz tiklandi. Bu burun sifati yaxshilandi yoki haqiqiy telefon sinaldi degani emas. Production sozlamalari,Admin/dastavka,sifat va yangiAPK/havola hali ochiq; eski saytlar saqlangan. Sizdan hozir qo‘lda sinov talab qilinmaydi.

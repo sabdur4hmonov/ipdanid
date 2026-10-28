@@ -23,6 +23,8 @@ Keyingi safar ham `bash scripts/deploy.sh`. Yangilashdan oldin SQLite va `.env.p
 
 ## 3. HTTPS va Admin
 
+Phase16 production build va API birga himoyalangan rejim1 da ishlaydi: Docker buildda `VITE_SERVER_GENERATION=1`, Compose API muhitida `SERVER_GENERATION=1`. Oddiy mijozga kod bilan ochilmaguncha faqat ipli PNG yuboriladi; tayyor qora-oq rasm serverga rozilik bilan keladi. API ishlamasa yashirin mahalliy hisob yo‘q. Mahalliy `.env.example`dagi0 qiymatini production himoyasi deb tushunmang. [PROTECTED_GENERATION_UZ.md](PROTECTED_GENERATION_UZ.md) chegaralarni, [KIT_MILLION_UZ.md](KIT_MILLION_UZ.md) esa yopiq million-kod bazasini kalitlari bilan to‘g‘ri ko‘chirishni tushuntiradi. Yangi toza VPS o‘zidan-o‘zi bu lokal kodlarni olmaydi.
+
 Brauzerda `https://SIZNING_DOMEN/api/health` oching: `adminAuth=password`, `livePayments=false` bo‘lishi kerak. Domen ilovasida Menyu → Hisob / Admin → Admin → **Admin paroli** orqali kiring. Lokal token production egasi sifatida qabul qilinmaydi. Xodimga alohida vazifa kodi bering; oddiy xodim parolni bilmasin. Sessiya8soat, eng ko‘pi10ta; chiqish uni serverda bekor qiladi, brauzer sessiyani doimiy diskka saqlamaydi. Admin har qayta ochishda kirishi mumkin.
 
 Admin bir sahifada kit kodlarini yaratadi va PDF/QRni oladi; kredit sarfi, buyurtmalar, narxlar (so‘m), dostavka/olib ketish manzili, e’lonlarni boshqaradi. Production bazasi demo mahsulot bilan to‘ldirilmaydi: o‘z narx/stock/kit profilidagi mahsulotlaringizni Admin orqali kiriting. Boshlang‘ich kit quota3. Kod/PDFni ommaga tarqatmang.

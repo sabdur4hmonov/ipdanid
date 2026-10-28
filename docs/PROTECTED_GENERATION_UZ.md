@@ -2,6 +2,8 @@
 
 ## Hozirgi bosqich
 
+Docker web buildi `VITE_SERVER_GENERATION=1`, Compose API esa `SERVER_GENERATION=1` bilan birga ishlaydi. Egasi imzolaydigan Android release skripti ham himoyalangan rejim1 va debug sozlamalari0 ni majburiy qo‘yadi; HTTPS manzil hali ham talab qilinadi. `.env.example`dagi0 faqat mahalliy eski rejimga moslik uchun. Bu o‘zgarish eski4216nusxani yoki bir million kod bazasini avtomatik almashtirmaydi. Tayyor rasmni serverga yuborish roziligi ko‘rsatiladi. API o‘chiq bo‘lsa mahalliy hisobga yashirin o‘tmaydi.
+
 Phase16da server va oddiy uch ekranli mijoz oqimi avtomatik tekshirildi: desktop3/3, mobil3/3. Rasm tanlash, surish/kattalashtirish/burish/qaytarish, bepul PNG, quti kodi bilan kirish, 1 kredit bilan ochish, bepul qayta ochish va internetsiz saqlangan qadamdan davom etish ishladi. To‘rt til matni va ekran kengligiga sig‘ishi tekshirildi. Tayyor rasmdan natijagacha desktop4,026soniya, mobil4,009soniya; bu sun’iy rasm sinovi, barcha suratlar uchun va’da emas.
 
 Mahalliy eski rejim ham saqlanadi: `SERVER_GENERATION=0`, `VITE_SERVER_GENERATION=0`. Himoyalangan rejim uchun **ikkalasi1** bo‘lishi kerak. `VITE_` qiymati build vaqtida, `SERVER_GENERATION` API ishga tushishida beriladi. API sozlamasini o‘zgartirishning o‘zi eski tayyor buildni o‘zgartirmaydi. Server ishlamasa himoyalangan mijoz yashirin ravishda mahalliy hisoblashga o‘tmaydi. Noto‘g‘ri build qiymati ham mahalliy rejimni yoqmaydi.

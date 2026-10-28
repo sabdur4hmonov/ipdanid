@@ -12,6 +12,8 @@ Builddan oldin shaxsiy `.env` fayliga `VITE_NATIVE_API_BASE=https://SIZNING-DOME
 
 ## Eganing release kaliti
 
+Phase16 release skripti `VITE_SERVER_GENERATION=1` va `VITE_NATIVE_DEBUG_SETTINGS=0` ni majburiy qo‘yadi. Shu HTTPS API ham `SERVER_GENERATION=1` bilan ishlashi kerak (Compose buni beradi). Faqat statik ko‘rinish bepul, yo‘riqnoma esa serverdagi quti kodi bilan ochiladi; avval ochilgan ishlar internetsiz qoladi. Mahalliy debug APK va haqiqiy owner release imzosi alohida natijalar.
+
 Kalitni faqat o‘zingiz yarating, parolini xavfsiz joyda saqlang va alohida zaxiralang. Repo ichiga qo‘ymang. Windows PowerShell misoli; haqiqiy parollarni buyruqqa yozmang, `keytool` o‘zi so‘raydi:
 
 ```powershell

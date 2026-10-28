@@ -9,12 +9,13 @@ const isolated=freshTestDatabase('phase14-production'),password=randomBytes(24).
 const probe=createServer();await new Promise(r=>probe.listen(0,'127.0.0.1',r));const port=probe.address().port;await new Promise(r=>probe.close(r));
 assert(![4194,4195,4196,4197,4198,4199,4331,4465,4478,4479,4480,4481].includes(port));
 const api='http://127.0.0.1:'+port+'/api',origin='https://iprasm.example.invalid';let logs='';
-const child=spawn(process.execPath,['--import','tsx','server/index.ts'],{windowsHide:true,env:{...process.env,NODE_ENV:'production',HOST:'127.0.0.1',PORT:String(port),DATABASE_PATH:isolated.databasePath,APP_ORIGIN:origin,ADMIN_PASSWORD_HASH:hash,LOCAL_ADMIN_TOKEN:localToken,CODE_PEPPER:randomBytes(32).toString('base64url'),SANDBOX_PAYMENT_KEY:randomBytes(32).toString('base64url'),PAYMENTS_SANDBOX:'0',IP_RASM_TEST_SERVER:'1'},stdio:['ignore','pipe','pipe']});
+const child=spawn(process.execPath,['--import','tsx','server/index.ts'],{windowsHide:true,env:{...process.env,NODE_ENV:'production',SERVER_GENERATION:'1',HOST:'127.0.0.1',PORT:String(port),DATABASE_PATH:isolated.databasePath,APP_ORIGIN:origin,ADMIN_PASSWORD_HASH:hash,LOCAL_ADMIN_TOKEN:localToken,CODE_PEPPER:randomBytes(32).toString('base64url'),SANDBOX_PAYMENT_KEY:randomBytes(32).toString('base64url'),PAYMENTS_SANDBOX:'0',IP_RASM_TEST_SERVER:'1'},stdio:['ignore','pipe','pipe']});
 child.stdout.on('data',d=>logs+=d);child.stderr.on('data',d=>logs+=d);
 const call=async(path,body,token,headers={})=>{const r=await fetch(api+path,{headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{}),...headers},...(body===undefined?{}:{method:'POST',body:JSON.stringify(body)})});return {status:r.status,data:await r.json()};};
 try{
  let ready=false;for(let i=0;i<100;i++){try{if((await call('/health')).status===200){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert(ready,'isolated production API readiness');
  assert.equal((await call('/health')).data.adminAuth,'password');assert.equal((await call('/catalog')).data.products.length,0);
+ assert.equal((await call('/generation/config')).data.enabled,true);
  assert.equal((await call('/health',undefined,undefined,{Origin:'https://evil.invalid'})).status,403);
  assert.equal((await call('/health',undefined,undefined,{Origin:origin})).status,200);
  assert.equal((await call('/health',undefined,undefined,{Origin:'capacitor://localhost'})).status,200);

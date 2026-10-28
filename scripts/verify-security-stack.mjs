@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
 import { randomBytes, randomUUID } from "node:crypto";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync, realpathSync } from "node:fs";
 import { resolve, join } from "node:path";
 import https from "node:https";
 import http from "node:http";
@@ -13,6 +13,12 @@ import { hashAdminPassword } from "../server/production-auth.ts";
 import { english, photoCases } from "../tests/e2e/phase12-cases.ts";
 
 mkdirSync("test-results", { recursive: true });
+const dist = resolve(process.env.IP_RASM_STACK_DIST || "output/phase15-dist");
+if (process.env.IP_RASM_STACK_DIST &&
+    (!/^phase16-[a-z0-9-]+-dist$/.test(dist.split(/[\\/]/).at(-1)) ||
+     !dist.startsWith(resolve('output') + (process.platform === 'win32' ? '\\' : '/')) ||
+     realpathSync(dist).toLowerCase() !== dist.toLowerCase()))
+  throw Error('Only a fresh non-symlink Phase16 working dist can override stack assets');
 const out = mkdtempSync(resolve("test-results/c24-stack-")),
   project = "iprasm-c24-" + randomUUID().replaceAll("-", "").slice(0, 10),
   config = join(out, "compose-private.json"),
@@ -304,7 +310,7 @@ try {
   );
   model.services.caddy.volumes.push(
     bind(join(out, "Caddyfile"), "/etc/caddy/Caddyfile"),
-    bind("output/phase15-dist", "/srv"),
+    bind(dist, "/srv"),
   );
   model.services.caddy.ports = [
     {
@@ -350,6 +356,7 @@ try {
       headers: { Host: "fixture.localhost:" + tlsPort, ...options.headers },
     });
   const health = JSON.parse((await call("/api/health")).text);
+  check(JSON.parse((await call('/api/generation/config')).text).enabled, true);
   check(health.trustedProxy, true);
   check(health.sandbox, false);
   const headers = (await call("/")).headers;

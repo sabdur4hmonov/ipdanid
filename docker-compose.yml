@@ -8,6 +8,7 @@ services:
     init: true
     environment:
       NODE_ENV: production
+      SERVER_GENERATION: "1"
       HOST: 0.0.0.0
       PORT: "4311"
       DATABASE_PATH: /data/iprasm.sqlite

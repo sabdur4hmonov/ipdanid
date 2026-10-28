@@ -10,16 +10,16 @@ Push-Location -LiteralPath $repoRoot
 try {
   $nativeConfigScript = @'
 import {loadEnv} from 'vite';
-import {resolveBackendUrl} from './src/backend-url.ts';
+import {releaseClientConfig} from './scripts/release-runtime.mjs';
 const env=loadEnv('production',process.cwd(),'VITE_');
-const value=resolveBackendUrl(true,process.env.VITE_NATIVE_API_BASE||env.VITE_NATIVE_API_BASE);
-if(!value||new URL(value).protocol!=='https:')throw Error('A public HTTPS VITE_NATIVE_API_BASE is required for release');
-process.stdout.write(value);
+process.stdout.write(JSON.stringify(releaseClientConfig(process.env.VITE_NATIVE_API_BASE||env.VITE_NATIVE_API_BASE)));
 '@
-  $apiBase = $nativeConfigScript | & node --import tsx --input-type=module
+  $runtimeJson = $nativeConfigScript | & node --import tsx --input-type=module
   if ($LASTEXITCODE -ne 0) { throw 'Release API configuration validation failed' }
-  $env:VITE_NATIVE_API_BASE = $apiBase
-  $env:VITE_NATIVE_DEBUG_SETTINGS = '0'
+  $runtime = $runtimeJson | ConvertFrom-Json
+  $env:VITE_NATIVE_API_BASE = $runtime.VITE_NATIVE_API_BASE
+  $env:VITE_NATIVE_DEBUG_SETTINGS = $runtime.VITE_NATIVE_DEBUG_SETTINGS
+  $env:VITE_SERVER_GENERATION = $runtime.VITE_SERVER_GENERATION
   if ($ValidateOnly) { Write-Output 'Release configuration validated; no build or signing performed'; return }
   $releaseDir = Join-Path $repoRoot ('output/release-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
   if (Test-Path -LiteralPath $releaseDir) { throw 'Refusing to overwrite a release directory' }

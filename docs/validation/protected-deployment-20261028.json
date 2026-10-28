@@ -1,0 +1,21 @@
+{
+  "ownedResourcesRemoved": true,
+  "noseImproved": false,
+  "publicTlsTested": false,
+  "unitFailed": 0,
+  "milestone": "P16.3 matching production configuration",
+  "releaseProtectedMode": "1",
+  "fullBuildModules": 2142,
+  "relatedUnitPassed": 5,
+  "releaseHttpsRequired": true,
+  "newDistMounted": true,
+  "newApk": false,
+  "viteSeconds": 38.02,
+  "currentSourcesReadOnlyMounted": true,
+  "releaseDebugSettings": "0",
+  "newDockerImagesBuilt": false,
+  "productionHttpPassed": true,
+  "dockerCachedImages": true,
+  "composeChecksPassed": 43,
+  "webAndApiProtectedMode": "1"
+}

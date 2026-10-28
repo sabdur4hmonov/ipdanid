@@ -3,6 +3,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+ENV VITE_SERVER_GENERATION=1
 RUN npx tsc -p tsconfig.production.json && npx vite build --outDir web-dist
 
 FROM node:24-bookworm-slim AS api
