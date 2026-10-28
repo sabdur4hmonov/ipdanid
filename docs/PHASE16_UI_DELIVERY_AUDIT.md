@@ -1,0 +1,11 @@
+# Phase16 customer, inventory and delivery audit
+
+Written before changes,2026-10-28. Deployment checkpointa70ada7 is published after638file/89commit export and5249object/3542text history scans, zero findings.
+
+Existing ordinary three-screen creation, passwordless kit3, offline paid assembly, region-bound checkout, pickup/courier, server price/revision validation, sandbox providers, stock and tracking remain implemented. Do not invent owner prices, contacts, actual shipments or live payments. Validate the existing real desktop/mobile business/customer cases with fresh APIs and new assets, then fix concrete failures. Keep screenshots/private kit cards in ignored evidence only.
+
+Concrete Admin gap: `/admin/kits` already returns at most50 private inventory summaries from actual SQLite, but KitAdmin does not display them. Add a four-locale read-only summary of ID/profile/issued/total/status. Clearly separate private offline inventories from the public100-code issuance tool; never download a million plaintext codes through the browser. SSR rendering tests must cover actual summary values, HTML escaping, all statuses/locales and absence of code/export fields. Actual browser Admin must display database-backed values and retain batch/PDF operations; final preview should display the real private million pool, not a fabricated counter.
+
+Concrete preview capacity defect:16retained jobs globally for30minutes can block the17th ordinary adjustment even when the worker is idle. Fix storage accounting to allow64live queued/running/ready records while retaining the exact64MiB result cap, one worker/two active queue,45s deadline,30min TTL and3starts/IP/minute. Failed/cancelled metadata must not consume live-result slots, but total retained metadata is independently capped512. Keep idempotent retries available at either cap; expired deletion must recover capacity. Tests must reach both bounds and retain byte-cap/cancellation/expiry/ownership guards. This change is product capacity, not a bypass to run browser tests faster; all acceptance still uses isolated budgets.
+
+No quality fitting, hardware changes or migration of old preview databases is included in this milestone. P16.1 and final APK/fullmatrix/newpreview stay open.

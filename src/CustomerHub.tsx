@@ -1,4 +1,5 @@
 import { uiText } from "./ui-i18n";
+import { protectedGenerationMode } from './protected-generation';
 import type {RecoverySnapshot} from './recovery-types';
 const TrialClaimPanel=lazy(()=>import('./TrialClaimPanel'));
 const TrialAdmin=lazy(()=>import('./TrialAdmin'));
@@ -1206,7 +1207,7 @@ export function CustomerHub({
                     </p>
                   )}
                 </div>
-                <p>{bt("orderOnline")}</p>
+                <p data-testid="checkout-network-note">{bt(protectedGenerationMode ? 'orderOnlineProtected' : 'orderOnline')}</p>
               </fieldset>
               <button
                 disabled={

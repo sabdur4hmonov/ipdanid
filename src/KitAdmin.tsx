@@ -6,6 +6,7 @@ import { customerApi as api } from "./customer-api";
 import { kitText } from "./kit-i18n";
 import { download } from "./download";
 import type { KitBatch } from "./kit-inserts";
+import { KitInventorySummary } from './KitInventorySummary';
 export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
   const t = (k: Parameters<typeof kitText>[1]) => kitText(locale, k),
     [policy, setPolicy] = useState<KitPolicy>(),
@@ -208,6 +209,7 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
       </fieldset>
       {data && (
         <>
+          <KitInventorySummary locale={locale} rows={data.inventories ?? []} />
           <div style={{ overflowX: "auto" }}>
             <table>
               <thead>

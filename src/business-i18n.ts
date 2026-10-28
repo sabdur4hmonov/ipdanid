@@ -85,6 +85,11 @@ const words = {
     "Для заказа нужен интернет. Создание и сборка картины работают офлайн.",
     "Ordering needs internet. Creating and assembling string art work offline.",
   ],
+  orderOnlineProtected: [
+    "Buyurtma va yangi ipli ko‘rinish uchun internet kerak. Avval ochilgan ishni yig‘ish internetsiz ishlaydi.",
+    "Для заказа и нового предпросмотра нужен интернет. Ранее открытая сборка работает офлайн.",
+    "Ordering and creating a new preview need internet. Previously unlocked assembly works offline.",
+  ],
   guideLanguage: ["Instruktor tili", "Язык инструктора", "Guide language"],
   guideOne: ["Instruktor 1", "Инструктор 1", "Guide 1"],
   guideTwo: ["Instruktor 2", "Инструктор 2", "Guide 2"],

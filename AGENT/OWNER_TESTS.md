@@ -1,3 +1,6 @@
+## 28.10.2026 — Admin va buyurtma/dastavka yakuni
+
+Desktop va mobil12/12sinov o‘tdi: haqiqiy bazadagi kod zaxirasi,QR/PDF,narxlar,olib ketish/kuryer,qayta urinishda ayni buyurtma,sandbox Click/Payme va kredit muddati. Yangi zaxira oynasi kodlarning o‘zini ochmaydi. Noto‘g‘ri offline matni va uzun ID ko‘rinishi tuzatildi.26tegishli unit,keyingi8ta o‘zgargan modul sinovi,yangi build va4til kalit tekshiruvi o‘tdi. Siz hozir qo‘lda tekshirishingiz shart emas. Keyin Admin → kitlar bo‘limida chiqarilgan/reja/holatni ko‘rasiz. Haqiqiy bir millionlik yopiq zaxira yangi yakuniy serverga ulanishi kerak; eski4216ga avtomatik ulanmagan. Burun sifati,umumiy yakuniy tekshiruv,yangiAPK va yangi havola hali davom etadi.
 ## 28.10.2026 — production sozlamalari va lokal Docker sinovi
 
 Sayt buildi,API va egasi imzolaydigan Android release bir xil himoyalangan rejimga sozlandi.5tegishli unit,yangi build,Dockerda43tekshiruv va alohida production API sinovi o‘tdi. Lokal HTTPS ostida rasm tanlash,serverda yaratish,kod bilan ochish va PDF tekshirildi. Bu haqiqiy VPS sertifikati yoki telefonda sinov emas. Qo‘llanmalar: docs/DEPLOY_VPS_UZ.md va docs/APK_SERVER_AND_SIGNING_UZ.md. Sizdan hozir kalit yoki qo‘lda sinov kutilmaydi; yangi APK/havola va qolgan sifat/Admin/dastavka ishlari davom etadi.

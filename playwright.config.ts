@@ -14,6 +14,9 @@ if (process.env.IP_RASM_TEST_REPORT)
   assertTestDatabasePath(process.env.IP_RASM_TEST_REPORT);
 mkdirSync(artifacts, { recursive: true });
 const database = join(mkdtempSync(join(artifacts, "api-")), "test.sqlite");
+// Node test fixtures only; never sent to browser assets or API responses.
+// Workers re-evaluate this config; retain the parent web server's fixture path.
+process.env.IP_RASM_TEST_DATABASE ??= database;
 for (const name of [
   "LOCAL_ADMIN_TOKEN",
   "CODE_PEPPER",

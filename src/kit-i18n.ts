@@ -1,6 +1,15 @@
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 const en = {
+  inventory: 'Private box-code inventory',
+  inventoryHelp: 'Issued privately with the offline owner tool. This summary never contains the code list. The web batch tool below remains limited to 100 codes.',
+  inventoryEmpty: 'No private inventory on this server.',
+  inventoryIssued: 'Issued / planned',
+  inventoryStatus: 'Status',
+  inventoryStaging: 'Preparing — unavailable',
+  inventoryReady: 'Ready',
+  inventoryFailed: 'Failed — unavailable',
+  inventoryRevoked: 'Revoked',
   locked: "Unlock this build",
   hint: "Previews are free and unlimited. Use one kit credit to open the steps, player and PDF/TXT/JSON. This guide then stays available offline on this device.",
   code: "Kit code",
@@ -46,6 +55,15 @@ const en = {
   newBatch: "Start another batch request",
 };
 const uz: typeof en = {
+  inventory: 'Shaxsiy quti kodlari zaxirasi',
+  inventoryHelp: 'Egasining yopiq kompyuter vositasida chiqariladi. Bu yerda kodlar ro‘yxati ko‘rsatilmaydi. Pastdagi sayt vositasi bir safar ko‘pi bilan 100 kod yaratadi.',
+  inventoryEmpty: 'Bu serverda shaxsiy zaxira yo‘q.',
+  inventoryIssued: 'Chiqarilgan / reja',
+  inventoryStatus: 'Holat',
+  inventoryStaging: 'Tayyorlanmoqda — yopiq',
+  inventoryReady: 'Tayyor',
+  inventoryFailed: 'Xato — yopiq',
+  inventoryRevoked: 'Bekor qilingan',
   locked: "Natijani ochish",
   hint: "Oldindan ko‘rish bepul va cheksiz. Qadamlar, yig‘ish oynasi va PDF/TXT/JSON uchun bitta kit krediti sarflanadi. Ochilgan qo‘llanma shu qurilmada internetsiz ham qoladi.",
   code: "Kit kodi",
@@ -91,6 +109,15 @@ const uz: typeof en = {
   newBatch: "Boshqa to‘plam so‘rovini boshlash",
 };
 const ru: typeof en = {
+  inventory: 'Закрытый запас кодов коробок',
+  inventoryHelp: 'Выпускается закрытым инструментом владельца. Список кодов здесь не показывается. Веб-инструмент ниже создаёт не более 100 кодов за раз.',
+  inventoryEmpty: 'На этом сервере нет закрытого запаса.',
+  inventoryIssued: 'Выпущено / план',
+  inventoryStatus: 'Статус',
+  inventoryStaging: 'Подготовка — недоступно',
+  inventoryReady: 'Готово',
+  inventoryFailed: 'Ошибка — недоступно',
+  inventoryRevoked: 'Отозвано',
   locked: "Открыть эту сборку",
   hint: "Предпросмотры бесплатны и не ограничены. Один кредит набора открывает шаги, плеер и PDF/TXT/JSON. Инструкция остаётся доступной офлайн на этом устройстве.",
   code: "Код набора",

@@ -211,7 +211,7 @@ test("cancel/expiry fence late completion and restart fails unfinished work with
 });
 test("global storage cap is bounded and retries do not allocate another row", () => {
   const { s, jobs, secret } = setup();
-  for (let k = 1; k < 16; k++)
+  for (let k = 1; k < 64; k++)
     jobs.begin(secret, "generation-capacity-" + k, "b".repeat(64));
   expect(() =>
     jobs.begin(secret, "generation-capacity-overflow", "c".repeat(64)),
@@ -221,7 +221,36 @@ test("global storage cap is bounded and retries do not allocate another row", ()
   ).toBe(true);
   expect(
     s.db.prepare("SELECT COUNT(*) n FROM protected_generations").get()!.n,
-  ).toBe(16);
+  ).toBe(64);
+});
+
+test('cancelled/failed metadata cannot block live slots or grow without a bound; retries and expiry recover safely', () => {
+  let at = 1000;
+  const {s,jobs,secret,job} = setup(() => at);
+  jobs.cancel(job.id,secret);
+  for (let k=1;k<512;k++) {
+    const next=jobs.begin(secret,'metadata-capacity-'+k,'b'.repeat(64));
+    if(k%2) jobs.fail(next.id); else jobs.cancel(next.id,secret);
+  }
+  expect(s.db.prepare("SELECT COUNT(*) n FROM protected_generations WHERE status IN ('queued','running','ready')").get()!.n).toBe(0);
+  expect(() => jobs.begin(secret,'metadata-capacity-overflow','c'.repeat(64))).toThrow('busy');
+  expect(jobs.begin(secret,'unit-generation-first','a'.repeat(64)).duplicate).toBe(true);
+  at+=30*60000;
+  expect(jobs.begin(secret,'metadata-capacity-after-expiry','d'.repeat(64)).duplicate).toBe(false);
+  expect(s.db.prepare('SELECT COUNT(*) n FROM protected_generations').get()!.n).toBe(1);
+});
+
+test('the unchanged64MiB byte limit still rejects new allocation and a result that would exceed it',async()=>{
+  const {s,jobs,secret,job}=setup();
+  const next=jobs.begin(secret,'generation-byte-cap-pending','b'.repeat(64));
+  jobs.running(next.id);
+  s.db.prepare("UPDATE protected_generations SET status='ready',guide='x',preview=zeroblob(?) WHERE id=?").run(64*1024*1024,job.id);
+  expect(()=>jobs.begin(secret,'generation-byte-cap-overflow','c'.repeat(64))).toThrow('busy');
+  expect(jobs.begin(secret,'unit-generation-first','a'.repeat(64)).duplicate).toBe(true);
+  await expect(jobs.complete(next.id,guide,png)).rejects.toThrow('storage is full');
+  expect(jobs.state(next.id,secret).status).toBe('running');
+  s.db.prepare("UPDATE protected_generations SET guide=NULL,preview=NULL,status='failed' WHERE id=?").run(job.id);
+  expect(await jobs.complete(next.id,guide,png)).toBe(true);
 });
 test("account erasure deletes owned previews and blocks late owner writes and unlocks", async () => {
   const { s, jobs, secret, job } = setup(),

@@ -24,7 +24,7 @@ Mijoz oldin rasmning joylashuvini o‘z qurilmasida moslaydi. Aniq rozilikdan ke
 
 Server amaldagi kit andozasi bilan hisoblaydi. Bepul natijada faqat haqiqiy ipli PNG ko‘rinishi keladi. Mixdan mixga ketma-ket yo‘l serverda qoladi. Quti kodi bilan kirib, bitta kredit sarflangandan keyin to‘liq yo‘riqnoma va imzolangan ruxsat keladi; ochilgan ish akkaunt arxiviga yoziladi. O‘sha ishni qayta ochish bepul. Saqlangan yo‘riqnoma keyin internetsiz ham ishlaydi.
 
-Boshlang‘ich cheklovlar: bir vaqtda bitta hisob, navbat bilan ko‘pi bilan ikkita faol so‘rov, 45 soniyalik majburiy hisob chegarasi, 16 ta vaqtinchalik yozuv va 64 MiB umumiy saqlash chegarasi. Bu kichik boshlang‘ich VPS uchun cheklov; bir million bir vaqtdagi mijoz yuklamasi sinaldi degani emas. Gavjum bo‘lsa tizim kutishni/qayta urinishni so‘raydi. Narx, taxta andozasi yoki kreditni mijoz o‘z so‘rovida almashtira olmaydi.
+Boshlang‘ich cheklovlar: bir vaqtda bitta hisob, navbat bilan ko‘pi bilan ikkita faol so‘rov, 45 soniyalik majburiy hisob chegarasi, 64 ta faol/tayyor natija, bekor yoki xato yozuvlar bilan jami512ta qisqa yozuv va64MiB natijalar saqlash chegarasi. Bu kichik boshlang‘ich VPS uchun cheklov; bir million bir vaqtdagi mijoz yuklamasi sinaldi degani emas. Gavjum bo‘lsa tizim kutishni/qayta urinishni so‘raydi. Narx, taxta andozasi yoki kreditni mijoz o‘z so‘rovida almashtira olmaydi.
 
 ## Ma’lumotlar
 

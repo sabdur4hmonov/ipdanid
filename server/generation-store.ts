@@ -80,11 +80,12 @@ export class GenerationStore {
       }
       const resources = this.store.db
         .prepare(
-          "SELECT COUNT(*) n, COALESCE(SUM(LENGTH(guide)+LENGTH(preview)),0) bytes FROM protected_generations",
+          "SELECT COUNT(*) n, COALESCE(SUM(CASE WHEN status IN ('queued','running','ready') THEN 1 ELSE 0 END),0) live, COALESCE(SUM(LENGTH(CAST(guide AS BLOB))+LENGTH(preview)),0) bytes FROM protected_generations",
         )
         .get()!;
       if (
-        Number(resources.n) >= 16 ||
+        Number(resources.n) >= 512 ||
+        Number(resources.live) >= 64 ||
         Number(resources.bytes) >= 64 * 1024 * 1024
       )
         throw new DomainError("Generation service is busy; retry later", 503);
