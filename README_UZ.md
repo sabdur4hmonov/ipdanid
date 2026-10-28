@@ -1,3 +1,8 @@
+## Phase16 — 28.10.2026, yakuniy tekshiruv davom etmoqda
+
+Haqiqiy1000000ta yopiq3yig‘ishli quti kodi alohida shaxsiy bazada tayyor; GitHub/APKga kiritilmaydi. Oddiy oqimning himoyalangan server hisobi,Admin zaxira oynasi va buyurtma/dastavka avtomatik tekshirildi.733ta to‘liq sozlangan unit va yangi qo‘shimcha tekshiruvlar bilan738ta takrorlanmagan natija o‘tdi; yakuniy brauzer matritsasi/APK/yangi URLhali davom etadi. Burun sifati yaxshilandi yoki100%foto tengligi deyilmaydi. Eski4216sayt/APK o‘zgarmagan.
+
+Production uchun [DEPLOY_VPS_UZ.md](docs/DEPLOY_VPS_UZ.md) yo‘lidan foydalaning: Docker web va API birga himoyalangan1rejimda ishlaydi. [PROTECTED_GENERATION_UZ.md](docs/PROTECTED_GENERATION_UZ.md) tayyor qora-oq rasmning rozilik bilan serverga yuborilishini va offline cheklovini tushuntiradi. [KIT_MILLION_UZ.md](docs/KIT_MILLION_UZ.md) haqiqiy yopiq bazani kalitlari bilan ko‘chirish/chop etish yo‘lini beradi. Yangi clone bu mahalliy maxfiy zaxirani olmaydi. Quyidagi oddiy yuklab-ochish yo‘li development uchun eski mahalliy moslik rejimidir; uni production himoyasi deb tushunmang. Yangilangan holat doim AGENT/PROGRESS.md birinchi Exact next step qismida.
 ## Sinovga tayyor nusxa — 27.10.2026
 
 Sayt: **http://127.0.0.1:4216/**. Yangi quti kodi faqat shu kompyuterdagi `output/phase15/final-review/manual-testing.txt` faylida. Parol shart emas: bitta kod 3 ta alohida to‘liq yo‘riqnomani ochadi. Ipli ko‘rinishni ko‘rish bepul; avval ochilgan loyihaga qaytish yana kredit olmaydi.

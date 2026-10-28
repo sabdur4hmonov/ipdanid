@@ -16,6 +16,35 @@ import {
 import { freemem } from "node:os";
 import { resolve, join, sep, basename } from "node:path";
 import net from "node:net";
+// Explicit local-compatibility matrix; protected ordinary/native acceptance is
+// a separate matching-mode suite, never a silent production fallback.
+const distArg = process.argv.find((v) => v.startsWith("--dist="))?.slice(7),
+  webDir = distArg ?? "output/phase15-dist",
+  absoluteDist = resolve(webDir);
+if (distArg) {
+  assert(
+    /^phase16-[a-z0-9-]+-dist$/.test(basename(absoluteDist)),
+    "Use a fresh Phase16 working build",
+  );
+  assert(
+    absoluteDist.startsWith(resolve("output") + sep),
+    "Build must stay in workspace output",
+  );
+  assert.equal(
+    realpathSync(absoluteDist),
+    absoluteDist,
+    "Build cannot be a symlink",
+  );
+  const runtime = JSON.parse(
+    readFileSync(join(absoluteDist, "build-runtime.json"), "utf8"),
+  );
+  assert.equal(runtime.version, "iprasm.build-runtime/1");
+  assert.equal(
+    runtime.protectedGeneration,
+    false,
+    "Full legacy matrix requires the explicit local compatibility build",
+  );
+}
 const excluded = new Set(
   [
     "anatomy",
@@ -55,7 +84,12 @@ const files = readdirSync("tests/e2e")
     .sort(),
   selected = files.filter((v) => !excluded.has(v)),
   digest = (v) => createHash("sha256").update(v).digest("hex"),
-  build = digest(readFileSync("output/phase15-dist/asset-manifest.json")),
+  build = digest(
+    readFileSync(join(absoluteDist, "asset-manifest.json")) +
+      (distArg
+        ? readFileSync(join(absoluteDist, "build-runtime.json"), "utf8")
+        : ""),
+  ),
   server = digest(
     [
       "package.json",
@@ -73,6 +107,7 @@ const files = readdirSync("tests/e2e")
       "scripts/run-release-e2e.mjs",
       "playwright.config.ts",
       "tests/helpers/evidence-paths.ts",
+      "tests/protected-e2e/helpers.ts",
       ...readdirSync("tests/e2e")
         .filter((n) => n.endsWith(".ts") && !n.endsWith(".spec.ts"))
         .map((n) => "tests/e2e/" + n),
@@ -101,6 +136,8 @@ const reportFile = join(root, "matrix.json"),
         schema: "iprasm.release-e2e/1",
         root,
         build,
+        webDir: absoluteDist,
+        executionMode: "local-compatibility",
         server,
         harness,
         startedAt: new Date().toISOString(),
@@ -114,6 +151,18 @@ const reportFile = join(root, "matrix.json"),
       };
 assert.equal(report.schema, "iprasm.release-e2e/1");
 assert.equal(report.root, root);
+if (distArg) {
+  assert.equal(
+    report.webDir,
+    absoluteDist,
+    "Build directory changed: start a new matrix",
+  );
+  assert.equal(
+    report.executionMode,
+    "local-compatibility",
+    "Execution mode changed",
+  );
+}
 assert.equal(
   report.server,
   server,
@@ -207,11 +256,13 @@ try {
         IP_RASM_TEST_BROWSER_CHANNEL: "chrome",
         IP_RASM_TEST_PORT: String(webPort),
         IP_RASM_TEST_API_PORT: String(apiPort),
-        IP_RASM_TEST_WEB_DIR: "output/phase15-dist",
+        IP_RASM_TEST_WEB_DIR: webDir,
+        SERVER_GENERATION: "0",
         IP_RASM_TEST_ARTIFACTS: directory,
         IP_RASM_TEST_REPORT: join(directory, "report.json"),
         IP_RASM_RELEASE_EVIDENCE_ROOT: join(directory, "evidence"),
       };
+      delete env.IP_RASM_TEST_DATABASE;
       if (
         existsSync("output/subject-repair/inputs/owner-cat-screenshot-crop.png")
       )

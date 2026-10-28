@@ -3,6 +3,14 @@ import { test, expect } from 'vitest';
 // @ts-expect-error existing deployment helper is an executable JavaScript module
 import { releaseClientConfig } from '../scripts/release-runtime.mjs';
 
+test('owner environment template cannot silently override a configured value with a duplicate blank assignment',()=>{
+  const example=readFileSync('.env.example','utf8');
+  const keys=Array.from(example.matchAll(/^([A-Z][A-Z0-9_]*)=/gm),m=>m[1]);
+  expect(new Set(keys).size).toBe(keys.length);
+  expect(example).toContain('SERVER_GENERATION=0');
+  expect(example).toContain('VITE_SERVER_GENERATION=0');
+});
+
 test('release client requires HTTPS and forces protected mode without a debug override', () => {
   expect(releaseClientConfig('https://example.invalid/api')).toEqual({
     VITE_NATIVE_API_BASE: 'https://example.invalid/api',

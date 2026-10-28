@@ -19,7 +19,7 @@ describe("isolated test database boundary", () => {
     for (const port of [
       4194, 4195, 4196, 4197, 4198, 4199, 4200, 4201, 4210, 4211, 4212, 4213,
       4214, 4215, 4216, 4331, 4465, 4478, 4479, 4480, 4481, 4482, 4483, 4650, 4651,
-      4652, 4653, 4654, 4655, 4656,
+      4652, 4653, 4654, 4655, 4656, 4217, 4657,
     ]) {
       expect(() => assertTestPorts(port, 4690)).toThrow("reserved");
       expect(() => assertTestPorts(4540, port)).toThrow("reserved");

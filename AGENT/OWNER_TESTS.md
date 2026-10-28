@@ -1,3 +1,6 @@
+## 28.10.2026 — umumiy unit va yakuniy build
+
+733ta to‘liq sozlangan unit sinovi o‘tdi. Keyin runnerga kirmay qolgan1ta render testi to‘g‘ri ulandi va yangi guardlar bilan alohida tekshirildi:jami738ta takrorlanmagan unit natijasi o‘tgan (bir buyruqdagi738degan da’vo yo‘q). Protected va mahalliy rejimning122faylli yangi buildlari tayyor. Maxfiy kod yo‘riqnomalari uchun8ta sun’iy HTTPsinovi403bilan yopildi; haqiqiy kalit yoki kod so‘ralmagan. Eski nusxalar saqlangan. Yangi yakuniy brauzer matritsasi,APK va havola hali e’lon qilinmagan; burun sifati o‘zgardi deyilmaydi. Hozir sizdan qo‘lda sinov yoki kalit kerak emas.
 ## 28.10.2026 — Admin va buyurtma/dastavka yakuni
 
 Desktop va mobil12/12sinov o‘tdi: haqiqiy bazadagi kod zaxirasi,QR/PDF,narxlar,olib ketish/kuryer,qayta urinishda ayni buyurtma,sandbox Click/Payme va kredit muddati. Yangi zaxira oynasi kodlarning o‘zini ochmaydi. Noto‘g‘ri offline matni va uzun ID ko‘rinishi tuzatildi.26tegishli unit,keyingi8ta o‘zgargan modul sinovi,yangi build va4til kalit tekshiruvi o‘tdi. Siz hozir qo‘lda tekshirishingiz shart emas. Keyin Admin → kitlar bo‘limida chiqarilgan/reja/holatni ko‘rasiz. Haqiqiy bir millionlik yopiq zaxira yangi yakuniy serverga ulanishi kerak; eski4216ga avtomatik ulanmagan. Burun sifati,umumiy yakuniy tekshiruv,yangiAPK va yangi havola hali davom etadi.

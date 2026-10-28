@@ -1,4 +1,6 @@
-import { build, defineConfig } from "vite";
+import { build, defineConfig, type ResolvedConfig } from "vite";
+import { resolveBackendUrl } from "./src/backend-url";
+import { privateManualUrl } from "./scripts/manual-file-boundary";
 import react from "@vitejs/plugin-react";
 import { offlineShellSource } from "./src/core/offline-shell";
 import { readFileSync } from "node:fs";
@@ -38,6 +40,11 @@ const fontFiles = [
     "/licenses/splaytree.txt",
     "/licenses/robust-predicates.txt",
   ]);
+let buildRuntime: {
+  version: string;
+  protectedGeneration: boolean;
+  nativeApiBase: string | null;
+};
 export default defineConfig({
   build: {
     // AAPT omits hidden directories; keep the audited manifest byte-exact in APKs.
@@ -47,7 +54,12 @@ export default defineConfig({
         // Stable React runtime can be cached across product updates. Expert,
         // account, PDF/font and legacy screens retain their existing lazy edges.
         manualChunks(id) {
-          if (/\/node_modules\/(?:react|react-dom|scheduler)\//.test(id.replaceAll("\\", "/"))) return "react-runtime";
+          if (
+            /\/node_modules\/(?:react|react-dom|scheduler)\//.test(
+              id.replaceAll("\\", "/"),
+            )
+          )
+            return "react-runtime";
         },
       },
     },
@@ -57,7 +69,17 @@ export default defineConfig({
     fs: {
       // Keep Vite's default denials when adding private inventory protection.
       // Ignoring a directory in the watcher does not prevent HTTP file serving.
-      deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "**/phase16-private/**", "**/*.sqlite*", "**/*.db", "**/private-keys.json"],
+      deny: [
+        ".env",
+        ".env.*",
+        "*.{crt,pem}",
+        "**/.git/**",
+        "**/phase16-private/**",
+        "**/manual-testing*.txt",
+        "**/*.sqlite*",
+        "**/*.db",
+        "**/private-keys.json",
+      ],
     },
     proxy: {
       "/api": process.env.IP_RASM_BACKEND_PROXY || "http://127.0.0.1:4311",
@@ -73,6 +95,37 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    {
+      name: "public-build-runtime-contract",
+      configureServer(server) {
+        // ?import can otherwise return an asset URL module with200 even when
+        // the underlying text is denied. Deny the credential path itself.
+        server.middlewares.use((req, res, next) => {
+          if (!privateManualUrl(req.url ?? "/")) return next();
+          res.statusCode = 403;
+          res.setHeader("Cache-Control", "no-store");
+          res.end();
+        });
+      },
+      configResolved(config: ResolvedConfig) {
+        const mode = config.env.VITE_SERVER_GENERATION;
+        if (mode !== undefined && mode !== "" && mode !== "0" && mode !== "1")
+          throw Error("Invalid server generation build mode");
+        buildRuntime = {
+          version: "iprasm.build-runtime/1",
+          protectedGeneration: mode === "1",
+          nativeApiBase:
+            resolveBackendUrl(true, config.env.VITE_NATIVE_API_BASE) ?? null,
+        };
+      },
+      generateBundle() {
+        this.emitFile({
+          type: "asset",
+          fileName: "build-runtime.json",
+          source: JSON.stringify(buildRuntime),
+        });
+      },
+    },
     {
       name: "classic-photo-worker-dev",
       configureServer(server) {
