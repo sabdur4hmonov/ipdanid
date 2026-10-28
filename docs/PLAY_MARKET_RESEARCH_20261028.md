@@ -1,0 +1,26 @@
+# Play Market string-art survey — 2026-10-28
+
+Owner requested that comparable Android apps may also be examined. This survey extends the earlier GitHub/QBRIX/China research; it does not reopen the rejected quality searches or establish a new quality winner.
+
+## Evidence and limits
+
+Read public developer-authored Play listings, first-party websites and the public repository below. No APK was downloaded, installed, unpacked or executed. No purchase, login, protected API probing, code redemption, external photo upload or developer contact occurred. Binary reverse engineering is **not** claimed. Public product descriptions describe advertised behavior, not independently verified numerical implementations or same-kit portrait quality.
+
+| Product / primary source | Advertised behavior useful for comparison | What this establishes for Ip Rasm |
+| --- | --- | --- |
+| [Penelope, com.vandele.stringart](https://play.google.com/store/apps/details?id=com.vandele.stringart) | Continuous thread per color, real diameter/thread-width preview, voice/color-change announcements, configurable nails/connections, no sign-in requirement. Recommends simple high-contrast inputs. | Material-aware preview and assembly are product requirements, already implemented here. No disclosed score/kernel or matched 240-pin/3000-line result. Its linked penelope.diy site could not be retrieved in this inspection. |
+| [String Art – Photo Thread Art, in.fourT.stringart](https://play.google.com/store/apps/details?id=in.fourT.stringart), [developer website](https://fourt.in/) | Circle/square/heart, A4/single-page templates, voice/automatic stepping, purchased projects saved against an email, PDF/TXT exports. Website exposes project-preview/DIY/assembly screenshots. | Supports separating free preview from paid instructions, durable progress and printable pin placement. The current primary pages do not identify the solver. An old third-party listing attributes a public repository; this is **not verified attribution** of the current app and is not used as proof. |
+| [StringArt, com.edalba.stringart](https://play.google.com/store/apps/details?id=com.edalba.stringart) | Gallery input, nail/line choices, peg guide, voice, save/resume. | Confirms the baseline workflow only. No public scoring arithmetic or same-photo physical comparison obtained. Linked edalba.com returned no readable content. |
+| [StringArt Studio, com.polomize.stringart](https://play.google.com/store/apps/details?id=com.polomize.stringart) | Listing explicitly calls the free generator greedy optimization; advertises premium multicolor, voice/resume and PDF/video exports. | A store app need not imply a different mathematical model. The listing was obtained through search; direct page retrieval failed. No binary/runtime verification. |
+| [Photo to String Art Maker, com.philkeen.string_art](https://play.google.com/store/apps/details?id=com.philkeen.string_art) | Advertises material/frame-derived width, continuous winding, exact resume, volume/Bluetooth/sound triggers and no Internet permission. | Interesting hands-free interaction claims. Permission/runtime and physical-preview accuracy were not independently verified. No compatible source or matched quality result found. Sound/volume features are not added to this release without their own concrete need/tests. |
+| [String art DIY, com.myzigzagart.mobile](https://play.google.com/store/apps/details?id=com.myzigzagart.mobile), [developer site](https://myzigzagart.com/) | Photo/shape conversion; developer website is a personalized gift shop. | No disclosed numerical algorithm. Ratings/reviews/download counts are not used to rank portrait quality. |
+
+## Public code boundary
+
+[piellardj/image-stylization-threading](https://github.com/piellardj/image-stylization-threading) and its [live public UI](https://piellardj.github.io/image-stylization-threading/) describe a continuous monochrome thread, three distinct threads for color, rectangle/ellipse, adjustable opacity/thickness and SVG/instructions. The repository displays GPL-3.0. No code/assets were copied into Ip Rasm; GPL is outside this project's current permissive-license reuse rule, not a claim that commercial GPL use is inherently forbidden. Current fourT binary provenance is unknown. The public demo's optional display blur and styled opacity must not be treated as physical-render quality at our fixed materials.
+
+## Release decision
+
+No inspected primary source reveals a tested replacement beating the current exact 500-grid/240-pin/3000-connection/0.12-mm/0.9-opacity output. Preserve the best verified classic3/preparation10 and the immutable runtime being accepted. Keep P16.1 fine-nose likeness OPEN. Do not promise photographic equality or label an advertised preview as an engine benchmark.
+
+A future external candidate needs a verified compatible license or independently derived mathematics, a distinct mechanism beyond sealed searches, procedural renderer parity, then a fixed same-target/same-material comparison with legal continuous output and the existing regional/runtime gates. The present survey adds evidence and clear limits; it adds no unmeasured quality claim or new release dependency.

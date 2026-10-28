@@ -1,3 +1,7 @@
+## 28.10.2026 — server nusxasi va to‘liq unit tekshiruvi
+
+741/741unit va serverning alohida nusxasida7ta asosiy desktop/mobil/AndroidAPI maketi sinovi o‘tdi. Bitta dastlabki Chrome ochilish xatosi saqlandi, boshlanmagan asosiy sinov alohida o‘tdi. Kod/dependency keyin o‘zgarsa ham nusxadagi yangi hisob eski kodni ishlatishi sinaldi. Yangi build tayyor; umumiy161ta alohida brauzer ishini tekshirish,APK va yangi havola hali qolgan. Play Marketdagi o‘xshash ilovalarning ochiq manbalari ko‘rildi, hozircha sifatni oshiradigan isbotlangan yangi algoritm yo‘q. Burun sifati ochiq. Sizdan qo‘lda sinov talab qilinmaydi.
+
 ## 28.10.2026 — yakuniy himoyalangan oqim7/7
 
 Yangi122faylli buildda desktop3,mobil3,AndroidAPI maketi1sinov o‘tdi. Moslashdan keyin Yaratishdan natijagacha10,5/11,1soniya; asl rasm tanlash va dastlabki tahlil vaqti bunga kirmaydi. Kod bilan ochish,bepul qayta ochish,offline1-qadam,bekor qilish va4til tekshirildi. Keyingi topilgan ish: keyin kodlar o‘zgarsa ham yangi serverdagi hisob o‘zgarmasligi uchun serverning o‘zini ham alohida yopiq nusxaga saqlash. Shundan so‘ng qolgan matritsa vaAPK yakuni. Hozir yangi URL/APK yoki burun yaxshilandi deyilmaydi; eski sayt saqlangan. Sizdan qo‘lda sinov kerak emas.

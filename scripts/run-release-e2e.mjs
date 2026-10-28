@@ -16,6 +16,13 @@ import {
 import { freemem } from "node:os";
 import { resolve, join, sep, basename } from "node:path";
 import net from "node:net";
+import { inspectServerRuntime } from "./snapshot-server-runtime.mjs";
+const runtimeArg = process.argv
+  .find((v) => v.startsWith("--api-runtime="))
+  ?.slice(14);
+const apiRuntime = runtimeArg
+  ? inspectServerRuntime(runtimeArg, { verifyFiles: false })
+  : null;
 // Explicit local-compatibility matrix; protected ordinary/native acceptance is
 // a separate matching-mode suite, never a silent production fallback.
 const distArg = process.argv.find((v) => v.startsWith("--dist="))?.slice(7),
@@ -105,6 +112,7 @@ const files = readdirSync("tests/e2e")
   harness = digest(
     [
       "scripts/run-release-e2e.mjs",
+      "scripts/run-snapshot-api.mjs",
       "playwright.config.ts",
       "tests/helpers/evidence-paths.ts",
       "tests/protected-e2e/helpers.ts",
@@ -138,6 +146,7 @@ const reportFile = join(root, "matrix.json"),
         build,
         webDir: absoluteDist,
         executionMode: "local-compatibility",
+        apiRuntime,
         server,
         harness,
         startedAt: new Date().toISOString(),
@@ -163,6 +172,11 @@ if (distArg) {
     "Execution mode changed",
   );
 }
+assert.equal(
+  report.apiRuntime?.sha256 ?? null,
+  apiRuntime?.sha256 ?? null,
+  "API runtime snapshot changed",
+);
 assert.equal(
   report.server,
   server,
@@ -227,6 +241,10 @@ async function memory() {
 }
 let serial = 0;
 try {
+  if (apiRuntime) {
+    await memory();
+    inspectServerRuntime(apiRuntime.directory);
+  }
   for (const file of selected) {
     if (fileFilter && file !== fileFilter) continue;
     for (const project of ["desktop", "mobile-browser"]) {
@@ -263,6 +281,8 @@ try {
         IP_RASM_RELEASE_EVIDENCE_ROOT: join(directory, "evidence"),
       };
       delete env.IP_RASM_TEST_DATABASE;
+      if (apiRuntime) env.IP_RASM_TEST_API_RUNTIME = apiRuntime.directory;
+      else delete env.IP_RASM_TEST_API_RUNTIME;
       if (
         existsSync("output/subject-repair/inputs/owner-cat-screenshot-crop.png")
       )
@@ -315,6 +335,13 @@ try {
           r.stats.unexpected === 0 &&
           r.stats.skipped === 0 &&
           r.stats.flaky === 0;
+        if (apiRuntime) {
+          job.apiRuntimeAttested = readFileSync(
+            join(directory, "private.log"),
+            "utf8",
+          ).includes('"apiRuntime":"' + apiRuntime.sha256 + '"');
+          job.success = job.success && job.apiRuntimeAttested;
+        }
       } else job.success = false;
       save();
       console.log(

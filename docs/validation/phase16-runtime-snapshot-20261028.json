@@ -1,0 +1,52 @@
+{
+  "milestone": "P16.5 immutable server runtime",
+  "date": "2026-10-28",
+  "runtime": {
+    "files": 20769,
+    "bytes": 381200633,
+    "nodeVersion": "v24.18.0",
+    "sha256": "bf58e6ae21aaf41f906cba73169b40b87d7e5406e35b2c1a3e41378239194e66",
+    "installedDependenciesCopiedWithoutInstall": true,
+    "originalSourceAndDependencyMutationFreshWorkerTest": true
+  },
+  "units": {
+    "fullConfigured": 741,
+    "passed": 741,
+    "failed": 0,
+    "pending": 0,
+    "files": 165,
+    "durationMs": 270560,
+    "followingTypeAnnotationFixFocusedPassed": 3
+  },
+  "browser": {
+    "uniqueAccepted": 7,
+    "desktopGuardAndLocalePassed": 2,
+    "desktopMainPassed": 1,
+    "mobilePassed": 3,
+    "nativeBridgePassed": 1,
+    "retainedInitialChromeLaunchFailure": 1,
+    "acceptedSkippedOrFlaky": 0,
+    "physicalPhoneTested": false
+  },
+  "build": {
+    "typescriptPassed": true,
+    "modules": 2145,
+    "viteSeconds": 21.19,
+    "files": 122,
+    "exactNonServiceWorkerFilesAgainstFinalProtectedBuild": 121,
+    "fontkitChunkSizeWarningRetained": true
+  },
+  "matrix": {
+    "root": "test-results/c26-release-CQeAdu",
+    "plannedFiles": 81,
+    "plannedFreshJobs": 161,
+    "executedAtCheckpoint": 0,
+    "requiresPerJobExactRuntimeAttestation": true,
+    "olderUnexecutedPlanSuperseded": true
+  },
+  "ownerHandoffPublished": false,
+  "newApkClaimed": false,
+  "qualityImprovementClaimed": false,
+  "noseQuality": "OPEN",
+  "playMarketPublicSourceSurvey": "PLAY_MARKET_RESEARCH_20261028.md"
+}

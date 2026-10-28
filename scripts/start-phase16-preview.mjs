@@ -17,12 +17,20 @@ import {
 import { resolve, join, dirname, basename, relative } from "node:path";
 import net from "node:net";
 import { freemem } from "node:os";
+import { createRequire } from "node:module";
+import { pathToFileURL } from "node:url";
 import { privateKitDirectory } from "./private-kit-paths.ts";
+import {
+  snapshotServerRuntime,
+  inspectServerRuntime,
+} from "./snapshot-server-runtime.mjs";
 
 const args = process.argv.slice(2);
 assert(
-  args.length === 1 && args[0].startsWith("--dist="),
-  "Expected one explicit --dist=output/phase16-...-dist",
+  [1, 2].includes(args.length) &&
+    args[0].startsWith("--dist=") &&
+    (args.length === 1 || args[1].startsWith("--runtime=")),
+  "Expected one explicit --dist=output/phase16-...-dist and optional --runtime=private-snapshot",
 );
 const source = resolve(args[0].slice(7)),
   root = realpathSync(".");
@@ -88,9 +96,12 @@ for (const name of ["database.sqlite", "private-keys.json"])
       !lstatSync(join(master, name)).isSymbolicLink(),
     "Regular private bundle files required",
   );
-const keys = JSON.parse(
-  readFileSync(join(master, "private-keys.json"), "utf8"),
-);
+let keys;
+try {
+  keys = JSON.parse(readFileSync(join(master, "private-keys.json"), "utf8"));
+} catch {
+  throw Error("Private bundle keys could not be read");
+}
 assert(
   typeof keys.CODE_PEPPER === "string" &&
     keys.CODE_PEPPER.length >= 32 &&
@@ -175,45 +186,104 @@ writeFileSync(
 cpSync(source, webDir, { recursive: true, errorOnExist: true, force: false });
 for (const [name, hash] of Object.entries(hashes))
   assert.equal(sha(join(webDir, name)), hash);
+assert(
+  freemem() >= 1.5 * 1024 ** 3,
+  "RAM below1.5GiB before immutable runtime snapshot",
+);
+const frozenRuntime = args[1]
+  ? inspectServerRuntime(args[1].slice(10), { sourceRoot: root })
+  : snapshotServerRuntime(root, join(privateDir, "runtime"));
+const frozenRequire = createRequire(
+  join(frozenRuntime.directory, "package.json"),
+);
+const tsxLoader = frozenRequire.resolve("tsx");
+assert(
+  tsxLoader.startsWith(join(frozenRuntime.directory, "node_modules")),
+  "Runtime loader escaped the snapshot",
+);
 const site = `http://127.0.0.1:${port}`,
   api = `http://127.0.0.1:${apiPort}/api`,
   admin = randomBytes(32).toString("base64url");
-const child = spawn(process.execPath, ["scripts/run-local.mjs"], {
-  windowsHide: true,
-  stdio: "inherit",
-  env: {
+const children = [];
+let stopping = false;
+function stop(code = 0) {
+  if (stopping) return;
+  stopping = true;
+  for (const owned of children) owned.kill();
+  process.exitCode = code;
+}
+function start(args, env, cwd) {
+  const owned = spawn(process.execPath, args, {
+    windowsHide: true,
+    stdio: "inherit",
+    env,
+    cwd,
+  });
+  children.push(owned);
+  owned.on("exit", (code) => {
+    if (!stopping) stop(code ?? 1);
+  });
+  owned.on("error", () => stop(1));
+  return owned;
+}
+const apiEnv = {
+  ...process.env,
+  NODE_OPTIONS: "--max-old-space-size=512",
+  TSX_TSCONFIG_PATH: join(frozenRuntime.directory, "tsconfig.json"),
+  NODE_ENV: "development",
+  HOST: "127.0.0.1",
+  PORT: String(apiPort),
+  IP_RASM_TEST_SERVER: "1",
+  IP_RASM_TEST_ORIGIN: site,
+  APP_ORIGIN: site,
+  TRUSTED_PROXY_IPS: "",
+  DATABASE_PATH: database,
+  ERASURE_LEDGER_PATH: join(privateDir, "erasure-intents.sqlite"),
+  LOCAL_ADMIN_TOKEN: admin,
+  CODE_PEPPER: keys.CODE_PEPPER,
+  SANDBOX_PAYMENT_KEY: keys.SANDBOX_PAYMENT_KEY,
+  SERVER_GENERATION: "1",
+  PAYMENTS_SANDBOX: "1",
+  FCM_MODE: "disabled",
+  TRANSACTIONAL_EMAIL_MODE: "disabled",
+  CLICK_SERVICE_ID: "12345",
+  CLICK_SECRET_KEY: randomBytes(32).toString("base64url"),
+  PAYME_LOGIN: "Paycom-test",
+  PAYME_TEST_KEY: randomBytes(32).toString("base64url"),
+};
+delete apiEnv.ESBUILD_BINARY_PATH;
+delete apiEnv.NODE_PATH;
+const child = start(
+  [
+    "--import",
+    pathToFileURL(tsxLoader).href,
+    join(frozenRuntime.directory, "server/index.ts"),
+  ],
+  apiEnv,
+  frozenRuntime.directory,
+);
+const webChild = start(
+  [
+    join(root, "node_modules/vite/bin/vite.js"),
+    "preview",
+    "--outDir",
+    webDir,
+    "--host",
+    "127.0.0.1",
+    "--port",
+    String(port),
+    "--strictPort",
+  ],
+  {
     ...process.env,
-    NODE_ENV: "development",
-    IP_RASM_LOCAL_PORT: String(port),
-    IP_RASM_API_PORT: String(apiPort),
-    IP_RASM_WEB_DIR: relative(root, webDir).replaceAll("\\", "/"),
-    IP_RASM_TEST_SERVER: "1",
-    IP_RASM_TEST_ORIGIN: site,
-    APP_ORIGIN: site,
-    TRUSTED_PROXY_IPS: "",
-    DATABASE_PATH: database,
-    ERASURE_LEDGER_PATH: join(privateDir, "erasure-intents.sqlite"),
-    LOCAL_ADMIN_TOKEN: admin,
-    CODE_PEPPER: keys.CODE_PEPPER,
-    SANDBOX_PAYMENT_KEY: keys.SANDBOX_PAYMENT_KEY,
-    SERVER_GENERATION: "1",
-    PAYMENTS_SANDBOX: "1",
-    FCM_MODE: "disabled",
-    TRANSACTIONAL_EMAIL_MODE: "disabled",
-    CLICK_SERVICE_ID: "12345",
-    CLICK_SECRET_KEY: randomBytes(32).toString("base64url"),
-    PAYME_LOGIN: "Paycom-test",
-    PAYME_TEST_KEY: randomBytes(32).toString("base64url"),
+    NODE_OPTIONS: "--max-old-space-size=512",
+    VITE_SERVER_GENERATION: "1",
+    VITE_NATIVE_API_BASE: runtime.nativeApiBase,
+    IP_RASM_BACKEND_PROXY: `http://127.0.0.1:${apiPort}`,
   },
-});
-child.on("exit", (code) => {
-  process.exitCode = code ?? 1;
-});
-child.on("error", () => {
-  process.exitCode = 1;
-});
-for (const signal of ["SIGINT", "SIGTERM"])
-  process.on(signal, () => child.kill());
+  root,
+);
+for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => stop());
 try {
   let ready = false;
   for (let n = 0; n < 120; n++) {
@@ -256,12 +326,14 @@ try {
     headers,
     body: JSON.stringify({
       profile: "standard-base-r1",
-      count: 3,
+      count: 4,
       requestKey: randomUUID(),
     }),
   });
   assert(issued.ok, "Separate private test kit issuance failed");
-  const batch = await issued.json();
+  const allCodes = await issued.json();
+  const verificationCode = allCodes.codes[3].code;
+  const batch = { ...allCodes, codes: allCodes.codes.slice(0, 3) };
   assert(batch.codes.every((c) => c.quota === 3));
   // Verify the private test code before publication without spending a build.
   const signedIn = await fetch(api + "/account/kit", {
@@ -296,6 +368,40 @@ try {
     );
     const page = await context.newPage();
     await page.goto(site);
+    const { english, choosePhoto, result } =
+      await import("../tests/protected-e2e/helpers.ts");
+    await english(page);
+    await choosePhoto(page, true);
+    const generationBegan = Date.now();
+    await page.getByRole("button", { name: "Create", exact: true }).click();
+    await result(page);
+    assert(
+      Date.now() - generationBegan < 20000,
+      "Frozen API generation exceeded20s",
+    );
+    await page
+      .getByRole("button", { name: "Start assembling", exact: true })
+      .click();
+    const gate = page.getByTestId("build-gate");
+    await page.getByTestId("kit-code").fill(verificationCode);
+    await gate
+      .getByRole("button", { name: "Sign in with kit code", exact: true })
+      .click();
+    await expect(page.getByTestId("kit-credits")).toContainText("3");
+    await page.getByTestId("unlock-build").click();
+    await expect(page.getByTestId("player-hash")).toBeVisible();
+    await page
+      .getByRole("button", {
+        name: "Confirm completed through this step",
+        exact: true,
+      })
+      .click();
+    await expect(page.getByTestId("confirmed-step")).toContainText("1/");
+    await expect(page.getByTestId("library-save-state")).toHaveAttribute(
+      "data-state",
+      "saved",
+    );
+    await page.goto(site);
     const menu = page.getByTestId("customer-menu");
     await menu.locator("summary").click();
     await page.getByTestId("locale-picker").selectOption("en");
@@ -303,9 +409,11 @@ try {
       .getByRole("button", { name: "Account / Admin", exact: true })
       .click();
     const hub = page.locator(".customer-hub");
-    await hub
-      .getByRole("button", { name: "Start sandbox session", exact: true })
-      .click();
+    const guest = hub.getByRole("button", {
+      name: "Start sandbox session",
+      exact: true,
+    });
+    if (await guest.isVisible()) await guest.click();
     await hub
       .getByRole("button", { name: "Administration", exact: true })
       .click();
@@ -345,6 +453,8 @@ try {
   const metadata = {
     pid: process.pid,
     childPid: child.pid,
+    previewPid: webChild.pid,
+    frozenRuntime,
     site,
     api,
     webDir,
@@ -359,6 +469,8 @@ try {
     actualMillionUiVerified: true,
     testCodeLoginCredits: 3,
     productionActivation: false,
+    verificationCodeSeparate: true,
+    frozenRuntimeGenerationAndUnlockVerified: true,
   };
   writeFileSync(
     join(privateDir, "snapshot.json"),
@@ -380,7 +492,7 @@ try {
     }),
   );
 } catch {
-  child.kill();
+  stop(1);
   console.error(
     "Phase16 preview failed; private partial evidence retained, no credentials printed.",
   );

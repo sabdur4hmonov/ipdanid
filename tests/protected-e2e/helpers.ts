@@ -5,9 +5,9 @@ export async function english(page: Page) {
   await page.getByTestId("locale-picker").selectOption("en");
   await menu.locator("summary").click();
 }
-export async function choosePhoto(page: Page) {
+export async function choosePhoto(page: Page, syntheticOnly = false) {
   let input: string | { name: string; mimeType: string; buffer: Buffer } =
-    process.env.IP_RASM_PHASE16_PHOTO ?? "";
+    syntheticOnly ? "" : (process.env.IP_RASM_PHASE16_PHOTO ?? "");
   if (!input) {
     const jpeg = await page.evaluate(() => {
       const canvas = document.createElement("canvas");
