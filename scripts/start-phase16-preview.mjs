@@ -284,6 +284,7 @@ const webChild = start(
   root,
 );
 for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => stop());
+let stage = "server-readiness";
 try {
   let ready = false;
   for (let n = 0; n < 120; n++) {
@@ -308,6 +309,7 @@ try {
     await new Promise((ok) => setTimeout(ok, 250));
   }
   assert(ready, "New isolated owner preview not ready");
+  stage = "million-inventory-summary";
   const headers = {
     "Content-Type": "application/json",
     Authorization: "Bearer " + admin,
@@ -321,6 +323,7 @@ try {
         i.total === 1000000 && i.issued === 1000000 && i.status === "ready",
     ),
   );
+  stage = "separate-test-code-issuance";
   const issued = await fetch(api + "/admin/kits/batch", {
     method: "POST",
     headers,
@@ -336,6 +339,7 @@ try {
   const batch = { ...allCodes, codes: allCodes.codes.slice(0, 3) };
   assert(batch.codes.every((c) => c.quota === 3));
   // Verify the private test code before publication without spending a build.
+  stage = "private-test-code-login";
   const signedIn = await fetch(api + "/account/kit", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -343,12 +347,14 @@ try {
   });
   assert(signedIn.ok, "Private test kit sign-in failed");
   const testSession = await signedIn.json();
+  stage = "private-test-code-balance";
   const balance = await (
     await fetch(api + "/credits", {
       headers: { Authorization: "Bearer " + testSession.token },
     })
   ).json();
   assert.equal(balance.credits, 3, "Test kit credits must remain unspent");
+  stage = "prepublication-browser-launch";
   assert(
     freemem() >= 1.5 * 1024 ** 3,
     "RAM below1.5GiB before prepublication UI acceptance",
@@ -371,7 +377,9 @@ try {
     const { english, choosePhoto, result } =
       await import("../tests/protected-e2e/helpers.ts");
     await english(page);
+    stage = "synthetic-gallery-upload";
     await choosePhoto(page, true);
+    stage = "frozen-api-generation";
     const generationBegan = Date.now();
     await page.getByRole("button", { name: "Create", exact: true }).click();
     await result(page);
@@ -379,6 +387,7 @@ try {
       Date.now() - generationBegan < 20000,
       "Frozen API generation exceeded20s",
     );
+    stage = "verification-code-unlock";
     await page
       .getByRole("button", { name: "Start assembling", exact: true })
       .click();
@@ -389,7 +398,13 @@ try {
       .click();
     await expect(page.getByTestId("kit-credits")).toContainText("3");
     await page.getByTestId("unlock-build").click();
-    await expect(page.getByTestId("player-hash")).toBeVisible();
+    await expect(page.getByTestId("player-hash")).toBeVisible({
+      timeout: 30000,
+    });
+    const verifiedGuideHash = await page
+      .getByTestId("player-hash")
+      .textContent();
+    stage = "confirmed-step-persistence";
     await page
       .getByRole("button", {
         name: "Confirm completed through this step",
@@ -401,7 +416,21 @@ try {
       "data-state",
       "saved",
     );
+    stage = "verified-guide-reopen";
     await page.goto(site);
+    await page
+      .getByRole("button", { name: "My projects", exact: true })
+      .click();
+    await page.getByRole("button", { name: "Resume", exact: true }).click();
+    await expect(page.getByTestId("player-hash")).toHaveText(verifiedGuideHash);
+    await expect(page.getByTestId("confirmed-step")).toContainText("1/");
+    // A saved assembly can restore a non-customer view. Its customer Menu is
+    // intentionally hidden there; navigate through the visible Main control.
+    await page
+      .getByRole("navigation", { name: "Main sections", exact: true })
+      .getByRole("button", { name: "Create", exact: true })
+      .click();
+    stage = "mobile-administration";
     const menu = page.getByTestId("customer-menu");
     await menu.locator("summary").click();
     await page.getByTestId("locale-picker").selectOption("en");
@@ -422,6 +451,7 @@ try {
       .getByRole("button", { name: "Open administration", exact: true })
       .click();
     const summary = page.getByTestId("kit-inventories");
+    stage = "actual-million-mobile-inventory";
     const row = summary.locator(
       '[data-total="1000000"][data-issued="1000000"]',
     );
@@ -439,6 +469,7 @@ try {
   } finally {
     await browser.close();
   }
+  stage = "publish-private-handoff";
   mkdirSync(dirname(manual), { recursive: true });
   assert.equal(
     realpathSync(dirname(manual)),
@@ -471,6 +502,8 @@ try {
     productionActivation: false,
     verificationCodeSeparate: true,
     frozenRuntimeGenerationAndUnlockVerified: true,
+    frozenRuntimeResumeVerified: true,
+    resumeConfirmedStep: 1,
   };
   writeFileSync(
     join(privateDir, "snapshot.json"),
@@ -491,10 +524,20 @@ try {
       credentialsPrinted: false,
     }),
   );
-} catch {
+} catch (error) {
   stop(1);
+  // Diagnostic stays private and deliberately removes all token-sized strings.
+  // Never serialize raw API replies, keys, codes, browser storage or request bodies.
+  const message = String(error?.message ?? "Unknown prepublication failure")
+    .replace(/[A-Za-z0-9+/_=-]{24,}/g, "[redacted]")
+    .slice(0, 4000);
+  writeFileSync(
+    join(privateDir, "prepublication-failure.json"),
+    JSON.stringify({ stage, name: error?.name ?? "Error", message }, null, 2),
+    { flag: "wx", mode: 0o600 },
+  );
   console.error(
-    "Phase16 preview failed; private partial evidence retained, no credentials printed.",
+    `Phase16 preview failed at ${stage}; private partial evidence retained, no credentials printed.`,
   );
   process.exitCode = 1;
 }

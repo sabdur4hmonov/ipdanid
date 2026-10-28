@@ -1,3 +1,15 @@
+## 29.10.2026 — yangi yakuniy funksional nusxa
+
+Sayt:**http://127.0.0.1:4217/**. APK:**output/mobile/ip-rasm-phase16-20261029-be6e489bff81-debug.apk**. Uchta shaxsiy kod va Admin ma’lumoti faqat `output/phase16/manual-testing.txt`da. Har kod3ta yangi ish uchun;takror ochish bepul. Kodlarni bu hisobotga ko‘chirmang.
+
+1. Galereyadan tanlang → Doira/Kvadrat/Yurak → surish/kattalashtirish/burish → Yaratish. Bepul ipli rasmni ko‘ring.
+2. Yig‘ishni boshlash → shaxsiy fayldan kit kodi → bir ishni ochish. Bajarilgan qadamni tasdiqlang.
+3. Dam olish → qayta kirish → Loyihalarim → Davom etish. Aynan shu yo‘riqnoma va oxirgi tasdiq saqlansin;avval ochilgan ish offline ishlaydi.
+4. Admin → Kitlar:haqiqiy1 000 000chiqarilgan/tayyor zaxira ko‘rsatiladi;kodlar ro‘yxati yo‘q. Telefonda holat ustuni uchun jadvalni yoniga suring.
+5. Yasashdan oldin100%shablon va50mmchiziqni tekshiring:[PHYSICAL_BOARD_UZ.md](../docs/PHYSICAL_BOARD_UZ.md). API4657ga telefonni ulash:[APK_SERVER_AND_SIGNING_UZ.md](../docs/APK_SERVER_AND_SIGNING_UZ.md).
+
+Bular avtomatik bajarildi;hozir sizning javobingiz kutilmaydi.741unit/348joriy desktop-mobil/7alohida himoyalangan holat va real millionlik nusxada rasm→ochish→qayta kirib1-qadamdan davom etish o‘tdi. Android fayl/imzo tekshirildi,telefon o‘rnatilmadi. Burun detali yangi yaxshilandi deyilmaydi. To‘liq holat:[FINAL_REPORT.md](FINAL_REPORT.md).
+
 ## 29.10.2026 — yangi Android APK tekshirildi
 
 Yangi fayl: output/mobile/ip-rasm-phase16-20261029-be6e489bff81-debug.apk.122web fayli aniq mos,eski imzo saqlangan,98arxiv yozuvi o‘zgarmagan.3haqiqiy shaxsiy kalit qiymati paketda yo‘q. Server manzili4657; noto‘g‘ri4656qiymat rad etildi. Telefon o‘rnatilmagan,bu debug nusxa. Telefonda keyin sinash uchun docs/APK_SERVER_AND_SIGNING_UZ.md. Yangi sayt hali ishga tushiriladi; burun sifati tuzatildi deyilmaydi.
