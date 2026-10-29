@@ -1,0 +1,1197 @@
+{
+  "schema": "p16-1c/frozen-framing/1",
+  "date": "2026-10-29",
+  "scope": "Four owner-confirmed existing source files; six cases; no composites/captions",
+  "analysis": {
+    "output/quality-original-20261026/source.jpg": {
+      "nose": {
+        "x": 0.5342289805412292,
+        "y": 0.5476111769676208
+      },
+      "noseAnchor": "existing-face-landmarker/point-1-tip",
+      "detected": {
+        "face": {
+          "left": 0.27848456382751463,
+          "top": 0.27149842262268065,
+          "width": 0.5061102294921875,
+          "height": 0.4508566045761109
+        },
+        "eyes": {
+          "left": 0.36527069854736327,
+          "top": 0.3964128737449646,
+          "width": 0.3367955198287964,
+          "height": 0.04731942319869997
+        },
+        "nose": {
+          "left": 0.4465164189338684,
+          "top": 0.40916206884384154,
+          "width": 0.17246402406692507,
+          "height": 0.1594082226753235
+        },
+        "mouth": {
+          "left": 0.4349137191772461,
+          "top": 0.5771977548599243,
+          "width": 0.19654340648651125,
+          "height": 0.07061369323730471
+        }
+      },
+      "width": 960,
+      "height": 1280,
+      "analysisMs": 2815.699999988079
+    },
+    "output/phase10/inputs/synthetic-1.png": {
+      "nose": {
+        "x": 0.5020439624786377,
+        "y": 0.5227460861206055
+      },
+      "noseAnchor": "existing-face-landmarker/point-1-tip",
+      "detected": {
+        "face": {
+          "left": 0.28773890018463133,
+          "top": 0.24151978969573976,
+          "width": 0.42547664880752567,
+          "height": 0.51174471616745
+        },
+        "eyes": {
+          "left": 0.3688772563934326,
+          "top": 0.3831570987701416,
+          "width": 0.26856751346588137,
+          "height": 0.049707125663757346
+        },
+        "nose": {
+          "left": 0.43233435797691344,
+          "top": 0.3897929136753082,
+          "width": 0.13989536070823672,
+          "height": 0.16240344548225405
+        },
+        "mouth": {
+          "left": 0.414837682723999,
+          "top": 0.5699082260131836,
+          "width": 0.1727746834754944,
+          "height": 0.06942809724807741
+        }
+      },
+      "width": 1254,
+      "height": 1254,
+      "analysisMs": 3027.5
+    },
+    "output/phase10/inputs/synthetic-2.png": {
+      "nose": {
+        "x": 0.5109826326370239,
+        "y": 0.519631564617157
+      },
+      "noseAnchor": "existing-face-landmarker/point-1-tip",
+      "detected": {
+        "face": {
+          "left": 0.31461153507232664,
+          "top": 0.24979368925094605,
+          "width": 0.3902879142761231,
+          "height": 0.46447060346603397
+        },
+        "eyes": {
+          "left": 0.3801498656272888,
+          "top": 0.3681019787788391,
+          "width": 0.24477983617782595,
+          "height": 0.06783707046508791
+        },
+        "nose": {
+          "left": 0.4473603014945984,
+          "top": 0.39549022364616393,
+          "width": 0.12622774744033816,
+          "height": 0.14728079342842104
+        },
+        "mouth": {
+          "left": 0.4307530765533447,
+          "top": 0.543294930934906,
+          "width": 0.17156119251251223,
+          "height": 0.07726455831527712
+        }
+      },
+      "width": 1254,
+      "height": 1254,
+      "analysisMs": 2378.5999999940395
+    },
+    "output/phase10/inputs/synthetic-3.png": {
+      "nose": {
+        "x": 0.5032951831817627,
+        "y": 0.5151477456092834
+      },
+      "noseAnchor": "existing-face-landmarker/point-1-tip",
+      "detected": {
+        "face": {
+          "left": 0.27531526565551756,
+          "top": 0.23257652997970582,
+          "width": 0.4427665257453919,
+          "height": 0.5160308861732483
+        },
+        "eyes": {
+          "left": 0.36666634130477904,
+          "top": 0.3744632248878479,
+          "width": 0.26894880437850954,
+          "height": 0.0459349265098572
+        },
+        "nose": {
+          "left": 0.4310325627326965,
+          "top": 0.38234242248535155,
+          "width": 0.14207799339294436,
+          "height": 0.16210157775878908
+        },
+        "mouth": {
+          "left": 0.41417005109786986,
+          "top": 0.568533504486084,
+          "width": 0.17624003791809084,
+          "height": 0.06147016191482546
+        }
+      },
+      "width": 1254,
+      "height": 1254,
+      "analysisMs": 2376.7000000029802
+    }
+  },
+  "settings": [
+    {
+      "id": "photo-01",
+      "source": "output/quality-original-20261026/source.jpg",
+      "sourceSha": "b8e97843fbc8dbd1adbb48878a5f88741b337696aa9813c3a221cbf09c5895f4",
+      "shape": "circle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F1",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.2780861663818359,
+              "top": 0.27145890474319456,
+              "width": 0.50684068441391,
+              "height": 0.45076534986495975
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": 0.01228635090856146,
+            "top": -0.246574209761911,
+            "width": 0.9129299735804938,
+            "height": 1.2172399647739918
+          },
+          "targetFaces": [
+            {
+              "left": 0.2661595474366317,
+              "top": 0.08385641788528156,
+              "width": 0.4627100526315102,
+              "height": 0.5486895985909597
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.5215500307879353,
+                "x": -0.031248662301191655,
+                "y": -0.1379542273749151
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2914589047431946,
+        "sourceChin": 0.7022242546081543,
+        "sourceNose": {
+          "x": 0.5342289805412292,
+          "y": 0.5476111769676208
+        },
+        "requestedHeight": 0.5,
+        "achievedHeight": 0.49999999999999994,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.41999999999999993
+        },
+        "targetChin": 0.6082012171807614,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 60.400000005960464,
+      "targetSha256": "20f71240e6bea18aa8aecbef10143dec5b2e0a718fd043dbe8175296a257ba3c",
+      "profileSha256": "6107df03ff4b68e1ff71e60fd0c07f345e4f7eb29315baea5581de335781d0c0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.92,
+        "nominalInnerHeightMm": 460,
+        "faceHeightMm": 229.99999999999997,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4264
+        }
+      }
+    },
+    {
+      "id": "photo-01",
+      "source": "output/quality-original-20261026/source.jpg",
+      "sourceSha": "b8e97843fbc8dbd1adbb48878a5f88741b337696aa9813c3a221cbf09c5895f4",
+      "shape": "circle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F2",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.2780861663818359,
+              "top": 0.27145890474319456,
+              "width": 0.50684068441391,
+              "height": 0.45076534986495975
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.13402774381887023,
+            "top": -0.44654647269048436,
+            "width": 1.1868089656546421,
+            "height": 1.5824119542061894
+          },
+          "targetFaces": [
+            {
+              "left": 0.19600741166762115,
+              "top": 0,
+              "width": 0.6015230684209634,
+              "height": 0.6963098214191136
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.9780150400243162,
+                "x": -0.04062326099154916,
+                "y": -0.15534049558738966
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2914589047431946,
+        "sourceChin": 0.7022242546081543,
+        "sourceNose": {
+          "x": 0.5342289805412292,
+          "y": 0.5476111769676208
+        },
+        "requestedHeight": 0.65,
+        "achievedHeight": 0.65,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.49999999999999994,
+          "y": 0.42
+        },
+        "targetChin": 0.6646615823349897,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 21.600000008940697,
+      "targetSha256": "7ce15c3cd911f4ae52858159ccce5fa646c4c9e2759ca6d45d5fa4c1be12af01",
+      "profileSha256": "6107df03ff4b68e1ff71e60fd0c07f345e4f7eb29315baea5581de335781d0c0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.92,
+        "nominalInnerHeightMm": 460,
+        "faceHeightMm": 299,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4264
+        }
+      }
+    },
+    {
+      "id": "photo-02",
+      "source": "output/quality-original-20261026/source.jpg",
+      "sourceSha": "b8e97843fbc8dbd1adbb48878a5f88741b337696aa9813c3a221cbf09c5895f4",
+      "shape": "rectangle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F1",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.2780861663818359,
+              "top": 0.27145890474319456,
+              "width": 0.50684068441391,
+              "height": 0.45076534986495975
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": 0.01228635090856146,
+            "top": -0.246574209761911,
+            "width": 0.9129299735804938,
+            "height": 1.2172399647739918
+          },
+          "targetFaces": [
+            {
+              "left": 0.2661595474366317,
+              "top": 0.08385641788528156,
+              "width": 0.4627100526315102,
+              "height": 0.5486895985909597
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.294936209922502,
+                "x": -0.031248662301191655,
+                "y": -0.1379542273749151
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2914589047431946,
+        "sourceChin": 0.7022242546081543,
+        "sourceNose": {
+          "x": 0.5342289805412292,
+          "y": 0.5476111769676208
+        },
+        "requestedHeight": 0.5,
+        "achievedHeight": 0.49999999999999994,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.41999999999999993
+        },
+        "targetChin": 0.6082012171807614,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 57.30000001192093,
+      "targetSha256": "d116ff114b71ce144a2bf1f36aaf71bc27c459b7a7aab889ccef2a9fb15f0083",
+      "profileSha256": "362b7b583a78f1661ef8233260515b66dd07a53945ff5fd22f83ad7f6878152e",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.94,
+        "nominalInnerHeightMm": 470,
+        "faceHeightMm": 234.99999999999997,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4248
+        }
+      }
+    },
+    {
+      "id": "photo-02",
+      "source": "output/quality-original-20261026/source.jpg",
+      "sourceSha": "b8e97843fbc8dbd1adbb48878a5f88741b337696aa9813c3a221cbf09c5895f4",
+      "shape": "rectangle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F2",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.2780861663818359,
+              "top": 0.27145890474319456,
+              "width": 0.50684068441391,
+              "height": 0.45076534986495975
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.13402774381887012,
+            "top": -0.44654647269048436,
+            "width": 1.186808965654642,
+            "height": 1.5824119542061894
+          },
+          "targetFaces": [
+            {
+              "left": 0.1960074116676212,
+              "top": 0,
+              "width": 0.6015230684209634,
+              "height": 0.6963098214191136
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.6834170728992526,
+                "x": -0.04062326099154916,
+                "y": -0.15534049558738966
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2914589047431946,
+        "sourceChin": 0.7022242546081543,
+        "sourceNose": {
+          "x": 0.5342289805412292,
+          "y": 0.5476111769676208
+        },
+        "requestedHeight": 0.65,
+        "achievedHeight": 0.65,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.49999999999999994,
+          "y": 0.42
+        },
+        "targetChin": 0.6646615823349897,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 18.400000005960464,
+      "targetSha256": "31a8d955cf0fdf89b9d8c8d0ff86ad734ff787a5727078aee7b786beeb66d3b3",
+      "profileSha256": "362b7b583a78f1661ef8233260515b66dd07a53945ff5fd22f83ad7f6878152e",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.94,
+        "nominalInnerHeightMm": 470,
+        "faceHeightMm": 305.5,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4248
+        }
+      }
+    },
+    {
+      "id": "photo-03",
+      "source": "output/quality-original-20261026/source.jpg",
+      "sourceSha": "b8e97843fbc8dbd1adbb48878a5f88741b337696aa9813c3a221cbf09c5895f4",
+      "shape": "heart",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F1",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.2780861663818359,
+              "top": 0.27145890474319456,
+              "width": 0.50684068441391,
+              "height": 0.45076534986495975
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": 0.01228635090856146,
+            "top": -0.246574209761911,
+            "width": 0.9129299735804938,
+            "height": 1.2172399647739918
+          },
+          "targetFaces": [
+            {
+              "left": 0.2661595474366317,
+              "top": 0.08385641788528156,
+              "width": 0.4627100526315102,
+              "height": 0.5486895985909597
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 3.1569652056397555,
+                "x": -0.031248662301191655,
+                "y": -0.18795422737491516
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2914589047431946,
+        "sourceChin": 0.7022242546081543,
+        "sourceNose": {
+          "x": 0.5342289805412292,
+          "y": 0.5476111769676208
+        },
+        "requestedHeight": 0.5,
+        "achievedHeight": 0.49999999999999994,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.41999999999999993
+        },
+        "targetChin": 0.6082012171807614,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 741.1000000089407,
+      "targetSha256": "f843df41de751020f135e2dbd602c3d33cb6f90d5436b71b003ae18349e4d553",
+      "profileSha256": "cb874255f04907d33b1db2d93820dbd5d4fe6d2485e3cccdbd26cbcef5c456d0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.78,
+        "nominalInnerHeightMm": 390,
+        "faceHeightMm": 194.99999999999997,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4376
+        }
+      }
+    },
+    {
+      "id": "photo-03",
+      "source": "output/quality-original-20261026/source.jpg",
+      "sourceSha": "b8e97843fbc8dbd1adbb48878a5f88741b337696aa9813c3a221cbf09c5895f4",
+      "shape": "heart",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F2",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.2780861663818359,
+              "top": 0.27145890474319456,
+              "width": 0.50684068441391,
+              "height": 0.45076534986495975
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.11795251746223016,
+            "top": -0.42457593459834214,
+            "width": 1.1567184484004973,
+            "height": 1.5422912645339966
+          },
+          "targetFaces": [
+            {
+              "left": 0.2037148814366096,
+              "top": 0,
+              "width": 0.586271970061504,
+              "height": 0.6893042243183913
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 4,
+                "x": -0.03959329326198151,
+                "y": -0.2034303023313439
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2914589047431946,
+        "sourceChin": 0.7022242546081543,
+        "sourceNose": {
+          "x": 0.5342289805412292,
+          "y": 0.5476111769676208
+        },
+        "requestedHeight": 0.65,
+        "achievedHeight": 0.6335198108699782,
+        "zoomCapped": true,
+        "targetNose": {
+          "x": 0.49999999999999994,
+          "y": 0.42
+        },
+        "targetChin": 0.6584583990277113,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 37.19999998807907,
+      "targetSha256": "31648b72ddd8ef40d29ba5e653e3d10409ea88a4ea03fe09b9afe4b2d08d12c1",
+      "profileSha256": "cb874255f04907d33b1db2d93820dbd5d4fe6d2485e3cccdbd26cbcef5c456d0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.78,
+        "nominalInnerHeightMm": 390,
+        "faceHeightMm": 247.0727262392915,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4376
+        }
+      }
+    },
+    {
+      "id": "photo-04",
+      "source": "output/phase10/inputs/synthetic-1.png",
+      "sourceSha": "39b92face6fa0decab9497d592b5acdc4244e561fb0c918a9a51138dbeedb3cf",
+      "shape": "circle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F1",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.2882208931446075,
+              "top": 0.24117950677871705,
+              "width": 0.4250318491458893,
+              "height": 0.5119828367233277
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.03184557087287866,
+            "top": -0.13377658406997844,
+            "width": 1.0593605552930219,
+            "height": 1.0593605552930219
+          },
+          "targetFaces": [
+            {
+              "left": 0.2734842745358435,
+              "top": 0.12171947215642037,
+              "width": 0.45026197572840915,
+              "height": 0.542374422211721
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.4981620701727372,
+                "x": -0.00216529322636773,
+                "y": -0.10409630642346752
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.26117950677871704,
+        "sourceChin": 0.7331623435020447,
+        "sourceNose": {
+          "x": 0.5020439624786377,
+          "y": 0.5227460861206055
+        },
+        "requestedHeight": 0.5,
+        "achievedHeight": 0.5,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.42
+        },
+        "targetChin": 0.642906683262281,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 18.400000005960464,
+      "targetSha256": "d15820f06a6e07c60bd77e7d682935ee1cf9be92371378a0a74bb0a3234d55a3",
+      "profileSha256": "6107df03ff4b68e1ff71e60fd0c07f345e4f7eb29315baea5581de335781d0c0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.92,
+        "nominalInnerHeightMm": 460,
+        "faceHeightMm": 230,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4264
+        }
+      }
+    },
+    {
+      "id": "photo-04",
+      "source": "output/phase10/inputs/synthetic-1.png",
+      "sourceSha": "39b92face6fa0decab9497d592b5acdc4244e561fb0c918a9a51138dbeedb3cf",
+      "shape": "circle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F2",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.2882208931446075,
+              "top": 0.24117950677871705,
+              "width": 0.4250318491458893,
+              "height": 0.5119828367233277
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.19139924213474221,
+            "top": -0.29990955929097196,
+            "width": 1.3771687218809283,
+            "height": 1.3771687218809283
+          },
+          "targetFaces": [
+            {
+              "left": 0.20552955689659655,
+              "top": 0.03223531380334649,
+              "width": 0.5853405684469319,
+              "height": 0.7050867488752373
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.947610691224558,
+                "x": -0.002814881194278049,
+                "y": -0.11132519835050778
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.26117950677871704,
+        "sourceChin": 0.7331623435020447,
+        "sourceNose": {
+          "x": 0.5020439624786377,
+          "y": 0.5227460861206055
+        },
+        "requestedHeight": 0.65,
+        "achievedHeight": 0.65,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.41999999999999993
+        },
+        "targetChin": 0.7097786882409651,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 20.600000008940697,
+      "targetSha256": "ea834c5b692bde8a7811924e83211607e9947b51b9f711dbe650e02f0d41a7cf",
+      "profileSha256": "6107df03ff4b68e1ff71e60fd0c07f345e4f7eb29315baea5581de335781d0c0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.92,
+        "nominalInnerHeightMm": 460,
+        "faceHeightMm": 299,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4264
+        }
+      }
+    },
+    {
+      "id": "photo-05",
+      "source": "output/phase10/inputs/synthetic-2.png",
+      "sourceSha": "89ec0c59d913ac1ce05e2002a0b0b190d3ff793d93e990b1177a2a7ea016e464",
+      "shape": "circle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F1",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.314414005279541,
+              "top": 0.2492624032497406,
+              "width": 0.3904300117492676,
+              "height": 0.4651084625720978
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.10100265888068748,
+            "top": -0.19117527686128838,
+            "width": 1.176170422425314,
+            "height": 1.176170422425314
+          },
+          "targetFaces": [
+            {
+              "left": 0.26880179452538516,
+              "top": 0.10199978926370801,
+              "width": 0.45921223184665644,
+              "height": 0.5470468168970126
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.6633561690894292,
+                "x": -0.012917447668030472,
+                "y": -0.1030900656486314
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2692624032497406,
+        "sourceChin": 0.6943708658218384,
+        "sourceNose": {
+          "x": 0.5109826326370239,
+          "y": 0.519631564617157
+        },
+        "requestedHeight": 0.5,
+        "achievedHeight": 0.5,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.42
+        },
+        "targetChin": 0.6255231977122142,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 19.799999997019768,
+      "targetSha256": "4e94378831564e50816878064545653ae48d1f0a0fcb078d3753c36f1e5275c1",
+      "profileSha256": "6107df03ff4b68e1ff71e60fd0c07f345e4f7eb29315baea5581de335781d0c0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.92,
+        "nominalInnerHeightMm": 460,
+        "faceHeightMm": 230,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4264
+        }
+      }
+    },
+    {
+      "id": "photo-05",
+      "source": "output/phase10/inputs/synthetic-2.png",
+      "sourceSha": "89ec0c59d913ac1ce05e2002a0b0b190d3ff793d93e990b1177a2a7ea016e464",
+      "shape": "circle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F2",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.314414005279541,
+              "top": 0.2492624032497406,
+              "width": 0.3904300117492676,
+              "height": 0.4651084625720978
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.28130345654489386,
+            "top": -0.374527859919675,
+            "width": 1.5290215491529084,
+            "height": 1.5290215491529084
+          },
+          "targetFaces": [
+            {
+              "left": 0.19944233288300067,
+              "top": 0.006599726042820331,
+              "width": 0.5969759014006535,
+              "height": 0.7111608619661165
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 2.162363019816258,
+                "x": -0.016792681968439613,
+                "y": -0.11001708534322081
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2692624032497406,
+        "sourceChin": 0.6943708658218384,
+        "sourceNose": {
+          "x": 0.5109826326370239,
+          "y": 0.519631564617157
+        },
+        "requestedHeight": 0.65,
+        "achievedHeight": 0.6500000000000001,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.42
+        },
+        "targetChin": 0.6871801570258786,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 30,
+      "targetSha256": "bc05d476d52d78451a11483222761a4f43a34fe99191399f43691c783cdb6b30",
+      "profileSha256": "6107df03ff4b68e1ff71e60fd0c07f345e4f7eb29315baea5581de335781d0c0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.92,
+        "nominalInnerHeightMm": 460,
+        "faceHeightMm": 299.00000000000006,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4264
+        }
+      }
+    },
+    {
+      "id": "photo-06",
+      "source": "output/phase10/inputs/synthetic-3.png",
+      "sourceSha": "9483d3248cf40118a6f574a9827ecf9a432a7fd8bbabefac90fb9d4a4a833501",
+      "shape": "circle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F1",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.27603385925292967,
+              "top": 0.2338130581378937,
+              "width": 0.4423578763008118,
+              "height": 0.5148224318027497
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.029982525542139083,
+            "top": -0.12246357280702963,
+            "width": 1.053025229034903,
+            "height": 1.053025229034903
+          },
+          "targetFaces": [
+            {
+              "left": 0.2606880923190653,
+              "top": 0.12374747628997695,
+              "width": 0.4658140040070555,
+              "height": 0.5421210091613962
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.4892025658239483,
+                "x": -0.003469911024687622,
+                "y": -0.09595095828957817
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2538130581378937,
+        "sourceChin": 0.7286354899406433,
+        "sourceNose": {
+          "x": 0.5032951831817627,
+          "y": 0.5151477456092834
+        },
+        "requestedHeight": 0.5,
+        "achievedHeight": 0.5,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.42
+        },
+        "targetChin": 0.644807980870675,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 21.5,
+      "targetSha256": "9efa1e5a6516d67bdc412990a158effa34955ea25e8dc9bac3b84dab208db93c",
+      "profileSha256": "6107df03ff4b68e1ff71e60fd0c07f345e4f7eb29315baea5581de335781d0c0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.92,
+        "nominalInnerHeightMm": 460,
+        "faceHeightMm": 230,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4264
+        }
+      }
+    },
+    {
+      "id": "photo-06",
+      "source": "output/phase10/inputs/synthetic-3.png",
+      "sourceSha": "9483d3248cf40118a6f574a9827ecf9a432a7fd8bbabefac90fb9d4a4a833501",
+      "shape": "circle",
+      "framing": {
+        "option": "p16-1c/reviewed-framing/1",
+        "level": "F2",
+        "transform": {
+          "version": "reviewed-free-photo/9",
+          "faces": [
+            {
+              "left": 0.27603385925292967,
+              "top": 0.2338130581378937,
+              "width": 0.4423578763008118,
+              "height": 0.5148224318027497
+            }
+          ],
+          "sourceBounds": {
+            "left": 0,
+            "top": 0,
+            "width": 1,
+            "height": 1
+          },
+          "targetBounds": {
+            "left": -0.1889772832047808,
+            "top": -0.28520264464913847,
+            "width": 1.3689327977453738,
+            "height": 1.3689327977453738
+          },
+          "targetFaces": [
+            {
+              "left": 0.18889452001478496,
+              "top": 0.03487171917697007,
+              "width": 0.6055582052091724,
+              "height": 0.704757311909815
+            }
+          ],
+          "product": {
+            "kind": "people"
+          },
+          "framing": {
+            "keepShoulders": true,
+            "adjustments": [
+              {
+                "zoom": 1.9359633355711328,
+                "x": -0.004510884332093909,
+                "y": -0.1007362457764516
+              }
+            ],
+            "heads": [],
+            "fadePx": 0,
+            "rotation": 0
+          }
+        },
+        "sourceHairline": 0.2538130581378937,
+        "sourceChin": 0.7286354899406433,
+        "sourceNose": {
+          "x": 0.5032951831817627,
+          "y": 0.5151477456092834
+        },
+        "requestedHeight": 0.65,
+        "achievedHeight": 0.65,
+        "zoomCapped": false,
+        "targetNose": {
+          "x": 0.5,
+          "y": 0.42000000000000004
+        },
+        "targetChin": 0.7122503751318775,
+        "fadePx": 18,
+        "whiteBackground": true,
+        "keepShoulders": false
+      },
+      "frameMs": 22.5,
+      "targetSha256": "18fe6298ec1553a15c5c22f8b5627c3289b73d815663f5f043ce9b8fabf159ff",
+      "profileSha256": "6107df03ff4b68e1ff71e60fd0c07f345e4f7eb29315baea5581de335781d0c0",
+      "physical": {
+        "baseMm": 500,
+        "patternScale": 0.92,
+        "nominalInnerHeightMm": 460,
+        "faceHeightMm": 299,
+        "noseBoard": {
+          "x": 0.5,
+          "y": 0.4264
+        }
+      }
+    }
+  ]
+}

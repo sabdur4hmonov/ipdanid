@@ -18,6 +18,8 @@ Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQL
 
 ## 1. Working protocol (read every session)
 
+2026-10-29 P16.1-C: manager closes all solver/target/route research. Perform ONLY the framing review in docs/P16_1C_FRAMING_REVIEW.md with unchanged classic3/prep9/10, archivedF0, parameter-onlyF1/F2. No SSIM veto; hard constraints/runtime only. No default promotion. After this one tested/built/documented/committed/scanned/feature-pushed milestone,STOP for owner's blind vote. P16.2–P16.5 remain accepted/frozen.
+
 2026-10-29 P16.1-B manager override: perform the single bounded three-candidate blinded portrait review in docs/P16_1B_BENCHMARK.md; owner visual vote decides, SSIM is a safety guardrail. This supersedes historical projection/procedural-proof-before-portrait gates. Preserve accepted classic3/preparation10 as default and all frozen functional artifacts. After review generation, focused tests/build, documentation/commit/scans/feature-only push, STOP pending the owner's vote. No default promotion or reopening P16.2–P16.5.
 
 ## PHASE 16 — complete owner production handoff (NEW OPEN,2026-10-27)

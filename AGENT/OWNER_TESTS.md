@@ -683,3 +683,11 @@ Mahalliy sahifa: http://127.0.0.1:4888/ yoki `output/p16-1b-review/index.html`.
 Bu safar uchala yangi variant xavfsizlik mezonidan o‘tmadi va sahifadan chiqarildi. Hozir taqqoslab ovoz beradigan yangi variant yo‘q; ovoz talab qilinmaydi.
 Keyingi yaroqli taqqoslashda ovoz shakli: har surat uchun odamga eng o‘xshash harfni yozing, masalan `1 — K, 2 — R`; teng bo‘lsa `teng`.
 4217 sayti, Android APK va qutidagi kodlar o‘zgarmadi. Maxfiy `key.json` ovoz berishdan oldin ochilmaydi.
+
+## 2026-10-29 — rasm joylashuviga ovoz berish (P16.1-C)
+
+http://127.0.0.1:4891/ ni oching. Jami6holat: sizning suratingiz3shaklda va qolgan3surat doirada.
+Har bir surat uchun eng o'xshash harfni yozing, masalan `1 — K, 2 — R`; teng bo'lsa `teng`.
+Avval katta rasmlarni, keyin pastdagi kichik ko'rinishlarni solishtiring. Telefonda natijalarni yon tomonga suring.
+Harflar har suratda alohida aralashtirilgan. Ovoz berishdan oldin key.json ni ochmang.
+Asosiy sayt/APK/kit kodlari o'zgarmadi; yangi joylashuv hali asosiy sozlama emas.

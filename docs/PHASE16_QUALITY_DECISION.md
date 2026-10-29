@@ -1,5 +1,9 @@
 # Phase16 release-source quality decision
 
+## 2026-10-29 manager decision: solver research CLOSED; P16.1-C framing only
+
+The manager reviewed P16.1-B: variants differ only at noise level and look alike at board scale. No further solver, target/edge filter, kernel, swap or route experiment. Classic3 and accepted prep9/10 remain unchanged. One bounded framing review uses only existing controls: F0 archived, F1~50%/F2~65% face height, nose0.08above centre, white below chin. See docs/P16_1C_FRAMING_REVIEW.md. NO SSIM disqualification for C; report metrics privately. Only hard constraints or runtime>1.5x can exclude a framing. Owner visual vote precedes any default change. This supersedes older quality-research pointers below.
+
 ## 2026-10-29 manager override: P16.1-B blind review
 
 The owner's latest implementer instruction explicitly supersedes the renderer-consistent projection/procedural-parity prerequisite in the historical text below. Stop that proof loop. Owner blind visual preference decides P16.1; SSIM is a safety guardrail, not an optimization target or required improvement margin. Build exactly three versioned research options against the unchanged accepted baseline and frozen existing controls, as predeclared in docs/P16_1B_BENCHMARK.md. No candidate becomes default before the owner votes. The accepted functional snapshot, private inventory, APK and frozen servers remain untouched. This authorizes one milestone and then a stop; it does not claim that nose quality is already fixed.
