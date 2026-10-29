@@ -675,3 +675,11 @@ Avtomatik desktop/mobil sinovda eski loyiha → Hisoblashni davom ettirish natij
 ## 2026-10-26 — quti kodi bilan sayt
 
 Kodsiz rasm yuklab tayyor ipli ko‘rinishni ko‘ring. PDF/yig‘ish tugmasi kit kodini so‘rashi, ketma-ket video/GIF esa yopiq bo‘lishi kerak. Har qutining o‘z kodi parolsiz3ta yangi yo‘riqnomani ochadi; ayni ishni qayta ochish bepul. To‘rtinchi yangi rasm ko‘rinishi chiqadi, uning yo‘riqnomasi ochilmaydi. Telegram/telefonni keyin qo‘shamiz. Yangi havola tekshirilgan web builddan keyin manual-testing.txt ga yoziladi; hozir e’lon qilingan degan da’vo yo‘q.
+
+## 2026-10-29 — P16.1-B portret sinovi
+
+Mahalliy sahifa: http://127.0.0.1:4888/ yoki `output/p16-1b-review/index.html`.
+8 ta holatda asl surat va avvalgi ip natijasi, pastida bir xil kattalikdagi burun kesmasi bor.
+Bu safar uchala yangi variant xavfsizlik mezonidan o‘tmadi va sahifadan chiqarildi. Hozir taqqoslab ovoz beradigan yangi variant yo‘q; ovoz talab qilinmaydi.
+Keyingi yaroqli taqqoslashda ovoz shakli: har surat uchun odamga eng o‘xshash harfni yozing, masalan `1 — K, 2 — R`; teng bo‘lsa `teng`.
+4217 sayti, Android APK va qutidagi kodlar o‘zgarmadi. Maxfiy `key.json` ovoz berishdan oldin ochilmaydi.

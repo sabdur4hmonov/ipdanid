@@ -1,5 +1,9 @@
 # Phase16 release-source quality decision
 
+## 2026-10-29 manager override: P16.1-B blind review
+
+The owner's latest implementer instruction explicitly supersedes the renderer-consistent projection/procedural-parity prerequisite in the historical text below. Stop that proof loop. Owner blind visual preference decides P16.1; SSIM is a safety guardrail, not an optimization target or required improvement margin. Build exactly three versioned research options against the unchanged accepted baseline and frozen existing controls, as predeclared in docs/P16_1B_BENCHMARK.md. No candidate becomes default before the owner votes. The accepted functional snapshot, private inventory, APK and frozen servers remain untouched. This authorizes one milestone and then a stop; it does not claim that nose quality is already fixed.
+
 2026-10-28. This is a source-freeze decision for software verification, **not completion of the owner's remaining nose-quality request**. P16.1 stays OPEN and is not waiting for owner credentials or another photo.
 
 Retain the accepted classic3/preparation10 selection, exact reviewed placement,240pins/3000connections and0.12mm/0.9/1000px physical output. The protected server reproduced all12accepted controls' full guide hashes and every physical RGBA byte; this demonstrates migration compatibility, not improvement. Current original Circle face/nose/eyes/mouth viewing SSIM remains0.6158505489781417/0.49652544044974173/0.6665095680123039/0.6882849515378566, white darkness0.3835131962164373. Fine nose detail is still weak on visual review.

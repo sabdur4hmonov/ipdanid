@@ -18,6 +18,8 @@ Stack: React 19 / TypeScript / Vite, Capacitor 8 Android (iOS later), Node + SQL
 
 ## 1. Working protocol (read every session)
 
+2026-10-29 P16.1-B manager override: perform the single bounded three-candidate blinded portrait review in docs/P16_1B_BENCHMARK.md; owner visual vote decides, SSIM is a safety guardrail. This supersedes historical projection/procedural-proof-before-portrait gates. Preserve accepted classic3/preparation10 as default and all frozen functional artifacts. After review generation, focused tests/build, documentation/commit/scans/feature-only push, STOP pending the owner's vote. No default promotion or reopening P16.2–P16.5.
+
 ## PHASE 16 — complete owner production handoff (NEW OPEN,2026-10-27)
 
 2026-10-29 status: P16.2–P16.5 functional handoff accepted:741fullunit/348current compatibility cases across161freshAPIjobs/7separate frozen protected cases; exact122asset same-signer APKbe6e489bff81. Actual1million private inventory shown in mobileAdmin; separate4thtestcode verified create/unlock/sameguide reopen/confirmedstep1. NEW4217/API4657 is FROZEN, launcher23432/API19288/web1824, immutable web output/phase16-owner-20261028-bab0cfaa-dist and private runtime output/phase16-private/final-runtime-20261028/runtime. Never future automatic HTTP tests/restart/rebuild/reuse; secrets only output/phase16/manual-testing.txt. Old snapshots/data remain preserved. P16.1 nose is stillOPEN with unchanged best quality; do not call wholePhase16 complete or wait for owner credentials as a substitute. Owner activation docs/AGENT/FINAL_REPORT.md, current next action in PROGRESS.
