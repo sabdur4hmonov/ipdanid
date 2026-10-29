@@ -1,3 +1,5 @@
+[Barcha rejalar, bajarilgan ishlar va qolganlar](PROJECT_REPORT_2026-10-29_UZ.md).
+
 # Ip Rasm — 29.10.2026
 
 Sayt va Androidning Phase16 funksional nusxasi tayyor. **Burun detali bo‘yicha yangi yaxshilanish tasdiqlanmagan: P16.1 ochiq.** Bu suratga100%tenglik yoki haqiqiy taxta/telefon qabul sinovi degani emas.

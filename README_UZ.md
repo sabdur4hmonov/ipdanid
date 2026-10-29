@@ -1,3 +1,5 @@
+[Barcha rejalar, bajarilgan ishlar va qolganlar](AGENT/PROJECT_REPORT_2026-10-29_UZ.md).
+
 # Ip Rasm — yuklab olish va ishlatish
 
 Foto → oq fondagi moslash → haqiqiy ipli ko‘rinish → quti kodi bilan yig‘ish. Doira, Kvadrat, Yurak; odam, hayvon, buyum va lotin/kirill/arabcha yozuv. Rasmni surish, kattalashtirish, burish va qaytarish mumkin.

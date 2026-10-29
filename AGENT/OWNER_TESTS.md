@@ -1,3 +1,5 @@
+[Barcha rejalar, bajarilgan ishlar va qolganlar](PROJECT_REPORT_2026-10-29_UZ.md).
+
 ## 29.10.2026 — yangi yakuniy funksional nusxa
 
 Sayt:**http://127.0.0.1:4217/**. APK:**output/mobile/ip-rasm-phase16-20261029-be6e489bff81-debug.apk**. Uchta shaxsiy kod va Admin ma’lumoti faqat `output/phase16/manual-testing.txt`da. Har kod3ta yangi ish uchun;takror ochish bepul. Kodlarni bu hisobotga ko‘chirmang.
