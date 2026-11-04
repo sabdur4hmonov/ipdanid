@@ -1,3 +1,11 @@
+## 2026-11-04 — O07 USB phone handoff
+
+The existing Phase16 APK is now installed on the owner's authorized Android phone with `adb install -r`; no rebuild or uninstall. The actual app WebView reached API4657 through `adb reverse` (HTTP200, sandbox). This verifies installation/connectivity, not the owner's complete photo/unlock/assembly/offline test. The three private codes remain unused by this handoff.
+
+Double-click `scripts/phone-usb.cmd` after reconnecting USB or restarting the PC. Keep the phone unlocked and accept its USB-debugging prompt. The script reuses the installed SDK, restores only missing4217/4657 services from the exact existing frozen dist/runtime/owner-review DB, and restores USB forwarding. It does not install APKs, issue codes, rebuild, reset data, touch the offline master inventory, or stop existing servers. Keep USB connected while generating new work. Codes: `output/phase16/manual-testing.txt` (private; never paste into reports).
+
+Do NOT rerun `start-phase16-preview.mjs` to recover this handoff: that historical one-shot issuer creates a different DB/codes. Restart details and limits: [O07_USB_PHONE_HANDOFF.md](O07_USB_PHONE_HANDOFF.md).
+
 ## 29.10.2026 — Phase16 himoyalangan debug APK
 
 `output/mobile/ip-rasm-phase16-20261029-be6e489bff81-debug.apk` yangi tekshirilgan nusxa.122web fayli aynan mos,eski8e43cf…imzo saqlangan,98arxiv yozuvi o‘zgarmagan. API: `http://127.0.0.1:4657/api`. Bu server yangi4217sayti bilan alohida ishga tushiriladi; eski4655/4656bilan adashtirmang. Keyingi USBtelefon sinovida `adb reverse tcp:4657 tcp:4657` yoki Admin → Server manzili orqali haqiqiy HTTPSAPI ishlatiladi. Hozir telefon o‘rnatilmadi va production release imzolanmadi. APIga ayni quti kodi bilan kirganda sayt va APK bir hisobdagi ochilgan ishlar bilan ishlaydi.

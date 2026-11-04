@@ -691,3 +691,12 @@ Har bir surat uchun eng o'xshash harfni yozing, masalan `1 — K, 2 — R`; teng
 Avval katta rasmlarni, keyin pastdagi kichik ko'rinishlarni solishtiring. Telefonda natijalarni yon tomonga suring.
 Harflar har suratda alohida aralashtirilgan. Ovoz berishdan oldin key.json ni ochmang.
 Asosiy sayt/APK/kit kodlari o'zgarmadi; yangi joylashuv hali asosiy sozlama emas.
+
+## 2026-11-04 — Android telefoningizda sinash (O07)
+
+Ip Rasm telefoningizga o'rnatildi va ochildi. USB kabelni ulangan holda qoldiring; kompyuter ham yoqilgan bo'lsin.
+Kabelni uzib-ulaganda yoki kompyuterni qayta yoqqanda `scripts/phone-usb.cmd` faylini ikki marta bosing. Telefonda USB debugging ruxsati so'ralsa, tasdiqlang. Bir vaqtning o'zida bitta telefon ulang.
+Uchta shaxsiy sinov kodi `output/phase16/manual-testing.txt` faylida. Bu ulash davomida kodlar ishlatilmadi; ularni ommaga yubormang.
+Ilovada surat tanlang → joylashtiring → Yaratish → Yig'ishni boshlash → quti kodi bilan oching. Ayni ishni qayta ochish yangi imkoniyatni sarflamasligi kerak.
+Bir qadamni bajaring va tasdiqlang → Dam olish → ilovani yopib oching → o'sha ishni davom ettiring. Ochilgan ishni internet/USBsiz ham tekshiring; yangi rasmni hisoblash uchun USB orqali server aloqasi kerak.
+Bu safar avtomatik tekshiruv haqiqiy telefon ilovasidan serverga ulanishni tasdiqladi. To'liq yig'ish, ovoz va jismoniy taxta sinovi hali siz tomondan bajariladi. Eski ilovani o'chirish yoki ma'lumotini tozalash kerak emas.
