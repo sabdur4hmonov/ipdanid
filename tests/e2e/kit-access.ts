@@ -23,6 +23,8 @@ export async function unlockKitGuide(page: Page, profile = "synthetic-e2e") {
   );
   expect(issued.ok()).toBe(true);
   const batch = await issued.json();
+  const purchase = page.getByTestId("have-kit-code");
+  if (await purchase.isVisible()) await purchase.click();
   await page.getByTestId("kit-code").fill(batch.codes[0].code);
   await gate
     .getByRole("button", { name: "Sign in with kit code", exact: true })

@@ -14,6 +14,44 @@ afterEach(() => {
 });
 const device = "device-client-0123456789",
   sequenceHash = "a".repeat(64);
+it("kit sign-in attaches to a durable login but does not trap a temporary guest in another kit account", async () => {
+  vi.spyOn(customerApi, "restore").mockResolvedValue(undefined);
+  const retain = vi
+    .spyOn(customerApi, "retain")
+    .mockImplementation(async (s) => {
+      customerApi.session = s;
+    });
+  const request = vi
+    .spyOn(customerApi, "request")
+    .mockResolvedValue({
+      id: "named-account",
+      token: "new-session-token",
+      credits: 3,
+    });
+  customerApi.session = {
+    id: "named-account",
+    token: "named-session-token",
+    email: "maker_name",
+  };
+  await buildAccess.login("x".repeat(32));
+  expect(request).toHaveBeenLastCalledWith(
+    "/account/kit",
+    { code: "x".repeat(32), attach: true },
+    "named-session-token",
+  );
+  expect(retain).toHaveBeenLastCalledWith({
+    id: "named-account",
+    token: "new-session-token",
+    email: "maker_name",
+  });
+  customerApi.session = { id: "temporary-guest", token: "guest-session-token" };
+  await buildAccess.login("x".repeat(32));
+  expect(request).toHaveBeenLastCalledWith(
+    "/account/kit",
+    { code: "x".repeat(32), attach: false },
+    "",
+  );
+});
 function setup() {
   const s = new KitStore(":memory:", "p".repeat(32), "k".repeat(32));
   stores.push(s);

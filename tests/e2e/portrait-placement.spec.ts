@@ -3,7 +3,7 @@ import { english } from "./phase12-cases";
 
 test.use({ serviceWorkers: "block", trace: "off" });
 
-test("portrait zoom is opt-in, translated, reversible and retained through a real generation", async ({
+test("portrait zoom defaults to faces, is translated, reversible and retained through a real generation", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -43,9 +43,10 @@ test("portrait zoom is opt-in, translated, reversible and retained through a rea
   await english(page);
   const jpeg = await page.evaluate(() => {
     const c = document.createElement("canvas");
-    c.width = 300;
-    c.height = 400;
+    c.width = 600;
+    c.height = 800;
     const x = c.getContext("2d")!;
+    x.scale(2, 2);
     x.fillStyle = "white";
     x.fillRect(0, 0, 300, 400);
     x.fillStyle = "#b59a86";
@@ -81,7 +82,7 @@ test("portrait zoom is opt-in, translated, reversible and retained through a rea
   await expect(page.locator("button.customer-main-action")).toBeEnabled();
   expect(intercepted).toBe(1);
   const initial = await read();
-  expect(initial.framing.adjustments[0].zoom).toBe(1);
+  expect(initial.framing.adjustments[0].zoom).toBeGreaterThan(1);
   const labels = {
     uz: "Yuzga yaqinlashtirish",
     "uz-Cyrl": "Юзга яқинлаштириш",
@@ -100,10 +101,11 @@ test("portrait zoom is opt-in, translated, reversible and retained through a rea
   for (const shape of ["Heart", "Square", "Circle"]) {
     await page.getByRole("button", { name: shape, exact: true }).click();
     const before = await read();
+    await page.getByRole("slider", { name: "Zoom", exact: true }).fill("1");
     await page.getByTestId("portrait-placement").click();
     const fit = await read();
     expect(fit.framing.adjustments[0].zoom).toBeGreaterThan(
-      before.framing.adjustments[0].zoom,
+      1,
     );
     expect(fit.framing.keepShoulders).toBe(true);
     expect(fit.framing.fadePx).toBe(0);

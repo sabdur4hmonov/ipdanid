@@ -34,7 +34,7 @@ test('native-mode login restores a paid guide and exact rest cursor with a new d
     localStorage.setItem('iprasm.debug-server.v1',api);localStorage.setItem('iprasm.locale','en');
   },{api});
   await page.goto('/');await page.getByTestId('customer-menu').locator('summary').click();
-  await page.getByTestId('customer-menu').getByRole('button',{name:'Account / Admin',exact:true}).click();
+  await page.getByTestId('customer-menu').getByRole('button',{name:'Sign in / Register',exact:true}).click();
   await page.getByLabel('Email',{exact:true}).fill(email);await page.getByLabel('Password (at least 12 characters)',{exact:true}).fill(password);
   await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.getByTestId('customer-credits')).toHaveText('2');
   await page.getByRole('button',{name:'Project sync',exact:true}).click();const panel=page.getByTestId('account-recovery');

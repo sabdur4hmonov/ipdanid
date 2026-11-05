@@ -74,7 +74,7 @@ test("owner sees actual private inventory states without exporting secrets or pr
   const menu = page.getByTestId("customer-menu");
   await menu.locator("summary").click();
   await menu
-    .getByRole("button", { name: "Account / Admin", exact: true })
+    .getByRole("button", { name: "Sign in / Register", exact: true })
     .click();
   const hub = page.locator(".customer-hub");
   await hub

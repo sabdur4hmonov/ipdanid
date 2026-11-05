@@ -20,7 +20,7 @@ async function enter(page: Page) {
   await english(page);
   await page.getByTestId("customer-menu").locator("summary").click();
   await page
-    .getByRole("button", { name: "Account / Admin", exact: true })
+    .getByRole("button", { name: "Sign in / Register", exact: true })
     .click();
 }
 async function register(page: Page) {

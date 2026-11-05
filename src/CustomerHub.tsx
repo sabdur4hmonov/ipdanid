@@ -1,4 +1,5 @@
 import { uiText } from "./ui-i18n";
+import { websiteText } from "./website-i18n";
 import { protectedGenerationMode } from './protected-generation';
 import type {RecoverySnapshot} from './recovery-types';
 const TrialClaimPanel=lazy(()=>import('./TrialClaimPanel'));
@@ -147,7 +148,7 @@ export function CustomerHub({
   onGiftHandled,
 }: {
   locale: Locale;
-  initialPane?: "account" | "shop";
+  initialPane?: "account" | "shop" | "sync";
   projects: Project[];
   onRestore: (instruction: Instruction, snapshot: RecoverySnapshot, valid:()=>boolean) => Promise<void>;
   onImport: (instruction: Instruction, progress: Progress) => void;
@@ -166,6 +167,7 @@ export function CustomerHub({
   const [pane, setPane] = useState<Pane>(initialPane),
     [connected, setConnected] = useState(false),
     [busy, setBusy] = useState(false);
+  useEffect(()=>setPane(initialPane),[initialPane]);
   const requestScope = useRef({ alive: true, life: 0, customer: 0, admin: 0 });
   useEffect(() => {
     const s = requestScope.current;
@@ -597,8 +599,7 @@ export function CustomerHub({
           {t("sandbox")}
         </p>
       )}
-      <PromotionPreference locale={locale} />
-      <PushSettings locale={locale} />
+      {(pane !== "account" || connected) && <><PromotionPreference locale={locale} /><PushSettings locale={locale} /></>}
       <div className="customer-tabs" role="group" aria-label={t("customer")}>
         {(
           ["account", "shop", "gallery", "sync", "support", "inbox", "admin"] as Pane[]
@@ -612,7 +613,7 @@ export function CustomerHub({
               setError("");
             }}
           >
-            {p === 'inbox'?mailText(locale,'title'):p === "gallery" ? galleryText(locale, "title") : t(p)}
+            {p === "account" ? websiteText(locale,"login") : p === "sync" ? websiteText(locale,"works") : p === 'inbox'?mailText(locale,'title'):p === "gallery" ? galleryText(locale, "title") : t(p)}
           </button>
         ))}
       </div>
@@ -624,7 +625,7 @@ export function CustomerHub({
       {notice && <p role="status">{notice}</p>}
       {busy && <p role="status">{t("loading")}</p>}
       <fieldset disabled={busy} className="customer-fields">
-        {pane !== "admin" && (
+        {pane !== "admin" && (connected || pane !== "account") && (
           <div className="customer-session">
             {connected ? (
               <>
@@ -733,17 +734,22 @@ export function CustomerHub({
                 <ReferralPanel locale={locale} />
               </Suspense>
             )}
-            <section className="card">
-              <h2>{t("account")}</h2>
+            <section className="card website-account-card" data-testid="website-login">
+              <h2>{websiteText(locale,"login")}</h2>
+              <p>{websiteText(locale,"optional")}</p>
               <label>
-                {t("email")}
+                {websiteText(locale,"identity")}
                 <input
-                  type="email"
+                  type="text"
+                  data-testid="account-identity"
+                  autoCapitalize="none"
+                  spellCheck={false}
                   autoComplete="username"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
+              <p className="fineprint">{websiteText(locale,"identityHint")}</p>
               <label>
                 {t("password")}
                 <input
@@ -1387,8 +1393,10 @@ export function CustomerHub({
             </section>
           </>
         )}
+        {pane === "sync" && !connected && <section className="card"><h2>{websiteText(locale,"works")}</h2><p>{websiteText(locale,"optional")}</p><button onClick={()=>setPane("account")}>{websiteText(locale,"login")}</button></section>}
         {pane === "sync" && connected && (
           <>
+            <h1>{websiteText(locale,"works")}</h1><p>{websiteText(locale,"remaining")}: <strong data-testid="works-credits">{me?.credits}</strong></p>
             <p>{t("uploadNotice")}</p>
             <section className="card">
               <h2>{t("localProjects")}</h2>

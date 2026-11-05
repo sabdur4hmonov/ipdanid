@@ -33,6 +33,11 @@ export function sampleDraft(): PhotoDraft {
   };
 }
 describe("editable photo archive", () => {
+  it("retains the optional website shoulder choice without changing old archives", async () => {
+    const d={...sampleDraft(),websiteKeepShoulders:false};
+    expect(await decodePhotoDraft(await encodePhotoDraft(d,now),now)).toEqual(d);
+    await expect(encodePhotoDraft({...d,websiteKeepShoulders:"false"} as any,now)).rejects.toThrow();
+  });
   it("round trips exact pixels, float mask, placement and kit without segmentation", async () => {
     const draft = sampleDraft();
     expect(

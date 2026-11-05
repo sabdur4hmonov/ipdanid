@@ -77,6 +77,7 @@ test("a box code needs no password, opens three guides, and never exposes a four
     await expect(gate).toBeVisible();
     await expect(gate.locator('input[type="password"], input[type="email"]')).toHaveCount(0);
     if (!index) {
+      await page.getByTestId("have-kit-code").click();
       await page.getByTestId("kit-code").fill(batch.codes[0].code);
       await gate.getByRole("button", { name: "Sign in with kit code", exact: true }).click();
     }
@@ -102,7 +103,8 @@ test("a box code needs no password, opens three guides, and never exposes a four
     await expect((await details(page)).getByRole("button", { name, exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "Start assembling", exact: true }).click();
   await expect(page.getByTestId("kit-credits")).toContainText("0");
-  await page.getByTestId("unlock-build").click();
-  await expect(page.getByTestId("build-gate").getByRole("alert")).toBeVisible();
+  await expect(page.getByTestId("buy-screen")).toBeVisible();
+  await expect(page.getByTestId("unlock-build")).toBeDisabled();
+  await expect(page.getByTestId("build-gate").getByRole("alert")).toHaveCount(0);
   await expect(page.getByTestId("player-hash")).toHaveCount(0);
 });

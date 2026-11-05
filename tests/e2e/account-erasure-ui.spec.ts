@@ -111,7 +111,7 @@ for (const native of [false, true])
       await page.getByTestId("customer-menu").locator("summary").click();
       await page
         .getByTestId("customer-menu")
-        .getByRole("button", { name: "Account / Admin", exact: true })
+        .getByRole("button", { name: "Sign in / Register", exact: true })
         .click();
     };
     await page.goto("/");

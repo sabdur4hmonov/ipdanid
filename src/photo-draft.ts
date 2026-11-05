@@ -19,6 +19,7 @@ export type PhotoDraft = {
   height: number;
   rgba: Uint8Array;
   maskEdited: boolean;
+  websiteKeepShoulders?: boolean;
   analysis: PhotoAnalysis;
   shape: Shape;
   kind: ProductKind;
@@ -73,7 +74,7 @@ function validate(d: PhotoDraft, now: number) {
     "rotation",
     "lines",
     "config",
-  ]);
+  ], ["websiteKeepShoulders"]);
   if (
     d.version !== "editable-photo/1" ||
     !Number.isSafeInteger(d.savedAt) ||
@@ -81,6 +82,7 @@ function validate(d: PhotoDraft, now: number) {
     d.savedAt > now + 60000 ||
     now - d.savedAt >= DRAFT_TTL ||
     typeof d.maskEdited !== "boolean" ||
+    (d.websiteKeepShoulders !== undefined && typeof d.websiteKeepShoulders !== "boolean") ||
     typeof d.caption !== "string" ||
     d.caption.length > 512 ||
     ![2500, 3000, 3500].includes(d.lines)

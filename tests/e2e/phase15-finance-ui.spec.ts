@@ -13,7 +13,7 @@ async function open(page: Page, code: string) {
   await english(page);
   await page.getByTestId("customer-menu").locator("summary").click();
   await page
-    .getByRole("button", { name: "Account / Admin", exact: true })
+    .getByRole("button", { name: "Sign in / Register", exact: true })
     .click();
   await page.getByLabel("Kit code for sign-in", { exact: true }).fill(code);
   await page
@@ -192,7 +192,7 @@ test("Finance records exact acknowledged cash and return once, compares actual i
   await page.reload();
   await page.getByTestId("customer-menu").locator("summary").click();
   await page
-    .getByRole("button", { name: "Account / Admin", exact: true })
+    .getByRole("button", { name: "Sign in / Register", exact: true })
     .click();
   await page
     .locator(".customer-tabs")

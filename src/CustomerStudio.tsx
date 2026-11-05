@@ -1,4 +1,12 @@
 import { uiText } from "./ui-i18n";
+import { websiteText } from "./website-i18n";
+import {
+  websiteFaceQuality,
+  websitePortraitPlacement,
+  websiteChinFade,
+} from "./core/website-framing";
+import { CustomerAccountLink } from "./CustomerAccountLink";
+import { telegramContact } from "./owner-contact";
 import { frameFreePhoto, freePhotoCanvas } from "./core/free-photo-framing";
 import { suggestPortraitPlacement } from "./core/portrait-placement";
 import { whiteBackground } from "./person-background";
@@ -78,6 +86,7 @@ type Props = {
   onShop: () => void;
   onExpert: () => void;
   onNavigate: (v: "library" | "customer") => void;
+  onWorks?: () => void;
   onGuide: (i: Instruction) => void;
   onPersist: (i: Instruction) => void;
 };
@@ -89,6 +98,7 @@ export function CustomerStudio({
   onExpert,
   onShop,
   onNavigate,
+  onWorks,
   onGuide,
   onPersist,
 }: Props) {
@@ -134,6 +144,16 @@ export function CustomerStudio({
     [gate, setGate] = useState<"pdf" | "start">(),
     [pdfBusy, setPdfBusy] = useState(false),
     [draftOpen, setDraftOpen] = useState(false);
+  const [farFace, setFarFace] = useState(false),
+    [lowFace, setLowFace] = useState(false),
+    [keepShoulders, setKeepShoulders] = useState(false),
+    [sourceHeight, setSourceHeight] = useState(0);
+  const farDialog = useRef<HTMLDialogElement>(null),
+    replacementPhoto = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (farFace) farDialog.current?.showModal();
+  }, [farFace]);
+  useEffect(() => { if (active) window.scrollTo({top:0,behavior:"instant"}); }, [step,active]);
   const generation = useRef(0),
     configRead = useRef(0),
     upload = useRef(0),
@@ -178,7 +198,15 @@ export function CustomerStudio({
             analysis.faces.map((f) => f.face),
             shape,
             source.width / source.height,
-            adjustments[0] ?? defaultHeadAdjustment(),
+            adjustments[0] ??
+              (kind === "people"
+                ? websitePortraitPlacement(
+                    analysis.faces.map((f) => f.face),
+                    shape,
+                    source.width / source.height,
+                    rotation,
+                  )
+                : defaultHeadAdjustment()),
             rotation,
           )
         : undefined,
@@ -239,21 +267,26 @@ export function CustomerStudio({
       tonal &&
       framing &&
       (!framing.caption || captionRaster?.key === captionKey)
-        ? freePhotoCanvas(tonal, framing, shape, captionRaster?.pixels)
-        : undefined,
-    [tonal, framing, shape, captionRaster, captionKey],
-  );
-  const display = useMemo(
-    () =>
-      framing && source && cutout
         ? freePhotoCanvas(
-            before ? source : cutout,
+            websiteChinFade(tonal, framing, keepShoulders),
             framing,
             shape,
             captionRaster?.pixels,
           )
         : undefined,
-    [framing, source, cutout, before, shape, captionRaster],
+    [tonal, framing, shape, captionRaster, captionKey, keepShoulders],
+  );
+  const display = useMemo(
+    () =>
+      framing && source && cutout
+        ? freePhotoCanvas(
+            before ? source : websiteChinFade(cutout, framing, keepShoulders),
+            framing,
+            shape,
+            captionRaster?.pixels,
+          )
+        : undefined,
+    [framing, source, cutout, before, shape, captionRaster, keepShoulders],
   );
   useEffect(() => {
     const c = maskCanvas.current;
@@ -302,6 +335,14 @@ export function CustomerStudio({
     setGate(undefined);
     setStep((s) => (s === "result" ? "adjust" : s));
   }, [framing, profile]);
+  useEffect(() => {
+    stopGeneration();
+    setBusy(false);
+    setResult(undefined);
+    setRemoteResult(undefined);
+    remoteAttempt.current = undefined;
+    setGate(undefined);
+  }, [keepShoulders]);
   useEffect(() => {
     if (!active) {
       stopGeneration();
@@ -404,6 +445,9 @@ export function CustomerStudio({
     setSourceHash("");
     setAdjustments([]);
     setRotation(0);
+    setFarFace(false);
+    setLowFace(false);
+    setKeepShoulders(false);
     setMaskEdit(false);
     setMaskHistory([]);
     setRestoredMaskEdited(false);
@@ -422,6 +466,8 @@ export function CustomerStudio({
       }
       const c = document.createElement("canvas");
       const scale = Math.min(1, 1536 / Math.max(image.width, image.height));
+      const originalHeight = image.height;
+      setSourceHeight(originalHeight);
       c.width = Math.round(image.width * scale);
       c.height = Math.round(image.height * scale);
       c.getContext("2d")!.drawImage(image, 0, 0, c.width, c.height);
@@ -441,6 +487,12 @@ export function CustomerStudio({
       setSource(c);
       setSourceHash(digest);
       setAnalysis(a);
+      setFarFace(
+        websiteFaceQuality(
+          a.faces.map((f) => f.face),
+          originalHeight,
+        ).far,
+      );
     } catch {
       if (id === upload.current) setError("error");
     } finally {
@@ -472,7 +524,10 @@ export function CustomerStudio({
       shape,
       kind,
       caption,
-      adjustment: { ...(adjustments[0] ?? defaultHeadAdjustment()) },
+      adjustment: {
+        ...(baseFraming?.framing?.adjustments[0] ?? defaultHeadAdjustment()),
+      },
+      websiteKeepShoulders: keepShoulders,
       rotation,
       lines,
       config: structuredClone(config),
@@ -501,6 +556,10 @@ export function CustomerStudio({
     setCutoutChoice(d.kind);
     setCaption(d.caption);
     setAdjustments([d.adjustment]);
+    setKeepShoulders(d.websiteKeepShoulders ?? true);
+    setFarFace(false);
+    setLowFace(false);
+    setSourceHeight(d.height);
     setRotation(d.rotation);
     setLines(d.lines);
     setConfig((old) =>
@@ -622,7 +681,13 @@ export function CustomerStudio({
     );
   }
   function change(_j: number, fn: (a: HeadAdjustment) => HeadAdjustment) {
-    setAdjustments((old) => [fn(old[0] ?? defaultHeadAdjustment())]);
+    setAdjustments((old) => [
+      fn(
+        old[0] ??
+          baseFraming?.framing?.adjustments[0] ??
+          defaultHeadAdjustment(),
+      ),
+    ]);
   }
   const clamp = (v: number, min: number, max: number) =>
     Math.max(min, Math.min(max, v));
@@ -693,7 +758,8 @@ export function CustomerStudio({
       if (!framing || busy) return;
       e.preventDefault();
       zoomRef.current(
-        (adjustments[selected]?.zoom ?? 1) * Math.exp(-e.deltaY * 0.0015),
+        (baseFraming?.framing?.adjustments[selected]?.zoom ?? 1) *
+          Math.exp(-e.deltaY * 0.0015),
       );
     };
     el.addEventListener("wheel", wheel, { passive: false });
@@ -701,6 +767,7 @@ export function CustomerStudio({
   }, [step, framing, busy, adjustments, selected]);
   function reset() {
     setAdjustments([]);
+    setKeepShoulders(false);
     setRotation(0);
     setMaskEdit(false);
     setMaskHistory([]);
@@ -937,8 +1004,18 @@ export function CustomerStudio({
                 onNavigate("customer");
               }}
             >
-              {t("account")}
+              {websiteText(locale, "login")}
             </button>
+            <button onClick={() => onWorks?.()}>
+              {websiteText(locale, "works")}
+            </button>
+            <a
+              href={telegramContact()}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {websiteText(locale, "telegram")}
+            </a>
             <button
               data-testid="customer-shop"
               onClick={(event) => {
@@ -954,6 +1031,66 @@ export function CustomerStudio({
           </div>
         </details>
       </header>
+      {active && (
+        <CustomerAccountLink
+          locale={locale}
+          onLogin={() => onNavigate("customer")}
+          onWorks={onWorks ?? (() => onNavigate("customer"))}
+        />
+      )}
+      <input
+        ref={replacementPhoto}
+        hidden
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          e.target.value = "";
+          if (f) void photo(f);
+        }}
+      />
+      {farFace && (
+        <dialog
+          ref={farDialog}
+          className="customer-unlock far-face-dialog"
+          data-testid="far-face-modal"
+          aria-labelledby="far-face-title"
+          onCancel={() => setFarFace(false)}
+        >
+          <h2 id="far-face-title">{websiteText(locale, "farTitle")}</h2>
+          <p>{websiteText(locale, "far")}</p>
+          <div className="website-actions">
+            <button
+              className="primary"
+              data-testid="far-face-crop"
+              onClick={() => {
+                if (portraitPlacement) setAdjustments([portraitPlacement]);
+                setKeepShoulders(false);
+                setFarFace(false);
+                setLowFace(
+                  websiteFaceQuality(
+                    analysis?.faces.map((f) => f.face) ?? [],
+                    sourceHeight,
+                  ).lowResolution,
+                );
+              }}
+            >
+              {websiteText(locale, "crop")}
+            </button>
+            <button
+              onClick={() => {
+                setFarFace(false);
+                replacementPhoto.current?.click();
+              }}
+            >
+              {websiteText(locale, "another")}
+            </button>
+            <button onClick={() => setFarFace(false)}>
+              {websiteText(locale, "anyway")}
+            </button>
+          </div>
+        </dialog>
+      )}
       {step !== "result" && (
         <label className="customer-hint">
           {productText(locale, "kind")}
@@ -1186,6 +1323,25 @@ export function CustomerStudio({
           ) : (
             <>
               <p className="customer-hint">{t("hint")}</p>
+              {lowFace && (
+                <p
+                  role="status"
+                  data-testid="low-face-warning"
+                  className="website-warning"
+                >
+                  {websiteText(locale, "low")}
+                </p>
+              )}
+              {kind === "people" && !!analysis?.faces.length && (
+                <label className="website-shoulders">
+                  <input
+                    type="checkbox"
+                    checked={keepShoulders}
+                    onChange={(e) => setKeepShoulders(e.target.checked)}
+                  />
+                  {t("shoulders")}
+                </label>
+              )}
               <label className="customer-zoom">
                 {t("zoom")}
                 <input
@@ -1194,7 +1350,7 @@ export function CustomerStudio({
                   min=".2"
                   max="4"
                   step=".01"
-                  value={adjustments[selected]?.zoom ?? 1}
+                  value={baseFraming?.framing?.adjustments[selected]?.zoom ?? 1}
                   disabled={!display || busy}
                   onChange={(e) => zoom(Number(e.target.value))}
                 />

@@ -131,18 +131,21 @@ export const buildAccess = {
       return false;
     }
   },
-  async login(code: string, attach = false) {
+  async login(code: string, attach?: boolean) {
     await customerApi.restore();
+    const previous = customerApi.session;
+    // A temporary sandbox guest must not prevent signing in to an existing kit.
+    const shouldAttach = attach ?? !!previous?.email;
     const s = await customerApi.request<{
       id: string;
       token: string;
       credits: number;
     }>(
       "/account/kit",
-      { code, attach },
-      attach ? customerApi.session?.token : "",
+      { code, attach: shouldAttach },
+      shouldAttach ? previous?.token : "",
     );
-    await customerApi.retain({ id: s.id, token: s.token });
+    await customerApi.retain({ id: s.id, token: s.token, ...(shouldAttach&&previous?.id===s.id&&previous.email?{email:previous.email}:{}) });
     return s;
   },
   async account() {

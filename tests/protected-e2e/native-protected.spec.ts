@@ -91,6 +91,7 @@ test("native HTTP and Preferences bridge unlock a protected snapshot guide and r
     .getByRole("button", { name: "Start assembling", exact: true })
     .click();
   const gate = page.getByTestId("build-gate");
+  await page.getByTestId("have-kit-code").click();
   await page.getByTestId("kit-code").fill(code);
   await gate
     .getByRole("button", { name: "Sign in with kit code", exact: true })

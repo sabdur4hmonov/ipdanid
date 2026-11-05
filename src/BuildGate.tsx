@@ -3,6 +3,8 @@ import type { Instruction, Locale } from "./core/types";
 import { kitText } from "./kit-i18n";
 import { buildAccess } from "./build-access";
 import { customerApi } from "./customer-api";
+import { websiteText } from "./website-i18n";
+import { phoneContact, telegramContact } from "./owner-contact";
 import { renderInstruction } from "./core/render";
 import { download } from "./download";
 import { standardText } from "./standard-kit-i18n";
@@ -29,24 +31,31 @@ export function BuildGate({
     [credits, setCredits] = useState<number>(),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const [showCode, setShowCode] = useState(false),
+    [reopen, setReopen] = useState(false);
+  const canUnlock = (credits ?? 0) > 0 || reopen;
   useEffect(() => {
     let live = true;
     let epoch = 0;
     const reload = () => {
       const ticket = ++epoch;
       setCredits(undefined);
+      setReopen(false);
       setCode("");
       setError("");
       void (async () => {
         await customerApi.restore();
         const token = customerApi.session?.token;
-        const a = await customerApi.request<{ credits: number }>(
-          "/builds/account",
-          undefined,
-          token,
-        );
-        if (live && ticket === epoch && token === customerApi.session?.token)
+        const a = await customerApi.request<{
+          credits: number;
+          unlocks?: { sequence_hash: string }[];
+        }>("/builds/account", undefined, token);
+        if (live && ticket === epoch && token === customerApi.session?.token) {
           setCredits(a.credits);
+          setReopen(
+            !!a.unlocks?.some((u) => u.sequence_hash === i.sequenceHash),
+          );
+        }
       })().catch(() => {});
     };
     customerApi.sessionChanged.add(reload);
@@ -56,7 +65,7 @@ export function BuildGate({
       ++epoch;
       customerApi.sessionChanged.delete(reload);
     };
-  }, []);
+  }, [i.sequenceHash]);
   async function run(fn: () => Promise<void>) {
     setBusy(true);
     setError("");
@@ -76,8 +85,34 @@ export function BuildGate({
   }
   return (
     <section className="card build-gate" data-testid="build-gate">
-      <h1>{t("locked")}</h1>
-      <p>{t("hint")}</p>
+      <h1>{canUnlock ? t("locked") : websiteText(locale, "buy")}</h1>
+      {!canUnlock && (
+        <div data-testid="buy-screen" className="website-buy">
+          <p>{websiteText(locale, "terms")}</p>
+          <p className="website-work-id">
+            {websiteText(locale, "work")}:{" "}
+            <code>{i.sequenceHash.slice(0, 12)}</code>
+          </p>
+          <div className="website-actions">
+            <a
+              data-testid="buy-telegram"
+              href={telegramContact(i.sequenceHash)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {websiteText(locale, "telegram")}
+            </a>
+            <a href={phoneContact()}>{websiteText(locale, "call")}</a>
+            <button
+              data-testid="have-kit-code"
+              onClick={() => setShowCode(true)}
+            >
+              {websiteText(locale, "haveCode")}
+            </button>
+          </div>
+        </div>
+      )}
+      {canUnlock && <p>{t("hint")}</p>}
       <div aria-label={t("preview")}>{preview}</div>
       <button
         onClick={() =>
@@ -139,70 +174,72 @@ export function BuildGate({
           {t("credits")}: {credits}
         </p>
       )}
-      <label>
-        {t("code")}
-        <input
-          data-testid="kit-code"
-          autoComplete="off"
-          autoCapitalize="none"
-          spellCheck={false}
-          maxLength={100}
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          disabled={busy}
-        />
-      </label>
-      <div className="grid-actions">
-        <button
-          disabled={busy || !code.trim()}
-          onClick={() =>
-            void run(async () => {
-              const a = await buildAccess.login(code.trim());
-              setCredits(a.credits);
-              setCode("");
-            })
-          }
-        >
-          {t("login")}
-        </button>
-        {customerApi.session && (
+      <div hidden={!showCode && !canUnlock}>
+        <label>
+          {t("code")}
+          <input
+            data-testid="kit-code"
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            maxLength={100}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            disabled={busy}
+          />
+        </label>
+        <div className="grid-actions">
           <button
             disabled={busy || !code.trim()}
             onClick={() =>
               void run(async () => {
-                const a = await buildAccess.login(code.trim(), true);
+                const a = await buildAccess.login(code.trim());
                 setCredits(a.credits);
                 setCode("");
               })
             }
           >
-            {t("attach")}
+            {t("login")}
           </button>
-        )}
-        <button
-          className="primary"
-          data-testid="unlock-build"
-          disabled={busy || credits === undefined || (!!remote && !onReleased)}
-          onClick={() =>
-            void run(async () => {
-              const r = await buildAccess.unlock(
-                local ?? {
-                  sequenceHash: remote!.sequenceHash,
-                  params: { accessPolicy: "kit-build/1" },
-                },
-                remote,
-              );
-              if (remote) {
-                if (!r.instruction) throw Error("build-access/signature");
-                onReleased!(r.instruction);
+          {customerApi.session && (
+            <button
+              disabled={busy || !code.trim()}
+              onClick={() =>
+                void run(async () => {
+                  const a = await buildAccess.login(code.trim(), true);
+                  setCredits(a.credits);
+                  setCode("");
+                })
               }
-              setCredits(r.credits);
-            })
-          }
-        >
-          {t("unlock")}
-        </button>
-        <button onClick={onBuy}>{t("buy")}</button>
+            >
+              {t("attach")}
+            </button>
+          )}
+          <button
+            className="primary"
+            data-testid="unlock-build"
+            disabled={busy || !canUnlock || (!!remote && !onReleased)}
+            onClick={() =>
+              void run(async () => {
+                const r = await buildAccess.unlock(
+                  local ?? {
+                    sequenceHash: remote!.sequenceHash,
+                    params: { accessPolicy: "kit-build/1" },
+                  },
+                  remote,
+                );
+                if (remote) {
+                  if (!r.instruction) throw Error("build-access/signature");
+                  onReleased!(r.instruction);
+                }
+                setCredits(r.credits);
+              })
+            }
+          >
+            {t("unlock")}
+          </button>
+          <button onClick={onBuy}>{t("buy")}</button>
+        </div>
       </div>
       <Suspense fallback={null}>
         <TrialClaimPanel locale={locale} onCredits={setCredits} />

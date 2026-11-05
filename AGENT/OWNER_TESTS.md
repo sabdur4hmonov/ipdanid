@@ -700,3 +700,16 @@ Uchta shaxsiy sinov kodi `output/phase16/manual-testing.txt` faylida. Bu ulash d
 Ilovada surat tanlang → joylashtiring → Yaratish → Yig'ishni boshlash → quti kodi bilan oching. Ayni ishni qayta ochish yangi imkoniyatni sarflamasligi kerak.
 Bir qadamni bajaring va tasdiqlang → Dam olish → ilovani yopib oching → o'sha ishni davom ettiring. Ochilgan ishni internet/USBsiz ham tekshiring; yangi rasmni hisoblash uchun USB orqali server aloqasi kerak.
 Bu safar avtomatik tekshiruv haqiqiy telefon ilovasidan serverga ulanishni tasdiqladi. To'liq yig'ish, ovoz va jismoniy taxta sinovi hali siz tomondan bajariladi. Eski ilovani o'chirish yoki ma'lumotini tozalash kerak emas.
+
+## 2026-11-05 — yangi saytni sinash (W1)
+
+1. Kompyuterda http://127.0.0.1:4900/ ni oching. Bu sinov hozir sayt uchun; telefonning oldingi APK nusxasi yangilanmadi.
+2. Uzoqdan tushirilgan odam suratini tanlang. Yuz kichik bo'lsa ogohlantirish chiqadi. Yuzga yaqinlashtirish, Boshqa rasm tanlash va Baribir davom etish tugmalarini tekshiring. Past aniqlikdagi yuz kattalashtirilsa, qo'shimcha ogohlantirish chiqadi.
+3. Yaqin portretda yuz avtomatik kattaroq joylashadi. Surib/kattalashtirib/burib ko'ring; Qaytarish avtomatik joylashuvga qaytaradi. Yelkani ko'rsatish bilan kiyimni qaytarish mumkin.
+4. Kirmasdan va kodsiz Yaratish bosing: tayyor ipli natija bepul chiqadi. Ketma-ket juda ko'p hisoblashda serverning vaqtinchalik cheklovi saqlanadi.
+5. Yig'ishni boshlash yoki PDF yuklab olishni bosing: Sotib olish oynasi, Telegram, qo'ng'iroq va Kodim bor tugmalari chiqadi. Bitta quti kodi3ta yangi ishni ochadi, ochilgan ishni qayta ochish bepul.
+6. Yangi, hali ishlatilmagan3ta ishli bitta kod `output/website-w1/manual-testing.txt` faylida. Boshqa eski kodlar o'rniga shu yangi saytning kodini ishlating; uni ommaga yubormang.
+7. Yuqoridagi Kirish / Ro'yxatdan o'tish orqali telefonni xalqaro shaklda yoki lotincha foydalanuvchi nomini kiriting; parol kamida12belgi. Tiklash kodini saqlang. Kirgan holda kit kodini ishlatsangiz, u hisobingizga bog'lanadi. Mening ishlarimda qolgan imkoniyatlar va ochilgan ishlar ko'rinadi; boshqa qurilmada ayni hisob bilan kiring.
+8. Telegram tugmasi barcha xaridor sahifalarida bor. Telegram va telefon hozir siz bergan namuna qiymatlar: haqiqiy aloqa uchun `src/owner-contact.ts` ichidagi faqat ikki qiymatni almashtirish kerak. Sinov haqiqiy buyurtma/to'lov/jo'natma qilmaydi.
+
+Skrinshotlar: `output/website-w1/screens/index.html`, desktop va mobile papkalari. Yangi sayt uchun bitta kod agent tomonidan sarflanmadi. P16.1-C joylashuv ovozi hali kutilmoqda; uning g'olibi tanlanmagan.

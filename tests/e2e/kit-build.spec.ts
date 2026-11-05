@@ -115,6 +115,7 @@ test("new guides lock steps and exports, signed unlock survives offline and tamp
   );
   expect(r.ok()).toBe(true);
   const code = (await r.json()).codes[0].code;
+  await page.getByTestId("have-kit-code").click();
   await page.getByTestId("kit-code").fill(code);
   await gate
     .getByRole("button", { name: "Sign in with kit code", exact: true })
@@ -178,6 +179,7 @@ test("new guides lock steps and exports, signed unlock survives offline and tamp
     const p = await second.newPage();
     await importGuide(p, file);
     await expect(p.getByTestId("build-gate")).toBeVisible();
+    await p.getByTestId("have-kit-code").click();
     await p.getByTestId("kit-code").fill(code);
     await p
       .getByRole("button", { name: "Sign in with kit code", exact: true })

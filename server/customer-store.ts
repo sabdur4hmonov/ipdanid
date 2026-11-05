@@ -59,9 +59,9 @@ export class CustomerStore extends Store {
     if (
       typeof value !== "string" ||
       value.length > 254 ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+      !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()) || /^\+[1-9]\d{9,14}$/.test(value.trim()) || /^[a-zA-Z][a-zA-Z0-9_.-]{2,31}$/.test(value.trim()))
     )
-      throw new DomainError("Invalid email");
+      throw new DomainError("Invalid account identifier");
     return value.trim().toLowerCase();
   }
   private password(value: unknown): string {

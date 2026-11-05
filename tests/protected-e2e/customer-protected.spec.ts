@@ -113,6 +113,7 @@ test("ordinary upload/adjust/static preview has no client sequence; actual kit u
     .click();
   const gate = page.getByTestId("build-gate");
   await expect(gate).toBeVisible();
+  await page.getByTestId("have-kit-code").click();
   await expect(
     gate.locator('input[type="password"],input[type="email"]'),
   ).toHaveCount(0);

@@ -49,7 +49,7 @@ async function accountScreen(page: Page) {
   if (!(await menu.evaluate((n: HTMLDetailsElement) => n.open)))
     await menu.locator("summary").click();
   await menu
-    .getByRole("button", { name: "Account / Admin", exact: true })
+    .getByRole("button", { name: "Sign in / Register", exact: true })
     .click();
 }
 async function login(page: Page, f: { email: string; password: string }) {
@@ -364,7 +364,7 @@ for (const native of [false, true])
       await p.getByTestId("customer-menu").locator("summary").click();
       await p
         .getByTestId("customer-menu")
-        .getByRole("button", { name: "Account / Admin", exact: true })
+        .getByRole("button", { name: "Sign in / Register", exact: true })
         .click();
       await p.getByLabel("Email", { exact: true }).fill(f.email);
       await p

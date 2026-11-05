@@ -169,7 +169,7 @@ test("explicit retry survives reload and second login restores exact paused posi
     await p.goto(new URL("/", page.url()).href);
     await p.getByTestId('customer-menu').locator('summary').click();
     await p.getByTestId('customer-menu')
-      .getByRole("button", { name: "Account / Admin", exact: true })
+      .getByRole("button", { name: "Sign in / Register", exact: true })
       .click();
     await p.getByLabel("Email", { exact: true }).fill(f.email);
     await p

@@ -1,4 +1,6 @@
 import { uiText } from "./ui-i18n";
+import { CustomerContact } from "./CustomerContact";
+import { CustomerAccountLink } from "./CustomerAccountLink";
 import type { Locale, Project, Shape } from "./core/types";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { startPushRuntime } from "./push-client";
@@ -33,7 +35,7 @@ export default function App() {
   );
   const [standard, setStandard] = useState(true);
   const [customerFlow, setCustomerFlow] = useState(true);
-  const [customerPane, setCustomerPane] = useState<"account" | "shop">("account");
+  const [customerPane, setCustomerPane] = useState<"account" | "shop" | "sync">("account");
   const context = useAppController(
     kitClaim || giftClaim ? "customer" : "create",
   );
@@ -179,6 +181,7 @@ export default function App() {
             <span>/</span> <span>{storefront.brandName || PRODUCT_NAME}</span>
           </div>
           <div className="header-right">
+            {customerFlow && view!=="create" && <CustomerAccountLink locale={locale} onLogin={()=>{setCustomerPane("account");nav("customer");}} onWorks={()=>{setCustomerPane("sync");nav("customer");}}/>}
             <MoreMenu
               customerMode={customerFlow}
               context={context}
@@ -346,6 +349,7 @@ export default function App() {
                 }}
                 onShop={() => { setCustomerPane("shop"); nav("customer"); }}
                 onNavigate={(v) => { setCustomerPane("account"); nav(v); }}
+                onWorks={()=>{setCustomerPane("sync");nav("customer");}}
                 onPersist={(i) => {
                   if (!loaded) return;
                   setProjects((ps) =>
@@ -458,6 +462,7 @@ export default function App() {
             {protectedGenerationMode ? protectedText(locale, "private") : t("private")}
           </span>
         </footer>
+        {customerFlow && <CustomerContact locale={locale}/>}
       </div>
       <input
         type="file"

@@ -15,7 +15,7 @@ async function accountMenu(page: Page) {
   if (!(await menu.evaluate((e) => (e as HTMLDetailsElement).open)))
     await menu.locator("summary").click();
   await page
-    .getByRole("button", { name: "Account / Admin", exact: true })
+    .getByRole("button", { name: "Sign in / Register", exact: true })
     .click();
 }
 async function open(page: Page, code: string) {

@@ -12,7 +12,7 @@ async function account(page: Page) {
   await page.goto("/");
   await page.getByTestId("customer-menu").locator("summary").click();
   await page
-    .getByRole("button", { name: "Account / Admin", exact: true })
+    .getByRole("button", { name: "Sign in / Register", exact: true })
     .click();
 }
 const dateInput = (n: number) =>
