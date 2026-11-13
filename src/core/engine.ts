@@ -80,6 +80,8 @@ export interface GenerateOptions {
   portrait?: PortraitSettings;
   subject?: import("./subject-plan").SubjectPlan;
   seed?: Instruction;
+  // Only read by classic-greedy/3 least squares; absent keeps classic-reference/3.
+  classicTuning?: import("./classic-least-squares").ClassicTuning;
   onProgress?: (fraction: number) => void;
   cancelled?: () => boolean;
   guarded?: boolean;

@@ -130,6 +130,10 @@ self.onmessage = async ({ data }) => {
       data.strategy === "classic2" || data.strategy === "classic3"
         ? await classicGenerator({
             ...options,
+            // New classic3 works use classic-reference/4; a resumed seed keeps its own.
+            ...(data.strategy === "classic3" && !options.classicTuning && !options.seed
+              ? { classicTuning: "classic-reference/4" as const }
+              : {}),
             onCheckpoint: (instruction) =>
               self.postMessage({
                 type: "checkpoint",

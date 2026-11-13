@@ -88,6 +88,8 @@ export const RETENTION_TABLES = {
     "migrations",
     "offer_policy",
     "owner_sessions",
+    // Keyed client digests + counters only; rows expire within an hour.
+    "owner_login_failures",
     "product_details",
     "products",
     "profiles",

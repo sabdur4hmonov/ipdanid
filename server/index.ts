@@ -11,7 +11,7 @@ import { DomainError } from "./store.ts";
 import { KitStore } from "./kit-store.ts";
 import { GenerationStore } from "./generation-store.ts";
 import { GenerationQueue } from "./generation-queue.ts";
-import { decodeGenerationRecipe } from "./generation-recipe.ts";
+import { decodeGenerationRecipe, serverClassicTuning } from "./generation-recipe.ts";
 import { RecoveryStore } from "./recovery-store.ts";
 import { PhotoBackupStore } from "./photo-backup-store.ts";
 import { AccountErasureStore } from "./account-erasure-store.ts";
@@ -55,6 +55,7 @@ const store = new KitStore(
 );
 if (!production) store.seed();
 const serverGenerationEnabled = process.env.SERVER_GENERATION === "1";
+const classicTuning = serverClassicTuning(process.env);
 if (process.env.SERVER_GENERATION && !["0", "1"].includes(process.env.SERVER_GENERATION))
   throw Error("Invalid SERVER_GENERATION configuration");
 const generated = new GenerationStore(store);
@@ -324,7 +325,7 @@ const server = createServer(async (req, res) => {
         // request/body limits also apply; the dedicated start budget is tighter.
         budgets.take("generation-global", "all", 20);
         budgets.take("generation-ip", ip, 3);
-        const recipe = decodeGenerationRecipe(body, store.standardKit());
+        const recipe = decodeGenerationRecipe(body, store.standardKit(), classicTuning);
         // A retry must work even when the queue is full; enqueue only new jobs.
         const previous = store.db.prepare("SELECT id,recipe_hash FROM protected_generations WHERE capability_hash=? AND request_key=? AND expires_at>?")
           .get(store.digest(recipe.secret), recipe.requestKey, Date.now());
@@ -402,7 +403,7 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (path === "/api/admin/login" && req.method === "POST" && ownerAuth) {
-      send(200, await ownerAuth.login(body.password));
+      send(200, await ownerAuth.login(body.password, Date.now(), ip));
       return;
     }
     if (path.startsWith("/api/admin/")) {

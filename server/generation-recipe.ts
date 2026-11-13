@@ -5,7 +5,20 @@ import {
   standardProfiles,
   type StandardKitConfig,
 } from "../src/core/standard-kit";
-import { leastSquaresProfile } from "../src/core/classic-least-squares";
+import {
+  leastSquaresProfile,
+  type ClassicTuning,
+} from "../src/core/classic-least-squares";
+// New protected works use classic-reference/4 (2026-11-13 audit). CLASSIC_TUNING=3
+// is the operator rollback; stored guides always replay with their own settings.
+export function serverClassicTuning(
+  env: Record<string, string | undefined> = process.env,
+): ClassicTuning {
+  const value = env.CLASSIC_TUNING ?? "4";
+  if (value === "4") return "classic-reference/4";
+  if (value === "3") return "classic-reference/3";
+  throw Error("Invalid CLASSIC_TUNING configuration");
+}
 import { frameFreePhoto } from "../src/core/free-photo-framing";
 import { withPortraitCaption } from "../src/core/portrait-caption";
 import type { GenerateOptions } from "../src/core/engine";
@@ -31,6 +44,7 @@ export function generationIdentity(value: unknown): string {
 export function decodeGenerationRecipe(
   value: unknown,
   config: StandardKitConfig,
+  classicTuning: ClassicTuning = serverClassicTuning(),
 ) {
   try {
     const b = value as Record<string, any>;
@@ -156,10 +170,19 @@ export function decodeGenerationRecipe(
         mode: "dark",
         accessPolicy: "kit-build/1",
         kitPreparation: structuredClone(k),
+        classicTuning,
       },
       recipeHash = createHash("sha256")
         .update(mono)
-        .update(JSON.stringify({ profile, preparation: k, lines: b.lines }))
+        .update(
+          JSON.stringify({
+            profile,
+            preparation: k,
+            lines: b.lines,
+            // /3 hashes stay byte-identical to stored recipes.
+            ...(classicTuning === "classic-reference/3" ? {} : { classicTuning }),
+          }),
+        )
         .digest("hex");
     return {
       options,

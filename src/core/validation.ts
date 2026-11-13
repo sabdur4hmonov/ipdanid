@@ -4,7 +4,7 @@ import { frameFreePhoto } from "./free-photo-framing";
 import { frameProduct } from "./product-framing";
 import { withPortraitCaption } from "./portrait-caption";
 import {
-  CLASSIC_LS_DEFAULTS,
+  classicLsDefaults,
   squareChordExcluded,
   SquareWeave,
 } from "./classic-least-squares";
@@ -335,7 +335,12 @@ export async function validateInstruction(
         JSON.stringify({
           ...(i.algorithm === "classic-greedy/3"
             ? {
-                ...CLASSIC_LS_DEFAULTS,
+                ...classicLsDefaults(
+                  (c as { version?: string } | undefined)?.version ===
+                    "classic-reference/4"
+                    ? "classic-reference/4"
+                    : "classic-reference/3",
+                ),
                 squareAxisExclusion:
                   p.standardKit?.chordPolicy ?? "axis-centre-skip/1",
               }

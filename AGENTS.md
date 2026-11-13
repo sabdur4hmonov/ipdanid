@@ -1,6 +1,8 @@
 # Agent instructions
 
-2026-10-29 owner handoff:4217/API4657 is now FROZEN and verified. Preserve launcher23432/API19288/web1824, output/phase16-owner-20261028-bab0cfaa-dist, its private owner-review DB and output/phase16-private/final-runtime-20261028/runtime. No future automated HTTP tests/restarts/rebuilds there. Credentials ONLY output/phase16/manual-testing.txt. Same-signer122asset APK be6e489bff81 and98previous archive entries verified. P16.2–P16.5 functional handoff accepted; P16.1 fine-nose likeness remains OPEN, not OWNER-blocked/100percent complete. First Exact next in PROGRESS supersedes historical pointers. Do not repeat full accepted suites or sealed quality fits without changed code/new evidence.
+Current state and Exact next step are in `AGENT/PROGRESS.md`; historical progress and logs through 2026-11-13 are preserved in `AGENT/archive/`. Read the current progress first; consult archived detail only when needed. Frozen owner handoffs, previews, private data, templates, sequences and saved progress remain protected. Q4 apply/verification is explicitly authorized; software checks do not establish physical portrait quality.
+
+2026-10-29 frozen handoff: preserve 4217/API4657, launcher23432/API19288/web1824, output/phase16-owner-20261028-bab0cfaa-dist, its private owner-review DB and output/phase16-private/final-runtime-20261028/runtime. No automated HTTP tests/restarts/rebuilds there. Credentials ONLY output/phase16/manual-testing.txt. Same-signer122asset APK be6e489bff81 and98previous archive entries remain preserved. P16.2–P16.5 functional acceptance does not establish P16.1 physical/fresh-photo likeness acceptance. Preserve W1 4900/4901, W2 4920/4921 and all older previews. Do not repeat sealed quality fits.
 
 Before doing anything in this repository, read `AGENT/MASTER_PLAN.md` and `AGENT/PROGRESS.md`, then follow the working protocol in MASTER_PLAN.md section 1.
 

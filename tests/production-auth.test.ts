@@ -77,3 +77,41 @@ test("password hashes, expiring hashed sessions and revocation disable local own
     s.close();
   }
 });
+test("owner login locks a client after5 failures and globally after50, survives restart and clears on success", async () => {
+  const password = "synthetic owner password only",
+    hash = await hashAdminPassword(password),
+    s = new KitStore(":memory:", "p".repeat(32), "k".repeat(32));
+  try {
+    let auth = new ProductionAdminAuth(s, hash);
+    const t0 = 10_000_000;
+    for (let k = 0; k < 4; k++)
+      await expect(auth.login("wrong password here", t0 + k, "1.2.3.4")).rejects.toThrow("Invalid administrator password");
+    // A success before the limit clears this client's counter.
+    await auth.login(password, t0 + 5, "1.2.3.4");
+    for (let k = 0; k < 5; k++)
+      await expect(auth.login("wrong password here", t0 + 10 + k, "1.2.3.4")).rejects.toThrow("Invalid administrator password");
+    // Locked: even the right password is refused, without a password check.
+    await expect(auth.login(password, t0 + 20, "1.2.3.4")).rejects.toThrow("Too many administrator login attempts");
+    // Another client is unaffected.
+    expect((await auth.login(password, t0 + 21, "5.6.7.8")).token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    // Restart keeps the lock.
+    auth = new ProductionAdminAuth(s, hash);
+    await expect(auth.login(password, t0 + 22, "1.2.3.4")).rejects.toThrow("Too many");
+    expect(auth.lockedUntil("1.2.3.4", t0 + 22)).toBe(t0 + 14 + ProductionAdminAuth.LOCKOUT.lockMs);
+    // After the lock expires the owner can log in again.
+    expect((await auth.login(password, t0 + 14 + ProductionAdminAuth.LOCKOUT.lockMs, "1.2.3.4")).token).toBeTruthy();
+    // Global: 200 failures spread over many clients lock everyone for15 minutes.
+    const t1 = t0 + 10 * 3600000;
+    for (let k = 0; k < 200; k++)
+      await expect(auth.login("wrong password here", t1 + k, "10.0." + (k >> 8) + "." + (k & 255))).rejects.toThrow();
+    await expect(auth.login(password, t1 + 250, "9.9.9.9")).rejects.toThrow("Too many");
+    const actions = (s.db.prepare("SELECT action FROM audit WHERE actor_id='owner-login'").all() as { action: string }[]).map((r) => r.action);
+    expect(actions).toContain("admin.login.locked");
+    expect(actions).toContain("admin.login.blocked");
+    expect(actions).toContain("admin.login.success");
+    // Client identifiers are stored only as keyed digests.
+    expect(JSON.stringify(s.db.prepare("SELECT scope FROM owner_login_failures").all())).not.toContain("1.2.3.4");
+  } finally {
+    s.close();
+  }
+}, 120000);

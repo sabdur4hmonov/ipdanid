@@ -28,10 +28,32 @@ export const CLASSIC_LS_DEFAULTS = Object.freeze({
   renderer: "classic-coverage/2" as const,
   squareAxisExclusion: "axis-centre-skip/1" as const,
 });
+// classic-reference/4 (2026-11-13 audit): identical greedy, chords, guards and
+// renderer; only the error tone curve and the reviewed-face weight change.
+// /3 stays the library default so every stored /3 guide, seed and test replays.
+export const CLASSIC_LS4_TUNING = Object.freeze({
+  version: "classic-reference/4" as const,
+  darknessGamma: 1.2,
+  importanceAmplitude: 3,
+});
+export type ClassicTuning = "classic-reference/3" | "classic-reference/4";
+export const CLASSIC_TUNINGS: readonly ClassicTuning[] = Object.freeze([
+  "classic-reference/3",
+  "classic-reference/4",
+]);
+export function classicLsDefaults(tuning: ClassicTuning = "classic-reference/3") {
+  if (tuning === "classic-reference/4")
+    return { ...CLASSIC_LS_DEFAULTS, ...CLASSIC_LS4_TUNING };
+  if (tuning !== "classic-reference/3") throw Error("classic3/tuning");
+  return { ...CLASSIC_LS_DEFAULTS };
+}
 export type ClassicLeastSquaresSettings = Omit<
   typeof CLASSIC_LS_DEFAULTS,
-  "squareAxisExclusion"
+  "squareAxisExclusion" | "version" | "darknessGamma" | "importanceAmplitude"
 > & {
+  version: ClassicTuning;
+  darknessGamma: number;
+  importanceAmplitude: number;
   squareAxisExclusion: "axis-centre-skip/1" | "axis-interior-skip/2";
   faces: RegionBox[];
 };
@@ -148,7 +170,11 @@ export class SquareWeave {
     if (v >= 0) this.vertical[v]++;
   }
 }
-export function leastSquaresImportance(n: number, faces: RegionBox[]) {
+export function leastSquaresImportance(
+  n: number,
+  faces: RegionBox[],
+  amplitude = 1,
+) {
   const out = new Float32Array(n * n);
   for (let y = 0; y < n; y++)
     for (let x = 0; x < n; x++) {
@@ -158,13 +184,16 @@ export function leastSquaresImportance(n: number, faces: RegionBox[]) {
           dy = (y - n * (b.top + b.height / 2)) / ((n * b.height) / 2);
         gaussian = Math.max(gaussian, Math.exp(-(dx * dx + dy * dy)));
       }
-      out[y * n + x] = 1 + gaussian;
+      out[y * n + x] = 1 + amplitude * gaussian;
     }
   return out;
 }
 
 export async function generateClassicLeastSquares(
-  o: GenerateOptions & { onCheckpoint?: (i: Instruction) => void },
+  o: GenerateOptions & {
+    onCheckpoint?: (i: Instruction) => void;
+    classicTuning?: ClassicTuning;
+  },
   sharedGeometry?: ClassicScoreGeometry,
 ): Promise<Instruction> {
   const { resolution: n, profile: p } = o,
@@ -194,13 +223,25 @@ export async function generateClassicLeastSquares(
       o.lines > 3500)
   )
     throw Error("classic3/cache-binding");
-  const faces = o.kitPreparation?.transform.targetFaces ?? [],
+  // A resumed seed keeps the tuning it was created with unless the caller names one.
+  const seedTuning = (o.seed?.params.classic as { version?: string } | undefined)
+      ?.version,
+    tuning: ClassicTuning =
+      o.classicTuning ??
+      (seedTuning === "classic-reference/4"
+        ? "classic-reference/4"
+        : "classic-reference/3"),
+    faces = o.kitPreparation?.transform.targetFaces ?? [],
     settings: ClassicLeastSquaresSettings = {
-      ...CLASSIC_LS_DEFAULTS,
+      ...classicLsDefaults(tuning),
       squareAxisExclusion: p.standardKit?.chordPolicy ?? "axis-centre-skip/1",
       faces,
     },
-    importance = leastSquaresImportance(n, faces),
+    importance = leastSquaresImportance(
+      n,
+      faces,
+      settings.importanceAmplitude,
+    ),
     darkness = Float64Array.from(importance, (v) => 0.08 * v),
     target = Float32Array.from(
       { length: n * n },
@@ -208,7 +249,7 @@ export async function generateClassicLeastSquares(
     ),
     err = Float32Array.from(
       target,
-      (v, k) => Math.pow(1 - v, 1.6) * importance[k],
+      (v, k) => Math.pow(1 - v, settings.darknessGamma) * importance[k],
     ),
     pins = classicPins(p, n),
     count = pins.length,

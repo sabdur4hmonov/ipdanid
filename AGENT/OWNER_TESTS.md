@@ -724,3 +724,10 @@ Skrinshotlar: `output/website-w1/screens/index.html`, desktop va mobile papkalar
 6. Bu safar sayt yangilandi; APK qayta yig‘ilmadi. Portret o‘xshashligi, haqiqiy taxta va telefon sinovi alohida qoladi. Rasmlaringiz tashqi servisga yuborilmadi.
 
 Taqqoslash ekranlari: output/website-w2/screens/index.html.
+# Q4 — yangi sifatni tekshirish (2026-11-14)
+
+- Yangi preview tayyor bo‘lgach: http://127.0.0.1:4940/ (API4941). Ishga tushganini output/q4-apply/launch.json ko‘rsatadi.
+- Faqat yangi sandbox uchun 3 ta ish kodi: output/q4-apply/manual-testing.txt. Eski W1/W2 kodlari bu alohida bazaga ko‘chirilmaydi.
+- Yangi surat yuklang, shakl va yuz joylashuvini tekshiring, natijani hisoblang. Yangi ishlar /4 tuning bilan; avvalgi saqlangan /3 ko‘rsatmalar o‘zgartirilmaydi.
+- Ko‘z, burun, lab va sochlarni asl surat bilan solishtiring. Dasturiy testlar haqiqiy taxtadagi sifatni yoki yangi suratlardagi o‘xshashlikni tasdiqlamaydi.
+- W1/W2 va oldingi previewlar, saqlangan ishlar hamda progress saqlangan. Bu previewda haqiqiy to‘lov yoki jo‘natish yoqilmagan.
