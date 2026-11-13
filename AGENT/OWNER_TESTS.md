@@ -713,3 +713,14 @@ Bu safar avtomatik tekshiruv haqiqiy telefon ilovasidan serverga ulanishni tasdi
 8. Telegram tugmasi barcha xaridor sahifalarida bor. Telegram va telefon hozir siz bergan namuna qiymatlar: haqiqiy aloqa uchun `src/owner-contact.ts` ichidagi faqat ikki qiymatni almashtirish kerak. Sinov haqiqiy buyurtma/to'lov/jo'natma qilmaydi.
 
 Skrinshotlar: `output/website-w1/screens/index.html`, desktop va mobile papkalari. Yangi sayt uchun bitta kod agent tomonidan sarflanmadi. P16.1-C joylashuv ovozi hali kutilmoqda; uning g'olibi tanlanmagan.
+
+## 2026-11-13 — yangi professional sayt dizayni (W2)
+
+1. http://127.0.0.1:4920/ ni oching. Bosh sahifadagi mahsulot tasviri, Qanday ishlaydi, Shakllar va Savollar bo‘limlarini ko‘ring. Tasvir AI konsepti deb belgilangan; u portret sifati isboti emas.
+2. Doira/Kvadrat/Yurakni tanlang → Galereyadan tanlash → suratni moslang → Yaratish. Kodsiz natija ochiladi. Natijani tekshirib, Yig‘ishni boshlash yoki PDF orqali eski haqiqiy kodli oqimga o‘ting.
+3. Menyudan UZ/RU/ENni almashtiring. Kirish, To‘plamim bor va Loyihalarimni ko‘ring. Pastdagi Suratimni tanlash yuqoridagi ishlaydigan tugmaga qaytaradi.
+4. Yangi saytning shaxsiy3-ishli kodi faqat output/website-w2/manual-testing.txt da. Agent uni sarflamadi. Kodni ommaga yubormang. Telegram/telefon hanuz namunaviy; haqiqiy aloqa va to‘lov faollashmagan.
+5. Eski4900sayt, uning loyihalari va kodlari saqlangan.4920alohida sinov nusxasi: eski brauzer loyihalari o‘z-o‘zidan ko‘chirilmaydi yoki o‘chirilmaydi. Oldingi ishlar uchun4900ni oching.
+6. Bu safar sayt yangilandi; APK qayta yig‘ilmadi. Portret o‘xshashligi, haqiqiy taxta va telefon sinovi alohida qoladi. Rasmlaringiz tashqi servisga yuborilmadi.
+
+Taqqoslash ekranlari: output/website-w2/screens/index.html.

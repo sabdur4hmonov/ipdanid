@@ -1,0 +1,259 @@
+{
+  "version": "iprasm.website-w2-verification/1",
+  "date": "2026-11-13",
+  "startingHead": "1857a8d",
+  "scope": "Website design and existing customer-flow regression only. No new portrait-quality, physical, device, production or universal acceptance.",
+  "browser": {
+    "uniqueAcceptedCases": 11,
+    "cases": [
+      {
+        "project": "desktop",
+        "title": "home shape selection reaches the real generator and exact result purchase gates without a new upload screen",
+        "file": "website-w2.spec.ts",
+        "report": "test-results/website-w2-desktop-final/report.json",
+        "durationMs": 47423
+      },
+      {
+        "project": "desktop",
+        "title": "existing kit, account, projects and object/lettering entry points remain reachable",
+        "file": "website-w2.spec.ts",
+        "report": "test-results/website-w2-desktop-final/report.json",
+        "durationMs": 5924
+      },
+      {
+        "project": "mobile-browser",
+        "title": "home shape selection reaches the real generator and exact result purchase gates without a new upload screen",
+        "file": "website-w2.spec.ts",
+        "report": "test-results/website-w2-mobile-final/report.json",
+        "durationMs": 35052
+      },
+      {
+        "project": "mobile-browser",
+        "title": "existing kit, account, projects and object/lettering entry points remain reachable",
+        "file": "website-w2.spec.ts",
+        "report": "test-results/website-w2-mobile-final/report.json",
+        "durationMs": 4311
+      },
+      {
+        "project": "desktop",
+        "title": "product-led home is localized, responsive, keyboard-accessible and has an offline concept asset",
+        "file": "website-w2.spec.ts",
+        "report": "test-results/website-w2-home-desktop-accepted/report.json",
+        "durationMs": 20839
+      },
+      {
+        "project": "mobile-browser",
+        "title": "product-led home is localized, responsive, keyboard-accessible and has an offline concept asset",
+        "file": "website-w2.spec.ts",
+        "report": "test-results/website-w2-home-mobile-accepted/report.json",
+        "durationMs": 36318
+      },
+      {
+        "project": "desktop",
+        "title": "far portrait warning is actionable in all four locales, crop is reversible and low pixels are explained",
+        "file": "website-w1.spec.ts",
+        "report": "test-results/website-w2-w1-desktop/report.json",
+        "durationMs": 97000
+      },
+      {
+        "project": "desktop",
+        "title": "unlimited anonymous previews lead to purchase for both actions; login attaches a kit and a second device restores the work",
+        "file": "website-w1.spec.ts",
+        "report": "test-results/website-w2-w1-desktop/report.json",
+        "durationMs": 65751
+      },
+      {
+        "project": "mobile-browser",
+        "title": "far portrait warning is actionable in all four locales, crop is reversible and low pixels are explained",
+        "file": "website-w1.spec.ts",
+        "report": "test-results/website-w2-w1-mobile/report.json",
+        "durationMs": 74232
+      },
+      {
+        "project": "mobile-browser",
+        "title": "unlimited anonymous previews lead to purchase for both actions; login attaches a kit and a second device restores the work",
+        "file": "website-w1.spec.ts",
+        "report": "test-results/website-w2-w1-mobile-purchase-review/report.json",
+        "durationMs": 54539
+      },
+      {
+        "project": "desktop",
+        "title": "ordinary upload/adjust/static preview has no client sequence; actual kit unlock persists exact offline progress",
+        "file": "customer-protected.spec.ts",
+        "report": "test-results/website-w2-protected-offline-review/report.json",
+        "durationMs": 48545
+      }
+    ],
+    "runs": [
+      {
+        "report": "test-results/website-w2-desktop-final/report.json",
+        "stats": {
+          "startTime": "2026-11-13T02:18:15.604Z",
+          "duration": 103526.106,
+          "expected": 2,
+          "skipped": 0,
+          "unexpected": 1,
+          "flaky": 0
+        },
+        "selection": "non-home",
+        "acceptance": "Only the explicitly selected successful cases; failed diagnostics retained separately"
+      },
+      {
+        "report": "test-results/website-w2-mobile-final/report.json",
+        "stats": {
+          "startTime": "2026-11-13T02:18:15.714Z",
+          "duration": 123462.86,
+          "expected": 2,
+          "skipped": 0,
+          "unexpected": 1,
+          "flaky": 0
+        },
+        "selection": "non-home",
+        "acceptance": "Only the explicitly selected successful cases; failed diagnostics retained separately"
+      },
+      {
+        "report": "test-results/website-w2-home-desktop-accepted/report.json",
+        "stats": {
+          "startTime": "2026-11-13T02:22:18.912Z",
+          "duration": 161293.141,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "selection": "all",
+        "acceptance": "All cases passed without skip or retry"
+      },
+      {
+        "report": "test-results/website-w2-home-mobile-accepted/report.json",
+        "stats": {
+          "startTime": "2026-11-13T02:26:22.591Z",
+          "duration": 115639.281,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "selection": "all",
+        "acceptance": "All cases passed without skip or retry"
+      },
+      {
+        "report": "test-results/website-w2-w1-desktop/report.json",
+        "stats": {
+          "startTime": "2026-11-13T02:25:36.681Z",
+          "duration": 195013.793,
+          "expected": 2,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "selection": "all",
+        "acceptance": "All cases passed without skip or retry"
+      },
+      {
+        "report": "test-results/website-w2-w1-mobile/report.json",
+        "stats": {
+          "startTime": "2026-11-13T02:34:09.589Z",
+          "duration": 293729.892,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 1,
+          "flaky": 0
+        },
+        "selection": "far-only",
+        "acceptance": "Only the explicitly selected successful cases; failed diagnostics retained separately"
+      },
+      {
+        "report": "test-results/website-w2-w1-mobile-purchase-review/report.json",
+        "stats": {
+          "startTime": "2026-11-13T02:42:43.110Z",
+          "duration": 72791.626,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "selection": "all",
+        "acceptance": "All cases passed without skip or retry"
+      },
+      {
+        "report": "test-results/website-w2-protected-offline-review/report.json",
+        "stats": {
+          "startTime": "2026-11-13T02:32:50.245Z",
+          "duration": 70329.298,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "selection": "all",
+        "acceptance": "All cases passed without skip or retry"
+      }
+    ]
+  },
+  "otherChecks": {
+    "focusedUnits": "13/13 in marketing-assets, website-w1 and history-secrets (3 files)",
+    "typescript": "tsc -b passed",
+    "locales": "82 dictionaries / 1897 keys / four locales passed"
+  },
+  "build": {
+    "directory": "output/website-w2-dist",
+    "manifestSha256": "f5fd2defc2a8e8d874be6d43a5857e4b1e0e8539a6726adc0c274c3c9ddbcbb5",
+    "modules": 2155,
+    "finalBuildSeconds": 84,
+    "bundle": {
+      "initial": [
+        {
+          "file": "assets/index-BwCXdLYW.js",
+          "bytes": 478234
+        },
+        {
+          "file": "assets/react-runtime-DTpdnjI2.js",
+          "bytes": 221974
+        }
+      ],
+      "initialJsBytes": 700208,
+      "customerAppBytes": 478234,
+      "expertPdfProviderInitiallyLoaded": false,
+      "warningLimitUnchanged": true,
+      "fontkitLimit": "Upstream single-module shaping/subsetting remains lazy and above500kB; no unsafe fork or warning suppression."
+    }
+  },
+  "handoff": {
+    "url": "http://127.0.0.1:4920",
+    "api": "http://127.0.0.1:4921/api",
+    "metadata": "output/website-w2/launch.json",
+    "manualCode": "output/website-w2/manual-testing.txt",
+    "agentRedeemedOwnerCode": false,
+    "runtime": {
+      "files": 20780,
+      "bytes": 381453616,
+      "sha256": "f91a3ae18fe1b38323cb4df6b9d97ad718978d8406fee7381a40ae5a441ff0c2"
+    }
+  },
+  "media": {
+    "provenance": "src/assets/PROVENANCE.json",
+    "role": "Explicitly labeled AI craft-process concept, never a portrait output or supplied-kit photograph",
+    "personalPhotoIncluded": false
+  },
+  "preserved": {
+    "W1": "4900/4901 and its snapshot/DB/code",
+    "earlierFrozenEndpoints": "No contact/restart/rebuild",
+    "instructions": "No sequence/engine/material/export changes; old guides and progress retained",
+    "Android": "Unchanged, no build/install/device claim"
+  },
+  "diagnostics": [
+    "Initial desktop: 2 passed / 1 genuine CTA focus failure. Selector chose hidden input; corrected and regression passed.",
+    "Next desktop: 2 passed / 1 menu action stability timeout. Independent unchanged-product home run passed; no timeout/production-limit relaxation.",
+    "Next mobile: 2 passed / 1 incorrect test naturalWidth assumption. Responsive density exposes adjusted intrinsic width; test now verifies decoded dimensions and exact online/offline asset SHA256, plus actual touch selection.",
+    "Initial protected offline test raced asynchronous saved-view restoration against the new home projects CTA. Added exact recovered sequence assertion and scoped main-navigation selection; offline confirmed progress and exported JSON regression passed.",
+    "First owner-runtime snapshot rejected concurrent source changes. Partial snapshot/seed and logs retained; no hash patched. New stable-source final snapshot passed all existing integrity checks.",
+    "W1 mobile full run passed the far-photo case but the second preview showed a generic client error. Isolated test DB contained two ready server jobs; the exact initial transport cause is unproven. Fresh isolated purchase-flow recheck includes sanitized transport diagnostics; no production guard or algorithm changed."
+  ],
+  "limitations": [
+    "Contact values remain owner placeholders; no real order/payment/message/email/delivery performed",
+    "Nose/portrait likeness remains open; design is not a quality breakthrough",
+    "Physical assembly and real-device acceptance remain separate",
+    "Full accepted historical matrices and sealed quality experiments were not repeated"
+  ]
+}

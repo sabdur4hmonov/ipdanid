@@ -1,0 +1,25 @@
+{
+  "version": "iprasm.marketing-concept/1",
+  "created": "2026-11-13",
+  "origin": "Generated with built-in image generation for the owner-requested website redesign. No reference image or personal photograph was provided.",
+  "purpose": "Editorial craft-process illustration only. Not an engine reconstruction, supplied kit photograph, physical assembly trial or likeness evidence.",
+  "displayLabel": "Localized AI concept illustration label in StudioHome figcaption.",
+  "prompt": "Use case: product-mockup. Asset type: wide editorial website photograph for a premium DIY string art website, 3:2 landscape.\nPrimary request: Create a tasteful original editorial product concept photograph. A close cropped circular white string-art board with many evenly spaced small brass nail heads around the perimeter and delicate actual black taut straight threads connecting nails into an abstract geometric radiating composition, NOT a human face or portrait. Board lies on a warm pale beige work surface; the board is predominantly on the right side and cropped at the right edge. At the lower-left edge, just part of a person's hand carefully guiding a single black thread with a slim wooden thread holder. Small black spool nearby. Fine realistic visible fibres, natural wood edge, convincing nail placement, relaxed daylight from upper left, soft long shadows. Modern artisanal design magazine, warm and intimate, high-end understated art direction. Leave uncluttered warm ivory negative space at upper left, but the board and threads are the clear subject. Palette warm chalk white, natural pale wood, deep ink black, small terracotta detail. No text, no logo, no packaging, no phone UI, no recognizable people, no personal photograph, no claimed portrait output, no watermarks. Strict physical realism: thread spans only between actual perimeter nails. Do not put random floating lines outside the board. This will be labeled a concept illustration, not used as algorithm evidence.",
+  "transforms": "Resized with Lanczos and encoded as WebP quality 84 using Pillow. No content editing.",
+  "assets": [
+    {
+      "path": "src/assets/craft-concept-v1-576.webp",
+      "width": 576,
+      "height": 384,
+      "bytes": 40796,
+      "sha256": "d745ed0d158a65cfddc3a59b6c09766b94cf828f935b6ba29a08dd08c5bb050e"
+    },
+    {
+      "path": "src/assets/craft-concept-v1-1152.webp",
+      "width": 1152,
+      "height": 768,
+      "bytes": 134302,
+      "sha256": "64a90685039f5f18d88ec43edfc51975a5cf2654eeb09dd27cf83fb29469b265"
+    }
+  ]
+}

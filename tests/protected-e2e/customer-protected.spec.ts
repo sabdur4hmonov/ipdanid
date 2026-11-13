@@ -164,7 +164,37 @@ test("ordinary upload/adjust/static preview has no client sequence; actual kit u
   await page.evaluate(async () => navigator.serviceWorker.ready);
   await context.setOffline(true);
   await page.reload();
-  await page.getByRole("button", { name: "My projects", exact: true }).click();
+  // Reload first restores the last active assembly asynchronously. The new
+  // home also has a projects CTA; do not race it against saved-view recovery.
+  await expect(page.getByTestId("player-hash")).toHaveText(sequenceHash);
+  await page.screenshot({
+    path: info.outputPath("offline-restored.png"),
+    fullPage: true,
+  });
+  await info.attach("offline-navigation-layout", {
+    contentType: "application/json",
+    body: Buffer.from(
+      JSON.stringify(
+        await page.evaluate(() => ({
+          app: document.querySelector(".app")?.className,
+          scrollY,
+          width: innerWidth,
+          sidebar: (() => {
+            const e = document.querySelector<HTMLElement>(".sidebar");
+            const r = e?.getBoundingClientRect();
+            return {
+              display: e && getComputedStyle(e).display,
+              visibility: e && getComputedStyle(e).visibility,
+              box: r && { x: r.x, y: r.y, width: r.width, height: r.height },
+            };
+          })(),
+        })),
+      ),
+    ),
+  });
+  await navigation
+    .getByRole("button", { name: "My projects", exact: true })
+    .click();
   await page.getByRole("button", { name: "Resume", exact: true }).click();
   await expect(page.getByTestId("player-hash")).toHaveText(sequenceHash);
   await expect(page.getByTestId("confirmed-step")).toContainText("1/");

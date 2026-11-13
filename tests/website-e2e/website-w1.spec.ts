@@ -4,6 +4,18 @@ import { websiteText } from "../../src/website-i18n";
 import { customerFlowText } from "../../src/customer-flow-i18n";
 import { english, choosePhoto, result } from "../protected-e2e/helpers";
 test.use({ trace: "off" });
+const generationTransport = new WeakMap<
+  import("@playwright/test").Page,
+  Array<Record<string, unknown>>
+>();
+test.afterEach(async ({ page }, info) => {
+  const rows = generationTransport.get(page);
+  if (rows)
+    await info.attach("generation-transport", {
+      contentType: "application/json",
+      body: Buffer.from(JSON.stringify(rows)),
+    });
+});
 
 async function farPhoto(page: import("@playwright/test").Page) {
   const input = readFileSync("output/phase10/inputs/synthetic-1.png").toString(
@@ -90,6 +102,34 @@ test("unlimited anonymous previews lead to purchase for both actions; login atta
   await page.goto("/");
   await english(page);
   await page.screenshot({ path: info.outputPath("start.png"), fullPage: true });
+  const transport: Array<Record<string, unknown>> = [];
+  generationTransport.set(page, transport);
+  page.on("requestfailed", (r) => {
+    const path = new URL(r.url()).pathname;
+    if (path.startsWith("/api/generation/"))
+      transport.push({ path, failure: r.failure()?.errorText });
+  });
+  page.on("response", async (r) => {
+    const path = new URL(r.url()).pathname;
+    if (!path.startsWith("/api/generation/")) return;
+    const row: Record<string, unknown> = { path, http: r.status() };
+    transport.push(row);
+    if (path.endsWith("/status") && r.ok())
+      try {
+        const b = await r.json();
+        Object.assign(row, {
+          state: b.status,
+          fraction: b.fraction,
+          lines: b.lines,
+          width: b.width,
+          height: b.height,
+          previewLength:
+            typeof b.preview === "string" ? b.preview.length : undefined,
+        });
+      } catch {
+        row.responseReadFailed = true;
+      }
+  });
   await expect(page.getByTestId("customer-account-link")).toBeVisible();
   await expect(page.getByTestId("customer-contact")).toHaveAttribute(
     "href",

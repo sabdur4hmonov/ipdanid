@@ -1,5 +1,8 @@
 import { uiText } from "./ui-i18n";
 import { websiteText } from "./website-i18n";
+import { StudioHome, StudioMark } from "./StudioHome";
+import { studioHomeText } from "./studio-home-i18n";
+import { useBusiness } from "./BusinessContext";
 import {
   websiteFaceQuality,
   websitePortraitPlacement,
@@ -71,6 +74,7 @@ import {
   clearOptimizerRecovery,
 } from "./optimizer-storage";
 import "./customer-flow.css";
+import "./studio-website.css";
 import type { PhotoDraft } from "./photo-draft";
 import { photoDraftText } from "./photo-draft-i18n";
 const SequenceAnimation = lazy(() => import("./SequenceAnimation"));
@@ -102,6 +106,7 @@ export function CustomerStudio({
   onGuide,
   onPersist,
 }: Props) {
+  const { settings: storefront } = useBusiness();
   const t = (k: Parameters<typeof customerFlowText>[1]) =>
     customerFlowText(locale, k);
   const [step, setStep] = useState<"start" | "adjust" | "result">("start"),
@@ -153,7 +158,9 @@ export function CustomerStudio({
   useEffect(() => {
     if (farFace) farDialog.current?.showModal();
   }, [farFace]);
-  useEffect(() => { if (active) window.scrollTo({top:0,behavior:"instant"}); }, [step,active]);
+  useEffect(() => {
+    if (active) window.scrollTo({ top: 0, behavior: "instant" });
+  }, [step, active]);
   const generation = useRef(0),
     configRead = useRef(0),
     upload = useRef(0),
@@ -937,6 +944,23 @@ export function CustomerStudio({
             (p, j) => `${j ? "L" : "M"}${1 + p.x * 497},${1 + p.y * 497}`,
           ).join(" ") + "Z"
         : undefined;
+  const changeProductKind = (next: CutoutChoice | "lettering") => {
+    setCutoutChoice(next);
+    setKind(next === "auto" ? "people" : next);
+    if (next === "lettering" || kind === "lettering") {
+      ++upload.current;
+      stopGeneration();
+      controller.current?.abort();
+      setStep("start");
+      setSource(undefined);
+      setAnalysis(undefined);
+      setResult(undefined);
+      setRemoteResult(undefined);
+      remoteAttempt.current = undefined;
+      setPreparing(false);
+      setBusy(false);
+    } else if (source) void recut(next);
+  };
   return (
     <section
       className="customer-flow"
@@ -961,82 +985,176 @@ export function CustomerStudio({
             ‹
           </button>
         ) : (
-          <span />
+          <a
+            className="studio-brand"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }}
+          >
+            <StudioMark />
+            <span>
+              {storefront.brandName || "Ip Rasm"}
+              <small>{studioHomeText(locale, "footer")}</small>
+            </span>
+          </a>
         )}
-        <span>
-          {step === "start" ? "" : t(step === "adjust" ? "adjust" : "result")}
-        </span>
-        <details className="customer-menu" data-testid="customer-menu">
-          <summary>{t("menu")}</summary>
-          <div>
-            <button
-              onClick={(event) => {
-                event.currentTarget.closest("details")?.removeAttribute("open");
-                setDraftOpen(true);
-              }}
-            >
-              {photoDraftText(locale, "title")}
-            </button>
-            {active && (
-              <select
-                data-testid="locale-picker"
-                aria-label={uiText(locale, "language")}
-                value={locale}
-                onChange={(e) => setLocale(e.target.value as Locale)}
+        {step === "start" ? (
+          <nav
+            className="studio-header-nav"
+            aria-label={studioHomeText(locale, "how")}
+          >
+            <a href="#studio-how">{studioHomeText(locale, "how")}</a>
+            <a href="#studio-shapes">{studioHomeText(locale, "shapes")}</a>
+            <a href="#studio-faq">{studioHomeText(locale, "questions")}</a>
+          </nav>
+        ) : (
+          <span className="studio-stage-name">
+            {t(step === "adjust" ? "adjust" : "result")}
+          </span>
+        )}
+        <div className="studio-header-actions">
+          {active && (
+            <CustomerAccountLink
+              locale={locale}
+              onLogin={() => onNavigate("customer")}
+              onWorks={onWorks ?? (() => onNavigate("customer"))}
+            />
+          )}
+          <details className="customer-menu" data-testid="customer-menu">
+            <summary>{t("menu")}</summary>
+            <div>
+              {step === "start" && (
+                <>
+                  <a
+                    href="#studio-how"
+                    onClick={(e) =>
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open")
+                    }
+                  >
+                    {studioHomeText(locale, "how")}
+                  </a>
+                  <a
+                    href="#studio-shapes"
+                    onClick={(e) =>
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open")
+                    }
+                  >
+                    {studioHomeText(locale, "shapes")}
+                  </a>
+                  <a
+                    href="#studio-faq"
+                    onClick={(e) =>
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open")
+                    }
+                  >
+                    {studioHomeText(locale, "questions")}
+                  </a>
+                </>
+              )}
+              <button
+                onClick={(event) => {
+                  event.currentTarget
+                    .closest("details")
+                    ?.removeAttribute("open");
+                  setDraftOpen(true);
+                }}
               >
-                <option value="uz">O‘zbekcha</option>
-                <option value="uz-Cyrl">Ўзбекча</option>
-                <option value="ru">Русский</option>
-                <option value="en">English</option>
-              </select>
-            )}
-            <button
-              onClick={(event) => {
-                event.currentTarget.closest("details")?.removeAttribute("open");
-                onNavigate("library");
-              }}
-            >
-              {t("library")}
-            </button>
-            <button
-              onClick={(event) => {
-                event.currentTarget.closest("details")?.removeAttribute("open");
-                onNavigate("customer");
-              }}
-            >
-              {websiteText(locale, "login")}
-            </button>
-            <button onClick={() => onWorks?.()}>
-              {websiteText(locale, "works")}
-            </button>
-            <a
-              href={telegramContact()}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {websiteText(locale, "telegram")}
-            </a>
-            <button
-              data-testid="customer-shop"
-              onClick={(event) => {
-                event.currentTarget.closest("details")?.removeAttribute("open");
-                onShop();
-              }}
-            >
-              {trialText(locale, "shop")}
-            </button>
-            <button data-testid="enter-expert" onClick={onExpert}>
-              {t("expert")}
-            </button>
-          </div>
-        </details>
+                {photoDraftText(locale, "title")}
+              </button>
+              {active && (
+                <select
+                  data-testid="locale-picker"
+                  aria-label={uiText(locale, "language")}
+                  value={locale}
+                  onChange={(e) => setLocale(e.target.value as Locale)}
+                >
+                  <option value="uz">O‘zbekcha</option>
+                  <option value="uz-Cyrl">Ўзбекча</option>
+                  <option value="ru">Русский</option>
+                  <option value="en">English</option>
+                </select>
+              )}
+              <button
+                onClick={(event) => {
+                  event.currentTarget
+                    .closest("details")
+                    ?.removeAttribute("open");
+                  onNavigate("library");
+                }}
+              >
+                {t("library")}
+              </button>
+              <button
+                onClick={(event) => {
+                  event.currentTarget
+                    .closest("details")
+                    ?.removeAttribute("open");
+                  onNavigate("customer");
+                }}
+              >
+                {websiteText(locale, "login")}
+              </button>
+              <button onClick={() => onWorks?.()}>
+                {websiteText(locale, "works")}
+              </button>
+              <a
+                href={telegramContact()}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {websiteText(locale, "telegram")}
+              </a>
+              <button
+                data-testid="customer-shop"
+                onClick={(event) => {
+                  event.currentTarget
+                    .closest("details")
+                    ?.removeAttribute("open");
+                  onShop();
+                }}
+              >
+                {trialText(locale, "shop")}
+              </button>
+              <button data-testid="enter-expert" onClick={onExpert}>
+                {t("expert")}
+              </button>
+            </div>
+          </details>
+        </div>
       </header>
-      {active && (
-        <CustomerAccountLink
-          locale={locale}
-          onLogin={() => onNavigate("customer")}
-          onWorks={onWorks ?? (() => onNavigate("customer"))}
-        />
+      {step !== "start" && (
+        <div className="studio-stage-heading">
+          <ol aria-label={studioHomeText(locale, "how")}>
+            {(["stepUpload", "stepAdjust", "stepResult"] as const).map(
+              (key, i) => (
+                <li
+                  key={key}
+                  aria-current={
+                    (step === "adjust" ? i === 1 : i === 2) ? "step" : undefined
+                  }
+                >
+                  <span>0{i + 1}</span>
+                  {studioHomeText(locale, key)}
+                </li>
+              ),
+            )}
+          </ol>
+          <h1>{t(step === "adjust" ? "adjust" : "result")}</h1>
+          <p>
+            {studioHomeText(
+              locale,
+              step === "adjust" ? "adjustIntro" : "resultIntro",
+            )}
+          </p>
+        </div>
       )}
       <input
         ref={replacementPhoto}
@@ -1091,31 +1209,16 @@ export function CustomerStudio({
           </div>
         </dialog>
       )}
-      {step !== "result" && (
+      {step === "adjust" && (
         <label className="customer-hint">
           {productText(locale, "kind")}
           <select
             data-testid="product-kind"
             value={cutoutChoice}
             disabled={busy || preparing}
-            onChange={(e) => {
-              const next = e.target.value as CutoutChoice | "lettering";
-              setCutoutChoice(next);
-              setKind(next === "auto" ? "people" : next);
-              if (next === "lettering" || kind === "lettering") {
-                ++upload.current;
-                stopGeneration();
-                controller.current?.abort();
-                setStep("start");
-                setSource(undefined);
-                setAnalysis(undefined);
-                setResult(undefined);
-                setRemoteResult(undefined);
-                remoteAttempt.current = undefined;
-                setPreparing(false);
-                setBusy(false);
-              } else if (source) void recut(next);
-            }}
+            onChange={(e) =>
+              changeProductKind(e.target.value as CutoutChoice | "lettering")
+            }
           >
             {(
               [
@@ -1150,101 +1253,144 @@ export function CustomerStudio({
       )}
       {step === "start" && (
         <div className="customer-start" data-testid="customer-start">
-          {kind === "lettering" ? (
-            <div>
+          <StudioHome
+            brandName={storefront.brandName || "Ip Rasm"}
+            locale={locale}
+            shape={shape}
+            onShape={setShape}
+            onKit={() => onNavigate("customer")}
+            onShop={onShop}
+            onProjects={() => onNavigate("library")}
+            photoControls={
               <label>
-                {productText(locale, "lettering")}
-                <input
-                  data-testid="lettering-input"
-                  dir="auto"
-                  value={lettering}
-                  onChange={(e) => setLettering(e.target.value)}
-                />
+                {productText(locale, "kind")}
+                <select
+                  data-testid="product-kind"
+                  value={cutoutChoice}
+                  disabled={busy || preparing}
+                  onChange={(e) =>
+                    changeProductKind(
+                      e.target.value as CutoutChoice | "lettering",
+                    )
+                  }
+                >
+                  {(
+                    [
+                      "auto",
+                      "people",
+                      "animal",
+                      "vehicle",
+                      "object",
+                      "lettering",
+                    ] as const
+                  ).map((k) => (
+                    <option key={k} value={k}>
+                      {productText(locale, k)}
+                    </option>
+                  ))}
+                </select>
               </label>
-              <button
-                className="primary"
-                data-testid="prepare-lettering"
-                onClick={() =>
-                  void (async () => {
-                    try {
-                      const { rasterLettering } =
-                          await import("./core/lettering"),
-                        { shapeText } = await import("./core/mixed-lettering");
-                      const g = await shapeText(lettering, {
-                        widthMm: 500,
-                        heightMm: 500,
-                        shape: "rectangle",
-                      });
-                      const pixels = rasterLettering(g, 500);
-                      const c = document.createElement("canvas");
-                      c.width = c.height = 500;
-                      const ctx = c.getContext("2d")!,
-                        d = ctx.createImageData(500, 500);
-                      for (let k = 0; k < 500 * 500; k++) {
-                        d.data[k * 4] =
-                          d.data[k * 4 + 1] =
-                          d.data[k * 4 + 2] =
-                            pixels[k * 3];
-                        d.data[k * 4 + 3] = 255;
-                      }
-                      ctx.putImageData(d, 0, 0);
-                      // Fit generated glyphs, including Arabic dots/diacritics,
-                      // rather than a large empty square around a short line.
-                      // Uploaded photographs retain the user's whole-photo framing.
-                      const left = Math.max(
-                          0,
-                          Math.floor(g.bounds.left * 500) - 4,
-                        ),
-                        top = Math.max(0, Math.floor(g.bounds.top * 500) - 4),
-                        right = Math.min(
-                          500,
-                          Math.ceil((g.bounds.left + g.bounds.width) * 500) + 4,
-                        ),
-                        bottom = Math.min(
-                          500,
-                          Math.ceil((g.bounds.top + g.bounds.height) * 500) + 4,
-                        ),
-                        textSource = document.createElement("canvas");
-                      textSource.width = right - left;
-                      textSource.height = bottom - top;
-                      textSource
-                        .getContext("2d")!
-                        .putImageData(
-                          ctx.getImageData(
-                            left,
-                            top,
-                            right - left,
-                            bottom - top,
+            }
+          >
+            {kind === "lettering" ? (
+              <div>
+                <label>
+                  {productText(locale, "lettering")}
+                  <input
+                    data-testid="lettering-input"
+                    dir="auto"
+                    value={lettering}
+                    onChange={(e) => setLettering(e.target.value)}
+                  />
+                </label>
+                <button
+                  className="primary"
+                  data-testid="prepare-lettering"
+                  onClick={() =>
+                    void (async () => {
+                      try {
+                        const { rasterLettering } =
+                            await import("./core/lettering"),
+                          { shapeText } =
+                            await import("./core/mixed-lettering");
+                        const g = await shapeText(lettering, {
+                          widthMm: 500,
+                          heightMm: 500,
+                          shape: "rectangle",
+                        });
+                        const pixels = rasterLettering(g, 500);
+                        const c = document.createElement("canvas");
+                        c.width = c.height = 500;
+                        const ctx = c.getContext("2d")!,
+                          d = ctx.createImageData(500, 500);
+                        for (let k = 0; k < 500 * 500; k++) {
+                          d.data[k * 4] =
+                            d.data[k * 4 + 1] =
+                            d.data[k * 4 + 2] =
+                              pixels[k * 3];
+                          d.data[k * 4 + 3] = 255;
+                        }
+                        ctx.putImageData(d, 0, 0);
+                        // Fit generated glyphs, including Arabic dots/diacritics,
+                        // rather than a large empty square around a short line.
+                        // Uploaded photographs retain the user's whole-photo framing.
+                        const left = Math.max(
+                            0,
+                            Math.floor(g.bounds.left * 500) - 4,
                           ),
-                          0,
-                          0,
+                          top = Math.max(0, Math.floor(g.bounds.top * 500) - 4),
+                          right = Math.min(
+                            500,
+                            Math.ceil((g.bounds.left + g.bounds.width) * 500) +
+                              4,
+                          ),
+                          bottom = Math.min(
+                            500,
+                            Math.ceil((g.bounds.top + g.bounds.height) * 500) +
+                              4,
+                          ),
+                          textSource = document.createElement("canvas");
+                        textSource.width = right - left;
+                        textSource.height = bottom - top;
+                        textSource
+                          .getContext("2d")!
+                          .putImageData(
+                            ctx.getImageData(
+                              left,
+                              top,
+                              right - left,
+                              bottom - top,
+                            ),
+                            0,
+                            0,
+                          );
+                        const blob = await new Promise<Blob>((r) =>
+                          textSource.toBlob((b) => r(b!)),
                         );
-                      const blob = await new Promise<Blob>((r) =>
-                        textSource.toBlob((b) => r(b!)),
-                      );
-                      await photo(
-                        new File([blob], "lettering.png", {
-                          type: "image/png",
-                        }),
-                      );
-                    } catch {
-                      setError("error");
-                    }
-                  })()
-                }
-              >
-                {t("adjust")}
-              </button>
-            </div>
-          ) : (
-            <PhotoActions
-              locale={locale}
-              onPhoto={photo}
-              galleryLabel={t("gallery")}
-              cameraLabel={t("camera")}
-              hint={false}
-            />
-          )}
+                        await photo(
+                          new File([blob], "lettering.png", {
+                            type: "image/png",
+                          }),
+                        );
+                      } catch {
+                        setError("error");
+                      }
+                    })()
+                  }
+                >
+                  {t("adjust")}
+                </button>
+              </div>
+            ) : (
+              <PhotoActions
+                locale={locale}
+                onPhoto={photo}
+                galleryLabel={t("gallery")}
+                cameraLabel={t("camera")}
+                hint={false}
+              />
+            )}
+          </StudioHome>
         </div>
       )}
       {step === "adjust" && (

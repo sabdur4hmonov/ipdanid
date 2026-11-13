@@ -12,7 +12,7 @@ import { standardText } from "./standard-kit-i18n";
 import { takeKitClaim, kitClaimCode } from "./kit-claim-link";
 import { giftClaimCode, takeGiftClaim } from "./gift-claim-link";
 import { startDigitalPendingLifecycle } from "./digital-pending";
-import {startAnalyticsRuntime} from './analytics-client';
+import { startAnalyticsRuntime } from "./analytics-client";
 import { standardKitRevision } from "./standard-kit-settings";
 import type { StandardKitConfig } from "./core/standard-kit";
 const StandardKitStudio = lazy(() =>
@@ -21,10 +21,20 @@ const StandardKitStudio = lazy(() =>
 
 import { useAppController } from "./useAppController";
 import { MoreMenu } from "./screens/MoreMenu";
-const CreateScreen = lazy(() => import("./screens/CreateScreen").then(m => ({ default: m.CreateScreen })));
-const AssembleScreen = lazy(() => import("./screens/AssembleScreen").then(m => ({ default: m.AssembleScreen })));
-const LibraryScreen = lazy(() => import("./screens/LibraryScreen").then(m => ({ default: m.LibraryScreen })));
-const MoreScreen = lazy(() => import("./screens/MoreScreen").then(m => ({ default: m.MoreScreen })));
+const CreateScreen = lazy(() =>
+  import("./screens/CreateScreen").then((m) => ({ default: m.CreateScreen })),
+);
+const AssembleScreen = lazy(() =>
+  import("./screens/AssembleScreen").then((m) => ({
+    default: m.AssembleScreen,
+  })),
+);
+const LibraryScreen = lazy(() =>
+  import("./screens/LibraryScreen").then((m) => ({ default: m.LibraryScreen })),
+);
+const MoreScreen = lazy(() =>
+  import("./screens/MoreScreen").then((m) => ({ default: m.MoreScreen })),
+);
 export default function App() {
   const [kitClaim, setKitClaim] = useState(() =>
     kitClaimCode(window.location.hash),
@@ -35,7 +45,9 @@ export default function App() {
   );
   const [standard, setStandard] = useState(true);
   const [customerFlow, setCustomerFlow] = useState(true);
-  const [customerPane, setCustomerPane] = useState<"account" | "shop" | "sync">("account");
+  const [customerPane, setCustomerPane] = useState<"account" | "shop" | "sync">(
+    "account",
+  );
   const context = useAppController(
     kitClaim || giftClaim ? "customer" : "create",
   );
@@ -94,7 +106,7 @@ export default function App() {
     view,
   } = context;
   useEffect(() => startPushRuntime(locale), [locale]);
-  useEffect(()=>startAnalyticsRuntime(),[]);
+  useEffect(() => startAnalyticsRuntime(), []);
   useEffect(() => {
     startDigitalPendingLifecycle();
   }, []);
@@ -122,7 +134,13 @@ export default function App() {
   }, []);
   return (
     <div
-      className={customerFlow && view === "create" ? "app customer-app" : "app"}
+      className={
+        customerFlow
+          ? view === "create"
+            ? "app website-app customer-app"
+            : "app website-app"
+          : "app"
+      }
     >
       <aside className="sidebar">
         <a
@@ -139,7 +157,7 @@ export default function App() {
             <span className="brand-sub">{t("tagline")}</span>
           </span>
         </a>
-        <nav aria-label={uiText(locale,"main")}>
+        <nav aria-label={uiText(locale, "main")}>
           {(
             [
               { id: "create", icon: Sparkles },
@@ -166,12 +184,16 @@ export default function App() {
         <div className="sidebar-bottom">
           <div className="local-badge">
             <ShieldCheck size={18} />
-            {protectedGenerationMode ? protectedText(locale, "private") : t("private")}
+            {protectedGenerationMode
+              ? protectedText(locale, "private")
+              : t("private")}
           </div>
           <button className="text-button" onClick={() => setShowPrivacy(true)}>
             {t("privacy")}
           </button>
-          <span className="version">Ip Rasm · {uiText(locale,"development")} 0.1</span>
+          <span className="version">
+            Ip Rasm · {uiText(locale, "development")} 0.1
+          </span>
         </div>
       </aside>
       <div className="body">
@@ -181,7 +203,19 @@ export default function App() {
             <span>/</span> <span>{storefront.brandName || PRODUCT_NAME}</span>
           </div>
           <div className="header-right">
-            {customerFlow && view!=="create" && <CustomerAccountLink locale={locale} onLogin={()=>{setCustomerPane("account");nav("customer");}} onWorks={()=>{setCustomerPane("sync");nav("customer");}}/>}
+            {customerFlow && view !== "create" && (
+              <CustomerAccountLink
+                locale={locale}
+                onLogin={() => {
+                  setCustomerPane("account");
+                  nav("customer");
+                }}
+                onWorks={() => {
+                  setCustomerPane("sync");
+                  nav("customer");
+                }}
+              />
+            )}
             <MoreMenu
               customerMode={customerFlow}
               context={context}
@@ -192,7 +226,7 @@ export default function App() {
               onExpert={() => {
                 setCustomerFlow(false);
                 context.setMoreOpen(false);
-                if(view === "assemble") context.pause();
+                if (view === "assemble") context.pause();
                 else nav("create");
               }}
             />
@@ -204,7 +238,8 @@ export default function App() {
             )}
             {!(customerFlow && view === "create") && (
               <select
-                data-testid="locale-picker" aria-label={uiText(locale,"language")}
+                data-testid="locale-picker"
+                aria-label={uiText(locale, "language")}
                 value={locale}
                 onChange={(e) => setLocale(e.target.value as Locale)}
               >
@@ -256,7 +291,10 @@ export default function App() {
           {error && (
             <div role="alert" className="alert error">
               {customerError(error, locale)}
-              <button aria-label={uiText(locale,"dismissError")} onClick={() => setError("")}>
+              <button
+                aria-label={uiText(locale, "dismissError")}
+                onClick={() => setError("")}
+              >
                 <X size={16} />
               </button>
             </div>
@@ -267,202 +305,229 @@ export default function App() {
               {notice}
             </div>
           )}
-          <Suspense fallback={<p role="status">{customerText(locale, "loading")}</p>}>
-          {view === "customer" && (
-            <CustomerHub
-              initialPane={customerPane}
-              kitClaim={kitClaim}
-              giftClaim={giftClaim}
-              onGiftHandled={() => setGiftClaim(null)}
-              onClaimHandled={() => setKitClaim(null)}
-              locale={locale}
-              projects={projects.filter((p) => canBuild(p.instruction))}
-              onRestore={context.restoreAccountProject}
-              onImport={(i, p) => {
-                const next: Project = {
-                  id: crypto.randomUUID(),
-                  name: "Server · " + i.sequenceHash.slice(0, 8),
-                  instruction: deepFreeze(i),
-                  progress: p,
-                  edits: { ...DEFAULT_EDITS },
-                };
-                setProjects((ps) => [next, ...ps]);
-                open(next);
-              }}
-              onProgress={(id, p) => {
-                const local = projects.find((item) => item.id === id);
-                if (!local || local.instruction.sequenceHash !== p.sequenceHash)
-                  throw new Error("Different sequences");
-                const progress = confirm(
-                  local.progress,
-                  p.confirmed,
-                  local.instruction,
-                );
-                setProjects((ps) =>
-                  ps.map((item) =>
-                    item.id === id ? { ...item, progress } : item,
-                  ),
-                );
-              }}
-              onApplyProfile={async (id) => {
-                const standardRevision = id.match(
-                  /^standard-(?:base|circle|rectangle|heart)-r([1-9]\d*)(?:-classic[23](?:-polished)?)?$/,
-                );
-                if (standardRevision) {
-                  setClaimedKit(
-                    await standardKitRevision(Number(standardRevision[1])),
-                  );
-                  setCustomerFlow(true);
-                  setStandard(true);
-                  nav("create");
-                  return;
-                }
-                const match = id.match(
-                  /^dev-(circle|rectangle|heart)-(\d+)-(dark|light|color)$/,
-                );
-                if (!match || Number(match[2]) < 24 || Number(match[2]) > 240) {
-                  setError(customerText(locale, "failure"));
-                  return;
-                }
-                setShape(match[1] as Shape);
-                setCustomerFlow(false);
-                setStandard(false);
-                setPinCount(Number(match[2]));
-                setMode(match[3] as "dark" | "light" | "color");
-                setWidthMm(400);
-                setHeightMm(400);
-                setThreadMm(0.3);
-                nav("create");
-              }}
-            />
-          )}
-          {customerFlow && (
-            <div className="customer-entry" hidden={view !== "create"}>
-              <CustomerStudio
-                kitConfig={claimedKit}
-                active={view === "create"}
+          <Suspense
+            fallback={<p role="status">{customerText(locale, "loading")}</p>}
+          >
+            {view === "customer" && (
+              <CustomerHub
+                initialPane={customerPane}
+                kitClaim={kitClaim}
+                giftClaim={giftClaim}
+                onGiftHandled={() => setGiftClaim(null)}
+                onClaimHandled={() => setKitClaim(null)}
                 locale={locale}
-                setLocale={setLocale}
-                onExpert={() => {
-                  setCustomerFlow(false);
-                  setStandard(true);
+                projects={projects.filter((p) => canBuild(p.instruction))}
+                onRestore={context.restoreAccountProject}
+                onImport={(i, p) => {
+                  const next: Project = {
+                    id: crypto.randomUUID(),
+                    name: "Server · " + i.sequenceHash.slice(0, 8),
+                    instruction: deepFreeze(i),
+                    progress: p,
+                    edits: { ...DEFAULT_EDITS },
+                  };
+                  setProjects((ps) => [next, ...ps]);
+                  open(next);
                 }}
-                onShop={() => { setCustomerPane("shop"); nav("customer"); }}
-                onNavigate={(v) => { setCustomerPane("account"); nav(v); }}
-                onWorks={()=>{setCustomerPane("sync");nav("customer");}}
-                onPersist={(i) => {
-                  if (!loaded) return;
-                  setProjects((ps) =>
-                    ps.some(
-                      (p) => p.instruction.sequenceHash === i.sequenceHash,
-                    )
-                      ? ps
-                      : [
-                          {
-                            id: crypto.randomUUID(),
-                            name: customerFlowText(locale, "result"),
-                            instruction: i,
-                            progress: progressFor(i),
-                            edits: { ...DEFAULT_EDITS },
-                          },
-                          ...ps,
-                        ],
+                onProgress={(id, p) => {
+                  const local = projects.find((item) => item.id === id);
+                  if (
+                    !local ||
+                    local.instruction.sequenceHash !== p.sequenceHash
+                  )
+                    throw new Error("Different sequences");
+                  const progress = confirm(
+                    local.progress,
+                    p.confirmed,
+                    local.instruction,
                   );
+                  setProjects((ps) =>
+                    ps.map((item) =>
+                      item.id === id ? { ...item, progress } : item,
+                    ),
+                  );
+                }}
+                onApplyProfile={async (id) => {
+                  const standardRevision = id.match(
+                    /^standard-(?:base|circle|rectangle|heart)-r([1-9]\d*)(?:-classic[23](?:-polished)?)?$/,
+                  );
+                  if (standardRevision) {
+                    setClaimedKit(
+                      await standardKitRevision(Number(standardRevision[1])),
+                    );
+                    setCustomerFlow(true);
+                    setStandard(true);
+                    nav("create");
+                    return;
+                  }
+                  const match = id.match(
+                    /^dev-(circle|rectangle|heart)-(\d+)-(dark|light|color)$/,
+                  );
+                  if (
+                    !match ||
+                    Number(match[2]) < 24 ||
+                    Number(match[2]) > 240
+                  ) {
+                    setError(customerText(locale, "failure"));
+                    return;
+                  }
+                  setShape(match[1] as Shape);
+                  setCustomerFlow(false);
+                  setStandard(false);
+                  setPinCount(Number(match[2]));
+                  setMode(match[3] as "dark" | "light" | "color");
+                  setWidthMm(400);
+                  setHeightMm(400);
+                  setThreadMm(0.3);
+                  nav("create");
+                }}
+              />
+            )}
+            {customerFlow && (
+              <div className="customer-entry" hidden={view !== "create"}>
+                <CustomerStudio
+                  kitConfig={claimedKit}
+                  active={view === "create"}
+                  locale={locale}
+                  setLocale={setLocale}
+                  onExpert={() => {
+                    setCustomerFlow(false);
+                    setStandard(true);
+                  }}
+                  onShop={() => {
+                    setCustomerPane("shop");
+                    nav("customer");
+                  }}
+                  onNavigate={(v) => {
+                    setCustomerPane("account");
+                    nav(v);
+                  }}
+                  onWorks={() => {
+                    setCustomerPane("sync");
+                    nav("customer");
+                  }}
+                  onPersist={(i) => {
+                    if (!loaded) return;
+                    setProjects((ps) =>
+                      ps.some(
+                        (p) => p.instruction.sequenceHash === i.sequenceHash,
+                      )
+                        ? ps
+                        : [
+                            {
+                              id: crypto.randomUUID(),
+                              name: customerFlowText(locale, "result"),
+                              instruction: i,
+                              progress: progressFor(i),
+                              edits: { ...DEFAULT_EDITS },
+                            },
+                            ...ps,
+                          ],
+                    );
+                  }}
+                  onGuide={(i) => {
+                    if (!loaded) return;
+                    const existing = projects.find(
+                      (p) => p.instruction.sequenceHash === i.sequenceHash,
+                    );
+                    const p = existing ?? {
+                      id: crypto.randomUUID(),
+                      name: customerFlowText(locale, "result"),
+                      instruction: i,
+                      progress: progressFor(i),
+                      edits: { ...DEFAULT_EDITS },
+                    };
+                    if (!existing) setProjects((ps) => [p, ...ps]);
+                    open(p);
+                  }}
+                />
+              </div>
+            )}
+            {view === "create" && !customerFlow && (
+              <>
+                <details open={!standard} data-testid="expert-tools">
+                  <summary>{standardText(locale, "details")}</summary>
+                  <button
+                    className="outline"
+                    data-testid="create-mode"
+                    onClick={() => setStandard((v) => !v)}
+                  >
+                    {standardText(locale, standard ? "legacy" : "standard")}
+                  </button>
+                </details>
+                {standard ? (
+                  <Suspense fallback={<p>…</p>}>
+                    <StandardKitStudio
+                      locale={locale}
+                      onGuide={(i) => {
+                        if (!loaded) return;
+                        const p: Project = {
+                          id: crypto.randomUUID(),
+                          name: standardText(locale, "title"),
+                          instruction: i,
+                          progress: progressFor(i),
+                          edits: { ...DEFAULT_EDITS },
+                        };
+                        setProjects((ps) => [p, ...ps]);
+                        open(p);
+                      }}
+                    />
+                  </Suspense>
+                ) : (
+                  <CreateScreen context={context} />
+                )}
+              </>
+            )}
+            {view === "assemble" && (
+              <AssembleScreen context={context} expert={!customerFlow} />
+            )}
+            {view === "library" && (
+              <LibraryScreen
+                context={context}
+                onCreateCustom={() => {
+                  // Saved legacy calculations own their editor; a prior standard-kit
+                  // selection must not hide their progress, result or reused settings.
+                  setCustomerFlow(false);
+                  setStandard(false);
+                  nav("create");
+                }}
+              />
+            )}
+            {view === "materials" && <MoreScreen context={context} />}
+            {view === "crafts" && (
+              <CraftStudio
+                locale={locale}
+                onPreset={(kind) => {
+                  chooseSubject(kind);
+                  setStrongSubjectFit(true);
+                  nav("create");
                 }}
                 onGuide={(i) => {
                   if (!loaded) return;
-                  const existing = projects.find(
-                    (p) => p.instruction.sequenceHash === i.sequenceHash,
-                  );
-                  const p = existing ?? {
+                  const p: Project = {
                     id: crypto.randomUUID(),
-                    name: customerFlowText(locale, "result"),
+                    name: i.params.product?.text ?? t("defaultName"),
                     instruction: i,
                     progress: progressFor(i),
                     edits: { ...DEFAULT_EDITS },
                   };
-                  if (!existing) setProjects((ps) => [p, ...ps]);
+                  setProjects((ps) => [p, ...ps]);
                   open(p);
                 }}
               />
-            </div>
-          )}
-          {view === "create" && !customerFlow && (
-            <>
-              <details open={!standard} data-testid="expert-tools">
-                <summary>{standardText(locale, "details")}</summary>
-                <button
-                  className="outline"
-                  data-testid="create-mode"
-                  onClick={() => setStandard((v) => !v)}
-                >
-                  {standardText(locale, standard ? "legacy" : "standard")}
-                </button>
-              </details>
-              {standard ? (
-                <Suspense fallback={<p>…</p>}>
-                  <StandardKitStudio
-                    locale={locale}
-                    onGuide={(i) => {
-                      if (!loaded) return;
-                      const p: Project = {
-                        id: crypto.randomUUID(),
-                        name: standardText(locale, "title"),
-                        instruction: i,
-                        progress: progressFor(i),
-                        edits: { ...DEFAULT_EDITS },
-                      };
-                      setProjects((ps) => [p, ...ps]);
-                      open(p);
-                    }}
-                  />
-                </Suspense>
-              ) : (
-                <CreateScreen context={context} />
-              )}
-            </>
-          )}
-          {view === "assemble" && <AssembleScreen context={context} expert={!customerFlow} />}
-          {view === "library" && <LibraryScreen context={context} onCreateCustom={() => {
-            // Saved legacy calculations own their editor; a prior standard-kit
-            // selection must not hide their progress, result or reused settings.
-            setCustomerFlow(false);
-            setStandard(false);
-            nav("create");
-          }} />}
-          {view === "materials" && <MoreScreen context={context} />}
-          {view === "crafts" && (
-            <CraftStudio
-              locale={locale}
-              onPreset={(kind) => {
-                chooseSubject(kind);
-                setStrongSubjectFit(true);
-                nav("create");
-              }}
-              onGuide={(i) => {
-                if (!loaded) return;
-                const p: Project = {
-                  id: crypto.randomUUID(),
-                  name: i.params.product?.text ?? t("defaultName"),
-                  instruction: i,
-                  progress: progressFor(i),
-                  edits: { ...DEFAULT_EDITS },
-                };
-                setProjects((ps) => [p, ...ps]);
-                open(p);
-              }}
-            />
-          )}
+            )}
           </Suspense>
         </main>
         <footer>
           <span>{storefront.brandName || PRODUCT_NAME}</span>
           <span>
             <ShieldCheck size={14} />
-            {protectedGenerationMode ? protectedText(locale, "private") : t("private")}
+            {protectedGenerationMode
+              ? protectedText(locale, "private")
+              : t("private")}
           </span>
         </footer>
-        {customerFlow && <CustomerContact locale={locale}/>}
+        {customerFlow && <CustomerContact locale={locale} />}
       </div>
       <input
         type="file"
@@ -484,7 +549,11 @@ export default function App() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2>{t("privacy")}</h2>
-            <p>{protectedGenerationMode ? protectedText(locale, "privacy") : t("privacyText")}</p>
+            <p>
+              {protectedGenerationMode
+                ? protectedText(locale, "privacy")
+                : t("privacyText")}
+            </p>
             <button
               className="primary"
               autoFocus

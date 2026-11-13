@@ -1,6 +1,10 @@
 import { execFileSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import assert from "node:assert/strict";
+import {
+  approvedMarketingAsset,
+  marketingAssets,
+} from "./marketing-assets.mjs";
 const phase15 = process.argv.includes("--phase15"),
   base = phase15 ? "40fd2f5" : "fe9e5a3",
   git = (...args) =>
@@ -22,7 +26,18 @@ const prohibited = paths.filter(
   (p) =>
     /^(?:tmp|output|comparison)\/|(?:^|\/)(?:\.env(?:\..*)?|[^/]+\.(?:sqlite|db|jks|keystore|p12|jpg|jpeg|png|webp))$/i.test(
       p,
-    ) && p !== ".env.example",
+    ) &&
+    p !== ".env.example" &&
+    !(
+      Object.hasOwn(marketingAssets, p) &&
+      approvedMarketingAsset(
+        p,
+        execFileSync("git", ["show", `HEAD:${p}`], {
+          maxBuffer: 4 * 1024 * 1024,
+          windowsHide: true,
+        }),
+      )
+    ),
 );
 assert.equal(
   prohibited.length,
@@ -58,8 +73,11 @@ const report = {
   scope:
     "Committed product patches and export paths; private owner env/data never read. Format scan cannot prove the absence of arbitrary unrecognized secrets.",
 };
+const reportPath = process.argv.find((v) => v.startsWith("--report="))?.slice(9) ??
+  `output/phase${phase15 ? 15 : 14}/source-export-audit.json`;
+assert(/^output\/[a-zA-Z0-9_./-]+\.json$/.test(reportPath) && !reportPath.split("/").includes(".."), "Invalid audit report path");
 writeFileSync(
-  `output/phase${phase15 ? 15 : 14}/source-export-audit.json`,
+  reportPath,
   JSON.stringify(report, null, 2),
 );
 console.log(JSON.stringify(report));
