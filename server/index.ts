@@ -1,4 +1,5 @@
 import { clientIp, securityConfig, WindowBudget, BodyLeases, requestBodyLimit } from "./request-security.ts";
+import { resolveFeatures, routeFeature, familyEnabled } from "../src/feature-policy.ts";
 import { allowedOrigin } from "./runtime-config.ts";
 import { ProductionAdminAuth } from "./production-auth.ts";
 import { BusinessStore } from "./business-store.ts";
@@ -35,9 +36,10 @@ import {AnalyticsStore} from './analytics-store.ts';
 import type {Locale} from "../src/core/types.ts";
 import { claimOrigin } from "../src/kit-claim-link.ts";
 const production = process.env.NODE_ENV === "production";
+const features = resolveFeatures(process.env);
 const security = securityConfig(process.env);
-const notificationAdapter = pushAdapter(process.env);
-const transactionalAdapter = emailAdapter(process.env);
+const notificationAdapter = pushAdapter(features.push ? process.env : { ...process.env, FCM_MODE: "disabled" });
+const transactionalAdapter = emailAdapter(features.inbox ? process.env : { ...process.env, TRANSACTIONAL_EMAIL_MODE: "disabled" });
 const adminToken = production
   ? randomBytes(32).toString("base64url")
   : (process.env.LOCAL_ADMIN_TOKEN ?? randomBytes(32).toString("base64url"));
@@ -70,6 +72,13 @@ const catalog = new CatalogStore(store);
 const regions = new RegionsStore(store);
 const journeys = new JourneyStore(store);
 const commissions = new CommissionStore(store);
+function productEnabled(id: string, seen = new Set<string>()): boolean {
+  if (seen.has(id)) return false;
+  const product = store.products().find(p => p.id === id);
+  if (!product || !familyEnabled(features, String(product.family)) || (!features.commissions && commissions.policy(id))) return false;
+  const next = new Set(seen).add(id);
+  return (catalog.all().find(s => s.productId === id)?.parts ?? []).every(part => productEnabled(part.productId, next));
+}
 const outbox = new TransactionalOutbox(store,pepper,transactionalAdapter);
 const analytics=new AnalyticsStore(store);
 const mailTimer=transactionalAdapter.mode!=='disabled'?setInterval(()=>{void outbox.drain().catch(()=>{});},2000).unref():undefined;
@@ -146,6 +155,8 @@ const server = createServer(async (req, res) => {
       throw new DomainError("Origin forbidden", 403);
     if (origin) res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
+    const disabledFeature = routeFeature(new URL(req.url ?? "/", "http://127.0.0.1").pathname);
+    if (disabledFeature && !features[disabledFeature]) throw new DomainError("Not found", 404);
     if (req.method === "OPTIONS") {
       res.setHeader(
         "Access-Control-Allow-Headers",
@@ -163,6 +174,11 @@ const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://127.0.0.1"),
       path = url.pathname,
       token = (req.headers.authorization ?? "").replace(/^Bearer /, "");
+    const feature = routeFeature(path);
+    if (feature && !features[feature]) throw new DomainError("Not found", 404);
+    if (path === "/api/features" && req.method === "GET") {
+      send(200, { version: "iprasm.features/1", features }); return;
+    }
     if (path.startsWith("/api/generation") && url.search)
       throw new DomainError("Generation credentials must not be in the URL");
     if((path.startsWith("/api/trial")||path.startsWith("/api/admin/trial"))&&url.search)throw new DomainError("Trial parameters must not be in the URL");
@@ -210,9 +226,9 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (req.method === "GET" && path === "/api/catalog") {
-      const publicCommissions = commissions.policies(true),
+      const publicCommissions = features.commissions ? commissions.policies(true) : [],
         offeredCommissions = new Set(publicCommissions.map(p=>p.productId)),
-        products = store.catalog().filter(p => !commissions.policy(String(p.id)) || offeredCommissions.has(String(p.id))),
+        products = store.catalog().filter(p => productEnabled(String(p.id)) && (!commissions.policy(String(p.id)) || offeredCommissions.has(String(p.id)))),
         productNames = new Map(
           store.products().map((p) => [p.id, String(p.name)]),
         ),
@@ -223,7 +239,7 @@ const server = createServer(async (req, res) => {
         products,
         catalogRevision: catalog.revision(),
         regions: regions.policy(),
-        journeys: journeys.publicPolicies(),
+        journeys: features.digital ? journeys.publicPolicies() : [],
         commissions: publicCommissions,
         claimOrigin: giftLinkOrigin,
         contents: Object.fromEntries(
@@ -482,6 +498,7 @@ const server = createServer(async (req, res) => {
         return;
       }
       if (path === "/api/admin/catalog/sku" && req.method === "POST") {
+        if (body.product?.family && !familyEnabled(features, body.product.family)) throw new DomainError("Not found", 404);
         send(200, catalog.save(actor, body));
         return;
       }
@@ -650,6 +667,7 @@ const server = createServer(async (req, res) => {
         }
       }
       if (path === "/api/admin/products" && req.method === "POST") {
+        if (body.family && !familyEnabled(features, body.family)) throw new DomainError("Not found", 404);
         send(200, store.updateProduct(actor, body));
         return;
       }
@@ -978,6 +996,10 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (path === "/api/orders" && req.method === "POST") {
+      if (Array.isArray(body.items)) for (const item of body.items) {
+        const product = store.products().find(p => p.id === item.productId);
+        if (product && !productEnabled(String(product.id))) throw new DomainError("Not found", 404);
+      }
       send(
         201,
         body.address?.deliveryMethod

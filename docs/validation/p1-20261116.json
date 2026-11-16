@@ -1,0 +1,168 @@
+{
+  "milestone": "P1 Oracle production readiness",
+  "date": "2026-11-16",
+  "baseCommit": "b98c16c",
+  "branch": "feat/full-roadmap",
+  "scope": "One software readiness milestone; no cloud deployment, quality fit, APK packaging or private master access",
+  "fullUnit": {
+    "source": "output/p1/unit-complete.json",
+    "passed": 791,
+    "failed": 0,
+    "pending": 0,
+    "files": 173,
+    "durationMs": 857405
+  },
+  "targetedUnit": {
+    "source": "output/p1/targeted-release.json",
+    "passed": 22,
+    "failed": 0,
+    "pending": 0,
+    "files": 6,
+    "durationMs": 17270
+  },
+  "protectedGoldens": {
+    "classicLeastSquares": 5,
+    "classicReference": 6,
+    "protectedDeployment": 3,
+    "solverNumbersChanged": false
+  },
+  "browser": [
+    {
+      "source": "test-results/p1-core/report.json",
+      "startTime": "2026-11-16T09:16:47.801Z",
+      "duration": 73961.52,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    {
+      "source": "test-results/p1-enabled-final/report.json",
+      "startTime": "2026-11-16T09:25:14.020Z",
+      "duration": 18988.295000000002,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  ],
+  "typecheck": {
+    "command": "npx tsc -b",
+    "exitCode": 0,
+    "source": "output/p1/typecheck-release.log"
+  },
+  "build": {
+    "command": "VITE_SERVER_GENERATION=1 VITE_NATIVE_API_BASE= npx vite build --outDir output/p1-release-dist",
+    "exitCode": 0,
+    "modules": 2157,
+    "durationSeconds": 53.5,
+    "runtime": {
+      "version": "iprasm.build-runtime/1",
+      "protectedGeneration": true,
+      "nativeApiBase": null
+    },
+    "byteIdenticalToBrowserTestedBuild": false,
+    "onlyDifference": "sw.js precache array ordering; identical cache version, file set and executable code after sorting FILES; all other files byte-identical",
+    "files": 124,
+    "manifestSha256": "e6322b955a3d597dc6a078b443a370509e51478dc0088fb490bd8bc51a144e7b",
+    "source": "output/p1/build-release.log",
+    "warnings": [
+      "Existing fontkit eval, mixed import and large-chunk warnings"
+    ]
+  },
+  "arm64": {
+    "platform": "linux/arm64",
+    "emulatedOn": "win32/x64",
+    "apiImage": "arm64",
+    "webImage": "arm64",
+    "runtime": {
+      "arch": "arm64",
+      "tuning": "classic-reference/4",
+      "encrypted": true,
+      "restored": true,
+      "signer": true
+    },
+    "caddy": true,
+    "caddyVersion": "v2.11.7 h1:yj0Y4fYZGPkSvibBJ1sTWE33xC0fxztVyXEW5iIdUT4=",
+    "coreDefault": true,
+    "productionTlsOrOCI": false,
+    "onlyDisposablePorts": [
+      5097,
+      5098
+    ]
+  },
+  "envSetup": {
+    "date": "2026-11-16",
+    "platform": "linux/arm64",
+    "interactive": true,
+    "hiddenPasswordHashVerified": true,
+    "mode": "0600",
+    "tuning": "4",
+    "features": "core-only",
+    "independentSecrets": true,
+    "credentialsPrinted": false,
+    "disposableTmpfs": true
+  },
+  "deployDrill": {
+    "mockDocker": true,
+    "backupBeforeDeploy": true,
+    "failureStopsDeploy": true,
+    "existingApiCannotUseFirstDeployException": true,
+    "explicitFirstCleanImport": true,
+    "source": "output/p1/deploy-drill-final.log"
+  },
+  "backup": {
+    "algorithm": "AES-256-GCM",
+    "onlineSnapshots": true,
+    "appThenPrivacyJournal": true,
+    "atomicAcrossDatabases": false,
+    "signerAndRuntimeSecretsIncluded": true,
+    "separateEncryptionKeyRequired": true,
+    "dailyUTC": "03:00",
+    "dailyRetention": 14,
+    "weeklyRetention": 8,
+    "predeployRetention": 8,
+    "payloadLimitGiB": 2,
+    "privateTmpfsGiB": 5,
+    "s3Upload": "Optional env-configured SigV4; mock transport verified; live OCI not tested",
+    "restore": "Authenticated new inactive directory only"
+  },
+  "diagnostics": {
+    "completedAttempts": [
+      {
+        "source": "output/p1/unit.json",
+        "passed": 788,
+        "failed": 1
+      },
+      {
+        "source": "output/p1/unit-final.json",
+        "passed": 786,
+        "failed": 3
+      },
+      {
+        "source": "output/p1/unit-accepted.json",
+        "passed": 788,
+        "failed": 1
+      }
+    ],
+    "canceledKnownFailedPartialRuns": [
+      "output/p1/unit-release.log",
+      "output/p1/unit-verified.log"
+    ],
+    "changes": "Strict catalog fixture fields corrected; preserved172080 geometry pairs while removing matcher-allocation overhead; split three PDF exports with all original assertions; functional runner30s and AST15s; explicit production/performance/security/cancellation budgets and solver values unchanged",
+    "other": "Initial enabled browser selector and noexec mock fixture corrected; slow all-emulated compile stopped before native build-stage/ARM runtime separation"
+  },
+  "unverified": {
+    "realOracleVM": true,
+    "publicTLSAndDNS": true,
+    "realOCIObjectStorage": true,
+    "physicalAssemblyAndFreshPhotoLikeness": true,
+    "realAndroidDevice": true
+  },
+  "protectedState": {
+    "frozenPreviewsUnchanged": true,
+    "noRequestsTo4194Or4940": true,
+    "tmpDataAndMillionMasterUntouched": true
+  },
+  "publication": "After commit, source/history audits and feature-only push: ignored output/p1/publication.json contains exact local/remote HEAD and cleanliness; no main/force/merge"
+}

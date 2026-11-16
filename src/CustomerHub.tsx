@@ -1,3 +1,5 @@
+import { useFeatures } from "./FeatureContext";
+import { familyEnabled } from "./feature-policy";
 import { uiText } from "./ui-i18n";
 import { websiteText } from "./website-i18n";
 import { protectedGenerationMode } from './protected-generation';
@@ -164,6 +166,7 @@ export function CustomerHub({
   const bt = (key: Parameters<typeof businessText>[1]) =>
     businessText(locale, key);
   const t = (key: CustomerWord) => customerText(locale, key);
+  const features = useFeatures();
   const [pane, setPane] = useState<Pane>(initialPane),
     [connected, setConnected] = useState(false),
     [busy, setBusy] = useState(false);
@@ -243,7 +246,7 @@ export function CustomerHub({
       ? region.courierFeeMinor
       : 0;
   const checkoutTotal = subtotal + deliveryFee;
-  const offerEnabled =
+  const offerEnabled = features.offers &&
     currency === "UZS" &&
     (address.country ?? "UZ") === "UZ" &&
     deliveryFee ===
@@ -599,11 +602,11 @@ export function CustomerHub({
           {t("sandbox")}
         </p>
       )}
-      {(pane !== "account" || connected) && <><PromotionPreference locale={locale} /><PushSettings locale={locale} /></>}
+      {(pane !== "account" || connected) && <>{features.push && <><PromotionPreference locale={locale} /><PushSettings locale={locale} /></>}</>}
       <div className="customer-tabs" role="group" aria-label={t("customer")}>
         {(
           ["account", "shop", "gallery", "sync", "support", "inbox", "admin"] as Pane[]
-        ).map((p) => (
+        ).filter(p => (p !== "gallery" || features.gallery) && (p !== "inbox" || features.inbox)).map((p) => (
           <button
             key={p}
             className={pane === p ? "active" : "outline"}
@@ -665,7 +668,7 @@ export function CustomerHub({
             )}
           </div>
         )}
-        {pane === "gallery" && (
+        {features.gallery && pane === "gallery" && (
           <Suspense fallback={<p role="status">…</p>}>
             <GalleryStudio
               locale={locale}
@@ -673,14 +676,14 @@ export function CustomerHub({
             />
           </Suspense>
         )}
-        {pane==='inbox'&&connected&&<Suspense fallback={<p role="status">…</p>}><InboxPanel key={locale+api.session?.token} locale={locale}/></Suspense>}
+        {features.inbox&&pane==='inbox'&&connected&&<Suspense fallback={<p role="status">…</p>}><InboxPanel key={locale+api.session?.token} locale={locale}/></Suspense>}
         {pane === "account" && (
           <div className="customer-grid">
             <Suspense fallback={<p role="status">…</p>}>
               <AccountErasurePanel locale={locale} connected={connected && !!me?.durable} />
             </Suspense>
-            {connected&&<Suspense fallback={<p role="status">…</p>}><AnalyticsSettings key={locale+api.session?.token} locale={locale}/></Suspense>}
-            {giftClaim && (
+            {features.analytics&&connected&&<Suspense fallback={<p role="status">…</p>}><AnalyticsSettings key={locale+api.session?.token} locale={locale}/></Suspense>}
+            {features.gifts && giftClaim && (
               <Suspense fallback={<p role="status">…</p>}>
                 <GiftClaimPanel
                   locale={locale}
@@ -717,19 +720,19 @@ export function CustomerHub({
                 />
               </Suspense>
             )}
-            <Suspense fallback={null}><TrialClaimPanel key={api.session?.token ?? "guest"} locale={locale} onCredits={async () => { await refresh(); }} /></Suspense>
+            {features.trials && <Suspense fallback={null}><TrialClaimPanel key={api.session?.token ?? "guest"} locale={locale} onCredits={async () => { await refresh(); }} /></Suspense>}
             <KitLogin locale={locale} onLogin={refresh} />
             {connected && (
               <Suspense fallback={<p role="status">…</p>}>
                 <KitCreditTerms locale={locale} />
               </Suspense>
             )}
-            {connected && (
+            {features.partner && connected && (
               <Suspense fallback={<p role="status">…</p>}>
                 <PartnerPortal locale={locale} />
               </Suspense>
             )}
-            {connected && (
+            {features.offers && connected && (
               <Suspense fallback={<p role="status">…</p>}>
                 <ReferralPanel locale={locale} />
               </Suspense>
@@ -851,6 +854,7 @@ export function CustomerHub({
                     </button>
                   </div>
                 )}
+                {features.gifts && <>
                 <hr />
                 <h3>{t("createGift")}</h3>
                 <label>
@@ -932,14 +936,15 @@ export function CustomerHub({
                 >
                   {t("redeemGift")}
                 </button>
+                </>}
               </section>
             )}
           </div>
         )}
         {pane === "shop" && connected && (
           <>
-            {(commissionPolicies.length > 0 || me?.durable) && <Suspense fallback={<p role="status">…</p>}><CommissionStudio locale={locale} products={products} policies={commissionPolicies} regions={regions} durable={!!me?.durable} archives={remote} onUpdated={refresh}/></Suspense>}
-            {(journeyPolicies.length > 0 || me?.durable) && (
+            {features.commissions && (commissionPolicies.length > 0 || me?.durable) && <Suspense fallback={<p role="status">…</p>}><CommissionStudio locale={locale} products={products} policies={commissionPolicies} regions={regions} durable={!!me?.durable} archives={remote} onUpdated={refresh}/></Suspense>}
+            {features.digital && (journeyPolicies.length > 0 || me?.durable) && (
               <Suspense fallback={<p role="status">…</p>}>
                 <DigitalStudio
                   locale={locale}
@@ -1533,7 +1538,7 @@ export function CustomerHub({
                 {can("codes") && (
                   <KitAdmin locale={locale} token={adminToken} />
                 )}
-                {(can("codes") || can("settings")) && <Suspense fallback={null}><TrialAdmin key={adminToken} locale={locale} token={adminToken} settingsAllowed={can("settings")} codesAllowed={can("codes")} /></Suspense>}
+                {features.trials && (can("codes") || can("settings")) && <Suspense fallback={null}><TrialAdmin key={adminToken} locale={locale} token={adminToken} settingsAllowed={can("settings")} codesAllowed={can("codes")} /></Suspense>}
                 <BusinessAdmin
                   locale={locale}
                   token={adminToken}
@@ -1541,20 +1546,20 @@ export function CustomerHub({
                   messagesAllowed={can("messages")}
                   run={run}
                 />
-                {can("support") && (
+                {features.gallery && can("support") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <GalleryModeration locale={locale} token={adminToken} />
                   </Suspense>
                 )}
-                {can("finance") && (
+                {features.offers && can("finance") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <OfferAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
                 {can("finance") && <Suspense fallback={<p role="status">…</p>}><FinancePanel locale={locale} token={adminToken}/></Suspense>}
-                {can('messages')&&<Suspense fallback={<p role="status">…</p>}><MailAdmin key={locale+adminToken} locale={locale} token={adminToken}/></Suspense>}
-                {can('audit')&&<Suspense fallback={<p role="status">…</p>}><AnalyticsAdmin key={locale+adminToken} locale={locale} token={adminToken}/></Suspense>}
-                {can("access") && (
+                {features.inbox&&can('messages')&&<Suspense fallback={<p role="status">…</p>}><MailAdmin key={locale+adminToken} locale={locale} token={adminToken}/></Suspense>}
+                {features.analytics&&can('audit')&&<Suspense fallback={<p role="status">…</p>}><AnalyticsAdmin key={locale+adminToken} locale={locale} token={adminToken}/></Suspense>}
+                {features.partner && can("access") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <PartnerAdmin locale={locale} token={adminToken} />
                   </Suspense>
@@ -1564,13 +1569,13 @@ export function CustomerHub({
                     <CatalogAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
-                {can("catalog") && (
+                {features.digital && can("catalog") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <DigitalAdmin locale={locale} token={adminToken} />
                   </Suspense>
                 )}
-                {can("catalog") && <Suspense fallback={<p role="status">…</p>}><CommissionPolicyAdmin locale={locale} token={adminToken}/></Suspense>}
-                {can("orders") && <Suspense fallback={<p role="status">…</p>}><CommissionOrdersAdmin locale={locale} token={adminToken} canFulfill={can("fulfill")}/></Suspense>}
+                {features.commissions && can("catalog") && <Suspense fallback={<p role="status">…</p>}><CommissionPolicyAdmin locale={locale} token={adminToken}/></Suspense>}
+                {features.commissions && can("orders") && <Suspense fallback={<p role="status">…</p>}><CommissionOrdersAdmin locale={locale} token={adminToken} canFulfill={can("fulfill")}/></Suspense>}
                 {can("settings") && (
                   <Suspense fallback={<p role="status">…</p>}>
                     <RegionsAdmin locale={locale} token={adminToken} />
@@ -1591,7 +1596,7 @@ export function CustomerHub({
                 >
                   <h2>{t("products")}</h2>
                   <div className="customer-actions">
-                    {adminProducts.map((p) => (
+                    {adminProducts.filter(p => familyEnabled(features,p.family)).map((p) => (
                       <button
                         className="outline"
                         key={p.id}
@@ -1643,7 +1648,7 @@ export function CustomerHub({
                         "book",
                         "guided",
                         "digital",
-                      ].map((v) => (
+                      ].filter(v => familyEnabled(features,v)).map((v) => (
                         <option key={v}>{v}</option>
                       ))}
                     </select>

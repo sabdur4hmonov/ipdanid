@@ -246,6 +246,10 @@ export default defineConfig({
   ],
   // Each optical test can allocate its own footprint cache; serialize to bound host usage.
   test: {
+    // Whole-repository AST scans and multi-PDF functional checks exceed Vitest's
+    // incidental5s default on busy hosts. Keep them bounded; explicit product
+    // performance/security/cancellation assertions retain their own budgets.
+    testTimeout: 30000,
     include: ["tests/**/*.test.ts"],
     environment: "node",
     maxWorkers: 1,

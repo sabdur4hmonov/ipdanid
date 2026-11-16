@@ -1,3 +1,5 @@
+import { configuredContact } from "./owner-contact";
+import { useFeatures } from "./FeatureContext";
 import { uiText } from "./ui-i18n";
 import { websiteText } from "./website-i18n";
 import { StudioHome, StudioMark } from "./StudioHome";
@@ -106,6 +108,7 @@ export function CustomerStudio({
   onGuide,
   onPersist,
 }: Props) {
+  const features = useFeatures();
   const { settings: storefront } = useBusiness();
   const t = (k: Parameters<typeof customerFlowText>[1]) =>
     customerFlowText(locale, k);
@@ -1106,7 +1109,7 @@ export function CustomerStudio({
                 {websiteText(locale, "works")}
               </button>
               <a
-                href={telegramContact()}
+                href={telegramContact(undefined, configuredContact(storefront))}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -1123,9 +1126,9 @@ export function CustomerStudio({
               >
                 {trialText(locale, "shop")}
               </button>
-              <button data-testid="enter-expert" onClick={onExpert}>
+              {features.expert && <button data-testid="enter-expert" onClick={onExpert}>
                 {t("expert")}
-              </button>
+              </button>}
             </div>
           </details>
         </div>

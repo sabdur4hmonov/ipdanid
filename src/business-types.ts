@@ -4,6 +4,7 @@ export type StorefrontSettings = {
   brandName: string;
   sellerName: string;
   sellerPhone: string;
+  sellerTelegram?: string;
   paymentDetails: string;
   pickupAddress: string;
   deliveryEnabled: boolean;
@@ -15,6 +16,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
   brandName: "Ip Rasm",
   sellerName: "",
   sellerPhone: "",
+  sellerTelegram: "",
   paymentDetails: "",
   pickupAddress: "",
   deliveryEnabled: false,

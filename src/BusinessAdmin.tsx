@@ -1,3 +1,4 @@
+import { useFeatures } from "./FeatureContext";
 import { useState, useEffect, useRef } from "react";
 import type { Locale } from "./core/types";
 import type { StorefrontSettings, Announcement } from "./business-types";
@@ -19,6 +20,7 @@ export function BusinessAdmin({
   messagesAllowed: boolean;
   run: (fn: () => Promise<void>) => Promise<void>;
 }) {
+  const features = useFeatures();
   const t = (key: Parameters<typeof businessText>[1]) =>
     businessText(locale, key);
   const { refresh } = useBusiness();
@@ -69,6 +71,7 @@ export function BusinessAdmin({
                 "brandName",
                 "sellerName",
                 "sellerPhone",
+                "sellerTelegram",
                 "paymentDetails",
                 "pickupAddress",
               ] as const
@@ -87,7 +90,7 @@ export function BusinessAdmin({
                             ? 60
                             : 100
                   }
-                  value={settings[key]}
+                  value={settings[key] ?? ""}
                   onChange={(e) =>
                     setSettings((s) => ({ ...s, [key]: e.target.value }))
                   }
@@ -266,12 +269,12 @@ export function BusinessAdmin({
             <article key={a.id} className="customer-item">
               <strong>{a.title}</strong>
               <p>{a.body}</p>
-              <PushAnnouncementAction
+              {features.push && <PushAnnouncementAction
                 locale={locale}
                 token={token}
                 announcement={a}
                 run={run}
-              />
+              />}
               <button
                 className="outline"
                 onClick={() => {

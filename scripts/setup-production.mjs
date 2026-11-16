@@ -1,7 +1,9 @@
 import { randomBytes, scrypt } from "node:crypto";
-import { writeFileSync, existsSync } from "node:fs";
+import { writeFileSync, existsSync, chmodSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
-if (existsSync(".env.production"))
+const target = process.argv[2] ?? ".env.production";
+if (![".env", ".env.production"].includes(target)) throw Error("Private setup target must be .env or .env.production");
+if (existsSync(target))
   throw Error("Existing private config will not be overwritten");
 if (!process.stdin.isTTY || !process.stdout.isTTY)
   throw Error(
@@ -70,8 +72,10 @@ const text =
   randomBytes(32).toString("base64url") +
   "\nSANDBOX_PAYMENT_KEY=" +
   randomBytes(32).toString("base64url") +
-  "\nPAYMENTS_SANDBOX=0\n";
-writeFileSync(".env.production", text, { mode: 0o600, flag: "wx" });
+  "\nBACKUP_ENCRYPTION_KEY=" + randomBytes(32).toString("base64url") +
+  "\nCLASSIC_TUNING=4\nFEATURES=\nPAYMENTS_SANDBOX=0\n";
+writeFileSync(target, text, { mode: 0o600, flag: "wx" });
+chmodSync(target, 0o600);
 console.log(
-  "Private .env.production yaratildi. Parol yoki kalitlar chiqarilmadi. Bu faylni alohida maxfiy zaxiralang.",
+  "Private environment created (0600). No passwords or keys printed. Keep the encryption key in a separate secure off-server location.",
 );

@@ -18,6 +18,7 @@ const words = {
   brandName: ["Ilova nomi", "Название приложения", "App name"],
   sellerName: ["Sotuvchi ismi", "Имя продавца", "Seller name"],
   sellerPhone: ["Sotuvchi telefoni", "Телефон продавца", "Seller phone"],
+  sellerTelegram: ["Telegram nomi (@ belgisisiz)", "Telegram (без @)", "Telegram username (without @)"],
   paymentDetails: [
     "To‘lov rekvizitlari / karta raqami",
     "Реквизиты / номер карты",

@@ -21,6 +21,7 @@ export function validBusinessSnapshot(
       "pickupAddress",
     ].every((k) => typeof s[k as keyof StorefrontSettings] === "string") &&
     s.brandName &&
+    (s.sellerTelegram === undefined || s.sellerTelegram === "" || (typeof s.sellerTelegram === "string" && /^[A-Za-z][A-Za-z0-9_]{4,31}$/.test(s.sellerTelegram))) &&
     typeof s.deliveryEnabled === "boolean" &&
     Number.isSafeInteger(s.deliveryFeeMinor) &&
     s.deliveryFeeMinor >= 0 &&

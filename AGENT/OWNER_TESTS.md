@@ -732,3 +732,11 @@ Taqqoslash ekranlari: output/website-w2/screens/index.html.
 - Yangi surat yuklang, shakl va yuz joylashuvini tekshiring, natijani hisoblang. Yangi ishlar /4 tuning bilan; avvalgi saqlangan /3 ko‘rsatmalar o‘zgartirilmaydi.
 - Ko‘z, burun, lab va sochlarni asl surat bilan solishtiring. Dasturiy testlar haqiqiy taxtadagi sifatni yoki yangi suratlardagi o‘xshashlikni tasdiqlamaydi.
 - W1/W2 va oldingi previewlar, saqlangan ishlar hamda progress saqlangan. Bu previewda haqiqiy to‘lov yoki jo‘natish yoqilmagan.
+# P1 — Oracle production tayyorgarligi (2026-11-16)
+
+1. Boshlang‘ich qo‘llanma: docs/DEPLOY_ORACLE_UZ.md. Bu ishda Oracle akkauntiga kirilmadi, pul sarflanmadi yoki domen nashr qilinmadi.
+2. 4940 va eski previewlar o‘zgarmagan; ulardan P1 sozlamalarini kutmang. Yangi imkoniyatlar yangi production build uchundir.
+3. O‘rnatishda setup script yashirin parol va shaxsiy .env yaratadi. Kalitlarni chatga yubormang; backup encryption key’ni VMdan boshqa yopiq joyda saqlang.
+4. Haqiqiy deploydan so‘ng core oqimni sinang, Admin’da Telegram/telefonni saqlab sahifani yangilang. Qo‘shimchalar FEATURES bo‘sh bo‘lsa yashirin va API404 bo‘lishi kerak.
+5. Birinchi qo‘lda backup va yangi inactive papkaga restore-drill bajaring. Mavjud production DB/jurnalni yoki toza million master’ni almashtirmang; guide’dagi birinchi import qoidalariga rioya qiling.
+6. Lokal ARM64/QEMU va brauzer sinovlari real A1 server, HTTPS, OCI bucket, telefon yoki taxta sinovini almashtirmaydi.

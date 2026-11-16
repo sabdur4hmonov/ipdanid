@@ -1,3 +1,7 @@
+# Joriy production tartibi (P1, 2026-11-16)
+
+Yangi Compose’da [DEPLOY_ORACLE_UZ.md](DEPLOY_ORACLE_UZ.md) bo‘yicha AES-GCM `.ipb` online backup/restore ishlatiladi: 14 kunlik + 8 haftalik, deploy-oldi nusxa, DB + CODE_PEPPER + DB ichidagi kit signer + privacy jurnali birga. Encryption key’ni alohida yopiq off-server joyda saqlang. Quyidagi `.sqlite` yordamchilari va eski local-backup formati legacy dalil/qo‘lda ishlatish uchun saqlangan; yangi production daily vazifasi plaintext arxiv chiqarmaydi.
+
 # SQLite zaxirasi
 
 scripts/backup-sqlite.mjs SQLite online-backup API bilan ishlaydi: faol WAL faylini oddiy copy qilish o‘rniga SQLite izchil snapshot oladi. Manba hamda BACKUP_DIR aniq ko‘rsatiladi; tmp/data barcha holatda taqiqlangan. Yangi backup avval .part faylga yoziladi, quick_check tekshiriladi, fayl ruxsati0600 qilinadi va yakuniy nomga o‘tkaziladi. Mavjud zaxira ustidan yozilmaydi. Test yangi disk DBda faol yozuvchi ochiq turganda backup oldi, keyingi yozuv backupga kirmaganini va asl DB o‘zgarmaganini tekshirdi.

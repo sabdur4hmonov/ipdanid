@@ -1,32 +1,20 @@
-# Progress — current state only (keep this file <= 5 KB)
+# Progress — current state only (keep <= 5 KB)
 
-Full history before 2026-11-13: `AGENT/archive/PROGRESS-2026-11-13.md` and `AGENT/archive/LOG-2026-11-13.md`. Read them only when a task needs that detail.
+History through 2026-11-13: AGENT/archive/. Current implementation log: AGENT/LOG.md.
 
-## Current state (2026-11-13)
+## P1 Oracle production readiness — SOFTWARE COMPLETE (2026-11-16)
 
-- Branch `feat/full-roadmap`. Website W1 (face guard, buy screen, visible accounts) and W2 (product website redesign) are done and await owner visual review.
-- P16.1 framing: **accepted** by the manager. P16.1-C F2 (face height 0.65, nose tip at (0.50, 0.42), white below the chin) is the default close framing.
-- Portrait solver: **classic-reference/4 tuning** (darknessGamma 1.2, face importance amplitude 3) is now the server default for NEW protected works. It runs on the same `classic-greedy/3` engine, chords, guards and renderer, and stored /3 guides replay unchanged. Rollback: `CLASSIC_TUNING=3`. Evidence: `docs/CLAUDE_AUDIT_2026-11-13.md`, `docs/CLAUDE_Q4_2026-11-13.md`.
-- Security: admin login lockout (5 failures per client per 15 min, 200 overall per hour, 15 min lock, persistent, audited).
-- Physical kit: first circle board is being built by the owner. 4×A3 template: `output/doira-4xA3/doira-taxta-4xA3.pdf`. Thread must match the 0.12 mm profile or be recalibrated.
+Manager Claude requests ONE milestone then STOP: production-default-off server feature flags and matching UI/API gates; encrypted online daily/pre-deploy backups, 14 daily + 8 weekly, optional OCI S3 upload and sandbox restore drill; ARM64 Docker validation; private interactive bash env setup; beginner Uzbek Oracle guide; Admin-configurable owner contacts. No production activation, solver changes, new APK or real provider use.
 
-## Rules that still apply
+Starting HEAD b98c16c on feat/full-roadmap, confirmed origin https://github.com/sabdur4hmonov/ipdanid.git. Implemented20 server-owned flags + matching fail-closed client/API/catalog/bundle guards; Admin contacts; streaming AES-GCM daily/predeploy14daily/8weekly/8predeploy retention, optional SigV4 S3, inactive authenticated restore; hidden-TTY env setup and guarded deploy wrapper; Uzbek Oracle guide. Frozen data untouched.
 
-- Owner messages: short Uzbek. Code/docs: English.
-- Never touch `tmp/data`, frozen previews (4217/API4657, 4900/4901, 4920/4921, 4194), old APKs or the private million-code master.
-- Normal feature-only pushes to `origin feat/full-roadmap`. No main/force/merge.
-- Do not repeat the full 348-case matrix unless shared code changed broadly; run targeted suites plus the full unit suite.
+Verified:791/791 full units in173files857.30s, zero failed/skipped (unit-complete.json);22/22 focused units;4desktop/mobile browser cases (core actual preview/unlock/player/contact editing + optional re-enable); final tsc -b and2157module protected build53.50s PASS. Final124files match browser build except sw.js precache ordering; identical worker code/cache version/file set after sorting, other123files byte-identical. Actual buildx linux/arm64 API+Caddy/QEMU startup, node:sqlite/tsx, encrypted restore/signer, core defaults PASS. Hidden-TTY setup0600/hash/independent keys and mock deploy abort/order drill PASS. Evidence docs/validation/p1-20261116.json, output/p1, docs/P1_PRODUCTION_READINESS.md. Real OCI upload/VM/TLS/Android/physical acceptance unclaimed.
 
-## Exact next step
+EXACT NEXT: STOP after this one P1 milestone. Implementation/tests/build are accepted; do not repeat. Check ignored output/p1/publication.json for matching local/remote HEAD and clean status. Only if publication is absent/incomplete: diff-check, commit this P1 change, run source-export/full-history secret scans, normal push ONLY origin feat/full-roadmap, verify remote HEAD/cleanliness and write that record. If already published, remain stopped for the manager/owner. No actual cloud deployment. Preserve4940/all old snapshots/master/tmpdata. Earlier completed/partial failures retained: old PDF-label matcher overhead; strict bundle fixture extra field; combined PDF/AST/tutorial deadlines. All172080geometry pairs/bounds and original PDF assertions remain; independent exports split (+2tests). Functional runner30s/AST15s; explicit application performance/security/cancellation budgets and solver values unchanged. Owner guide/tests updated.
 
-Q4-apply verification completed locally on 2026-11-14: full npm test 781/781 tests in 170/170 files (468.96 s), tsc -b PASS, protected Vite build 2155 modules PASS (23.87 s). Golden classic-least-squares 5/5, classic-reference 6/6, new tuning 9/9 and protected-deployment 3/3 all passed. Patch applied unchanged; historical docs archived unchanged. No quality fits repeated or solver values altered beyond the supplied patch.
+## Preserved accepted state
 
-Q4 product commit e23686b was scanned and pushed to origin feat/full-roadmap; remote HEAD verified. NEW protected preview READY at http://127.0.0.1:4940/ (API4941), launcher23012/API25208. Build output/q4-apply-dist is copied into immutable output/q4-apply-owner-20261114-final-dist. Fresh own seed-copy DB/keys/runtime ONLY output/phase16-private/q4-apply-20261114-final. Runtime20780files/381461995bytes/SHA3fd0d9419137dc4607bb01865bc058ccec4dafbf88ba1bb86ea3cb558d2fc8b1. SERVER_GENERATION=1, CLASSIC_TUNING=4, protected client verified; live payments/messages disabled. Exact served HTML and generation/config checked using ONLY4940/4941. Unused3-build test code ONLY output/q4-apply/manual-testing.txt; launch.json and preview-verification.json hold sanitized evidence. New in-app tab2 opened/visually inspected and marked deliverable. Initial browser-tool initialization timeout was recovered; no full browser generation/quality trial or code redemption claimed.
-
-EXACT NEXT: publish this final handoff documentation if pending (normal feature-only commit/scans/push; skip when already published), then STOP for owner review at4940. Preserve this new handoff and every frozen preview/DB/code/progress. Do not repeat Q4 suites or sealed fits without changed code/new evidence. Restart only through output/q4-apply/start-preview.mjs --resume if explicitly needed; never rerun its fresh issuance path against the existing handoff. No autonomous deploy, solver work, Android rebuild or fresh-photo/physical quality acceptance.
-
-After the Q4 handoff:
-
-1. Owner blind review of /3 vs /4 on fresh photos (optional confirmation; /4 is already the default for new works).
-2. Choose a product name and domain (owner).
-3. Oracle Cloud deploy: server, HTTPS, scheduled off-server backups + restore drill (audit S2), production feature flags hiding non-core features.
+- Q4 product e23686b + final docs b98c16c pushed; full781 tests/170files, tsc,2155module protected build passed. Classic-reference/4 tuning (gamma1.2/A3) for new works; old /3 unchanged, CLASSIC_TUNING=3 rollback. P16.1-C framing accepted by manager; physical/fresh-photo likeness separate.
+- Q4 FROZEN4940/API4941, output/q4-apply-owner-20261114-final-dist; private runtime/DB output/phase16-private/q4-apply-20261114-final. Unused code ONLY output/q4-apply/manual-testing.txt. Do not test/restart/rebuild/access this handoff for P1. Metadata/evidence output/q4-apply/{launch,preview-verification,publication}.json.
+- W1 4900/4901, W2 4920/4921,4217/API4657 and all earlier snapshots/APKs/sequences/progress remain frozen. Preserve tmp/data, private million-code master and4194. P16.2–P16.5 functional acceptance is not physical likeness acceptance.
+- Owner messages short Uzbek; code/docs English except requested owner guide. No main/force/reset/merge. Feature-only pushes authorized; no actual cloud credentials, money, DNS changes or external personal-photo upload.

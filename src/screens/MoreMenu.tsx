@@ -1,3 +1,5 @@
+import { useFeatures } from "../FeatureContext";
+import { craftsEnabled } from "../feature-policy";
 import { customerFlowText } from "../customer-flow-i18n";
 import type { AppScreenContext } from "../useAppController";
 type ScreenContext = Pick<
@@ -24,6 +26,7 @@ export function MoreMenu({
   onCustomer?: () => void;
   onExpert?: () => void;
 }) {
+  const features = useFeatures();
   const {
     addPhoto,
     customerText,
@@ -51,7 +54,7 @@ export function MoreMenu({
             {customerFlowText(locale, "simple")}
           </button>
         )}
-        {onExpert && (
+        {onExpert && features.expert && (
           <button onClick={onExpert}>
             {customerFlowText(locale, "expert")}
           </button>
@@ -62,7 +65,7 @@ export function MoreMenu({
         <button onClick={() => nav("customer")}>
           {customerText(locale, "customer")}
         </button>
-        {!customerMode && (
+        {craftsEnabled(features) && (
           <button onClick={() => nav("crafts")}>{t("crafts")}</button>
         )}
         <button

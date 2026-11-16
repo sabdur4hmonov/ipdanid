@@ -1,3 +1,6 @@
+import { useBusiness } from "./BusinessContext";
+import { configuredContact } from "./owner-contact";
+import { useFeatures } from "./FeatureContext";
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import type { Instruction, Locale } from "./core/types";
 import { kitText } from "./kit-i18n";
@@ -23,6 +26,8 @@ export function BuildGate({
   onBuy: () => void;
   onReleased?: (guide: Instruction) => void;
 }) {
+  const features = useFeatures();
+  const contact = configuredContact(useBusiness().settings);
   const local = "schema" in i ? i : undefined,
     remote = "schema" in i ? undefined : i,
     lines = local?.metrics.lines ?? remote!.lines;
@@ -96,13 +101,13 @@ export function BuildGate({
           <div className="website-actions">
             <a
               data-testid="buy-telegram"
-              href={telegramContact(i.sequenceHash)}
+              href={telegramContact(i.sequenceHash, contact)}
               target="_blank"
               rel="noopener noreferrer"
             >
               {websiteText(locale, "telegram")}
             </a>
-            <a href={phoneContact()}>{websiteText(locale, "call")}</a>
+            <a href={phoneContact(contact)}>{websiteText(locale, "call")}</a>
             <button
               data-testid="have-kit-code"
               onClick={() => setShowCode(true)}
@@ -241,9 +246,9 @@ export function BuildGate({
           <button onClick={onBuy}>{t("buy")}</button>
         </div>
       </div>
-      <Suspense fallback={null}>
+      {features.trials && <Suspense fallback={null}>
         <TrialClaimPanel locale={locale} onCredits={setCredits} />
-      </Suspense>
+      </Suspense>}
       {busy && <p role="status">…</p>}
       {error && <p role="alert">{error}</p>}
     </section>

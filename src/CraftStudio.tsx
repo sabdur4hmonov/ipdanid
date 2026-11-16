@@ -1,3 +1,4 @@
+import { useFeatures } from "./FeatureContext";
 import { lazy, Suspense, useState } from "react";
 const GridStudio = lazy(() => import("./GridStudio").then(m => ({ default: m.GridStudio })));
 const PaintStudio = lazy(() => import("./PaintStudio").then(m => ({ default: m.PaintStudio })));
@@ -22,9 +23,13 @@ export function CraftStudio({
   onGuide: (i: Instruction) => void;
   onPreset: (kind: "animal" | "object") => void;
 }) {
+  const features = useFeatures();
   const [mode, setMode] = useState<
     "grid" | "paint" | "text" | "qr" | "book" | "solid" | "tutorial"
   >("grid");
+  const allowed = {grid: features.mosaic || features.diamond, paint: features.paint, text: features.lettering, qr: features.qr, book: features.book, solid: features.models, tutorial: features.workshops};
+  const activeMode = allowed[mode] ? mode : (Object.keys(allowed) as (keyof typeof allowed)[]).find(k => allowed[k]);
+  if (!activeMode) return null;
   return (
     <>
       <div className="card">
@@ -43,58 +48,58 @@ export function CraftStudio({
         role="group"
         aria-label={paintText(locale, "title")}
       >
-        <button aria-pressed={mode === "grid"} onClick={() => setMode("grid")}>
+        {allowed.grid && <>        <button aria-pressed={activeMode === "grid"} onClick={() => setMode("grid")}>
           {paintText(locale, "crafts")}
-        </button>
-        <button
-          aria-pressed={mode === "paint"}
+        </button></>}
+        {allowed.paint && <>        <button
+          aria-pressed={activeMode === "paint"}
           onClick={() => setMode("paint")}
         >
           {paintText(locale, "paint")}
-        </button>
-        <button aria-pressed={mode === "text"} onClick={() => setMode("text")}>
+        </button></>}
+        {allowed.text && <>        <button aria-pressed={activeMode === "text"} onClick={() => setMode("text")}>
           {letteringText(locale, "title")}
-        </button>
-        <button aria-pressed={mode === "qr"} onClick={() => setMode("qr")}>
+        </button></>}
+        {allowed.qr && <>        <button aria-pressed={activeMode === "qr"} onClick={() => setMode("qr")}>
           {qrCraftText(locale, "title")}
-        </button>
-        <button aria-pressed={mode === "book"} onClick={() => setMode("book")}>
+        </button></>}
+        {allowed.book && <>        <button aria-pressed={activeMode === "book"} onClick={() => setMode("book")}>
           {bookText(locale, "title")}
-        </button>
-        <button
-          aria-pressed={mode === "solid"}
+        </button></>}
+        {allowed.solid && <>        <button
+          aria-pressed={activeMode === "solid"}
           onClick={() => setMode("solid")}
         >
           {solidText(locale, "title")}
-        </button>
-        <button
-          aria-pressed={mode === "tutorial"}
+        </button></>}
+        {allowed.tutorial && <>        <button
+          aria-pressed={activeMode === "tutorial"}
           onClick={() => setMode("tutorial")}
         >
           {tutorialText(locale, "title")}
-        </button>
+        </button></>}
       </div>
-      {mode === "tutorial" ? (
+      {activeMode === "tutorial" ? (
         <Suspense fallback={<p role="status">…</p>}>
           <TutorialStudio locale={locale} />
         </Suspense>
-      ) : mode === "solid" ? (
+      ) : activeMode === "solid" ? (
         <Suspense fallback={<p role="status">…</p>}>
           <SolidStudio locale={locale} />
         </Suspense>
-      ) : mode === "book" ? (
+      ) : activeMode === "book" ? (
         <Suspense fallback={<p role="status">…</p>}>
           <BookStudio locale={locale} />
         </Suspense>
-      ) : mode === "qr" ? (
+      ) : activeMode === "qr" ? (
         <Suspense fallback={<p role="status">…</p>}>
           <QrCraftStudio locale={locale} />
         </Suspense>
-      ) : mode === "text" ? (
+      ) : activeMode === "text" ? (
         <Suspense fallback={<p role="status">…</p>}>
           <TextStudio locale={locale} onGuide={onGuide} />
         </Suspense>
-      ) : mode === "grid" ? (
+      ) : activeMode === "grid" ? (
         <GridStudio locale={locale} />
       ) : (
         <PaintStudio locale={locale} />

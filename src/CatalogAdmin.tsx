@@ -1,3 +1,5 @@
+import { useFeatures } from "./FeatureContext";
+import { familyEnabled } from "./feature-policy";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import type { CatalogSku } from "./catalog-types";
@@ -94,6 +96,7 @@ export function CatalogAdmin({
   locale: Locale;
   token: string;
 }) {
+  const features = useFeatures();
   const t = (k: CatalogWord) => catalogText(locale, k),
     task = useAdminTask(locale, token),
     [products, setProducts] = useState<CommerceProduct[]>([]),
@@ -222,7 +225,7 @@ export function CatalogAdmin({
                 "book",
                 "guided",
                 "digital",
-              ].map((f) => (
+              ].filter(f => familyEnabled(features,f)).map((f) => (
                 <option key={f}>{f}</option>
               ))}
             </select>

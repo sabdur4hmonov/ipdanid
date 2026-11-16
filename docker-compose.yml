@@ -1,3 +1,4 @@
+name: iprasm
 services:
   api:
     image: iprasm-api:${APP_IMAGE_TAG:-local}
@@ -9,6 +10,8 @@ services:
     environment:
       NODE_ENV: production
       SERVER_GENERATION: "1"
+      CLASSIC_TUNING: ${CLASSIC_TUNING:-4}
+      FEATURES: ${FEATURES:-}
       HOST: 0.0.0.0
       PORT: "4311"
       DATABASE_PATH: /data/iprasm.sqlite
@@ -76,15 +79,31 @@ services:
     image: iprasm-api:${APP_IMAGE_TAG:-local}
     restart: unless-stopped
     init: true
-    command: ["node", "scripts/backup-sqlite.mjs", "--daemon"]
+    command: ["node", "scripts/production-backup.mjs", "--daemon"]
     environment:
       DATABASE_PATH: /data/iprasm.sqlite
       BACKUP_DIR: /backups
       ERASURE_LEDGER_PATH: /privacy/erasure-intents.sqlite
+      CODE_PEPPER: ${CODE_PEPPER:?Set CODE_PEPPER}
+      SANDBOX_PAYMENT_KEY: ${SANDBOX_PAYMENT_KEY:?Set SANDBOX_PAYMENT_KEY}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?Set ADMIN_PASSWORD_HASH}
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
+      CLASSIC_TUNING: ${CLASSIC_TUNING:-4}
+      FEATURES: ${FEATURES:-}
+      BACKUP_ENCRYPTION_KEY: ${BACKUP_ENCRYPTION_KEY:?Set BACKUP_ENCRYPTION_KEY}
+      BACKUP_S3_ENDPOINT: ${BACKUP_S3_ENDPOINT:-}
+      BACKUP_S3_REGION: ${BACKUP_S3_REGION:-}
+      BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:-}
+      BACKUP_S3_ACCESS_KEY: ${BACKUP_S3_ACCESS_KEY:-}
+      BACKUP_S3_SECRET_KEY: ${BACKUP_S3_SECRET_KEY:-}
+      BACKUP_S3_PREFIX: ${BACKUP_S3_PREFIX:-iprasm/}
     volumes: ["sqlite:/data:ro", "erasure:/privacy:ro", "backups:/backups"]
+    # Consistent plaintext snapshots exist only in private ephemeral tmpfs.
+    tmpfs: ["/tmp:mode=1777,size=5368709120"]
     networks:
       backend:
         ipv4_address: ${APP_BACKUP_IP:-172.30.51.4}
+      egress: {}
     depends_on:
       api: {condition: service_healthy}
     cap_drop: [ALL]

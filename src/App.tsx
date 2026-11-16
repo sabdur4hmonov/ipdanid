@@ -1,3 +1,5 @@
+import { useFeatures } from "./FeatureContext";
+import { craftsEnabled } from "./feature-policy";
 import { uiText } from "./ui-i18n";
 import { CustomerContact } from "./CustomerContact";
 import { CustomerAccountLink } from "./CustomerAccountLink";
@@ -36,6 +38,7 @@ const MoreScreen = lazy(() =>
   import("./screens/MoreScreen").then((m) => ({ default: m.MoreScreen })),
 );
 export default function App() {
+  const features = useFeatures();
   const [kitClaim, setKitClaim] = useState(() =>
     kitClaimCode(window.location.hash),
   );
@@ -105,11 +108,11 @@ export default function App() {
     t,
     view,
   } = context;
-  useEffect(() => startPushRuntime(locale), [locale]);
-  useEffect(() => startAnalyticsRuntime(), []);
+  useEffect(() => features.push ? startPushRuntime(locale) : undefined, [locale, features.push]);
+  useEffect(() => features.analytics ? startAnalyticsRuntime() : undefined, [features.analytics]);
   useEffect(() => {
-    startDigitalPendingLifecycle();
-  }, []);
+    if (features.digital) startDigitalPendingLifecycle();
+  }, [features.digital]);
   useEffect(() => {
     takeKitClaim();
     takeGiftClaim();
@@ -223,12 +226,12 @@ export default function App() {
                 setCustomerFlow(true);
                 nav("create");
               }}
-              onExpert={() => {
+              onExpert={features.expert ? () => {
                 setCustomerFlow(false);
                 context.setMoreOpen(false);
                 if (view === "assemble") context.pause();
                 else nav("create");
-              }}
+              } : undefined}
             />
             {!online && (
               <span className="offline">
@@ -443,7 +446,7 @@ export default function App() {
                 />
               </div>
             )}
-            {view === "create" && !customerFlow && (
+            {view === "create" && !customerFlow && features.expert && (
               <>
                 <details open={!standard} data-testid="expert-tools">
                   <summary>{standardText(locale, "details")}</summary>
@@ -494,7 +497,7 @@ export default function App() {
               />
             )}
             {view === "materials" && <MoreScreen context={context} />}
-            {view === "crafts" && (
+            {view === "crafts" && craftsEnabled(features) && (
               <CraftStudio
                 locale={locale}
                 onPreset={(kind) => {

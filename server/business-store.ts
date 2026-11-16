@@ -25,7 +25,7 @@ export class BusinessStore {
     const row = this.store.db
       .prepare("SELECT revision,data FROM storefront_settings WHERE id=1")
       .get()!;
-    return { ...JSON.parse(String(row.data)), revision: Number(row.revision) };
+    return { ...DEFAULT_STOREFRONT, ...JSON.parse(String(row.data)), revision: Number(row.revision) };
   }
   private transaction<T>(fn: () => T) {
     this.store.db.exec("BEGIN IMMEDIATE");
@@ -59,6 +59,7 @@ export class BusinessStore {
       brandName: clean(input.brandName, 60),
       sellerName: clean(input.sellerName, 100),
       sellerPhone: clean(input.sellerPhone, 40),
+      sellerTelegram: clean(input.sellerTelegram ?? "", 32),
       paymentDetails: clean(input.paymentDetails, 500),
       pickupAddress: clean(input.pickupAddress, 300),
       deliveryEnabled: input.deliveryEnabled,
@@ -72,6 +73,7 @@ export class BusinessStore {
     };
     if (
       !next.brandName ||
+      (next.sellerTelegram && !/^[A-Za-z][A-Za-z0-9_]{4,31}$/.test(next.sellerTelegram)) ||
       (next.sellerPhone &&
         (!/^\+?[\d ()-]{7,40}$/.test(next.sellerPhone) ||
           !/^\d{7,15}$/.test(next.sellerPhone.replace(/\D/g, ""))))

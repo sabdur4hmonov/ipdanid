@@ -86,6 +86,9 @@ it("printed ruler labels do not overlap at square corners or the heart tip", asy
   const doc = await PDFDocument.create(),
     font = await doc.embedFont(StandardFonts.Helvetica),
     mm = 72 / 25.4;
+  // Retain every bounds/pair check; avoid ~178k matcher/stack allocations.
+  const outside: string[] = [], overlaps: string[] = [];
+  let comparisons = 0;
   for (const sectors of [4, 8])
     for (const profile of standardProfiles({
       ...DEFAULT_STANDARD_KIT,
@@ -106,20 +109,20 @@ it("printed ruler labels do not overlap at square corners or the heart tip", asy
       });
       for (let i = 0; i < boxes.length; i++) {
         const a = boxes[i];
-        expect(a.x0).toBeGreaterThanOrEqual(0);
-        expect(a.x1).toBeLessThanOrEqual(500);
-        expect(a.y0).toBeGreaterThanOrEqual(0);
-        expect(a.y1).toBeLessThanOrEqual(500);
+        if (!(a.x0 >= 0 && a.x1 <= 500 && a.y0 >= 0 && a.y1 <= 500)) outside.push(`${profile.shape} ${sectors} ${a.label}`);
         for (let j = 0; j < i; j++) {
           const b = boxes[j];
-          expect(
-            Math.min(a.x1, b.x1) <= Math.max(a.x0, b.x0) ||
-              Math.min(a.y1, b.y1) <= Math.max(a.y0, b.y0),
-            `${profile.shape} ${a.label}/${b.label}`,
-          ).toBe(true);
+          comparisons++;
+          if (!(Math.min(a.x1, b.x1) <= Math.max(a.x0, b.x0) ||
+                Math.min(a.y1, b.y1) <= Math.max(a.y0, b.y0))) {
+            overlaps.push(`${profile.shape} ${sectors} ${a.label}/${b.label}`);
+          }
         }
       }
     }
+  expect(comparisons).toBe(6 * 240 * 239 / 2);
+  expect(outside).toEqual([]);
+  expect(overlaps).toEqual([]);
 });
 it("admin revisions reject lost updates/collisions, default3 and existing grants stay unchanged", () => {
   const s = new KitStore(":memory:", "p".repeat(32), "k".repeat(32));
@@ -160,7 +163,7 @@ it("admin revisions reject lost updates/collisions, default3 and existing grants
     s.close();
   }
 });
-it("full sheet is exactly500mm, A4 tiles have real-size board coordinates and50mm calibration", async () => {
+it("full sheet is exactly500mm", async () => {
   const mm = 72 / 25.4;
   const sheet = await PDFDocument.load(
     await standardKitPdf(DEFAULT_STANDARD_KIT, "sheet"),
@@ -168,6 +171,9 @@ it("full sheet is exactly500mm, A4 tiles have real-size board coordinates and50m
   expect(sheet.getPageCount()).toBe(1);
   expect(sheet.getPage(0).getWidth()).toBeCloseTo(500 * mm, 8);
   expect(sheet.getPage(0).getHeight()).toBeCloseTo(500 * mm, 8);
+});
+it("A4 tiles preserve every exact physical hole, page width and50mm calibration", async () => {
+  const mm = 72 / 25.4;
   const tiles = await PDFDocument.load(
     await standardKitPdf(DEFAULT_STANDARD_KIT, "tiles"),
   );
@@ -205,6 +211,8 @@ it("full sheet is exactly500mm, A4 tiles have real-size board coordinates and50m
     }
     expect(content).toContain(`${10 * mm} ${9 * mm} m`);
   }
+});
+it("stickers retain the complete18-page physical guide", async () => {
   const stickers = await PDFDocument.load(
     await standardKitPdf(DEFAULT_STANDARD_KIT, "stickers"),
   );

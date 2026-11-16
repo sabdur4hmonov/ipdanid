@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set +x
+set -euo pipefail
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
+umask 077
+[[ ! -e .env && ! -L .env ]] || { echo 'Existing .env preserved. Do not regenerate keys for an existing database.' >&2; exit 1; }
+command -v docker >/dev/null || { echo 'Install Docker first: docs/DEPLOY_ORACLE_UZ.md' >&2; exit 1; }
+[[ -t 0 && -t 1 ]] || { echo 'Interactive terminal required; passwords are never command-line arguments.' >&2; exit 1; }
+docker run --rm -it --user "$(id -u):$(id -g)" --mount "type=bind,source=$PWD,target=/work" --workdir /work node:24-bookworm-slim node scripts/setup-production.mjs .env
+chmod 600 .env
+echo 'Private .env ready. Save BACKUP_ENCRYPTION_KEY separately; never paste .env into chat.'

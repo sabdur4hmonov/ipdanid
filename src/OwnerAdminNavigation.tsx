@@ -1,3 +1,4 @@
+import { useFeatures } from "./FeatureContext";
 import { uiText } from "./ui-i18n";
 import { trialText } from "./trial-i18n";
 import type { Locale } from "./core/types";
@@ -24,6 +25,7 @@ const words = {
   en: ["Kit codes", "Credits", "Orders", "Prices", "Delivery", "Announcements"],
 };
 export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
+  const features = useFeatures();
   return (
     <nav
       className="card customer-actions"
@@ -45,8 +47,8 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
           </button>
         ),
       )}
-      <button className="outline" onClick={()=>document.getElementById("admin-trials")?.scrollIntoView({behavior:"smooth",block:"start"})}>{trialText(locale,"admin")}</button>
-      <button
+      <button hidden={!features.trials} className="outline" onClick={()=>document.getElementById("admin-trials")?.scrollIntoView({behavior:"smooth",block:"start"})}>{trialText(locale,"admin")}</button>
+      <button hidden={!features.partner}
         className="outline"
         onClick={() =>
           document
@@ -70,10 +72,10 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
         </button>
       ))}
       <button className="outline" onClick={()=>document.getElementById("admin-finance")?.scrollIntoView({behavior:"smooth",block:"start"})}>{financeText(locale,"title")}</button>
-      <button className="outline" onClick={()=>document.getElementById('admin-mail')?.scrollIntoView({behavior:'smooth',block:'start'})}>{mailText(locale,'admin')}</button>
-      <button className="outline" onClick={()=>document.getElementById('admin-analytics')?.scrollIntoView({behavior:'smooth',block:'start'})}>{analyticsText(locale,'admin')}</button>
-      <button className="outline" onClick={()=>document.getElementById("admin-commissions")?.scrollIntoView({behavior:"smooth",block:"start"})}>{commissionText(locale,"orders")}</button>
-      <button
+      <button hidden={!features.inbox} className="outline" onClick={()=>document.getElementById('admin-mail')?.scrollIntoView({behavior:'smooth',block:'start'})}>{mailText(locale,'admin')}</button>
+      <button hidden={!features.analytics} className="outline" onClick={()=>document.getElementById('admin-analytics')?.scrollIntoView({behavior:'smooth',block:'start'})}>{analyticsText(locale,'admin')}</button>
+      <button hidden={!features.commissions} className="outline" onClick={()=>document.getElementById("admin-commissions")?.scrollIntoView({behavior:"smooth",block:"start"})}>{commissionText(locale,"orders")}</button>
+      <button hidden={!features.digital}
         className="outline"
         onClick={() =>
           document
@@ -83,7 +85,7 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
       >
         {journeyText(locale, "admin")}
       </button>
-      <button
+      <button hidden={!features.offers}
         className="outline"
         onClick={() =>
           document
@@ -93,7 +95,7 @@ export function OwnerAdminNavigation({ locale }: { locale: Locale }) {
       >
         {offersText(locale, "admin")}
       </button>
-      <button
+      <button hidden={!features.gallery}
         className="outline"
         onClick={() =>
           document

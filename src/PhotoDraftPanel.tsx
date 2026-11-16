@@ -1,3 +1,4 @@
+import { useFeatures } from "./FeatureContext";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import type { PhotoDraft } from "./photo-draft";
@@ -19,6 +20,7 @@ export default function PhotoDraftPanel({
   restore: (d: PhotoDraft) => void;
   close: () => void;
 }) {
+  const features = useFeatures();
   const dialog = useRef<HTMLDialogElement>(null),
     live = useRef(false);
   const [busy, setBusy] = useState(false),
@@ -85,14 +87,14 @@ export default function PhotoDraftPanel({
       <p role="status" data-testid="local-photo-draft-status">
         {notice}
       </p>
-      <PrivatePhotoBackupPanel
+      {features.photoBackup && <PrivatePhotoBackupPanel
         locale={locale}
         capture={capture}
         restore={(d) => {
           restore(d);
           close();
         }}
-      />
+      />}
     </dialog>
   );
 }

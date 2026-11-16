@@ -1,5 +1,7 @@
 # Ip Rasm — Hetzner VPSga joylash
 
+P1 (2026-11-16): yangi production o‘rnatma va yangilash uchun [DEPLOY_ORACLE_UZ.md](DEPLOY_ORACLE_UZ.md)dagi joriy `.env`, shifrlangan backup, restore va feature-flag tartibidan foydalaning. Quyidagi eski plaintext `.sqlite` backup misollari historical/legacy usul; yangi Compose AES-GCM `.ipb` arxivlarni ishlatadi. Mavjud kalitlarni qayta yaratmang.
+
 Bu yo‘riqnoma egasi o‘z VPSida bajarishi uchun. Agent real VPS, DNS yoki akkauntga ulanmaydi. Lokal Docker sinovi yakuniy hisobotda alohida ko‘rsatiladi; haqiqiy sertifikat va telefon tarmog‘i egasi domenni ulaganda tekshiriladi.
 
 ## 1. Domen va VPS

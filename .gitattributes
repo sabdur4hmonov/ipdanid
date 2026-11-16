@@ -1,6 +1,8 @@
 * text=auto
 android/gradlew text eol=lf
 *.bat text eol=crlf
+*.sh text eol=lf
+scripts/setup-production-env text eol=lf
 # Preserve handoff originals exactly, including their existing line endings.
 docs/IP_RASM_MASTER_BUILD_SPEC.md -text
 docs/IP_RASM_RESEARCH_FINDINGS.md -text

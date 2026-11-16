@@ -1,3 +1,4 @@
+import { useFeatures } from "./FeatureContext";
 import { useEffect, useRef, useState } from "react";
 import { PhotoActions } from "./PhotoActions";
 import { PersonBackground, type BackgroundState } from "./PersonBackground";
@@ -46,8 +47,9 @@ const COLORS = [
 const paletteText = (hexes: string[]) =>
   hexes.map((hex, index) => `C${index + 1},${hex},5000`).join("\n");
 export function GridStudio({ locale }: { locale: Locale }) {
+  const features = useFeatures();
   const t = (key: Parameters<typeof gridText>[1]) => gridText(locale, key),
-    [kind, setKind] = useState<GridKind>("mosaic"),
+    [kind, setKind] = useState<GridKind>(features.mosaic ? "mosaic" : "diamond"),
     [columns, setColumns] = useState(48),
     [rows, setRows] = useState(48),
     [pitch, setPitch] = useState(8),
@@ -320,8 +322,8 @@ export function GridStudio({ locale }: { locale: Locale }) {
                   setSpares(v === "mosaic" ? 0 : 10);
                 }}
               >
-                <option value="mosaic">{t("mosaic")}</option>
-                <option value="diamond">{t("diamond")}</option>
+                {features.mosaic && <option value="mosaic">{t("mosaic")}</option>}
+                {features.diamond && <option value="diamond">{t("diamond")}</option>}
               </select>
             </label>
             {(

@@ -7,6 +7,8 @@ export const OWNER_PREVIEW_PORTS = Object.freeze([
   4654, 4655, 4656,
   // Reserved for the next immutable Phase16 owner handoff, never test jobs.
   4217, 4657,
+  // Accepted website and Q4 snapshots are frozen too.
+  4900, 4901, 4920, 4921, 4940, 4941,
 ]);
 export function assertTestPorts(preview, api) {
   for (const port of [preview, api])

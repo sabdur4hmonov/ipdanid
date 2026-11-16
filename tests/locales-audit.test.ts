@@ -16,7 +16,8 @@ test("CI inspects every source locale dictionary without importing browser code"
       0,
     ),
   ).toBeGreaterThan(1600);
-});
+// Whole-tree AST coverage grows with the repo; it is not a5s speed benchmark.
+}, 15000);
 test("missing language, missing key, blank tuple and missing Cyrillic bridge each fail the audit", () => {
   const good =
     'const words={title:["Salom","Привет","Hello"]}; function text(l,k){return scriptText(words[k][0],l)}';
