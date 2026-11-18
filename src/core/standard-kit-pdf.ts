@@ -20,13 +20,14 @@ import {
   type StandardKitConfig,
 } from "./standard-kit";
 import { hash } from "./engine";
+import { drawBoardQuadrants } from "./board-quadrant-pdf";
 const MM = 72 / 25.4;
 const colours = [
   rgb(0.06, 0.21, 0.38),
   rgb(0.35, 0.35, 0.35),
   rgb(0.57, 0.08, 0.2),
 ];
-export type KitPdfKind = "sheet" | "tiles" | "stickers";
+export type KitPdfKind = "sheet" | "tiles" | "stickers" | "quadrants";
 export function stickerMarks(p: MaterialProfile) {
   return p.pins.map((pin, id) => {
     const before = p.pins[(id + p.pins.length - 1) % p.pins.length],
@@ -57,7 +58,7 @@ export function stickerMarks(p: MaterialProfile) {
 export async function standardKitPdf(
   c: StandardKitConfig,
   kind: KitPdfKind,
-  options: { locale?: Locale; fontBytes?: Uint8Array } = {},
+  options: { locale?: Locale; fontBytes?: Uint8Array; shape?: MaterialProfile["shape"] } = {},
 ): Promise<Uint8Array> {
   const profiles = standardProfiles(c),
     holes = combinedHoles(profiles),
@@ -75,6 +76,12 @@ export async function standardKitPdf(
   doc.setTitle(`Ip Rasm | ${t(kind)}`);
   doc.setSubject(`standard-kit/1 revision ${c.revision} SHA256 ${digest}`);
   doc.setKeywords([digest, "physical-mm/y-down/1", String(holes.length)]);
+  if (kind === "quadrants") {
+    const profile = profiles.find(p => p.shape === (options.shape ?? "circle"));
+    if (!profile) throw Error("A standard kit shape is required for A3");
+    drawBoardQuadrants(doc, c, profile, locale, bodyFont, font);
+    return doc.save();
+  }
   const width = kind === "sheet" ? c.baseMm : 210,
     height = kind === "sheet" ? c.baseMm : 297;
   const margin = kind === "sheet" ? 0 : 10,

@@ -2,11 +2,13 @@ import { animationText } from "../animation-i18n";
 import { AssemblyFocus } from "../AssemblyFocus";
 import { recordManualMilestone } from "../analytics-client";
 import { lazy, Suspense } from "react";
+import { AssemblyResultComparison } from "./AssemblyResultComparison";
 const SequenceAnimation = lazy(() => import("../SequenceAnimation"));
 const AssemblyCommands = lazy(() => import("../AssemblyCommands"));
 const AssemblyPhotos = lazy(() => import("../AssemblyPhotos"));
 import type { AppScreenContext } from "../useAppController";
-import { pinLabel, sectorPin } from "../core/standard-kit";
+import { pinLabel, sectorPin, threadMeasurementWarning } from "../core/standard-kit";
+import { standardText } from "../standard-kit-i18n";
 import { recordedVoiceText } from "../recorded-voice-i18n";
 import { assemblyAudioText } from "../assembly-audio-i18n";
 type ScreenContext = Pick<
@@ -166,6 +168,7 @@ export function AssembleScreen({ context, expert = false }: { context: ScreenCon
     volume,
     zoom,
   } = context;
+  const warning = threadMeasurementWarning(instruction?.profile.standardKit?.config.measuredThreadMm);
   return !instruction || !project ? (
     <div className="empty-page">
       <Layers size={36} />
@@ -217,6 +220,9 @@ export function AssembleScreen({ context, expert = false }: { context: ScreenCon
         onRest={restAssembly}
         onResume={resumeAssembly}
       />
+      {warning && <p className="instruction-note" data-testid="player-thread-warning">{standardText(locale, warning)}</p>}
+      <AssemblyResultComparison key={instruction.sequenceHash} instruction={instruction}
+        current={current} total={steps.length} locale={locale} />
       {expert && <Suspense fallback={<p>…</p>}><AssemblyCommands
         locale={locale}
         scope={{projectId:project.id,sequenceHash:instruction.sequenceHash,current,total:steps.length,language:guideLocale}}

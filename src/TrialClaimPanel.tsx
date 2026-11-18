@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import { customerApi as api } from "./customer-api";
 import type { Locale } from "./core/types";
@@ -54,7 +55,7 @@ export default function TrialClaimPanel({
       if (claim) {
         pending.current ??= {
           code: code.trim().toUpperCase(),
-          requestKey: crypto.randomUUID(),
+          requestKey: randomId(),
         };
         const result = await api.request<TrialClaim>(
           "/trial/claim",

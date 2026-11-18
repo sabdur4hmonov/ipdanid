@@ -1,3 +1,4 @@
+import { sha256Bytes } from "./core/browser-crypto";
 import type { Shape } from "./core/types";
 import type { ProductKind } from "./core/product-framing";
 import type { HeadAdjustment } from "./core/portrait-framing";
@@ -140,7 +141,7 @@ function validate(d: PhotoDraft, now: number) {
 }
 async function digest(bytes: Uint8Array) {
   return new Uint8Array(
-    await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)),
+    await sha256Bytes(Uint8Array.from(bytes)),
   );
 }
 export async function encodePhotoDraft(value: PhotoDraft, now = Date.now()) {

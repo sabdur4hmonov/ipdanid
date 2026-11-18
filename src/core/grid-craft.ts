@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import { hash, deepFreeze } from "./engine";
 export type GridKind = "mosaic" | "diamond";
 export interface GridColor {
@@ -288,7 +289,7 @@ export async function generateGrid(
     g: GridGuide = {
       schema: profile.diamond ? "iprasm.grid/2" : "iprasm.grid/1",
       algorithm: "inventory-regret-linear-rgb/1",
-      id: crypto.randomUUID(),
+      id: randomId(),
       createdAt: new Date().toISOString(),
       columns,
       rows,
@@ -320,7 +321,7 @@ export async function replaceGridCell(
     throw Error("Choose a different replacement color");
   const next = structuredClone(g);
   next.manualEdit = { parentSequenceHash: g.sequenceHash, cell: index, color };
-  next.id = crypto.randomUUID();
+  next.id = randomId();
   next.createdAt = new Date().toISOString();
   next.cells[index] = color;
   next.sequenceHash = await hash(gridPayload(next));
@@ -328,7 +329,7 @@ export async function replaceGridCell(
 }
 export function newGridProject(g: GridGuide, name: string): GridProject {
   return {
-    id: crypto.randomUUID(),
+    id: randomId(),
     name: name.trim().slice(0, 80) || "Grid craft",
     guide: g,
     progress: { sequenceHash: g.sequenceHash, confirmed: 0, revision: 0 },
@@ -384,7 +385,7 @@ export async function parseGridProject(raw: string) {
   )
     throw Error("Unsupported grid file");
   const p = await validateGridProject(data.project);
-  return { ...p, id: crypto.randomUUID() };
+  return { ...p, id: randomId() };
 }
 export function gridFile(p: GridProject) {
   return JSON.stringify(

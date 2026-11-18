@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import type { AssemblyAudioProgram } from "./assembly-audio-program";
 export type AssemblyAudioSnapshot = {
   version: "assembly-audio-state/1";
@@ -30,7 +31,7 @@ export interface AssemblyAudioAdapter {
 }
 /** Announced position only. This class has no progress, credit or analytics writer. */
 export class AssemblyAudioDriver {
-  private readonly controller = crypto.randomUUID();
+  private readonly controller = randomId();
   private requestId = 0;
   private program: AssemblyAudioProgram | undefined;
   private revision = -1;

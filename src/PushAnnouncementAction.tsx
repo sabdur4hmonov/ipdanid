@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import type { Announcement } from "./business-types";
@@ -17,7 +18,7 @@ export function PushAnnouncementAction({
   const [mode, setMode] = useState("disabled"),
     [queued, setQueued] = useState(false),
     [busy, setBusy] = useState(false);
-  const requestKey = useRef(crypto.randomUUID());
+  const requestKey = useRef(randomId());
   useEffect(() => {
     let alive = true;
     void api
@@ -31,7 +32,7 @@ export function PushAnnouncementAction({
     };
   }, [token]);
   useEffect(() => {
-    requestKey.current = crypto.randomUUID();
+    requestKey.current = randomId();
     setQueued(false);
   }, [announcement.revision]);
   const t = (key: Parameters<typeof pushText>[1]) => pushText(locale, key);

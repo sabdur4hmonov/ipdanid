@@ -1,3 +1,4 @@
+import { randomId, sha256Bytes } from "./core/browser-crypto";
 import {
   decodePhotoDraft,
   encodePhotoDraft,
@@ -55,7 +56,7 @@ export async function photoUpload(
   return {
     consent: "private-photo-backup/1",
     expectedRevision,
-    requestKey: crypto.randomUUID(),
+    requestKey: randomId(),
     archive: btoa(raw),
   };
 }
@@ -65,7 +66,7 @@ export async function checkedPhotoRead(read: PhotoBackupRead) {
     throw Error("photo-backup/expired");
   const bytes = fromBase64(read.archive);
   const checksum = Array.from(
-    new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+    new Uint8Array(await sha256Bytes(bytes)),
     (n) => n.toString(16).padStart(2, "0"),
   ).join("");
   if (checksum !== s.checksum) throw Error("photo-backup/checksum");

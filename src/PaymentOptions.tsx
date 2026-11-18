@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
@@ -69,7 +70,7 @@ export function PaymentOptions({
     [invoice, setInvoice] = useState<Invoice>(),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(false);
-  const key = useRef(crypto.randomUUID());
+  const key = useRef(randomId());
   const t = (k: keyof typeof words.en) =>
     scriptText(words[baseLocale(locale)][k], locale);
   useEffect(() => {
@@ -198,7 +199,7 @@ export function PaymentOptions({
                     "/payments/invoices/" + invoice.id + "/cancel",
                     {},
                   );
-                  key.current = crypto.randomUUID();
+                  key.current = randomId();
                   setInvoice(undefined);
                 })
               }

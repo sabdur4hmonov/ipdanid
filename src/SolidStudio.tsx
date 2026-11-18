@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useMemo, useState } from "react";
 import {
   makeSolidPlan,
@@ -237,7 +238,7 @@ export default function SolidStudio({ locale }: { locale: Locale }) {
             void run(async () => {
               const guide = await makeSolidPlan(source);
               await retain({
-                id: crypto.randomUUID(),
+                id: randomId(),
                 name: "3D",
                 guide,
                 confirmed: 0,
@@ -265,7 +266,7 @@ export default function SolidStudio({ locale }: { locale: Locale }) {
                   await store.check(raw.project);
                   await retain({
                     ...raw.project,
-                    id: crypto.randomUUID(),
+                    id: randomId(),
                     revision: 0,
                   });
                 });

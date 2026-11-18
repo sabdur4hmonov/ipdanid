@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TUTORIALS,
@@ -190,7 +191,7 @@ export default function TutorialStudio({ locale }: { locale: Locale }) {
     }
     const guide = await makeTutorial(id),
       p = {
-        id: crypto.randomUUID(),
+        id: randomId(),
         name: phrase(TUTORIALS[id].title),
         guide,
         confirmed: 0,
@@ -283,7 +284,7 @@ export default function TutorialStudio({ locale }: { locale: Locale }) {
                 await store.check(value.project);
                 const copy = {
                   ...value.project,
-                  id: crypto.randomUUID(),
+                  id: randomId(),
                   revision: 0,
                 };
                 setLibrary(await store.save(copy));

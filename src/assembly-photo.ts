@@ -1,3 +1,4 @@
+import { sha256Bytes } from "./core/browser-crypto";
 import { imageDimensions } from "./core/image";
 export const BOARD_PHOTO_TTL = 30 * 86400000,
   BOARD_PHOTO_BYTES = 524288;
@@ -70,7 +71,7 @@ export function boardPhotoMetadata(p: BoardPhoto, now = Date.now()) {
 export async function boardPhotoDigest(blob: Blob) {
   const bytes = await blob.arrayBuffer();
   return Array.from(
-    new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+    await sha256Bytes(new Uint8Array(bytes)),
     (v) => v.toString(16).padStart(2, "0"),
   ).join("");
 }

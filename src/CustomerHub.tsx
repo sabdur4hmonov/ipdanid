@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useFeatures } from "./FeatureContext";
 import { familyEnabled } from "./feature-policy";
 import { uiText } from "./ui-i18n";
@@ -875,7 +876,7 @@ export function CustomerHub({
                   onClick={() =>
                     void run(async () => {
                       giftRequest.current ??= {
-                        key: crypto.randomUUID(),
+                        key: randomId(),
                         expiry: Date.now() + 30 * 86400000,
                         credits: giftCredits,
                       };
@@ -1261,7 +1262,7 @@ export function CustomerHub({
                     const payload = JSON.stringify({ items, address, quote });
                     if (!orderRequest.current)
                       await retainCheckout({
-                        key: crypto.randomUUID(),
+                        key: randomId(),
                         payload,
                         display: {
                           subtotal,

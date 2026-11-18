@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import type {
@@ -212,7 +213,7 @@ function MoneyForm({
         e.preventDefault();
         void task.run(async (_auth, valid) => {
           attempt.current ??= {
-            requestKey: crypto.randomUUID(),
+            requestKey: randomId(),
             amountMinor: order.amountMinor,
             currency: order.currency,
             reference,

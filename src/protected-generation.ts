@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { customerApi } from "./customer-api";
 import { hash } from "./core/engine";
 import type { KitPreparation } from "./core/standard-preparation";
@@ -74,7 +75,7 @@ export async function generationAttempt(
     fingerprint,
     body: {
       ...recipe,
-      requestKey: crypto.randomUUID(),
+      requestKey: randomId(),
       secret: base64(crypto.getRandomValues(new Uint8Array(32))),
     },
   };

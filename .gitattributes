@@ -1,6 +1,7 @@
 * text=auto
 android/gradlew text eol=lf
 *.bat text eol=crlf
+*.cmd text eol=crlf
 *.sh text eol=lf
 scripts/setup-production-env text eol=lf
 # Preserve handoff originals exactly, including their existing line endings.

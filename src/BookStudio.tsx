@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useState } from "react";
 import {
   DEFAULT_BOOK,
@@ -219,7 +220,7 @@ export default function BookStudio({ locale }: { locale: Locale }) {
                 params,
               );
               await retain({
-                id: crypto.randomUUID(),
+                id: randomId(),
                 name: "Book",
                 guide,
                 confirmed: 0,
@@ -247,7 +248,7 @@ export default function BookStudio({ locale }: { locale: Locale }) {
                   await store.check(raw.project);
                   await retain({
                     ...raw.project,
-                    id: crypto.randomUUID(),
+                    id: randomId(),
                     revision: 0,
                   });
                 });

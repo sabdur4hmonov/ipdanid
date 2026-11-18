@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import type {
@@ -253,7 +254,7 @@ export function PartnerPortal({ locale }: { locale: Locale }) {
               onClick={() =>
                 void action.run(async () => {
                   if (quote || !quoteRequest.current)
-                    quoteRequest.current = { key: crypto.randomUUID(), count };
+                    quoteRequest.current = { key: randomId(), count };
                   const q = await api.request<PartnerQuote>("/partner/quotes", {
                     count: quoteRequest.current.count,
                     requestKey: quoteRequest.current.key,
@@ -293,7 +294,7 @@ export function PartnerPortal({ locale }: { locale: Locale }) {
                     void action.run(async () => {
                       if (!campaignRequest.current)
                         campaignRequest.current = {
-                          key: crypto.randomUUID(),
+                          key: randomId(),
                           quoteId: quote.id,
                           name: name.trim(),
                         };

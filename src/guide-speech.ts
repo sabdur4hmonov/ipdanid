@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { recordedVoices, type RecordedVoice } from "./core/recorded-voices";
 import { recordedClipPlayer } from "./recorded-player";
@@ -23,7 +24,7 @@ const native = registerPlugin<{
   stop(options: { requestId: number; session: string }): Promise<void>;
 }>("IpRasmSpeech");
 let requestId = 0;
-const session = crypto.randomUUID();
+const session = randomId();
 export const androidSpeech = () => Capacitor.getPlatform() === "android";
 export async function guideVoices(): Promise<GuideVoice[]> {
   const recorded = (await recordedVoices()).map((v) => ({

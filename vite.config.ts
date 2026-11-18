@@ -39,6 +39,8 @@ const fontFiles = [
     "/licenses/polygon-clipping.txt",
     "/licenses/splaytree.txt",
     "/licenses/robust-predicates.txt",
+    "/licenses/noble-curves.txt",
+    "/licenses/noble-hashes.txt",
   ]);
 let buildRuntime: {
   version: string;

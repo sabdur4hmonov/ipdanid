@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import type { Instruction, MaterialProfile, Segment } from "./types";
 import { Distribution } from "./distribution";
 import { connectionAllowed, insideProfile } from "./geometry";
@@ -85,7 +86,7 @@ export async function addHeartAccent(
     body.algorithm === "classic-greedy/2"
       ? "standard-accent/21"
       : "standard-accent/20";
-  i.id = crypto.randomUUID();
+  i.id = randomId();
   i.createdAt = new Date().toISOString();
   i.segments.push({ color: colour, path });
   i.params = {

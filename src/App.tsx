@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useFeatures } from "./FeatureContext";
 import { craftsEnabled } from "./feature-policy";
 import { uiText } from "./ui-i18n";
@@ -323,7 +324,7 @@ export default function App() {
                 onRestore={context.restoreAccountProject}
                 onImport={(i, p) => {
                   const next: Project = {
-                    id: crypto.randomUUID(),
+                    id: randomId(),
                     name: "Server · " + i.sequenceHash.slice(0, 8),
                     instruction: deepFreeze(i),
                     progress: p,
@@ -418,7 +419,7 @@ export default function App() {
                         ? ps
                         : [
                             {
-                              id: crypto.randomUUID(),
+                              id: randomId(),
                               name: customerFlowText(locale, "result"),
                               instruction: i,
                               progress: progressFor(i),
@@ -434,7 +435,7 @@ export default function App() {
                       (p) => p.instruction.sequenceHash === i.sequenceHash,
                     );
                     const p = existing ?? {
-                      id: crypto.randomUUID(),
+                      id: randomId(),
                       name: customerFlowText(locale, "result"),
                       instruction: i,
                       progress: progressFor(i),
@@ -465,7 +466,7 @@ export default function App() {
                       onGuide={(i) => {
                         if (!loaded) return;
                         const p: Project = {
-                          id: crypto.randomUUID(),
+                          id: randomId(),
                           name: standardText(locale, "title"),
                           instruction: i,
                           progress: progressFor(i),
@@ -508,7 +509,7 @@ export default function App() {
                 onGuide={(i) => {
                   if (!loaded) return;
                   const p: Project = {
-                    id: crypto.randomUUID(),
+                    id: randomId(),
                     name: i.params.product?.text ?? t("defaultName"),
                     instruction: i,
                     progress: progressFor(i),

@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useFeatures } from "./FeatureContext";
 import { useState, useEffect, useRef } from "react";
 import type { Locale } from "./core/types";
@@ -226,7 +227,7 @@ export function BusinessAdmin({
                 });
                 if (request.current?.signature !== signature)
                   request.current = {
-                    key: crypto.randomUUID(),
+                    key: randomId(),
                     signature,
                     startsAt: Date.now(),
                   };

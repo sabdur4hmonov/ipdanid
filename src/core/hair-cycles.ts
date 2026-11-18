@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import type { Instruction } from "./types";
 import { validateInstruction } from "./validation";
 import { hash, sequencePayload, rgb, deepFreeze } from "./engine";
@@ -268,7 +269,7 @@ export async function refineHairCycles(
   async function materialize() {
     const result = structuredClone(seed);
     result.algorithm = "hair-cycles/14";
-    result.id = crypto.randomUUID();
+    result.id = randomId();
     result.createdAt = new Date().toISOString();
     result.segments[0].path = [...path];
     result.params.parentSequenceHash = seed.sequenceHash;

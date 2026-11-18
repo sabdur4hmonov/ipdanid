@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { customerApi, customerCacheNamespace } from "./customer-api";
@@ -60,22 +61,28 @@ export async function verifyBuildReceipt(
       !/^[-\w]{86}$/.test(r.signature)
     )
       return false;
-    const imported = await crypto.subtle.importKey(
-        "jwk",
-        normalizedKey(key),
-        { name: "Ed25519" },
-        false,
-        ["verify"],
-      ),
-      bytes = Uint8Array.from(
+    const publicKey = normalizedKey(key);
+    const bytes = Uint8Array.from(
         atob(r.signature.replace(/-/g, "+").replace(/_/g, "/") + "=="),
         (c) => c.charCodeAt(0),
       );
+    const message = new TextEncoder().encode(JSON.stringify(p));
+    if (!crypto.subtle) {
+      const { ed25519 } = await import("@noble/curves/ed25519.js");
+      const raw = Uint8Array.from(
+        atob(publicKey.x.replace(/-/g, "+").replace(/_/g, "/") + "="),
+        (c) => c.charCodeAt(0),
+      );
+      return ed25519.verify(bytes, message, raw, { zip215: false });
+    }
+    const imported = await crypto.subtle.importKey(
+      "jwk", publicKey, { name: "Ed25519" }, false, ["verify"],
+    );
     return await crypto.subtle.verify(
       "Ed25519",
       imported,
       bytes,
-      new TextEncoder().encode(JSON.stringify(p)),
+      message,
     );
   } catch {
     return false;
@@ -95,7 +102,7 @@ async function read(): Promise<Cache> {
       throw Error("build-access/storage");
     return c;
   }
-  return { deviceId: crypto.randomUUID(), receipts: {} };
+  return { deviceId: randomId(), receipts: {} };
 }
 async function write(c: Cache) {
   const value = JSON.stringify(c);
@@ -171,7 +178,7 @@ export const buildAccess = {
         JSON.stringify(normalizedKey(c.publicKey)) !== JSON.stringify(key)
       )
         throw Error("build-access/key");
-      await crypto.subtle.importKey("jwk", key, { name: "Ed25519" }, false, [
+      await crypto.subtle?.importKey("jwk", key, { name: "Ed25519" }, false, [
         "verify",
       ]);
       c.publicKey = key;

@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import type { AnalyticsEvent, AnalyticsPreferences } from "./analytics-types";
 type PhotoInput = { kind: "photo-selected" | "preview-ready"; shape: unknown };
 type ManualInput = {
@@ -32,7 +33,7 @@ export class AnalyticsDriver {
   private running: Promise<void> | undefined;
   constructor(
     private transport: AnalyticsTransport,
-    private key = () => crypto.randomUUID(),
+    private key = () => randomId(),
   ) {}
   pause() {
     ++this.epoch;

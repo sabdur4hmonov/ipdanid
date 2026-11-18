@@ -1,5 +1,6 @@
 // This screen is already lazy. Load its inline editors together so toggling a
 // controlled input cannot suspend the entire screen or detach its canvas refs.
+import { randomId } from "../core/browser-crypto";
 import { BackgroundEditor } from "../BackgroundEditor";
 import { PeopleRegionEditor } from "../PeopleRegionEditor";
 import { PersonBackground } from "../PersonBackground";
@@ -599,7 +600,7 @@ export function CreateScreen({ context }: { context: ScreenContext }) {
                                   ...p,
                                   image: prepared,
                                   background,
-                                  sourceRevision: crypto.randomUUID(),
+                                  sourceRevision: randomId(),
                                 }
                               : p,
                           ),

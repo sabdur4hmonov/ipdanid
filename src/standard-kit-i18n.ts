@@ -2,6 +2,12 @@ import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 const messages = {
   en: {
+    a3Template: "4 × A3 template",
+    a3TooLarge: "This A3 layout fits boards up to 500 mm. Use the other template sizes for larger boards.",
+    measuredThread: "Measured thread diameter (mm)",
+    measuredThreadNote: "Saved as a new kit revision for later calibration. Preview and generation still use the existing material settings.",
+    measuredThinner: "Thinner than 0.12 mm by over 25%. The preview may look darker than the board.",
+    measuredThicker: "Thicker than 0.12 mm by over 25%. The preview may look lighter than the board.",
     framing: "Head framing",
     keepShoulders: "Keep shoulders",
     zoom: "Zoom",
@@ -81,6 +87,12 @@ const messages = {
       "A measured knee has not been accepted for this photo; line count is a starting budget.",
   },
   uz: {
+    a3Template: "4 × A3 andoza",
+    a3TooLarge: "Bu A3 andoza 500 mm gacha bo‘lgan taxtaga mos. Kattaroq taxta uchun boshqa andozani tanlang.",
+    measuredThread: "O‘lchangan ip qalinligi (mm)",
+    measuredThreadNote: "Keyingi kalibrlash uchun yangi kit versiyasiga saqlanadi. Hisob va ko‘rinish hozirgi material sozlamalaridan foydalanadi.",
+    measuredThinner: "Ip 0.12 mm dan 25% dan ortiq ingichka. Ekrandagi natija taxtadagidan to‘qroq ko‘rinishi mumkin.",
+    measuredThicker: "Ip 0.12 mm dan 25% dan ortiq qalin. Ekrandagi natija taxtadagidan ochroq ko‘rinishi mumkin.",
     framing: "Boshni joylashtirish",
     keepShoulders: "Yelkani qoldirish",
     zoom: "Kattalashtirish",
@@ -161,6 +173,12 @@ const messages = {
       "Bu surat uchun o‘lchangan eng samarali nuqta qabul qilinmagan; ip soni boshlang‘ich chegara.",
   },
   ru: {
+    a3Template: "Шаблон 4 × A3",
+    a3TooLarge: "Этот шаблон A3 подходит для досок до 500 мм. Для большей доски выберите другой шаблон.",
+    measuredThread: "Измеренный диаметр нити (мм)",
+    measuredThreadNote: "Сохраняется в новой версии набора для будущей калибровки. Расчёт и предпросмотр используют текущие настройки материала.",
+    measuredThinner: "Нить более чем на 25% тоньше 0,12 мм. Предпросмотр может выглядеть темнее доски.",
+    measuredThicker: "Нить более чем на 25% толще 0,12 мм. Предпросмотр может выглядеть светлее доски.",
     framing: "Размещение головы",
     keepShoulders: "Оставить плечи",
     zoom: "Масштаб",

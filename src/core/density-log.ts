@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import type { GenerateOptions } from "./engine";
 import { deepFreeze, hash, rgb, sequencePayload } from "./engine";
 import { inside, connectionAllowed, assertPinSpacing } from "./geometry";
@@ -353,7 +354,7 @@ export async function generateLogDensity(
   const result: Instruction = {
     schema: "iprasm.instruction/1",
     algorithm: "density-optical/5",
-    id: crypto.randomUUID(),
+    id: randomId(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
     sequenceHash: "",

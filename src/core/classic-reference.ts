@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import type { Instruction, MaterialProfile, RegionBox } from "./types";
 import type { GenerateOptions } from "./engine";
 import { deepFreeze, hash, sequencePayload } from "./engine";
@@ -294,7 +295,7 @@ export async function generateClassicReference(
     const i: Instruction = {
       schema: "iprasm.instruction/1",
       algorithm: "classic-greedy/2",
-      id: crypto.randomUUID(),
+      id: randomId(),
       createdAt: new Date().toISOString(),
       imageHash,
       sequenceHash: "",

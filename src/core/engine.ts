@@ -1,4 +1,6 @@
+import { randomId } from "./browser-crypto";
 import { validSubjectPlan } from "./subject-plan";
+import { sha256Bytes } from "./browser-crypto";
 import { Distribution } from "./distribution";
 import { assertContinuation } from "./continuation";
 import type { Instruction, MaterialProfile, Segment, Step } from "./types";
@@ -20,8 +22,8 @@ export async function hash(value: unknown): Promise<string> {
     value instanceof Uint8Array
       ? value
       : new TextEncoder().encode(JSON.stringify(value));
-  const digest = await crypto.subtle.digest("SHA-256", new Uint8Array(bytes));
-  return [...new Uint8Array(digest)]
+  const digest = await sha256Bytes(bytes);
+  return [...digest]
     .map((x) => x.toString(16).padStart(2, "0"))
     .join("");
 }
@@ -521,7 +523,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
   const result: Instruction = {
     schema: "iprasm.instruction/1",
     algorithm: algorithm,
-    id: crypto.randomUUID(),
+    id: randomId(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
     sequenceHash: "",

@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import type { RegionBox, EditParams, PortraitSettings, Shape } from "./types";
 import { sourceToTarget } from "./coordinates";
 import { inside } from "./geometry";
@@ -180,7 +181,7 @@ export function reviewedPeoplePortrait(
       version: "multiple-portraits/1",
       reference: "processed-target/sample-centers-v1",
       faces: mapped.map((p) => ({
-        id: crypto.randomUUID(),
+        id: randomId(),
         face: p.face,
         regions: p.regions!,
       })),
@@ -200,7 +201,7 @@ export function estimatedPairPortrait(
       height: h * face.height,
     });
     return {
-      id: crypto.randomUUID(),
+      id: randomId(),
       face,
       regions: {
         reference: "processed-target/sample-centers-v1" as const,

@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import {
   commandScopeKey,
   recognizedAssemblyCommand,
@@ -22,7 +23,7 @@ export interface AssemblyCommandAdapter {
   cancel(o: { controller: string; requestId: number }): Promise<void>;
 }
 export class AssemblyCommandDriver {
-  private readonly controller = crypto.randomUUID();
+  private readonly controller = randomId();
   private epoch = 0;
   private requestId = 0;
   private inFlight = false;
@@ -64,7 +65,7 @@ export class AssemblyCommandDriver {
       return;
     }
     const ticket = ++this.epoch,
-      session = crypto.randomUUID(),
+      session = randomId(),
       began = this.clock();
     this.inFlight = true;
     const valid = () =>

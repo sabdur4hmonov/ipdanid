@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useState, useRef, type ReactNode, type PointerEvent } from "react";
 import type { SubjectPlan } from "./core/subject-plan";
 import type { Locale, RegionBox } from "./core/types";
@@ -98,7 +99,7 @@ export function SubjectMarksEditor({
           onChange([
             ...subjects,
             {
-              id: crypto.randomUUID(),
+              id: randomId(),
               bounds: { left: 0.2, top: 0.2, width: 0.6, height: 0.6 },
               reviewed: false,
               regions: [],

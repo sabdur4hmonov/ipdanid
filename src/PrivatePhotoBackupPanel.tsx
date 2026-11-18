@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import type { PhotoDraft } from "./photo-draft";
@@ -126,7 +127,7 @@ export default function PrivatePhotoBackupPanel({
         ? await photoUpload(capture!(), status.revision)
         : {
             expectedRevision: status.revision,
-            requestKey: crypto.randomUUID(),
+            requestKey: randomId(),
           };
     if (!valid()) return;
     const p = { action, body, createdAt: Date.now() };

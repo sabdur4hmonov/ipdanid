@@ -1,5 +1,6 @@
 // Reproducible pre-improvement /3 reference for local comparison scripts/tests.
 // The shipping application imports engine.ts, never this baseline.
+import { randomId, sha256Bytes } from "./browser-crypto";
 import type { Instruction, MaterialProfile, Segment, Step } from "./types";
 import { strandFootprint, type Footprint } from "./optical";
 import { connectionAllowed, inside, assertPinSpacing } from "./geometry";
@@ -10,7 +11,7 @@ export async function hash(value: unknown): Promise<string> {
     value instanceof Uint8Array
       ? value
       : new TextEncoder().encode(JSON.stringify(value));
-  const digest = await crypto.subtle.digest("SHA-256", new Uint8Array(bytes));
+  const digest = await sha256Bytes(new Uint8Array(bytes));
   return [...new Uint8Array(digest)]
     .map((x) => x.toString(16).padStart(2, "0"))
     .join("");
@@ -224,7 +225,7 @@ export async function generate(o: GenerateOptions): Promise<Instruction> {
   const result: Instruction = {
     schema: "iprasm.instruction/1",
     algorithm: "greedy-optical/3",
-    id: crypto.randomUUID(),
+    id: randomId(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
     sequenceHash: "",

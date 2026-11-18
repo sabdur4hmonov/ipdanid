@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import type { Instruction, MaterialProfile } from "./types";
 import type { LetteringProduct, GlyphLayout } from "./lettering-contract";
 import {
@@ -134,7 +135,7 @@ export async function generateGlyphOutline(input: {
   const i: Instruction = {
     schema: "iprasm.instruction/1",
     algorithm: "glyph-outline/19",
-    id: crypto.randomUUID(),
+    id: randomId(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(target),
     sequenceHash: "",

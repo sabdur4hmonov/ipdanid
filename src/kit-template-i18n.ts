@@ -1,6 +1,33 @@
 import type { Locale } from "./core/types";
 import { baseLocale, scriptText } from "./uzbek-script";
 const words = {
+  quadrants: ["4 TA A3 ANDOZA", "4 ШАБЛОНА A3", "4 A3 TEMPLATES"],
+  quadrantPrint: [
+    "2–5-betlarni A3 qog‘ozga 100% o‘lchamda chop eting.",
+    "Печатайте страницы 2–5 на A3 в масштабе 100%.",
+    "Print pages 2–5 on A3 at 100% scale.",
+  ],
+  quadrantFrame: [
+    "Ramka bo‘ylab qirqing. Ochiq chiziqlar markazda tutashadi.",
+    "Вырежьте по рамке. Светлые линии стыкуются в центре.",
+    "Trim on the frame. Join the light seam lines at the board centre.",
+  ],
+  quadrantLayout: [
+    "Taxtaning oldi: A — yuqori o‘ng, B — pastki o‘ng, C — pastki chap, D — yuqori chap.",
+    "Лицевая сторона: A — верх справа, B — низ справа, C — низ слева, D — верх слева.",
+    "Front view: A top right, B bottom right, C bottom left, D top left.",
+  ],
+  quadrantBoardEdges: [
+    "{0} VARAQ — to‘q chiziqlarni taxtaning tashqi chetlariga tekislang.",
+    "ЛИСТ {0} — совместите тёмные линии с краями доски.",
+    "SHEET {0} — align dark frame lines to the outer board edges.",
+  ],
+  quadrantCut: [
+    "Ichki uzukni ochish ixtiyoriy: qizil uzuq chiziq bo‘ylab qirqing.",
+    "При желании вырежьте середину по красному пунктиру.",
+    "Optional inner cutout: cut along the red dashed line.",
+  ],
+  calibration100: ["100 mm tekshirish belgisi", "Проверка 100 мм", "100 mm calibration"],
   sheet: ["BIR VARAQ", "ОДИН ЛИСТ", "SHEET"],
   tiles: ["A4 BO‘LAKLAR", "ЛИСТЫ A4", "TILES"],
   stickers: ["SEKTOR YOPISHTIRMALARI", "НАКЛЕЙКИ СЕКТОРОВ", "STICKERS"],

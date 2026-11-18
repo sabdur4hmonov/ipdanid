@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import type { GenerateOptions } from "./engine";
 import { deepFreeze, hash, sequencePayload } from "./engine";
 import type { Instruction } from "./types";
@@ -131,7 +132,7 @@ export async function generateClassic(
     const i: Instruction = {
       schema: "iprasm.instruction/1",
       algorithm: "classic-greedy/1",
-      id: crypto.randomUUID(),
+      id: randomId(),
       createdAt: new Date().toISOString(),
       imageHash,
       sequenceHash: "",

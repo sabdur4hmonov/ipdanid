@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import type { Instruction, Locale } from "./core/types";
 import { loadPhoto } from "./core/image";
@@ -111,7 +112,7 @@ export default function AssemblyPhotos(props: {
       const photo: BoardPhoto = {
         ...scope,
         version: 1,
-        id: crypto.randomUUID(),
+        id: randomId(),
         createdAt: Date.now(),
         width: canvas.width,
         height: canvas.height,

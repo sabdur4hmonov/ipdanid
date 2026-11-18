@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import { StandardKitAdmin } from "./StandardKitAdmin";
 import type { Locale } from "./core/types";
@@ -17,7 +18,7 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
     [account, setAccount] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    request = useRef(crypto.randomUUID()),
+    request = useRef(randomId()),
     uncertain = useRef(false);
   async function refresh() {
     const r = await api.request<any>("/admin/kits", undefined, token);
@@ -144,7 +145,7 @@ export function KitAdmin({ locale, token }: { locale: Locale; token: string }) {
         {uncertain.current && (
           <button
             onClick={() => {
-              request.current = crypto.randomUUID();
+              request.current = randomId();
               uncertain.current = false;
               setBatch(undefined);
             }}

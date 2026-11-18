@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { customerApi as api, customerCacheNamespace } from "./customer-api";
@@ -29,7 +30,7 @@ async function load() {
   }
   const bytes = crypto.getRandomValues(new Uint8Array(32));
   return (state = {
-    installationId: crypto.randomUUID(),
+    installationId: randomId(),
     installationSecret: btoa(String.fromCharCode(...bytes))
       .replace(/\+/g, "-")
       .replace(/\//g, "_")

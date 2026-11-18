@@ -740,3 +740,11 @@ Taqqoslash ekranlari: output/website-w2/screens/index.html.
 4. Haqiqiy deploydan so‘ng core oqimni sinang, Admin’da Telegram/telefonni saqlab sahifani yangilang. Qo‘shimchalar FEATURES bo‘sh bo‘lsa yashirin va API404 bo‘lishi kerak.
 5. Birinchi qo‘lda backup va yangi inactive papkaga restore-drill bajaring. Mavjud production DB/jurnalni yoki toza million master’ni almashtirmang; guide’dagi birinchi import qoidalariga rioya qiling.
 6. Lokal ARM64/QEMU va brauzer sinovlari real A1 server, HTTPS, OCI bucket, telefon yoki taxta sinovini almashtirmaydi.
+
+# P2 — uy Wi-Fi orqali birinchi Doira (2026-11-18)
+
+1. Kompyuter va telefonni bir xil ishonchli uy Wi-Fi’ga ulang. `scripts\start-lan-build.cmd`ni oching, kerak bo‘lsa Wi-Fi adapterining IPv4 manzilini tanlang. Oynadagi Telefon URL yoki QR orqali telefonda kiring.
+2. Doira uchun suratni joylashtirib hisoblang. Yig‘ishni boshlang va LAN oynasida ko‘rsatilgan maxfiy fayldagi P2 sandbox kit kodini kiriting. Player aytgan aniq mixda boshlang.
+3. Har haqiqiy ulanishni tasdiqlang. Natijani shu qadamgacha ko‘rish orqali taxta bilan taqqoslang. Dam olishni bosing, saqlandi yozuvini kuting va shu brauzerda qaytib Davom etishni bosing.
+4. Instruktor tili va telefon ovozini tanlang, Ovozli qo‘llanmani yoqing va Takrorlashni bosing. Haqiqiy telefonda eshitilishini tekshiring. Windows firewall va HTTPS farqlari `docs/LAN_BUILD_UZ.md`da.
+5. Shablon kerak bo‘lsa Admin’da 4 × A3’ni tanlang. 2–5-betlar 100% masshtabda chop etiladi. 100 mm belgi 10 sm chiqmaguncha teshmang. Mavjud menejer Doira andozasi ham shu mix koordinatalariga mos.

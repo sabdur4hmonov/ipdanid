@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import type { Instruction, Project } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
 import type { RecoverySnapshot, RecoveryWrite } from "./recovery-types";
@@ -15,7 +16,7 @@ export function recoveryFor(
       sequenceHash: project.instruction.sequenceHash,
       confirmed: project.progress.confirmed,
       expectedRevision: revision,
-      requestKey: crypto.randomUUID(),
+      requestKey: randomId(),
       resume: session
         ? {
             current: session.current,
@@ -89,7 +90,7 @@ export function recoveredProject(
   )
     throw Error("Different or deleted project");
   const project: Project = {
-    ...(existing ?? { id: crypto.randomUUID(), edits: { ...DEFAULT_EDITS } }),
+    ...(existing ?? { id: randomId(), edits: { ...DEFAULT_EDITS } }),
     instruction: guide,
     progress: snapshot.progress,
     name: snapshot.details?.library.name ?? existing?.name ?? "Saved portrait",

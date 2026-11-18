@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import { validSubjectPlan } from "./subject-plan";
 import { validLetteringProduct } from "./lettering-contract";
 import {
@@ -1365,7 +1366,7 @@ export async function generateDensity(
                     : tuning.multiscale
                       ? "density-multiscale/7"
                       : "density-optical/5",
-    id: crypto.randomUUID(),
+    id: randomId(),
     createdAt: new Date().toISOString(),
     imageHash: await hash(o.pixels),
     sequenceHash: "",

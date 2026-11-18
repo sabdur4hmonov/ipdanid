@@ -3,11 +3,13 @@ import type { Locale } from "./core/types";
 import {
   DEFAULT_STANDARD_KIT,
   standardProfiles,
+  threadMeasurementWarning,
   type StandardKitConfig,
 } from "./core/standard-kit";
 import { standardText } from "./standard-kit-i18n";
 import { customerApi } from "./customer-api";
 import { download } from "./download";
+import type { KitPdfKind } from "./core/standard-kit-pdf";
 export function StandardKitAdmin({
   locale,
   token,
@@ -39,7 +41,7 @@ export function StandardKitAdmin({
       .catch(() => setError(true));
   }, []);
   const fields: [
-    Exclude<keyof StandardKitConfig, "version" | "revision" | "threadColor">,
+    Exclude<keyof StandardKitConfig, "version" | "revision" | "threadColor" | "measuredThreadMm">,
     Parameters<typeof standardText>[1],
   ][] = [
     ["baseMm", "base"],
@@ -67,6 +69,17 @@ export function StandardKitAdmin({
       setBusy(false);
     }
   }
+  const warning = threadMeasurementWarning(config.measuredThreadMm);
+  const unsaved = JSON.stringify(config) !== JSON.stringify(savedConfig);
+  const exportTemplate = (kind: KitPdfKind, shape?: "circle" | "rectangle" | "heart") =>
+    run(async () => {
+      const { standardKitPdf } = await import("./core/standard-kit-pdf");
+      const bytes = await standardKitPdf(savedConfig, kind, { locale, shape });
+      await download(
+        `ip-rasm-standard-${shape ? shape + "-" : ""}${kind}-r${savedConfig.revision}.pdf`,
+        new Blob([new Uint8Array(bytes)], { type: "application/pdf" }),
+      );
+    });
   return (
     <section data-testid="standard-kit-admin">
       <h3>{t("config")}</h3>
@@ -86,6 +99,24 @@ export function StandardKitAdmin({
             />
           </label>
         ))}
+        <label>
+          {t("measuredThread")}
+          <input
+            type="number"
+            step="any"
+            min={0.05}
+            max={0.5}
+            value={config.measuredThreadMm ?? ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              setConfig(({ measuredThreadMm: _previous, ...rest }) =>
+                value === "" ? rest : { ...rest, measuredThreadMm: Number(value) },
+              );
+            }}
+          />
+        </label>
+        <p className="fineprint">{t("measuredThreadNote")}</p>
+        {warning && <p role="status">{t(warning)}</p>}
         <label>
           {t("threadColor")}
           <input
@@ -129,24 +160,19 @@ export function StandardKitAdmin({
         {(["sheet", "tiles", "stickers"] as const).map((kind) => (
           <button
             key={kind}
-            disabled={JSON.stringify(config) !== JSON.stringify(savedConfig)}
-            onClick={() =>
-              void run(async () => {
-                const { standardKitPdf } =
-                  await import("./core/standard-kit-pdf");
-                await download(
-                  `ip-rasm-standard-${kind}-r${config.revision}.pdf`,
-                  new Blob(
-                    [new Uint8Array(await standardKitPdf(config, kind, {locale}))],
-                    { type: "application/pdf" },
-                  ),
-                );
-              })
-            }
+            disabled={unsaved}
+            onClick={() => void exportTemplate(kind)}
           >
             {t(kind)}
           </button>
         ))}
+        {(["circle", "rectangle", "heart"] as const).map((shape) => (
+          <button key={shape} disabled={unsaved || savedConfig.baseMm > 500}
+            onClick={() => void exportTemplate("quadrants", shape)}>
+            {t("a3Template")} · {t(shape)}
+          </button>
+        ))}
+        {savedConfig.baseMm > 500 && <p className="fineprint">{t("a3TooLarge")}</p>}
       </fieldset>
     </section>
   );

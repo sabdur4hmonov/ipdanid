@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import { exportText } from "../export-i18n";
 import type { Locale } from "./types";
 import { frameFreePhoto } from "./free-photo-framing";
@@ -1249,5 +1250,5 @@ export async function parseProjectFile(
     if (!Number.isFinite(v) || v < range[0] || v > range[1])
       throw new Error("Invalid crop parameters");
   }
-  return { ...p, id: crypto.randomUUID(), deletedAt: undefined };
+  return { ...p, id: randomId(), deletedAt: undefined };
 }

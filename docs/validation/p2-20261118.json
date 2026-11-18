@@ -1,0 +1,85 @@
+{
+  "milestone": "P2 first physical board software readiness",
+  "date": "2026-11-18",
+  "baseCommit": "7f98070",
+  "units": {
+    "passed": 795,
+    "files": 174,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 550.18,
+    "source": "output/p2/unit-plan.json"
+  },
+  "browser": {
+    "connection": "plain HTTP to bound RFC1918 Windows interface",
+    "viewportCssWidth": 390,
+    "browser": "Chrome",
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "durationMs": 23566,
+    "cases": [
+      "Admin token exchange, measured-thread revision and valid A3 PDF download",
+      "Real protected /4 photo preview and kit unlock, current/final render, fullscreen, device-TTS/vibration call interception, muted video playback and rest persistence after reload"
+    ],
+    "actualHandsetAudioOrVibration": false,
+    "source": "output/p2/lan-accepted.json",
+    "screenshot": "output/p2/player-390.png"
+  },
+  "build": {
+    "modules": 2174,
+    "durationSeconds": 25.88,
+    "typecheck": true,
+    "protectedGeneration": true,
+    "files": 128,
+    "differingFiles": [
+      "sw.js"
+    ],
+    "normalizedServiceWorkerMatches": true,
+    "manifestSha256": "1de4ab053c13ebc4517f70bc935deb8a62931fe9ed7de02644ed5a5d62878446"
+  },
+  "pdf": {
+    "source": "output/p2/pdf-audit-final.json",
+    "operatorAudit": "Decoded actual PDF drawing paths against shared official coordinate CSV",
+    "allLabelsAndCenters": 720,
+    "templatePagesPerShape": 5,
+    "quadrantMm": 250,
+    "independentChecks": {
+      "circle": {
+        "count": 240,
+        "maxErrorMm": 0.000025,
+        "calibrationBars": 4
+      },
+      "rectangle": {
+        "count": 240,
+        "maxErrorMm": 0.0000253,
+        "calibrationBars": 4
+      },
+      "heart": {
+        "count": 240,
+        "maxErrorMm": 0.00002485,
+        "calibrationBars": 4
+      },
+      "managerCircle": {
+        "count": 240,
+        "seamDuplicateMarks": 4,
+        "maxErrorMm": 0.00021478
+      }
+    }
+  },
+  "launcher": {
+    "ownerPort": 4950,
+    "apiLoopbackPort": 4951,
+    "anonymousStatus": 403,
+    "ticketBits": 128,
+    "rotatesPerLaunch": true,
+    "guardedCookie": true,
+    "sameSubnetAndHostRequired": true,
+    "privateSandboxCopiedFromSameQ4SeedRecipe": true,
+    "frozenDbUsed": false,
+    "operatorGuide": "docs/LAN_BUILD_UZ.md"
+  },
+  "limitations": "Windows firewall unchanged. Actual phone connectivity, installed TTS sound, physical vibration, fallback screen-awake behaviour and physical assembly were not validated.",
+  "next": "Stop after P2 and wait for the first-board physical trial. Exact publication is in ignored output/p2/publication.json."
+}

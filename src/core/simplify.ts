@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import type { Instruction, RegionBox } from "./types";
 import { deepFreeze, hash, sequencePayload, rgb } from "./engine";
 import { validateInstruction } from "./validation";
@@ -344,7 +345,7 @@ export async function simplifySequence(
   ) => {
     const i = structuredClone(source);
     i.algorithm = "assembly-prune/9";
-    i.id = crypto.randomUUID();
+    i.id = randomId();
     i.createdAt = new Date().toISOString();
     i.segments[0].path = route;
     i.params.parentSequenceHash = source.sequenceHash;

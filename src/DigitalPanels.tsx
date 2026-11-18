@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import type { CommerceProduct } from "./catalog-checkout";
@@ -411,7 +412,7 @@ export function DigitalStudio({
                 kind: policy.kind,
                 name,
                 locale,
-                requestKey: crypto.randomUUID(),
+                requestKey: randomId(),
                 quote: {
                   productRevision: product.revision,
                   settingsRevision,

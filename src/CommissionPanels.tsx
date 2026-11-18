@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import { customerApi as api } from "./customer-api";
 import { useJourneyRun } from "./DigitalPanels";
@@ -232,12 +233,12 @@ export function CommissionStudio({
     [productId, setProductId] = useState(""),
     [instructionId, setInstructionId] = useState(""),
     [consent, setConsent] = useState(false),
-    key = useRef(crypto.randomUUID()),
+    key = useRef(randomId()),
     task = useJourneyRun(locale, undefined, () => {
       setRows([]);
       setConsent(false);
       setInstructionId("");
-      key.current = crypto.randomUUID();
+      key.current = randomId();
     });
   async function load(token: string) {
     const v = await api.request<Commission[]>("/commissions", undefined, token);
@@ -280,7 +281,7 @@ export function CommissionStudio({
               return () => {
                 apply();
                 setConsent(false);
-                key.current = crypto.randomUUID();
+                key.current = randomId();
               };
             });
           }}
@@ -294,7 +295,7 @@ export function CommissionStudio({
                 onChange={(e) => {
                   setProductId(e.target.value);
                   setConsent(false);
-                  key.current = crypto.randomUUID();
+                  key.current = randomId();
                 }}
               >
                 <option value="">—</option>
@@ -318,7 +319,7 @@ export function CommissionStudio({
                 onChange={(e) => {
                   setInstructionId(e.target.value);
                   setConsent(false);
-                  key.current = crypto.randomUUID();
+                  key.current = randomId();
                 }}
               >
                 <option value="">—</option>
@@ -529,7 +530,7 @@ function AcceptCommission({
           attempt.current ??= {
             revision: row.revision,
             artHash: row.artHash,
-            requestKey: crypto.randomUUID(),
+            requestKey: randomId(),
             address: { ...address },
             quote: {
               catalogRevision: a.catalogRevision,

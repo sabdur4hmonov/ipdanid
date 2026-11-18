@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useState, type ComponentProps } from "react";
 import { RegionEditor } from "./RegionEditor";
 import { portraitHelp } from "./portrait-help-i18n";
@@ -94,7 +95,7 @@ export function PeopleRegionEditor(
             (props.resolution ?? 160) > 192
           }
           onClick={() => {
-            const id = crypto.randomUUID();
+            const id = randomId();
             props.setPortrait((p) => addPerson(p, id));
             setSelectedId(id);
           }}

@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import { customerApi as api, ApiError } from "./customer-api";
 import type { Locale } from "./core/types";
@@ -215,7 +216,7 @@ export default function TrialAdmin({
             onClick={() => {
               const epoch = life.current,
                 credential = token;
-              pending.current ??= { count, requestKey: crypto.randomUUID() };
+              pending.current ??= { count, requestKey: randomId() };
               const body = pending.current;
               void run(async () => {
                 const result = await api.request<{ codes: string[] }>(

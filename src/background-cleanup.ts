@@ -1,3 +1,4 @@
+import { sha256Bytes } from "./core/browser-crypto";
 import { cleanUncertainBackground } from "./core/background-cleanup";
 import type { PersonMask } from "./core/person-mask";
 import { semanticCutout, type CutoutChoice } from "./core/semantic-cutout";
@@ -25,7 +26,7 @@ async function getModel() {
     if (!response.ok) throw Error("Background cleanup model unavailable");
     const bytes = new Uint8Array(await response.arrayBuffer()),
       hash = Array.from(
-        new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+        new Uint8Array(await sha256Bytes(bytes)),
         (v) => v.toString(16).padStart(2, "0"),
       ).join("");
     if (

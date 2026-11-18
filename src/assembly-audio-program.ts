@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { flatten } from "./core/engine";
 import { pinLabel } from "./core/standard-kit";
 import { recordedStepEntries, type VoiceClip } from "./core/recorded-voices";
@@ -127,7 +128,7 @@ export function assemblyAudioProgram(options: {
   });
   const program: AssemblyAudioProgram = {
     version: "assembly-audio/1",
-    session: crypto.randomUUID(),
+    session: randomId(),
     sequenceHash: instruction.sequenceHash,
     projectId: options.projectId,
     language,

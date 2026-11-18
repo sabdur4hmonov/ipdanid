@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState, useMemo } from "react";
 import type { Instruction, Locale, RegionBox, Shape } from "./core/types";
 import { DEFAULT_EDITS } from "./core/types";
@@ -186,7 +187,7 @@ export function StandardKitStudio({
       setN(500);
       setLines(2500);
       setBackground(undefined);
-      setSourceId(crypto.randomUUID());
+      setSourceId(randomId());
       setSource(c);
     } catch {
       if (request === photoSerial.current) setError(t("error"));

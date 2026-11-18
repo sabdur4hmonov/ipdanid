@@ -11,6 +11,7 @@ export interface StandardKitConfig {
   sectors: number;
   shaftMm: number;
   threadMm: number;
+  measuredThreadMm?: number;
   opacity: number;
   threadColor: string;
   minHoleGapMm: number;
@@ -52,7 +53,7 @@ export function validateStandardConfig(c: StandardKitConfig) {
   if (
     !c ||
     c.version !== "standard-kit/1" ||
-    Object.keys(c).sort().join() !== Object.keys(defaults).sort().join() ||
+    Object.keys(c).filter(key => key !== "measuredThreadMm").sort().join() !== Object.keys(defaults).sort().join() ||
     Object.entries(c).some(
       ([key, v]) =>
         !["version", "threadColor"].includes(key) && !Number.isFinite(v),
@@ -75,6 +76,8 @@ export function validateStandardConfig(c: StandardKitConfig) {
     c.shaftMm > 5 ||
     c.threadMm < 0.05 ||
     c.threadMm > 1 ||
+    (c.measuredThreadMm !== undefined &&
+      (c.measuredThreadMm < 0.05 || c.measuredThreadMm > 0.5)) ||
     c.opacity <= 0 ||
     c.opacity > 1 ||
     c.minHoleGapMm < c.shaftMm + c.threadMm ||
@@ -89,6 +92,12 @@ export function validateStandardConfig(c: StandardKitConfig) {
     )
   )
     throw Error("kit/invalid-configuration");
+}
+export function threadMeasurementWarning(mm?: number) {
+  if (mm === undefined) return undefined;
+  if (mm < 0.09) return "measuredThinner";
+  if (mm > 0.15) return "measuredThicker";
+  return undefined;
 }
 function build(c: StandardKitConfig, shape: Shape): MaterialProfile {
   const original = createProfile(shape, c.nails, "dark", {

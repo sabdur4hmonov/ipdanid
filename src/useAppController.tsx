@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import {recoveredProject} from './recovery-client';
 import { cancelAssemblyInputs } from "./assembly-input-cancellation";
 import type {RecoverySnapshot} from './recovery-types';
@@ -974,7 +975,7 @@ export function useAppController(initialView: View = "create") {
                 background?.enabled && background.canvas
                   ? background.canvas
                   : p.original,
-              sourceRevision: crypto.randomUUID(),
+              sourceRevision: randomId(),
             },
       ),
     );
@@ -1032,8 +1033,8 @@ export function useAppController(initialView: View = "create") {
     c.getContext("2d")!.drawImage(source, 0, 0, c.width, c.height);
     const p: PhotoCandidate = {
       subjectKind,
-      id: crypto.randomUUID(),
-      sourceRevision: crypto.randomUUID(),
+      id: randomId(),
+      sourceRevision: randomId(),
       name: label.slice(0, 100),
       image: c,
       original: c,
@@ -1125,7 +1126,7 @@ export function useAppController(initialView: View = "create") {
   async function savePreset() {
     try {
       const next = await changePreset({
-        id: crypto.randomUUID(),
+        id: randomId(),
         name: presetName.trim(),
         settings: {
           resolution,
@@ -1805,7 +1806,7 @@ export function useAppController(initialView: View = "create") {
       return;
     }
     const p: Project = {
-      id: crypto.randomUUID(),
+      id: randomId(),
       name: name.trim() || t("defaultName"),
       instruction: deepFreeze(i),
       progress: progressFor(i),

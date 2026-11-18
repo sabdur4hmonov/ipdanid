@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "./core/types";
 import {
@@ -121,7 +122,7 @@ export default function QrCraftStudio({ locale }: { locale: Locale }) {
             void run(async () => {
               const guide = await makeQrCraft(payload);
               await retain({
-                id: crypto.randomUUID(),
+                id: randomId(),
                 name: "QR",
                 guide,
                 confirmed: 0,
@@ -149,7 +150,7 @@ export default function QrCraftStudio({ locale }: { locale: Locale }) {
                   await store.check(raw.project);
                   await retain({
                     ...raw.project,
-                    id: crypto.randomUUID(),
+                    id: randomId(),
                     revision: 0,
                   });
                 });

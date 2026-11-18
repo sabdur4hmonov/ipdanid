@@ -1,3 +1,4 @@
+import { randomId } from "./browser-crypto";
 import { hash, deepFreeze } from "./engine";
 
 export type PaintColor = { code: string; hex: string };
@@ -330,7 +331,7 @@ export async function generatePaint(
   const g: PaintGuide = {
     schema: "iprasm.paint/1",
     algorithm: "linear-rgb-connected-small-first/1",
-    id: crypto.randomUUID(),
+    id: randomId(),
     createdAt: new Date().toISOString(),
     columns,
     rows,
@@ -379,7 +380,7 @@ export async function validatePaint(g: PaintGuide) {
 }
 export function newPaintProject(g: PaintGuide, name: string): PaintProject {
   return {
-    id: crypto.randomUUID(),
+    id: randomId(),
     name:
       name
         .replace(/[\u0000-\u001f\u007f]/g, " ")
@@ -434,7 +435,7 @@ export async function parsePaintProject(raw: string) {
   if (data.schema !== "iprasm.paint-project/1")
     throw Error("Unsupported paint file");
   const p = await validatePaintProject(data.project);
-  return { ...p, id: crypto.randomUUID() };
+  return { ...p, id: randomId() };
 }
 export function paintCoverage(g: PaintGuide) {
   return g.palette.map((c, color) => {

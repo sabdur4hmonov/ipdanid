@@ -1,3 +1,4 @@
+import { randomId } from "./core/browser-crypto";
 import { useEffect, useRef, useState } from "react";
 import { customerApi as api, ApiError } from "./customer-api";
 import { galleryText } from "./gallery-i18n";
@@ -373,7 +374,7 @@ export default function GalleryStudio({
                     },
                     signature = JSON.stringify(data);
                   if (attempt.current?.signature !== signature)
-                    attempt.current = { signature, key: crypto.randomUUID() };
+                    attempt.current = { signature, key: randomId() };
                   const response = await api.request<PrivateGalleryPost>(
                     "/gallery/submit",
                     { ...data, requestKey: attempt.current.key },

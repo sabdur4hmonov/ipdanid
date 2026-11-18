@@ -1,3 +1,4 @@
+import { sha256Bytes } from "./core/browser-crypto";
 import {
   faceFeatures,
   distinctSourceFaces,
@@ -31,7 +32,7 @@ function getLandmarker() {
       if (!response.ok) throw Error("Local face model unavailable");
       const bytes = new Uint8Array(await response.arrayBuffer());
       const hash = Array.from(
-        new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)),
+        new Uint8Array(await sha256Bytes(bytes)),
         (v) => v.toString(16).padStart(2, "0"),
       ).join("");
       if (hash !== MODEL_SHA256)
